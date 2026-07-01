@@ -173,7 +173,7 @@ function Dashboard() {
             <div className="text-[10px] uppercase tracking-widest text-gold-deep">Weekly cadence</div>
             <h2 className="mt-1 font-display text-2xl font-bold">Your latest report</h2>
           </div>
-          <Link to="/weekly-report" className="text-sm font-semibold text-primary hover:underline">
+          <Link to={"/weekly-report" as any} className="text-sm font-semibold text-primary hover:underline">
             File this week's report →
           </Link>
         </div>
