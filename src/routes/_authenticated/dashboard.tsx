@@ -89,7 +89,7 @@ function Dashboard() {
   useEffect(() => {
     if (!user || !profile) return;
     if (profile.xp === xp && profile.rank === rank.key) return;
-    supabase.from("profiles").update({ xp, rank: rank.key }).eq("id", user.id).then(({ error }) => {
+    supabase.from("profiles").update({ xp, rank: rank.key } as any).eq("id", user.id).then(({ error }) => {
       if (error) console.error("[profile sync]", error);
     });
   }, [user, profile, xp, rank.key]);
