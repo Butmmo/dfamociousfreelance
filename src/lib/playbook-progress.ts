@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Persist a keyed boolean map for a playbook to task_progress.
- * The key stored in task_progress.task_id combines a section prefix + task id,
- * so different tabs (e.g. "score" vs "plan") can share a hook.
+ * A drop-in replacement for `useState<Record<string, boolean>>({})` that
+ * hydrates from and persists to public.task_progress under a given playbook key.
+ * Callsites keep using `setDone(prev => ({ ...prev, [id]: !prev[id] }))` unchanged.
  */
-export function usePlaybookProgress(playbook: string) {
-  const [state, setState] = useState<Record<string, boolean>>({});
-  const [loading, setLoading] = useState(true);
+export function useSyncedTaskMap(
+  playbook: string,
+): [Record<string, boolean>, Dispatch<SetStateAction<Record<string, boolean>>>] {
+  const [state, setStateRaw] = useState<Record<string, boolean>>({});
   const userIdRef = useRef<string | null>(null);
+  const hydratedRef = useRef(false);
+  const prevRef = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -17,65 +21,60 @@ export function usePlaybookProgress(playbook: string) {
       const { data: auth } = await supabase.auth.getUser();
       const uid = auth.user?.id ?? null;
       userIdRef.current = uid;
-      if (!uid) { if (!cancelled) setLoading(false); return; }
+      if (!uid) { hydratedRef.current = true; return; }
       const { data } = await supabase
         .from("task_progress")
         .select("task_id, completed")
         .eq("user_id", uid)
         .eq("playbook", playbook);
       if (cancelled) return;
-      const initial: Record<string, boolean> = {};
-      (data ?? []).forEach((r) => { if (r.completed) initial[r.task_id] = true; });
-      setState(initial);
-      setLoading(false);
+      const next: Record<string, boolean> = {};
+      (data ?? []).forEach((r: { task_id: string; completed: boolean }) => {
+        if (r.completed) next[r.task_id] = true;
+      });
+      prevRef.current = next;
+      setStateRaw(next);
+      hydratedRef.current = true;
     })();
     return () => { cancelled = true; };
   }, [playbook]);
 
-  const toggle = useCallback(async (taskId: string) => {
-    setState((prev) => {
-      const next = { ...prev, [taskId]: !prev[taskId] };
-      const done = next[taskId];
+  const setState: Dispatch<SetStateAction<Record<string, boolean>>> = useCallback((updater) => {
+    setStateRaw((prev) => {
+      const next = typeof updater === "function"
+        ? (updater as (p: Record<string, boolean>) => Record<string, boolean>)(prev)
+        : updater;
+      // Diff against server-known state and persist changes only after hydration
       const uid = userIdRef.current;
-      if (uid) {
-        supabase
-          .from("task_progress")
-          .upsert(
-            {
+      if (uid && hydratedRef.current) {
+        const changes: { user_id: string; playbook: string; task_id: string; completed: boolean; completed_at: string | null }[] = [];
+        const keys = new Set([...Object.keys(prevRef.current), ...Object.keys(next)]);
+        keys.forEach((k) => {
+          const before = !!prevRef.current[k];
+          const after = !!next[k];
+          if (before !== after) {
+            changes.push({
               user_id: uid,
               playbook,
-              task_id: taskId,
-              completed: done,
-              completed_at: done ? new Date().toISOString() : null,
-            },
-            { onConflict: "user_id,playbook,task_id" },
-          )
-          .then(({ error }) => { if (error) console.error("[task_progress]", error); });
+              task_id: k,
+              completed: after,
+              completed_at: after ? new Date().toISOString() : null,
+            });
+          }
+        });
+        if (changes.length > 0) {
+          supabase
+            .from("task_progress")
+            .upsert(changes, { onConflict: "user_id,playbook,task_id" })
+            .then(({ error }: { error: unknown }) => {
+              if (error) console.error("[task_progress upsert]", error);
+            });
+        }
+        prevRef.current = next;
       }
       return next;
     });
   }, [playbook]);
 
-  const setKey = useCallback((taskId: string, value: boolean) => {
-    setState((prev) => (prev[taskId] === value ? prev : { ...prev, [taskId]: value }));
-    const uid = userIdRef.current;
-    if (!uid) return;
-    supabase
-      .from("task_progress")
-      .upsert(
-        { user_id: uid, playbook, task_id: taskId, completed: value, completed_at: value ? new Date().toISOString() : null },
-        { onConflict: "user_id,playbook,task_id" },
-      )
-      .then(({ error }) => { if (error) console.error("[task_progress]", error); });
-  }, [playbook]);
-
-  const reset = useCallback(async () => {
-    const uid = userIdRef.current;
-    setState({});
-    if (uid) {
-      await supabase.from("task_progress").delete().eq("user_id", uid).eq("playbook", playbook);
-    }
-  }, [playbook]);
-
-  return { state, setState: setKey, toggle, reset, loading };
+  return [state, setState];
 }
