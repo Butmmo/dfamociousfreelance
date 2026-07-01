@@ -15,6 +15,10 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/_authenticated/playbooks/prospecting'
+import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
+import { Route as AuthenticatedPlaybooksGrandSlamRouteImport } from './routes/_authenticated/playbooks/grand-slam'
+import { Route as AuthenticatedPlaybooksGlobalRouteImport } from './routes/_authenticated/playbooks/global'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -45,6 +49,30 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPlaybooksProspectingRoute =
+  AuthenticatedPlaybooksProspectingRouteImport.update({
+    id: '/playbooks/prospecting',
+    path: '/playbooks/prospecting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksPlanRoute =
+  AuthenticatedPlaybooksPlanRouteImport.update({
+    id: '/playbooks/plan',
+    path: '/playbooks/plan',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksGrandSlamRoute =
+  AuthenticatedPlaybooksGrandSlamRouteImport.update({
+    id: '/playbooks/grand-slam',
+    path: '/playbooks/grand-slam',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksGlobalRoute =
+  AuthenticatedPlaybooksGlobalRouteImport.update({
+    id: '/playbooks/global',
+    path: '/playbooks/global',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,6 +80,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
+  '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
+  '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
+  '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -59,6 +91,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
+  '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
+  '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
+  '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +104,34 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
+  '/_authenticated/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
+  '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
+  '/_authenticated/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/accept-invite' | '/auth' | '/admin' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/accept-invite'
+    | '/auth'
+    | '/admin'
+    | '/dashboard'
+    | '/playbooks/global'
+    | '/playbooks/grand-slam'
+    | '/playbooks/plan'
+    | '/playbooks/prospecting'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/accept-invite' | '/auth' | '/admin' | '/dashboard'
+  to:
+    | '/'
+    | '/accept-invite'
+    | '/auth'
+    | '/admin'
+    | '/dashboard'
+    | '/playbooks/global'
+    | '/playbooks/grand-slam'
+    | '/playbooks/plan'
+    | '/playbooks/prospecting'
   id:
     | '__root__'
     | '/'
@@ -82,6 +140,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/playbooks/global'
+    | '/_authenticated/playbooks/grand-slam'
+    | '/_authenticated/playbooks/plan'
+    | '/_authenticated/playbooks/prospecting'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,17 +197,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/playbooks/prospecting': {
+      id: '/_authenticated/playbooks/prospecting'
+      path: '/playbooks/prospecting'
+      fullPath: '/playbooks/prospecting'
+      preLoaderRoute: typeof AuthenticatedPlaybooksProspectingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/plan': {
+      id: '/_authenticated/playbooks/plan'
+      path: '/playbooks/plan'
+      fullPath: '/playbooks/plan'
+      preLoaderRoute: typeof AuthenticatedPlaybooksPlanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/grand-slam': {
+      id: '/_authenticated/playbooks/grand-slam'
+      path: '/playbooks/grand-slam'
+      fullPath: '/playbooks/grand-slam'
+      preLoaderRoute: typeof AuthenticatedPlaybooksGrandSlamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/global': {
+      id: '/_authenticated/playbooks/global'
+      path: '/playbooks/global'
+      fullPath: '/playbooks/global'
+      preLoaderRoute: typeof AuthenticatedPlaybooksGlobalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPlaybooksGlobalRoute: typeof AuthenticatedPlaybooksGlobalRoute
+  AuthenticatedPlaybooksGrandSlamRoute: typeof AuthenticatedPlaybooksGrandSlamRoute
+  AuthenticatedPlaybooksPlanRoute: typeof AuthenticatedPlaybooksPlanRoute
+  AuthenticatedPlaybooksProspectingRoute: typeof AuthenticatedPlaybooksProspectingRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPlaybooksGlobalRoute: AuthenticatedPlaybooksGlobalRoute,
+  AuthenticatedPlaybooksGrandSlamRoute: AuthenticatedPlaybooksGrandSlamRoute,
+  AuthenticatedPlaybooksPlanRoute: AuthenticatedPlaybooksPlanRoute,
+  AuthenticatedPlaybooksProspectingRoute:
+    AuthenticatedPlaybooksProspectingRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
