@@ -26,9 +26,10 @@ const RANKS = [
   { key: "crown",     label: "Crown",     icon: Crown,      min: 1200, color: "text-gold" },
 ] as const;
 
-function resolveRank(xp: number) {
-  let current = RANKS[0];
-  let next: typeof RANKS[number] | null = null;
+type Rank = (typeof RANKS)[number];
+function resolveRank(xp: number): { current: Rank; next: Rank | null } {
+  let current: Rank = RANKS[0];
+  let next: Rank | null = null;
   for (let i = 0; i < RANKS.length; i++) {
     if (xp >= RANKS[i].min) current = RANKS[i];
     else { next = RANKS[i]; break; }

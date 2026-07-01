@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
 import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/_authenticated/playbooks/prospecting'
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
 import { Route as AuthenticatedPlaybooksGrandSlamRouteImport } from './routes/_authenticated/playbooks/grand-slam'
@@ -49,6 +50,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPlaybooksIndexRoute =
+  AuthenticatedPlaybooksIndexRouteImport.update({
+    id: '/playbooks/',
+    path: '/playbooks/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPlaybooksProspectingRoute =
   AuthenticatedPlaybooksProspectingRouteImport.update({
     id: '/playbooks/prospecting',
@@ -84,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
+  '/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -95,6 +103,7 @@ export interface FileRoutesByTo {
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
+  '/playbooks': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -108,6 +117,7 @@ export interface FileRoutesById {
   '/_authenticated/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/_authenticated/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
+  '/_authenticated/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
     | '/playbooks/prospecting'
+    | '/playbooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
     | '/playbooks/prospecting'
+    | '/playbooks'
   id:
     | '__root__'
     | '/'
@@ -144,6 +156,7 @@ export interface FileRouteTypes {
     | '/_authenticated/playbooks/grand-slam'
     | '/_authenticated/playbooks/plan'
     | '/_authenticated/playbooks/prospecting'
+    | '/_authenticated/playbooks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/playbooks/': {
+      id: '/_authenticated/playbooks/'
+      path: '/playbooks'
+      fullPath: '/playbooks/'
+      preLoaderRoute: typeof AuthenticatedPlaybooksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/playbooks/prospecting': {
       id: '/_authenticated/playbooks/prospecting'
       path: '/playbooks/prospecting'
@@ -235,6 +255,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlaybooksGrandSlamRoute: typeof AuthenticatedPlaybooksGrandSlamRoute
   AuthenticatedPlaybooksPlanRoute: typeof AuthenticatedPlaybooksPlanRoute
   AuthenticatedPlaybooksProspectingRoute: typeof AuthenticatedPlaybooksProspectingRoute
+  AuthenticatedPlaybooksIndexRoute: typeof AuthenticatedPlaybooksIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -245,6 +266,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlaybooksPlanRoute: AuthenticatedPlaybooksPlanRoute,
   AuthenticatedPlaybooksProspectingRoute:
     AuthenticatedPlaybooksProspectingRoute,
+  AuthenticatedPlaybooksIndexRoute: AuthenticatedPlaybooksIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
