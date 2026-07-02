@@ -3,11 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
 export type AppRole = "admin" | "beneficiary";
+export const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
 
 export interface SessionState {
   session: Session | null;
   user: User | null;
   role: AppRole | null;
+  isSuperAdmin: boolean;
   loading: boolean;
 }
 
@@ -56,5 +58,6 @@ export function useSession(): SessionState {
     };
   }, []);
 
-  return { session, user: session?.user ?? null, role, loading };
+  const email = (session?.user?.email ?? "").toLowerCase();
+  return { session, user: session?.user ?? null, role, isSuperAdmin: email === SUPER_ADMIN_EMAIL, loading };
 }

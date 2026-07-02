@@ -135,7 +135,7 @@ const EMAIL_STEPS = [
   { n: "02", icon: "🌐", color: "#3B82F6", title: "Visit Their Website Contact or Footer",
     body: "If they have a site, go to /contact, /about-us, or the footer. 70% of the time the owner's direct email is right there. Takes 30 seconds. Always do this before touching a tool." },
   { n: "03", icon: "⚙️", color: "#10B981", title: "Bulk Scrape with Outscraper",
-    body: "Your main workhorse. Outscraper.com pulls business name, phone, website, email, and address directly from Google Maps in bulk. Free tier: 50 rows/month. Paid: from ~$3 per 1,000 leads. Export CSV, import to Zoho CRM.",
+    body: "Your main workhorse. Outscraper.com pulls business name, phone, website, email, and address directly from Google Maps in bulk. Free tier: 50 rows/month. Paid: from ~$3 per 1,000 leads. Export CSV, import to Notion CRM.",
     url: "outscraper.com" },
   { n: "04", icon: "🔍", color: "#F59E0B", title: "Enrich Missing Emails with Apollo.io",
     body: "For leads where Outscraper found no email, paste their website domain into Apollo.io. It cross-references LinkedIn and 20+ data sources to find the decision-maker's direct address. Free: 50 verified emails/month.",
@@ -183,7 +183,7 @@ const LADDER = [
     what: "Landing page, Google-optimised, contact form, mobile-first. Delivered in under 10 days.",
     upsell: "\"Now let's add CRM so you don't lose a single lead that comes through this page.\"" },
   { rung: 2, icon: "🌐", color: "#3B82F6", name: "Full Presence", price: "$800–1,500", yours: true,
-    what: "Multi-page website + Zoho CRM setup + Calendly booking integration.",
+    what: "Multi-page website + Notion CRM setup + Calendly booking integration.",
     upsell: "\"Now let's add email marketing so those visitors become repeat customers.\"" },
   { rung: 3, icon: "⚡", color: "#8B5CF6", name: "Custom System", price: "$2,000–4,000", yours: true,
     what: "Custom Bubble.io or Adalo app + Make.com automation + CRM + Klaviyo email marketing.",
@@ -217,10 +217,10 @@ const TOOLS = [
     { name: "Lemlist", tier: "From $39/mo", url: "lemlist.com", desc: "Cold email + LinkedIn + personalised image thumbnails in each email." },
   ]},
   { cat: "Automation", color: "#3B82F6", items: [
-    { name: "Make.com", tier: "Free (1K ops/mo)", url: "make.com", desc: "Connect everything: Outscraper → Apollo → Instantly → Zoho. Your silent engine." },
+    { name: "Make.com", tier: "Free (1K ops/mo)", url: "make.com", desc: "Connect everything: Outscraper → Apollo → Instantly → Notion. Your silent engine." },
   ]},
   { cat: "CRM & Nurture", color: "#EC4899", items: [
-    { name: "Zoho CRM", tier: "Free (3 users)", url: "zoho.com/crm", desc: "Your lead pipeline — you already know this. Stages: Scraped → Contacted → Replied → Call → Proposal → Closed." },
+    { name: "Notion CRM", tier: "Free (3 users)", url: "notion.com/crm", desc: "Your lead pipeline — you already know this. Stages: Scraped → Contacted → Replied → Call → Proposal → Closed." },
     { name: "Klaviyo", tier: "Free (<250 contacts)", url: "klaviyo.com", desc: "Nurture sequence for leads who don't reply. You already know this too — use it!" },
   ]},
   { cat: "Close & Deliver", color: "#14B8A6", items: [
@@ -236,7 +236,7 @@ const MONTH1_COST = [
   { tool: "Apollo.io", cost: "$0" },
   { tool: "Hunter.io", cost: "$0" },
   { tool: "Make.com", cost: "$0" },
-  { tool: "Zoho CRM", cost: "$0" },
+  { tool: "Notion CRM", cost: "$0" },
   { tool: "Klaviyo", cost: "$0" },
   { tool: "Calendly", cost: "$0" },
   { tool: "Loom", cost: "$0" },
@@ -265,7 +265,7 @@ function Row({ color, icon, children }) {
   return (
     <div style={{ display: "flex", gap: 7, marginBottom: 6, alignItems: "flex-start" }}>
       <span style={{ color, fontSize: 12, flexShrink: 0, marginTop: 1 }}>{icon}</span>
-      <span style={{ fontSize: 12.5, color: "#94A3B8", lineHeight: 1.5 }}>{children}</span>
+      <span style={{ fontSize: 12.5, color: "#6E6459", lineHeight: 1.5 }}>{children}</span>
     </div>
   );
 }
@@ -298,32 +298,32 @@ function ProspectingGuide() {
   ];
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "#080E1A", minHeight: "100vh", color: "#E2E8F0" }}>
+    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "#F8F5EE", minHeight: "100vh", color: "#201A16" }}>
 
       {/* ── HEADER ── */}
-      <div style={{ background: "linear-gradient(160deg,#0F1629 0%,#0C1320 60%,#080E1A 100%)", padding: "24px 18px 20px", borderBottom: "1px solid #1A2840" }}>
+      <div style={{ background: "linear-gradient(160deg,#FDF9F0 0%,#F8F5EE 60%,#F8F5EE 100%)", padding: "24px 18px 20px", borderBottom: "1px solid #D9CFBB" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#10B981", textTransform: "uppercase", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", boxShadow: "0 0 6px #10B981", display: "inline-block" }} />
             SMB Prospecting Playbook
           </div>
-          <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px, 4.5vw, 34px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg,#FFFFFF 30%,#818CF8 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px, 4.5vw, 34px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg,#FFFFFF 30%,#C99A3B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             From Google Maps to Closed Deal
           </h1>
-          <p style={{ margin: 0, fontSize: 13, color: "#4B6080", maxWidth: 560, lineHeight: 1.65 }}>
+          <p style={{ margin: 0, fontSize: 13, color: "#6E6459", maxWidth: 560, lineHeight: 1.65 }}>
             Exact searches · Email extraction · Lead scoring · Grand Slam Offer · Value ladder — built for web development freelancing on a lean budget.
           </p>
         </div>
       </div>
 
       {/* ── TABS ── */}
-      <div style={{ background: "#0C1420", borderBottom: "1px solid #1A2840", position: "sticky", top: 0, zIndex: 20 }}>
+      <div style={{ background: "#F8F5EE", borderBottom: "1px solid #D9CFBB", position: "sticky", top: 0, zIndex: 20 }}>
         <div style={{ maxWidth: 880, margin: "0 auto", display: "flex", padding: "0 8px", overflowX: "auto" }}>
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               background: "transparent", border: "none",
               borderBottom: tab === t.id ? "2px solid #6366F1" : "2px solid transparent",
-              color: tab === t.id ? "#A5B4FC" : "#374151",
+              color: tab === t.id ? "#A5B4FC" : "#8A7C6D",
               padding: "12px 14px", fontSize: 12.5, fontWeight: tab === t.id ? 600 : 500,
               cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s", fontFamily: "inherit",
             }}>{t.label}</button>
@@ -337,15 +337,15 @@ function ProspectingGuide() {
         {/* ────────── MAPS ────────── */}
         {tab === "maps" && (
           <div>
-            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>Exact Google Maps Search Terms</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 14px" }}>Tap a niche for country-specific searches, green-light signals, and red flags.</p>
+            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Exact Google Maps Search Terms</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Tap a niche for country-specific searches, green-light signals, and red flags.</p>
 
             <div style={{ background: "#0A1020", border: "1px solid #6366F120", borderRadius: 10, padding: "12px 14px", marginBottom: 16, display: "flex", gap: 10 }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>💡</span>
               <div>
                 <div style={{ fontSize: 11.5, fontWeight: 700, color: "#A5B4FC", marginBottom: 3 }}>How to run these searches</div>
-                <p style={{ fontSize: 12, color: "#94A3B8", margin: 0, lineHeight: 1.6 }}>
-                  Open Google Maps → type the search term + city name, e.g. <em style={{ color: "#E2E8F0" }}>"dentist Austin TX"</em> or <em style={{ color: "#E2E8F0" }}>"estate agent Manchester"</em>.
+                <p style={{ fontSize: 12, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
+                  Open Google Maps → type the search term + city name, e.g. <em style={{ color: "#201A16" }}>"dentist Austin TX"</em> or <em style={{ color: "#201A16" }}>"estate agent Manchester"</em>.
                   For bulk scraping, paste the same string into <strong style={{ color: "#10B981" }}>Outscraper.com</strong> and it exports hundreds of leads as a CSV in minutes.
                 </p>
               </div>
@@ -354,21 +354,21 @@ function ProspectingGuide() {
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {SEARCHES.map((s, i) => (
                 <div key={s.niche} onClick={() => setOpenNiche(openNiche === i ? null : i)}
-                  style={{ background: openNiche === i ? "#0F1C30" : "#0C1520", border: `1px solid ${openNiche === i ? "#6366F1" : "#1A2840"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
+                  style={{ background: openNiche === i ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${openNiche === i ? "#6366F1" : "#D9CFBB"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
                   <div style={{ padding: "13px 15px", display: "flex", alignItems: "center", gap: 12 }}>
                     <span style={{ fontSize: 22, flexShrink: 0 }}>{s.icon}</span>
-                    <span style={{ flex: 1, fontWeight: 600, fontSize: 14, color: "#F1F5F9" }}>{s.niche}</span>
-                    <span style={{ color: "#374151", fontSize: 19, display: "inline-block", transform: openNiche === i ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>›</span>
+                    <span style={{ flex: 1, fontWeight: 600, fontSize: 14, color: "#1A140F" }}>{s.niche}</span>
+                    <span style={{ color: "#8A7C6D", fontSize: 19, display: "inline-block", transform: openNiche === i ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>›</span>
                   </div>
 
                   {openNiche === i && (
-                    <div style={{ padding: "0 15px 16px", borderTop: "1px solid #1A2840" }}>
+                    <div style={{ padding: "0 15px 16px", borderTop: "1px solid #D9CFBB" }}>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 14 }}>
                         {[["🇺🇸 USA", s.us], ["🇬🇧 UK", s.uk], ["🇦🇺 Australia", s.au], ["🇨🇦 Canada", s.ca]].map(([country, terms]) => (
-                          <div key={country} style={{ background: "#080E1A", borderRadius: 8, padding: "10px 12px", border: "1px solid #1A2840" }}>
+                          <div key={country} style={{ background: "#F8F5EE", borderRadius: 8, padding: "10px 12px", border: "1px solid #D9CFBB" }}>
                             <div style={{ fontSize: 11, fontWeight: 700, color: "#A5B4FC", marginBottom: 7 }}>{country}</div>
                             {terms.map((t, j) => (
-                              <div key={j} style={{ fontSize: 11.5, color: "#94A3B8", marginBottom: 4, display: "flex", gap: 4 }}>
+                              <div key={j} style={{ fontSize: 11.5, color: "#6E6459", marginBottom: 4, display: "flex", gap: 4 }}>
                                 <span style={{ color: "#6366F1" }}>"</span>{t}<span style={{ color: "#6366F1" }}>"</span>
                               </div>
                             ))}
@@ -376,19 +376,19 @@ function ProspectingGuide() {
                         ))}
                       </div>
 
-                      <div style={{ marginTop: 10, background: "#080E1A", borderRadius: 8, padding: "10px 12px", border: "1px solid #10B98120" }}>
+                      <div style={{ marginTop: 10, background: "#F8F5EE", borderRadius: 8, padding: "10px 12px", border: "1px solid #10B98120" }}>
                         <SectionLabel color="#10B981">✅ Green-Light Signals</SectionLabel>
                         {s.signals.map((sg, j) => <Row key={j} color="#10B981" icon="✓">{sg}</Row>)}
                       </div>
 
-                      <div style={{ marginTop: 8, background: "#080E1A", borderRadius: 8, padding: "10px 12px", border: "1px solid #EF444420" }}>
+                      <div style={{ marginTop: 8, background: "#F8F5EE", borderRadius: 8, padding: "10px 12px", border: "1px solid #EF444420" }}>
                         <SectionLabel color="#EF4444">🚫 Skip These</SectionLabel>
                         {s.skip.map((sk, j) => <Row key={j} color="#EF4444" icon="✕">{sk}</Row>)}
                       </div>
 
-                      <div style={{ marginTop: 8, background: "#080E1A", borderRadius: 8, padding: "10px 12px", border: "1px solid #F59E0B20" }}>
+                      <div style={{ marginTop: 8, background: "#F8F5EE", borderRadius: 8, padding: "10px 12px", border: "1px solid #F59E0B20" }}>
                         <SectionLabel color="#F59E0B">⚡ Pro Tip</SectionLabel>
-                        <p style={{ fontSize: 12.5, color: "#94A3B8", margin: 0, lineHeight: 1.55 }}>{s.tip}</p>
+                        <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.55 }}>{s.tip}</p>
                       </div>
                     </div>
                   )}
@@ -401,22 +401,22 @@ function ProspectingGuide() {
         {/* ────────── EMAIL ────────── */}
         {tab === "email" && (
           <div>
-            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>How to Get Their Email</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 18px" }}>Work top to bottom — stop the moment you have a verified address.</p>
+            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>How to Get Their Email</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 18px" }}>Work top to bottom — stop the moment you have a verified address.</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
               {EMAIL_STEPS.map((m, i) => (
                 <div key={m.n} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0, paddingTop: 2 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 9, background: m.color + "18", border: `1px solid ${m.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17 }}>{m.icon}</div>
-                    {i < EMAIL_STEPS.length - 1 && <div style={{ width: 2, height: 28, background: "#1A2840", marginTop: 4, marginBottom: 4 }} />}
+                    {i < EMAIL_STEPS.length - 1 && <div style={{ width: 2, height: 28, background: "#D9CFBB", marginTop: 4, marginBottom: 4 }} />}
                   </div>
-                  <div style={{ background: "#0C1520", border: "1px solid #1A2840", borderRadius: 10, padding: "12px 13px", flex: 1, marginBottom: 10 }}>
+                  <div style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 10, padding: "12px 13px", flex: 1, marginBottom: 10 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                       <span style={{ fontSize: 9, fontWeight: 700, color: m.color }}>{m.n}</span>
-                      <span style={{ fontWeight: 700, fontSize: 13.5, color: "#F1F5F9" }}>{m.title}</span>
+                      <span style={{ fontWeight: 700, fontSize: 13.5, color: "#1A140F" }}>{m.title}</span>
                     </div>
-                    <p style={{ fontSize: 12.5, color: "#94A3B8", margin: 0, lineHeight: 1.55 }}>{m.body}</p>
+                    <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.55 }}>{m.body}</p>
                     {m.url && <div style={{ marginTop: 8, fontSize: 11.5, color: m.color, fontWeight: 600 }}>→ {m.url}</div>}
                   </div>
                 </div>
@@ -426,14 +426,14 @@ function ProspectingGuide() {
             <div style={{ background: "#0A1020", border: "1px solid #F59E0B25", borderRadius: 11, padding: "14px", marginTop: 4 }}>
               <SectionLabel color="#F59E0B">🔄 The Automation Flow (Set Once, Runs Forever)</SectionLabel>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5, marginBottom: 10 }}>
-                {["Outscraper","→","Apollo.io","→","Hunter.io","→","Make.com","→","Instantly.ai","→","Zoho CRM"].map((item, i) =>
+                {["Outscraper","→","Apollo.io","→","Hunter.io","→","Make.com","→","Instantly.ai","→","Notion CRM"].map((item, i) =>
                   item === "→"
-                    ? <span key={i} style={{ color: "#374151", fontSize: 14 }}>→</span>
-                    : <span key={i} style={{ background: "#111C2E", border: "1px solid #1E2E46", borderRadius: 6, padding: "4px 9px", fontSize: 11.5, color: "#A5B4FC", fontWeight: 500 }}>{item}</span>
+                    ? <span key={i} style={{ color: "#8A7C6D", fontSize: 14 }}>→</span>
+                    : <span key={i} style={{ background: "#EDE7DA", border: "1px solid #1E2E46", borderRadius: 6, padding: "4px 9px", fontSize: 11.5, color: "#A5B4FC", fontWeight: 500 }}>{item}</span>
                 )}
               </div>
-              <p style={{ fontSize: 12, color: "#4B6080", margin: 0, lineHeight: 1.6 }}>
-                Make.com triggers automatically: new scraped batch from Outscraper → enrich via Apollo → verify via Hunter if needed → load into Instantly email sequence → create Zoho CRM record. You only review replies.
+              <p style={{ fontSize: 12, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
+                Make.com triggers automatically: new scraped batch from Outscraper → enrich via Apollo → verify via Hunter if needed → load into Instantly email sequence → create Notion CRM record. You only review replies.
               </p>
             </div>
           </div>
@@ -442,15 +442,15 @@ function ProspectingGuide() {
         {/* ────────── QUALIFY ────────── */}
         {tab === "qualify" && (
           <div>
-            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>Lead Qualification & Scoring</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 16px" }}>Score each listing in 60 seconds. Only invest real time in leads that hit 5+.</p>
+            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Lead Qualification & Scoring</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 16px" }}>Score each listing in 60 seconds. Only invest real time in leads that hit 5+.</p>
 
-            <div style={{ background: "#0A1020", border: "1px solid #1A2840", borderRadius: 11, padding: "14px 16px", marginBottom: 16 }}>
+            <div style={{ background: "#0A1020", border: "1px solid #D9CFBB", borderRadius: 11, padding: "14px 16px", marginBottom: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.07em" }}>Live Score Calculator</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#6E6459", textTransform: "uppercase", letterSpacing: "0.07em" }}>Live Score Calculator</span>
                 <div style={{ textAlign: "right" }}>
                   <div style={{ fontSize: 22, fontWeight: 800, color: rating.color }}>{rating.label}</div>
-                  <div style={{ fontSize: 12, color: "#4B6080" }}>Score: {total > 0 ? "+" : ""}{total}</div>
+                  <div style={{ fontSize: 12, color: "#6E6459" }}>Score: {total > 0 ? "+" : ""}{total}</div>
                 </div>
               </div>
 
@@ -460,11 +460,11 @@ function ProspectingGuide() {
                 const on = !!score[key];
                 return (
                   <div key={key} onClick={() => setScore(p => ({ ...p, [key]: !p[key] }))}
-                    style={{ background: on ? "#10B98115" : "#080E1A", border: `1px solid ${on ? "#10B98145" : "#1A2840"}`, borderRadius: 8, padding: "9px 11px", marginBottom: 6, cursor: "pointer", display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${on ? "#10B981" : "#374151"}`, background: on ? "#10B981" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, color: "#080E1A", fontWeight: 700 }}>{on ? "✓" : ""}</div>
+                    style={{ background: on ? "#10B98115" : "#F8F5EE", border: `1px solid ${on ? "#10B98145" : "#D9CFBB"}`, borderRadius: 8, padding: "9px 11px", marginBottom: 6, cursor: "pointer", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                    <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${on ? "#10B981" : "#8A7C6D"}`, background: on ? "#10B981" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, color: "#F8F5EE", fontWeight: 700 }}>{on ? "✓" : ""}</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 12.5, color: "#E2E8F0", fontWeight: 500 }}>{s.label}</div>
-                      <div style={{ fontSize: 11, color: "#4B6080", marginTop: 2 }}>{s.why}</div>
+                      <div style={{ fontSize: 12.5, color: "#201A16", fontWeight: 500 }}>{s.label}</div>
+                      <div style={{ fontSize: 11, color: "#6E6459", marginTop: 2 }}>{s.why}</div>
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#10B981", flexShrink: 0 }}>{s.pts}</span>
                   </div>
@@ -477,18 +477,18 @@ function ProspectingGuide() {
                 const on = !!score[key];
                 return (
                   <div key={key} onClick={() => setScore(p => ({ ...p, [key]: !p[key] }))}
-                    style={{ background: on ? "#EF444415" : "#080E1A", border: `1px solid ${on ? "#EF444445" : "#1A2840"}`, borderRadius: 8, padding: "9px 11px", marginBottom: 6, cursor: "pointer", display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${on ? "#EF4444" : "#374151"}`, background: on ? "#EF4444" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, color: "#080E1A", fontWeight: 700 }}>{on ? "✕" : ""}</div>
+                    style={{ background: on ? "#EF444415" : "#F8F5EE", border: `1px solid ${on ? "#EF444445" : "#D9CFBB"}`, borderRadius: 8, padding: "9px 11px", marginBottom: 6, cursor: "pointer", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                    <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${on ? "#EF4444" : "#8A7C6D"}`, background: on ? "#EF4444" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, color: "#F8F5EE", fontWeight: 700 }}>{on ? "✕" : ""}</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 12.5, color: "#E2E8F0", fontWeight: 500 }}>{s.label}</div>
-                      <div style={{ fontSize: 11, color: "#4B6080", marginTop: 2 }}>{s.why}</div>
+                      <div style={{ fontSize: 12.5, color: "#201A16", fontWeight: 500 }}>{s.label}</div>
+                      <div style={{ fontSize: 11, color: "#6E6459", marginTop: 2 }}>{s.why}</div>
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#EF4444", flexShrink: 0 }}>{s.pts}</span>
                   </div>
                 );
               })}
 
-              <button onClick={() => setScore({})} style={{ marginTop: 10, background: "#111C2E", border: "1px solid #1E2E46", color: "#64748B", borderRadius: 7, padding: "7px 14px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Reset</button>
+              <button onClick={() => setScore({})} style={{ marginTop: 10, background: "#EDE7DA", border: "1px solid #1E2E46", color: "#64748B", borderRadius: 7, padding: "7px 14px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Reset</button>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
@@ -497,10 +497,10 @@ function ProspectingGuide() {
                 { lbl: "⚡ WARM", range: "4–6", desc: "Standard sequence", color: "#F59E0B" },
                 { lbl: "❄️ COLD", range: "0–3", desc: "Mass email or skip", color: "#6B7280" },
               ].map(b => (
-                <div key={b.lbl} style={{ background: "#0C1520", border: `1px solid ${b.color}30`, borderRadius: 10, padding: "12px", textAlign: "center" }}>
+                <div key={b.lbl} style={{ background: "#FFFFFF", border: `1px solid ${b.color}30`, borderRadius: 10, padding: "12px", textAlign: "center" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: b.color, marginBottom: 4 }}>{b.lbl}</div>
-                  <div style={{ fontSize: 17, fontWeight: 800, color: "#F1F5F9", marginBottom: 4 }}>{b.range}</div>
-                  <div style={{ fontSize: 11, color: "#4B6080", lineHeight: 1.4 }}>{b.desc}</div>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: "#1A140F", marginBottom: 4 }}>{b.range}</div>
+                  <div style={{ fontSize: 11, color: "#6E6459", lineHeight: 1.4 }}>{b.desc}</div>
                 </div>
               ))}
             </div>
@@ -509,7 +509,7 @@ function ProspectingGuide() {
               <SectionLabel color="#6366F1">🎯 How to Reduce Attrition</SectionLabel>
               {[
                 "Only manually craft outreach for HOT leads (7+). WARM leads go into your automated sequence. COLD leads are bulk-emailed or skipped.",
-                "Set a Zoho CRM rule: if no reply after 3 emails → auto-move to 'Nurture' and swap into a Klaviyo long-game sequence instead of burning more send credits.",
+                "Set a Notion CRM rule: if no reply after 3 emails → auto-move to 'Nurture' and swap into a Klaviyo long-game sequence instead of burning more send credits.",
                 "Review your list weekly. Any lead that hasn't opened a single email after 3 sends gets archived, not emailed a 4th time.",
                 "Your conversion focus: quality of leads > volume. 50 HOT leads outperform 500 COLD ones every time.",
               ].map((tip, i) => <Row key={i} color="#6366F1" icon={`${i + 1}.`}>{tip}</Row>)}
@@ -520,34 +520,34 @@ function ProspectingGuide() {
         {/* ────────── OFFER ────────── */}
         {tab === "offer" && (
           <div>
-            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>The Grand Slam Offer</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 16px", lineHeight: 1.5 }}>Alex Hormozi's framework applied to your services — make the value so obvious that saying no feels irrational.</p>
+            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>The Grand Slam Offer</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 16px", lineHeight: 1.5 }}>Alex Hormozi's framework applied to your services — make the value so obvious that saying no feels irrational.</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 18 }}>
               {OFFER_PARTS.map((f, i) => (
-                <div key={f.part} style={{ background: "#0C1520", border: `1px solid ${f.color}30`, borderRadius: 10, padding: "13px 14px" }}>
+                <div key={f.part} style={{ background: "#FFFFFF", border: `1px solid ${f.color}30`, borderRadius: 10, padding: "13px 14px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 7 }}>
                     <span style={{ fontSize: 20 }}>{f.icon}</span>
                     <div>
                       <div style={{ fontSize: 10, fontWeight: 700, color: f.color, textTransform: "uppercase", letterSpacing: "0.07em" }}>Part {i + 1}</div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#F1F5F9" }}>{f.part}</div>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#1A140F" }}>{f.part}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: 11.5, color: "#4B6080", marginBottom: 6 }}>{f.q}</div>
-                  <div style={{ fontSize: 13, color: "#E2E8F0", lineHeight: 1.6, borderLeft: `2px solid ${f.color}50`, paddingLeft: 10 }}>{f.a}</div>
+                  <div style={{ fontSize: 11.5, color: "#6E6459", marginBottom: 6 }}>{f.q}</div>
+                  <div style={{ fontSize: 13, color: "#201A16", lineHeight: 1.6, borderLeft: `2px solid ${f.color}50`, paddingLeft: 10 }}>{f.a}</div>
                 </div>
               ))}
             </div>
 
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#F1F5F9", marginBottom: 3 }}>Ready-Made Offer Hooks by Tier</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#1A140F", marginBottom: 3 }}>Ready-Made Offer Hooks by Tier</div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 16 }}>
               {HOOKS.map((h, i) => (
-                <div key={i} style={{ background: "#0C1520", border: "1px solid #1A2840", borderRadius: 10, padding: "13px 14px" }}>
+                <div key={i} style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 10, padding: "13px 14px" }}>
                   <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 5 }}>{h.tier}</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#F1F5F9", fontStyle: "italic", marginBottom: 6 }}>{h.headline}</div>
-                  <div style={{ fontSize: 11.5, color: "#4B6080", marginBottom: 5 }}>Best for: {h.target}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#1A140F", fontStyle: "italic", marginBottom: 6 }}>{h.headline}</div>
+                  <div style={{ fontSize: 11.5, color: "#6E6459", marginBottom: 5 }}>Best for: {h.target}</div>
                   <div style={{ fontSize: 12.5, color: "#10B981", display: "flex", gap: 6 }}><span>🎁</span> Bonus: {h.bonus}</div>
                 </div>
               ))}
@@ -555,17 +555,17 @@ function ProspectingGuide() {
 
             <div style={{ background: "#0A1020", border: "1px solid #10B98130", borderRadius: 10, padding: "13px 14px", marginBottom: 14 }}>
               <SectionLabel color="#10B981">🛡️ The Guarantee (Remove Their Fear)</SectionLabel>
-              <div style={{ fontSize: 14, color: "#E2E8F0", fontStyle: "italic", lineHeight: 1.65, marginBottom: 10 }}>
+              <div style={{ fontSize: 14, color: "#201A16", fontStyle: "italic", lineHeight: 1.65, marginBottom: 10 }}>
                 "If your site isn't live and working within [14/21/30] days, you pay nothing until it is."
               </div>
-              <p style={{ fontSize: 12, color: "#374151", margin: 0, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 12, color: "#8A7C6D", margin: 0, lineHeight: 1.6 }}>
                 Their biggest fear: "What if I pay and get nothing useful?" A clear delivery guarantee removes that objection. Since you control the build and timeline, you control whether you hit it. Start with the guarantee you can absolutely keep — then stretch it as you get faster.
               </p>
             </div>
 
             <div style={{ background: "#0A1020", border: "1px solid #8B5CF625", borderRadius: 10, padding: "13px 14px" }}>
               <SectionLabel color="#8B5CF6">🗣️ When They Ask: "Can't I Build This Myself With AI?"</SectionLabel>
-              <div style={{ fontSize: 13, color: "#E2E8F0", fontStyle: "italic", lineHeight: 1.7, borderLeft: "2px solid #8B5CF640", paddingLeft: 12 }}>
+              <div style={{ fontSize: 13, color: "#201A16", fontStyle: "italic", lineHeight: 1.7, borderLeft: "2px solid #8B5CF640", paddingLeft: 12 }}>
                 "Honestly? You could try — I use these same kinds of tools to move fast. But here's what usually happens: most owners get to about 70% done, then stall on the part that actually matters — connecting it to their CRM, setting up secure payments, making sure it works on every device, and maintaining it as things change. That's the 30% I specialise in. Think of it like accounting software: anyone can open QuickBooks, but you'd still hire an accountant. I'm not selling you a tool — I'm selling you a finished system, and the support to keep it running."
               </div>
             </div>
@@ -575,38 +575,38 @@ function ProspectingGuide() {
         {/* ────────── LADDER ────────── */}
         {tab === "ladder" && (
           <div>
-            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>Value Ladder & Where to Draw the Line</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 16px", lineHeight: 1.5 }}>Tap each rung to see what to deliver, your upsell trigger, and whether it's in your zone.</p>
+            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Value Ladder & Where to Draw the Line</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 16px", lineHeight: 1.5 }}>Tap each rung to see what to deliver, your upsell trigger, and whether it's in your zone.</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
               {LADDER.map((r, i) => (
                 <div key={r.rung} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0, paddingTop: 2 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 8, background: r.color + "18", border: `1px solid ${r.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>{r.icon}</div>
-                    {i < LADDER.length - 1 && <div style={{ width: 2, height: 22, background: "#1A2840", marginTop: 4, marginBottom: 4 }} />}
+                    {i < LADDER.length - 1 && <div style={{ width: 2, height: 22, background: "#D9CFBB", marginTop: 4, marginBottom: 4 }} />}
                   </div>
                   <div onClick={() => setOpenRung(openRung === i ? null : i)}
-                    style={{ background: openRung === i ? "#0F1C30" : "#0C1520", border: `1px solid ${openRung === i ? r.color : "#1A2840"}`, borderRadius: 10, padding: "11px 13px", flex: 1, marginBottom: 10, cursor: "pointer" }}>
+                    style={{ background: openRung === i ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${openRung === i ? r.color : "#D9CFBB"}`, borderRadius: 10, padding: "11px 13px", flex: 1, marginBottom: 10, cursor: "pointer" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginBottom: openRung === i ? 8 : 0 }}>
-                      <span style={{ fontSize: 13.5, fontWeight: 700, color: "#F1F5F9" }}>{r.name}</span>
+                      <span style={{ fontSize: 13.5, fontWeight: 700, color: "#1A140F" }}>{r.name}</span>
                       <span style={{ fontSize: 12, fontWeight: 700, color: r.color }}>{r.price}</span>
                       {r.yours
                         ? <Tag color={r.color} bg={r.color + "18"}>YOUR ZONE</Tag>
-                        : <Tag color="#94A3B8" bg="#1A2840">REFER OUT</Tag>}
-                      <span style={{ marginLeft: "auto", color: "#374151", fontSize: 18, display: "inline-block", transform: openRung === i ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
+                        : <Tag color="#6E6459" bg="#D9CFBB">REFER OUT</Tag>}
+                      <span style={{ marginLeft: "auto", color: "#8A7C6D", fontSize: 18, display: "inline-block", transform: openRung === i ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
                     </div>
                     {openRung === i && (
                       <div>
-                        <p style={{ fontSize: 12.5, color: "#94A3B8", margin: "0 0 10px", lineHeight: 1.55 }}>{r.what}</p>
+                        <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 10px", lineHeight: 1.55 }}>{r.what}</p>
                         {r.upsell && (
-                          <div style={{ background: "#080E1A", borderRadius: 7, padding: "8px 10px", border: `1px solid ${r.color}25` }}>
+                          <div style={{ background: "#F8F5EE", borderRadius: 7, padding: "8px 10px", border: `1px solid ${r.color}25` }}>
                             <div style={{ fontSize: 10, fontWeight: 700, color: r.color, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.06em" }}>Upsell Trigger</div>
-                            <div style={{ fontSize: 12.5, color: "#E2E8F0", fontStyle: "italic" }}>{r.upsell}</div>
+                            <div style={{ fontSize: 12.5, color: "#201A16", fontStyle: "italic" }}>{r.upsell}</div>
                           </div>
                         )}
                         {!r.yours && (
-                          <div style={{ background: "#080E1A", borderRadius: 7, padding: "8px 10px", border: "1px solid #1A2840", marginTop: r.upsell ? 8 : 0 }}>
-                            <p style={{ fontSize: 12, color: "#94A3B8", margin: 0, lineHeight: 1.55 }}>Build a referral partner relationship. You stay as the client's main contact, your partner does the specialist work, and you earn 10–20% or a flat referral fee. This is how you look full-service without overextending.</p>
+                          <div style={{ background: "#F8F5EE", borderRadius: 7, padding: "8px 10px", border: "1px solid #D9CFBB", marginTop: r.upsell ? 8 : 0 }}>
+                            <p style={{ fontSize: 12, color: "#6E6459", margin: 0, lineHeight: 1.55 }}>Build a referral partner relationship. You stay as the client's main contact, your partner does the specialist work, and you earn 10–20% or a flat referral fee. This is how you look full-service without overextending.</p>
                           </div>
                         )}
                       </div>
@@ -618,8 +618,8 @@ function ProspectingGuide() {
 
             <div style={{ background: "#0A1020", border: "1px solid #F59E0B25", borderRadius: 10, padding: "13px 14px", marginTop: 2 }}>
               <SectionLabel color="#F59E0B">⚡ On Learning CRM While Freelancing</SectionLabel>
-              <p style={{ fontSize: 13, color: "#94A3B8", margin: 0, lineHeight: 1.65 }}>
-                Don't pitch Zoho CRM as the main project until you've configured it at least once on a demo or your own business. Offer it as a <strong style={{ color: "#F59E0B" }}>small add-on</strong> to a web project first — scoped, fixed deliverable, low stakes. That's your real classroom. Once you've done it twice confidently, flip it into a standalone service line and charge for it properly.
+              <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65 }}>
+                Don't pitch Notion CRM as the main project until you've configured it at least once on a demo or your own business. Offer it as a <strong style={{ color: "#F59E0B" }}>small add-on</strong> to a web project first — scoped, fixed deliverable, low stakes. That's your real classroom. Once you've done it twice confidently, flip it into a standalone service line and charge for it properly.
               </p>
             </div>
           </div>
@@ -628,8 +628,8 @@ function ProspectingGuide() {
         {/* ────────── STACK ────────── */}
         {tab === "stack" && (
           <div>
-            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>Your Full Tool Stack</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 18px" }}>Everything from first scrape to closed deal and monthly retainer — with realistic costs.</p>
+            <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Your Full Tool Stack</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 18px" }}>Everything from first scrape to closed deal and monthly retainer — with realistic costs.</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {TOOLS.map(cat => (
@@ -640,13 +640,13 @@ function ProspectingGuide() {
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
                     {cat.items.map(t => (
-                      <div key={t.name} style={{ background: "#0C1520", border: "1px solid #1A2840", borderRadius: 9, padding: "11px 13px", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <div key={t.name} style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 9, padding: "11px 13px", display: "flex", gap: 10, alignItems: "flex-start" }}>
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 3 }}>
-                            <span style={{ fontWeight: 700, fontSize: 13.5, color: "#F1F5F9" }}>{t.name}</span>
+                            <span style={{ fontWeight: 700, fontSize: 13.5, color: "#1A140F" }}>{t.name}</span>
                             <Tag color={cat.color} bg={cat.color + "18"}>{t.tier}</Tag>
                           </div>
-                          <div style={{ fontSize: 12, color: "#94A3B8", lineHeight: 1.5 }}>{t.desc}</div>
+                          <div style={{ fontSize: 12, color: "#6E6459", lineHeight: 1.5 }}>{t.desc}</div>
                         </div>
                         <div style={{ fontSize: 10.5, color: cat.color, fontWeight: 500, flexShrink: 0 }}>{t.url}</div>
                       </div>
@@ -659,16 +659,16 @@ function ProspectingGuide() {
             <div style={{ marginTop: 20, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 11, padding: "14px 16px" }}>
               <SectionLabel color="#10B981">💰 Real Month-1 Cost Breakdown</SectionLabel>
               {MONTH1_COST.map((row, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #1A2840" }}>
-                  <span style={{ fontSize: 13, color: "#94A3B8" }}>{row.tool}</span>
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #D9CFBB" }}>
+                  <span style={{ fontSize: 13, color: "#6E6459" }}>{row.tool}</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: row.cost === "$0" ? "#10B981" : "#F59E0B" }}>{row.cost}</span>
                 </div>
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 12 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#F1F5F9" }}>Total Month 1</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#1A140F" }}>Total Month 1</span>
                 <span style={{ fontSize: 20, fontWeight: 800, color: "#10B981" }}>~$40</span>
               </div>
-              <p style={{ fontSize: 12, color: "#374151", margin: "10px 0 0", lineHeight: 1.6 }}>
+              <p style={{ fontSize: 12, color: "#8A7C6D", margin: "10px 0 0", lineHeight: 1.6 }}>
                 Run the entire first month for essentially nothing. Only start paying for Instantly.ai once your pipeline is loaded and you're ready to send at volume. Scale spending when revenue justifies it — not before.
               </p>
             </div>

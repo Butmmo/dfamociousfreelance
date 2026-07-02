@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_assignments: {
+        Row: {
+          admin_id: string
+          assigned_by: string | null
+          beneficiary_id: string
+          created_at: string
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          admin_id: string
+          assigned_by?: string | null
+          beneficiary_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          admin_id?: string
+          assigned_by?: string | null
+          beneficiary_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      check_ins: {
+        Row: {
+          admin_id: string
+          beneficiary_id: string
+          created_at: string
+          id: string
+          mood: string | null
+          next_action: string | null
+          next_action_due: string | null
+          summary: string
+        }
+        Insert: {
+          admin_id: string
+          beneficiary_id: string
+          created_at?: string
+          id?: string
+          mood?: string | null
+          next_action?: string | null
+          next_action_due?: string | null
+          summary: string
+        }
+        Update: {
+          admin_id?: string
+          beneficiary_id?: string
+          created_at?: string
+          id?: string
+          mood?: string | null
+          next_action?: string | null
+          next_action_due?: string | null
+          summary?: string
+        }
+        Relationships: []
+      }
       cohorts: {
         Row: {
           created_at: string
@@ -35,6 +95,69 @@ export type Database = {
           id?: string
           name?: string
           start_date?: string
+        }
+        Relationships: []
+      }
+      direct_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      escalations: {
+        Row: {
+          beneficiary_id: string
+          created_at: string
+          id: string
+          level: string
+          opened_by: string | null
+          reason: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          beneficiary_id: string
+          created_at?: string
+          id?: string
+          level?: string
+          opened_by?: string | null
+          reason?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          beneficiary_id?: string
+          created_at?: string
+          id?: string
+          level?: string
+          opened_by?: string | null
+          reason?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -279,6 +402,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "beneficiary"

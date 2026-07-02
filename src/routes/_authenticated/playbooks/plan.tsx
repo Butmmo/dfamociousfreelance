@@ -2,6 +2,7 @@
 // Playbook route — content provided by the user, wired to Supabase progress tracking.
 import { createFileRoute } from "@tanstack/react-router";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
+import { SaveBar } from "@/components/dfs/SaveBar";
 import { useState, useMemo } from "react";
 
 /* ─── 45-DAY PLAN DATA ──────────────────────────────────── */
@@ -591,12 +592,12 @@ const PRINCIPLES = [
 
 /* ─── HELPER COMPONENTS ─────────────────────────────────── */
 function Chevron({ open }) {
-  return <span style={{ color: "#374151", fontSize: 19, display: "inline-block", transform: open ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>›</span>;
+  return <span style={{ color: "#8A7C6D", fontSize: 19, display: "inline-block", transform: open ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>›</span>;
 }
 
 function Check({ checked, color }) {
   return (
-    <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${checked ? color : "#374151"}`, background: checked ? color : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, fontSize: 11, color: "#080E1A", fontWeight: 800, transition: "all 0.15s" }}>
+    <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${checked ? color : "#8A7C6D"}`, background: checked ? color : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, fontSize: 11, color: "#F8F5EE", fontWeight: 800, transition: "all 0.15s" }}>
       {checked ? "✓" : ""}
     </div>
   );
@@ -604,7 +605,7 @@ function Check({ checked, color }) {
 
 function ProgressBar({ value, color, height = 6 }) {
   return (
-    <div style={{ background: "#1A2840", borderRadius: 999, height, overflow: "hidden" }}>
+    <div style={{ background: "#D9CFBB", borderRadius: 999, height, overflow: "hidden" }}>
       <div style={{ width: `${value}%`, height: "100%", background: color, borderRadius: 999, transition: "width 0.3s ease" }} />
     </div>
   );
@@ -617,7 +618,7 @@ function ImplementationPlaybook() {
   const [openDay, setOpenDay]   = useState(null);
   const [openScript, setOpenScript] = useState(null);
   const [openFaq, setOpenFaq]   = useState(null);
-  const [done, setDone]         = useState({});
+  const [done, setDone, saveMeta] = useSyncedTaskMap("p_45day");
 
   const allTasks = useMemo(() => WEEKS.flatMap(w => w.days.flatMap(d => d.tasks)), []);
   const totalTasks = allTasks.length;
@@ -642,24 +643,26 @@ function ImplementationPlaybook() {
   ];
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "#080E1A", minHeight: "100vh", color: "#E2E8F0" }}>
+    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "#F8F5EE", minHeight: "100vh", color: "#201A16" }}>
+      <SaveBar meta={saveMeta} title="45-Day Plan" total={totalTasks} />
+
 
       {/* ── HEADER ────────────────────────────────────────── */}
-      <div style={{ background: "linear-gradient(160deg,#0F1629 0%,#0C1320 60%,#080E1A 100%)", padding: "22px 16px 18px", borderBottom: "1px solid #1A2840" }}>
+      <div style={{ background: "linear-gradient(160deg,#FDF9F0 0%,#F8F5EE 60%,#F8F5EE 100%)", padding: "22px 16px 18px", borderBottom: "1px solid #D9CFBB" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#10B981", textTransform: "uppercase", marginBottom: 7, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", boxShadow: "0 0 6px #10B981", display: "inline-block" }} />
             45-Day Implementation Playbook
           </div>
-          <h1 style={{ margin: "0 0 7px", fontSize: "clamp(21px,4.5vw,33px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg,#FFFFFF 30%,#818CF8 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <h1 style={{ margin: "0 0 7px", fontSize: "clamp(21px,4.5vw,33px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg,#FFFFFF 30%,#C99A3B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             From Zero to First Client
           </h1>
-          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#4B6080", maxWidth: 560, lineHeight: 1.65 }}>
+          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#6E6459", maxWidth: 560, lineHeight: 1.65 }}>
             A beginner-friendly, day-by-day action guide to building a profitable international web development freelance business. 45 days. Real targets. Actionable every single day.
           </p>
-          <div style={{ background: "#0C1520", borderRadius: 10, padding: "11px 14px", border: "1px solid #1A2840" }}>
+          <div style={{ background: "#FFFFFF", borderRadius: 10, padding: "11px 14px", border: "1px solid #D9CFBB" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#94A3B8" }}>Overall Progress</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "#6E6459" }}>Overall Progress</span>
               <span style={{ fontSize: 13, fontWeight: 800, color: progressColor }}>{completedTasks} / {totalTasks} tasks · {progress}%</span>
             </div>
             <ProgressBar value={progress} color={progressColor} height={8} />
@@ -668,13 +671,13 @@ function ImplementationPlaybook() {
       </div>
 
       {/* ── TABS ──────────────────────────────────────────── */}
-      <div style={{ background: "#0C1420", borderBottom: "1px solid #1A2840", position: "sticky", top: 0, zIndex: 20 }}>
+      <div style={{ background: "#F8F5EE", borderBottom: "1px solid #D9CFBB", position: "sticky", top: 0, zIndex: 20 }}>
         <div style={{ maxWidth: 880, margin: "0 auto", display: "flex", padding: "0 8px", overflowX: "auto" }}>
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               background: "transparent", border: "none",
               borderBottom: tab === t.id ? "2px solid #6366F1" : "2px solid transparent",
-              color: tab === t.id ? "#A5B4FC" : "#374151",
+              color: tab === t.id ? "#A5B4FC" : "#8A7C6D",
               padding: "12px 13px", fontSize: 12.5, fontWeight: tab === t.id ? 600 : 500,
               cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s", fontFamily: "inherit",
             }}>{t.label}</button>
@@ -688,30 +691,30 @@ function ImplementationPlaybook() {
         {/* ════ 45-DAY PLAN ════════════════════════════════ */}
         {tab === "plan" && (
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>45-Day Action Plan</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 14px" }}>Tap a week → expand a day → tick off tasks as you complete them.</p>
+            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>45-Day Action Plan</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Tap a week → expand a day → tick off tasks as you complete them.</p>
             {WEEKS.map((w, wi) => {
               const wp = weekPct(w);
               const wOpen = openWeek === wi;
               return (
                 <div key={w.week} style={{ marginBottom: 9 }}>
                   <div onClick={() => setOpenWeek(wOpen ? null : wi)}
-                    style={{ background: wOpen ? "#0F1C30" : "#0C1520", border: `1px solid ${wOpen ? w.color + "55" : "#1A2840"}`, borderRadius: wOpen ? "11px 11px 0 0" : 11, cursor: "pointer", padding: "13px 15px", display: "flex", alignItems: "center", gap: 12 }}>
+                    style={{ background: wOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${wOpen ? w.color + "55" : "#D9CFBB"}`, borderRadius: wOpen ? "11px 11px 0 0" : 11, cursor: "pointer", padding: "13px 15px", display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ width: 37, height: 37, borderRadius: 9, background: w.color + "18", border: `1px solid ${w.color}35`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{w.icon}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap", marginBottom: 4 }}>
-                        <span style={{ fontWeight: 700, fontSize: 14, color: "#F1F5F9" }}>Week {w.week}: {w.title}</span>
-                        <span style={{ fontSize: 10, color: "#374151", background: "#111C2E", borderRadius: 4, padding: "1px 6px" }}>{w.range}</span>
+                        <span style={{ fontWeight: 700, fontSize: 14, color: "#1A140F" }}>Week {w.week}: {w.title}</span>
+                        <span style={{ fontSize: 10, color: "#8A7C6D", background: "#EDE7DA", borderRadius: 4, padding: "1px 6px" }}>{w.range}</span>
                         {wp > 0 && <span style={{ fontSize: 10.5, fontWeight: 700, color: w.color }}>{wp}%</span>}
                       </div>
-                      <p style={{ fontSize: 11.5, color: "#4B6080", margin: "0 0 6px", lineHeight: 1.4 }}>{w.goal}</p>
+                      <p style={{ fontSize: 11.5, color: "#6E6459", margin: "0 0 6px", lineHeight: 1.4 }}>{w.goal}</p>
                       <ProgressBar value={wp} color={w.color} height={3} />
                     </div>
                     <Chevron open={wOpen} />
                   </div>
 
                   {wOpen && (
-                    <div style={{ background: "#090F1C", border: `1px solid ${w.color}25`, borderTop: "none", borderRadius: "0 0 11px 11px", padding: "8px 11px 13px" }}>
+                    <div style={{ background: "#F5F0E4", border: `1px solid ${w.color}25`, borderTop: "none", borderRadius: "0 0 11px 11px", padding: "8px 11px 13px" }}>
                       {w.days.map((d) => {
                         const dk = `${wi}-${d.day}`;
                         const dOpen = openDay === dk;
@@ -720,19 +723,19 @@ function ImplementationPlaybook() {
                         return (
                           <div key={d.day} style={{ marginTop: 7 }}>
                             <div onClick={() => setOpenDay(dOpen ? null : dk)}
-                              style={{ background: dOpen ? "#0C1829" : "#0A1422", border: `1px solid ${dComplete ? w.color + "60" : "#1A2840"}`, borderRadius: dOpen ? "9px 9px 0 0" : 9, cursor: "pointer", padding: "10px 12px", display: "flex", alignItems: "center", gap: 9 }}>
+                              style={{ background: dOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${dComplete ? w.color + "60" : "#D9CFBB"}`, borderRadius: dOpen ? "9px 9px 0 0" : 9, cursor: "pointer", padding: "10px 12px", display: "flex", alignItems: "center", gap: 9 }}>
                               <span style={{ fontSize: 16, flexShrink: 0 }}>{dComplete ? "✅" : d.icon}</span>
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                                   <span style={{ fontSize: 10, fontWeight: 700, color: w.color, background: w.color + "18", borderRadius: 4, padding: "1px 6px" }}>Day {d.day}</span>
-                                  <span style={{ fontSize: 13, fontWeight: 600, color: "#E2E8F0" }}>{d.focus}</span>
+                                  <span style={{ fontSize: 13, fontWeight: 600, color: "#201A16" }}>{d.focus}</span>
                                 </div>
-                                <div style={{ fontSize: 11, color: "#374151", marginTop: 2 }}>{dDone}/{d.tasks.length} tasks</div>
+                                <div style={{ fontSize: 11, color: "#8A7C6D", marginTop: 2 }}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
                               <Chevron open={dOpen} />
                             </div>
                             {dOpen && (
-                              <div style={{ background: "#060C18", border: "1px solid #1A2840", borderTop: "none", borderRadius: "0 0 9px 9px", padding: "10px 12px 12px" }}>
+                              <div style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderTop: "none", borderRadius: "0 0 9px 9px", padding: "10px 12px 12px" }}>
                                 {d.note && (
                                   <div style={{ background: w.color + "10", border: `1px solid ${w.color}22`, borderRadius: 7, padding: "7px 10px", marginBottom: 10, fontSize: 12, color: w.color + "CC", lineHeight: 1.5 }}>
                                     💡 {d.note}
@@ -740,9 +743,9 @@ function ImplementationPlaybook() {
                                 )}
                                 {d.tasks.map(t => (
                                   <div key={t.id} onClick={() => toggle(t.id)}
-                                    style={{ display: "flex", gap: 9, alignItems: "flex-start", padding: "8px 0", borderBottom: "1px solid #0F1829", cursor: "pointer" }}>
+                                    style={{ display: "flex", gap: 9, alignItems: "flex-start", padding: "8px 0", borderBottom: "1px solid #EDE7DA", cursor: "pointer" }}>
                                     <Check checked={!!done[t.id]} color={w.color} />
-                                    <span style={{ fontSize: 13, color: done[t.id] ? "#374151" : "#C4CFD8", lineHeight: 1.55, textDecoration: done[t.id] ? "line-through" : "none", transition: "all 0.15s" }}>{t.text}</span>
+                                    <span style={{ fontSize: 13, color: done[t.id] ? "#8A7C6D" : "#3A2E24", lineHeight: 1.55, textDecoration: done[t.id] ? "line-through" : "none", transition: "all 0.15s" }}>{t.text}</span>
                                   </div>
                                 ))}
                               </div>
@@ -761,26 +764,26 @@ function ImplementationPlaybook() {
         {/* ════ SCRIPTS ════════════════════════════════════ */}
         {tab === "scripts" && (
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>Scripts & Templates</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 14px" }}>Ready to copy. Replace the brackets, personalise one line, and send.</p>
+            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Scripts & Templates</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Ready to copy. Replace the brackets, personalise one line, and send.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
               {SCRIPTS.map((s, i) => {
                 const isOpen = openScript === i;
                 return (
                   <div key={s.id} onClick={() => setOpenScript(isOpen ? null : i)}
-                    style={{ background: isOpen ? "#0F1C30" : "#0C1520", border: `1px solid ${isOpen ? s.color : "#1A2840"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
+                    style={{ background: isOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${isOpen ? s.color : "#D9CFBB"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
                     <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap", marginBottom: 2 }}>
-                          <span style={{ fontWeight: 700, fontSize: 13.5, color: "#F1F5F9" }}>{s.title}</span>
+                          <span style={{ fontWeight: 700, fontSize: 13.5, color: "#1A140F" }}>{s.title}</span>
                           <span style={{ fontSize: 10, color: s.color, background: s.color + "18", borderRadius: 4, padding: "1px 6px", fontWeight: 600 }}>{s.tag}</span>
                         </div>
                       </div>
                       <Chevron open={isOpen} />
                     </div>
                     {isOpen && (
-                      <div style={{ padding: "0 14px 14px", borderTop: "1px solid #1A2840" }}>
-                        <div style={{ background: "#060C18", borderRadius: 8, padding: "12px 13px", marginTop: 12, fontFamily: "'Courier New', monospace", fontSize: 12, color: "#94A3B8", lineHeight: 1.85, borderLeft: `2px solid ${s.color}40`, whiteSpace: "pre-wrap" }}>
+                      <div style={{ padding: "0 14px 14px", borderTop: "1px solid #D9CFBB" }}>
+                        <div style={{ background: "#FFFFFF", borderRadius: 8, padding: "12px 13px", marginTop: 12, fontFamily: "'Courier New', monospace", fontSize: 12, color: "#6E6459", lineHeight: 1.85, borderLeft: `2px solid ${s.color}40`, whiteSpace: "pre-wrap" }}>
                           {s.body}
                         </div>
                         <div style={{ marginTop: 9, background: s.color + "10", border: `1px solid ${s.color}25`, borderRadius: 7, padding: "7px 10px", fontSize: 12, color: s.color, lineHeight: 1.5 }}>
@@ -798,21 +801,21 @@ function ImplementationPlaybook() {
         {/* ════ MILESTONES ══════════════════════════════════ */}
         {tab === "milestones" && (
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>45-Day Milestones</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 18px" }}>Seven checkpoints. Use these as your north star — not a rigid schedule.</p>
+            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>45-Day Milestones</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 18px" }}>Seven checkpoints. Use these as your north star — not a rigid schedule.</p>
             {MILESTONES.map((m, i) => (
               <div key={m.day} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
                   <div style={{ width: 38, height: 38, borderRadius: 9, background: m.color + "18", border: `1px solid ${m.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{m.icon}</div>
-                  {i < MILESTONES.length - 1 && <div style={{ width: 2, height: 26, background: "#1A2840", marginTop: 4, marginBottom: 4 }} />}
+                  {i < MILESTONES.length - 1 && <div style={{ width: 2, height: 26, background: "#D9CFBB", marginTop: 4, marginBottom: 4 }} />}
                 </div>
-                <div style={{ background: "#0C1520", border: "1px solid #1A2840", borderRadius: 10, padding: "11px 13px", flex: 1, marginBottom: 10 }}>
+                <div style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 10, padding: "11px 13px", flex: 1, marginBottom: 10 }}>
                   <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap", marginBottom: 5 }}>
                     <span style={{ fontSize: 10, fontWeight: 700, color: m.color, background: m.color + "18", borderRadius: 4, padding: "1px 7px" }}>{m.day}</span>
-                    <span style={{ fontWeight: 700, fontSize: 14, color: "#F1F5F9" }}>{m.label}</span>
+                    <span style={{ fontWeight: 700, fontSize: 14, color: "#1A140F" }}>{m.label}</span>
                     <span style={{ fontSize: 11.5, fontWeight: 700, color: "#10B981", marginLeft: "auto" }}>{m.revenue}</span>
                   </div>
-                  <p style={{ fontSize: 12.5, color: "#94A3B8", margin: 0, lineHeight: 1.5 }}>{m.desc}</p>
+                  <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.5 }}>{m.desc}</p>
                 </div>
               </div>
             ))}
@@ -823,16 +826,16 @@ function ImplementationPlaybook() {
                 { label: "0–1 Standard Package",  range: "$0–1,500" },
                 { label: "0–1 Retainer Started",  range: "$0–400" },
               ].map((r, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #1A2840" }}>
-                  <span style={{ fontSize: 13, color: "#94A3B8" }}>{r.label}</span>
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #D9CFBB" }}>
+                  <span style={{ fontSize: 13, color: "#6E6459" }}>{r.label}</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{r.range}</span>
                 </div>
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 10 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#F1F5F9" }}>45-Day Total</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#1A140F" }}>45-Day Total</span>
                 <span style={{ fontSize: 20, fontWeight: 800, color: "#10B981" }}>$300–3,100+</span>
               </div>
-              <p style={{ fontSize: 12, color: "#374151", margin: "8px 0 0", lineHeight: 1.6 }}>Conservative, assuming 1–2 closed deals. Following the daily outreach routine consistently pushes the higher end. Month 2 and 3 will be significantly higher as the pipeline compounds.</p>
+              <p style={{ fontSize: 12, color: "#8A7C6D", margin: "8px 0 0", lineHeight: 1.6 }}>Conservative, assuming 1–2 closed deals. Following the daily outreach routine consistently pushes the higher end. Month 2 and 3 will be significantly higher as the pipeline compounds.</p>
             </div>
           </div>
         )}
@@ -840,24 +843,24 @@ function ImplementationPlaybook() {
         {/* ════ FAQ ════════════════════════════════════════ */}
         {tab === "faq" && (
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>Beginner FAQ</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 14px" }}>The questions every new freelancer asks, answered directly.</p>
+            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Beginner FAQ</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>The questions every new freelancer asks, answered directly.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {FAQS.map((f, i) => {
                 const isOpen = openFaq === i;
                 return (
                   <div key={i} onClick={() => setOpenFaq(isOpen ? null : i)}
-                    style={{ background: isOpen ? "#0F1C30" : "#0C1520", border: `1px solid ${isOpen ? "#6366F1" : "#1A2840"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
+                    style={{ background: isOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${isOpen ? "#6366F1" : "#D9CFBB"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
                     <div style={{ padding: "12px 14px", display: "flex", alignItems: "flex-start", gap: 9 }}>
                       <span style={{ color: "#6366F1", fontSize: 13, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>Q</span>
-                      <span style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: "#E2E8F0", lineHeight: 1.45 }}>{f.q}</span>
+                      <span style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: "#201A16", lineHeight: 1.45 }}>{f.q}</span>
                       <Chevron open={isOpen} />
                     </div>
                     {isOpen && (
-                      <div style={{ padding: "0 14px 13px", borderTop: "1px solid #1A2840" }}>
+                      <div style={{ padding: "0 14px 13px", borderTop: "1px solid #D9CFBB" }}>
                         <div style={{ display: "flex", gap: 9, marginTop: 11, alignItems: "flex-start" }}>
                           <span style={{ color: "#10B981", fontSize: 13, fontWeight: 800, flexShrink: 0 }}>A</span>
-                          <p style={{ fontSize: 13, color: "#94A3B8", margin: 0, lineHeight: 1.65 }}>{f.a}</p>
+                          <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65 }}>{f.a}</p>
                         </div>
                       </div>
                     )}
@@ -871,19 +874,19 @@ function ImplementationPlaybook() {
         {/* ════ PRINCIPLES ══════════════════════════════════ */}
         {tab === "principles" && (
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#F1F5F9" }}>8 Core Principles</h2>
-            <p style={{ fontSize: 12.5, color: "#374151", margin: "0 0 14px" }}>Rules that separate freelancers who close from those who stay stuck. Return to these whenever you feel lost.</p>
+            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>8 Core Principles</h2>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Rules that separate freelancers who close from those who stay stuck. Return to these whenever you feel lost.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
               {PRINCIPLES.map((p) => (
-                <div key={p.num} style={{ background: "#0C1520", border: `1px solid ${p.color}22`, borderRadius: 11, padding: "13px 14px" }}>
+                <div key={p.num} style={{ background: "#FFFFFF", border: `1px solid ${p.color}22`, borderRadius: 11, padding: "13px 14px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                     <span style={{ fontSize: 19 }}>{p.icon}</span>
                     <div>
                       <div style={{ fontSize: 9.5, fontWeight: 700, color: p.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>Principle {p.num}</div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#F1F5F9", marginTop: 1 }}>{p.title}</div>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#1A140F", marginTop: 1 }}>{p.title}</div>
                     </div>
                   </div>
-                  <p style={{ fontSize: 13, color: "#94A3B8", margin: 0, lineHeight: 1.65, borderLeft: `2px solid ${p.color}40`, paddingLeft: 11 }}>{p.body}</p>
+                  <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65, borderLeft: `2px solid ${p.color}40`, paddingLeft: 11 }}>{p.body}</p>
                 </div>
               ))}
             </div>
