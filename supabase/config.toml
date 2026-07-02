@@ -1,1 +1,2 @@
-project_id = "hvciiodxmugcaqbjzvkn"
+[functions.citadel-report]
+verify_jwt = false
