@@ -2,6 +2,7 @@
 // Playbook route — content provided by the user, wired to Supabase progress tracking.
 import { createFileRoute } from "@tanstack/react-router";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
+import { SaveBar } from "@/components/dfs/SaveBar";
 import { useState } from "react";
 
 /* ═══════════════════════════════════════════════
@@ -217,7 +218,7 @@ const HOOKS = [
 
 function GrandSlamPlaybook() {
   const [tab, setTab] = useState("journey");
-  const [done, setDone] = useSyncedTaskMap("p_grandslam");
+  const [done, setDone, saveMeta] = useSyncedTaskMap("p_grandslam");
   const [openPhase, setOpenPhase] = useState(0);
   const [openLadder, setOpenLadder] = useState(null);
   const [scoreChecks, setScoreChecks] = useState({});
@@ -292,6 +293,8 @@ Boluwatife Famokunwa
 
   return (
     <div style={{ background: "#F8F5EE", minHeight: "100vh", fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: "#201A16" }}>
+      <SaveBar meta={saveMeta} title="Grand Slam" total={totalTasks} />
+
 
       {/* ── HEADER ─────────────────────────────────── */}
       <div style={{ background: "linear-gradient(160deg,#FDF9F0 0%,#F5F0E4 100%)", borderBottom: "1px solid #D9CFBB", padding: "20px 16px 0" }}>

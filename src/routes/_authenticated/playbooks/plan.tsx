@@ -2,6 +2,7 @@
 // Playbook route — content provided by the user, wired to Supabase progress tracking.
 import { createFileRoute } from "@tanstack/react-router";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
+import { SaveBar } from "@/components/dfs/SaveBar";
 import { useState, useMemo } from "react";
 
 /* ─── 45-DAY PLAN DATA ──────────────────────────────────── */
@@ -617,7 +618,7 @@ function ImplementationPlaybook() {
   const [openDay, setOpenDay]   = useState(null);
   const [openScript, setOpenScript] = useState(null);
   const [openFaq, setOpenFaq]   = useState(null);
-  const [done, setDone]         = useState({});
+  const [done, setDone, saveMeta] = useSyncedTaskMap("p_45day");
 
   const allTasks = useMemo(() => WEEKS.flatMap(w => w.days.flatMap(d => d.tasks)), []);
   const totalTasks = allTasks.length;
@@ -643,6 +644,8 @@ function ImplementationPlaybook() {
 
   return (
     <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "#F8F5EE", minHeight: "100vh", color: "#201A16" }}>
+      <SaveBar meta={saveMeta} title="45-Day Plan" total={totalTasks} />
+
 
       {/* ── HEADER ────────────────────────────────────────── */}
       <div style={{ background: "linear-gradient(160deg,#FDF9F0 0%,#F8F5EE 60%,#F8F5EE 100%)", padding: "22px 16px 18px", borderBottom: "1px solid #D9CFBB" }}>
