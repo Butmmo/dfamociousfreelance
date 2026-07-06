@@ -39,6 +39,8 @@ function AuthedShell() {
           <nav className="hidden md:flex items-center gap-1 text-sm">
             <NavTab to="/dashboard" icon={LayoutDashboard}>Dashboard</NavTab>
             <NavTab to="/playbooks" icon={BookOpen}>Playbooks</NavTab>
+            <NavTab to="/calendar" icon={CalendarDays}>Calendar</NavTab>
+            <NavTab to="/report" icon={FileBarChart}>Report</NavTab>
             {role === "admin" && (
               <NavTab to="/admin" icon={Crown}>Council</NavTab>
             )}
