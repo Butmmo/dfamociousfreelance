@@ -14,6 +14,7 @@ import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
 import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/_authenticated/playbooks/prospecting'
@@ -43,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
   '/_authenticated/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
+    | '/calendar'
     | '/dashboard'
     | '/playbooks/global'
     | '/playbooks/grand-slam'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
+    | '/calendar'
     | '/dashboard'
     | '/playbooks/global'
     | '/playbooks/grand-slam'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/calendar'
     | '/_authenticated/dashboard'
     | '/_authenticated/playbooks/global'
     | '/_authenticated/playbooks/grand-slam'
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/calendar': {
+      id: '/_authenticated/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof AuthenticatedCalendarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -250,6 +269,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPlaybooksGlobalRoute: typeof AuthenticatedPlaybooksGlobalRoute
   AuthenticatedPlaybooksGrandSlamRoute: typeof AuthenticatedPlaybooksGrandSlamRoute
@@ -260,6 +280,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPlaybooksGlobalRoute: AuthenticatedPlaybooksGlobalRoute,
   AuthenticatedPlaybooksGrandSlamRoute: AuthenticatedPlaybooksGrandSlamRoute,
