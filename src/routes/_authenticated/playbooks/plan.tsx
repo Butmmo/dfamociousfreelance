@@ -6,7 +6,7 @@ import { SaveBar } from "@/components/dfs/SaveBar";
 import { useState, useMemo } from "react";
 
 /* ─── 45-DAY PLAN DATA ──────────────────────────────────── */
-const WEEKS = [
+export const WEEKS = [
   {
     week: 1, title: "Build Your Foundation", range: "Days 1–7", icon: "🏗️", color: "#6366F1",
     goal: "Tools set up, niche locked, 2 demos built, portfolio site live. You are ready to go to market.",
