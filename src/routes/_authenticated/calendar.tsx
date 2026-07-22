@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { WEEKS } from "./playbooks/plan";
 import { CheckCircle2, Circle, CalendarDays, Flame, Lock, ArrowRight, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { ESCALATION_START } from "@/lib/escalation";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
@@ -98,6 +99,10 @@ function CalendarPage() {
   };
   const isToday = (d: Date | null) => d?.getTime() === today.getTime();
   const isPast = (d: Date | null) => !!d && d.getTime() < today.getTime();
+  // Grace period: never mark days before ESCALATION_START as "behind" — the
+  // programme was paused for this build; tracking resumes on 27 Jul 2026.
+  const isTrackable = (d: Date | null) => !!d && d.getTime() >= ESCALATION_START.getTime();
+
 
   const total = daysMeta.length;
   const completeCount = daysMeta.filter((d) => dayStatus(d).complete).length;
@@ -179,11 +184,12 @@ function CalendarPage() {
               ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-700"
               : isTodayCell
               ? "bg-gold/15 border-gold ring-1 ring-gold text-gold-deep"
-              : dayObj && !isFuture && !st?.complete
+              : dayObj && !isFuture && !st?.complete && isTrackable(cd)
               ? "bg-crimson/10 border-crimson/40 text-crimson"
               : dayObj
               ? "bg-background border-border"
               : "bg-muted/20 border-transparent text-muted-foreground";
+
             return (
               <div key={i} className={`aspect-square rounded-md border p-1 flex flex-col text-[10px] ${tone}`}>
                 <div className="flex items-center justify-between">
@@ -240,7 +246,7 @@ function CalendarPage() {
                 const st = dayStatus(d);
                 const dt = dayOfPlan(d.day);
                 const isTodayDay = isToday(dt);
-                const behind = !st.complete && isPast(dt);
+                const behind = !st.complete && isPast(dt) && isTrackable(dt);
                 const upcoming = !!dt && dt.getTime() > new Date().setHours(0, 0, 0, 0);
 
                 const tone = st.complete ? "bg-emerald-500/10 border-emerald-500/40"
