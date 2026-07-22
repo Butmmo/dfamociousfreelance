@@ -7,9 +7,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "DFS — The D'Famocious Freelance Scholarship" },
-      { name: "description", content: "An invitation-only training citadel by D'Famocious Group. We forge Digital Systems Engineers and scale them globally in record time." },
-      { property: "og:title", content: "DFS — Fortuna Audentes Iuvat" },
-      { property: "og:description", content: "Invitation-only. Six weeks. From zero to closing international clients as a Digital Systems Engineer." },
+      { name: "description", content: "An invitation-only training citadel by D'Famocious Group. We forge Digital Systems Experts and scale them globally in record time." },
+      { property: "og:title", content: "DFS — The D'Famocious Freelance Scholarship" },
+      { property: "og:description", content: "An invitation-only training citadel by D'Famocious Group. We forge Digital Systems Experts and scale them globally in record time." },
     ],
   }),
   component: Landing,
