@@ -7,8 +7,10 @@ import {
   removeBeneficiary, promoteToAdmin, demoteFromAdmin, assignAdminToBeneficiary,
   listEscalations, openEscalation, logCheckIn,
 } from "@/lib/admin.functions";
+import { listAscentAccess, grantAscent, revokeAscent } from "@/lib/ascent.functions";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
+import { Mountain } from "lucide-react";
 import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -32,6 +34,10 @@ function Admin() {
   const assign = useServerFn(assignAdminToBeneficiary);
   const openEsc = useServerFn(openEscalation);
   const logCi = useServerFn(logCheckIn);
+  const listAscent = useServerFn(listAscentAccess);
+  const grantAsc = useServerFn(grantAscent);
+  const revokeAsc = useServerFn(revokeAscent);
+  const [ascent, setAscent] = useState<any[]>([]);
 
   const [bens, setBens] = useState<any[]>([]);
   const [invs, setInvs] = useState<any[]>([]);
@@ -51,12 +57,12 @@ function Admin() {
 
   const refresh = async () => {
     try {
-      const [b, i, a, s, e] = await Promise.all([
+      const [b, i, a, s, e, ac] = await Promise.all([
         listBens({ data: undefined as never }), listInvs({ data: undefined as never }),
         listAdms({ data: undefined as never }), listAssigns({ data: undefined as never }),
-        listEsc({ data: undefined as never }),
+        listEsc({ data: undefined as never }), listAscent({ data: undefined as never }),
       ]);
-      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e);
+      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e); setAscent(ac);
     } catch (e: any) { toast.error(e.message ?? "Failed to load"); }
   };
   useEffect(() => { if (role === "admin") refresh(); /* eslint-disable-next-line */ }, [role]);
@@ -98,6 +104,14 @@ function Admin() {
     try { await openEsc({ data: { beneficiary_id, level } }); toast.success("Escalation updated."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
+  const toggleAscent = async (uid: string, has: boolean) => {
+    try {
+      if (has) { await revokeAsc({ data: { user_id: uid } }); toast.success("Ascent access revoked."); }
+      else    { await grantAsc({ data: { user_id: uid } }); toast.success("Ascent access granted."); }
+      refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed"); }
+  };
+  const ascentSet = useMemo(() => new Set(ascent.map((a) => a.user_id)), [ascent]);
   const submitCheckIn = async () => {
     if (!checkinTarget || checkinText.trim().length < 2) return;
     try {
