@@ -1,7 +1,8 @@
 // @ts-nocheck
-// 45-Day Implementation Playbook v2. Content owned by DFS; UI adopts app's Regal palette.
+// 45-Day Implementation Playbook — installed verbatim from source; only colours
+// remapped to the DFS Regal palette. Progress persists via Supabase.
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
 
@@ -10,11 +11,11 @@ export const Route = createFileRoute("/_authenticated/playbooks/plan")({
   component: PlanPage,
 });
 
-/* ─── 45-DAY PLAN DATA (v2) ─────────────────────────────── */
+
 export const WEEKS = [
   {
     week:1, title:"Build Your Foundation", range:"Days 1-7",
-    icon:"🏗️", color:"#6366F1",
+    icon:"🏗️", color:"#7A5A00",
     goal:"All free accounts live. Notion CRM built. Two Lovable demos recorded on Loom. You are ready to go to market with zero budget spent.",
     days:[
       {day:1, focus:"Free Account Arsenal", icon:"⚡",
@@ -82,7 +83,7 @@ export const WEEKS = [
     ]},
   {
     week:2, title:"Manual Lead Harvest", range:"Days 8-14",
-    icon:"🔍", color:"#10B981",
+    icon:"🔍", color:"#0D7A5F",
     goal:"Minimum 10 fully enriched HOT leads in Notion CRM with founder email, 3 connected problems identified, and ready for outreach.",
     days:[
       {day:8, focus:"Google Maps Scouting Session 1", icon:"🗺️",
@@ -145,7 +146,7 @@ export const WEEKS = [
     ]},
   {
     week:3, title:"Outreach Launch", range:"Days 15-21",
-    icon:"📧", color:"#F59E0B",
+    icon:"📧", color:"#B8860B",
     goal:"5+ personalised emails sent manually from Gmail. LinkedIn requests to same leads. First replies tracked in Notion.",
     days:[
       {day:15, focus:"Draft Email 1 for Top 5 HOT Leads", icon:"✍️",
@@ -207,7 +208,7 @@ export const WEEKS = [
     ]},
   {
     week:4, title:"First Close", range:"Days 22-28",
-    icon:"🏆", color:"#EC4899",
+    icon:"🏆", color:"#8B2E1F",
     goal:"Discovery calls run, proposals sent, first paid project closed, 50% deposit collected.",
     days:[
       {day:22, focus:"LinkedIn DMs to Accepted Connections", icon:"💬",
@@ -269,7 +270,7 @@ export const WEEKS = [
     ]},
   {
     week:5, title:"Deliver and Expand", range:"Days 29-35",
-    icon:"🚀", color:"#8B5CF6",
+    icon:"🚀", color:"#8B2E1F",
     goal:"First project delivered and fully paid. Upsell conversation started. Real testimonial and case study secured. New batch in outreach.",
     days:[
       {day:29, focus:"Blueprint Phase — Map Before You Build", icon:"📐",
@@ -327,7 +328,7 @@ export const WEEKS = [
     ]},
   {
     week:6, title:"Scale the Manual Machine", range:"Days 36-42",
-    icon:"⚙️", color:"#14B8A6",
+    icon:"⚙️", color:"#0D7A5F",
     goal:"Third scouting round complete. Full Notion pipeline active. LinkedIn content started. First retainer conversation open.",
     days:[
       {day:36, focus:"Scouting Session 3 — New Niche or Country", icon:"🗺️",
@@ -384,7 +385,7 @@ export const WEEKS = [
     ]},
   {
     week:7, title:"Month 2 Launch", range:"Days 43-45",
-    icon:"🌅", color:"#F97316",
+    icon:"🌅", color:"#B8860B",
     goal:"Full debrief complete. Month 2 targets set in writing. Public proof shared. Pipeline actively running.",
     days:[
       {day:43, focus:"Full Month 1 Debrief", icon:"🪞",
@@ -413,96 +414,1336 @@ export const WEEKS = [
     ]},
 ];
 
-/* ─── UI ─────────────────────────────────────────────────── */
-function PlanPage() {
-  const [tasks, setTasks, meta] = useSyncedTaskMap("p_45day");
+const NOTION_COLS = [
+  {name:"SMB Name",          type:"Title",    icon:"🏢", desc:"Official business name from Google Maps"},
+  {name:"Phone Number",      type:"Phone",    icon:"📞", desc:"Direct business phone from the listing"},
+  {name:"Website URL",       type:"URL",      icon:"🌐", desc:"Their current site URL, or enter 'No Website'"},
+  {name:"Google Reviews",    type:"Number",   icon:"⭐", desc:"Total review count at time of research"},
+  {name:"City",              type:"Text",     icon:"📍", desc:"City where the business operates"},
+  {name:"Country",           type:"Select",   icon:"🌍", desc:"USA / UK / Canada / Australia / Germany / Netherlands / UAE / Israel"},
+  {name:"Niche",             type:"Select",   icon:"🎯", desc:"Dental / Real Estate / Fitness / Coach / Beauty / Restaurant / Legal / etc."},
+  {name:"Founder Name",      type:"Text",     icon:"👤", desc:"Owner or decision-maker — found via LinkedIn, website, or Facebook"},
+  {name:"Founder Email",     type:"Email",    icon:"📧", desc:"Direct personal email — not info@ or contact@ — 3x higher reply rate"},
+  {name:"Founder LinkedIn",  type:"URL",      icon:"💼", desc:"Their personal LinkedIn profile URL for DM outreach"},
+  {name:"Lead Score",        type:"Number",   icon:"🎯", desc:"1-10 score from the Grand Slam Playbook scoring rubric"},
+  {name:"Lead Priority",     type:"Select",   icon:"🔥", desc:"🔥 Hot (7+)  ·  ⚡ Warm (4-6)  ·  ❄️ Cold (0-3)"},
+  {name:"Lead Stage",        type:"Select",   icon:"📊", desc:"Not Contacted → Contacted → Replied Positively → Replied Negatively → Call Booked → Proposal Sent → Closed → Retainer"},
+  {name:"The Gap",           type:"Text",     icon:"⚠️", desc:"Problem 1 — the visible missing piece in their digital presence"},
+  {name:"The Leak",          type:"Text",     icon:"💧", desc:"Problem 2 — what The Gap silently costs them every week"},
+  {name:"The Lift",          type:"Text",     icon:"🚀", desc:"Problem 3 — the revenue they could be capturing if the system existed"},
+  {name:"Email 1 Sent",      type:"Checkbox", icon:"✉️", desc:"The Gap email (PAS formula) — sent?"},
+  {name:"Email 2 Sent",      type:"Checkbox", icon:"✉️", desc:"The Leak email (consequence reveal) — sent 3 days after Email 1"},
+  {name:"Email 3 Sent",      type:"Checkbox", icon:"✉️", desc:"The Lift email (live demo reveal) — sent 7 days after Email 1"},
+  {name:"LinkedIn Connected",type:"Checkbox", icon:"💼", desc:"Connection request sent on LinkedIn"},
+  {name:"LinkedIn DM Sent",  type:"Checkbox", icon:"💬", desc:"DM sent after they accepted the connection"},
+  {name:"Last Contacted",    type:"Date",     icon:"📅", desc:"Date of most recent outreach — used to time Email 2 and Email 3"},
+  {name:"Notes",             type:"Text",     icon:"📝", desc:"Their exact reply words, call notes, objections raised, anything relevant"},
+];
 
-  const totalTasks = useMemo(
-    () => WEEKS.reduce((n, w) => n + w.days.reduce((m, d) => m + d.tasks.length, 0), 0),
-    []
+const NOTION_VIEWS = [
+  {name:"📋 All Leads",        desc:"Master table — every lead in order of entry. Never delete from here."},
+  {name:"🔥 Hot Leads",        desc:"Filter: Lead Priority = Hot. These get a personalised Lovable demo before any email goes out."},
+  {name:"⚡ Active Outreach",  desc:"Filter: Lead Stage = Contacted OR Replied Positively. Your live pipeline."},
+  {name:"📅 This Week",        desc:"Filter: Last Contacted within last 7 days. Nothing slips through this view."},
+  {name:"📊 Pipeline Board",   desc:"Kanban grouped by Lead Stage. Drag cards left to right as leads progress."},
+  {name:"🏆 Closed Won",       desc:"Filter: Stage = Closed OR Retainer. Your proof library and case study source."},
+];
+
+const RESEARCH_STEPS = [
+  {n:"01",icon:"🗺️",color:"#7A5A00",title:"Scout on Google Maps — Notebook Only",
+   body:"Open Google Maps on your phone. Search '[niche] [city]'. Browse 25-30 listings. In your physical notebook, record: business name, phone, review count, whether a website appears, and a quick note on what looks weak. Move fast — this is scouting, not research. Aim for 15-20 entries per session."},
+  {n:"02",icon:"📒",color:"#0D7A5F",title:"Transfer Notebook to Google Sheets",
+   body:"Same evening or next morning: open your raw data sheet and create a row for each listing. Columns: SMB Name | Phone | Website (or None) | Reviews | City | Country | Niche | Date Found. Visit each website briefly (30 seconds max) and note: mobile-friendly? Has booking? Modern design? Use a comment cell."},
+  {n:"03",icon:"💼",color:"#B8860B",title:"Find the Founder on LinkedIn",
+   body:"Search '[Business Name] [City]' on LinkedIn. Find the Owner, Founder, Director, or MD. Note: full name, job title, profile URL. Check whether they post content — active LinkedIn users respond to DMs 2-3x faster than inactive ones. If not on LinkedIn, check the website About page or Facebook."},
+  {n:"04",icon:"📘",color:"#8B2E1F",title:"Check Facebook and Instagram",
+   body:"Search the business name on both platforms. Note: when did they last post? Are customers commenting with pain points like 'hard to book' or 'never got a reply'? A business with an active Instagram but no booking system is a perfect target — they have the audience but no system to convert it."},
+  {n:"05",icon:"🔍",color:"#8B2E1F",title:"Find the Direct Email via Google Search",
+   body:"Try: '[Founder Name] [Business Name] email' or '[Founder Name] [City] contact'. Then check the website /contact and /about pages. Look for a personal email, not info@ or contact@ — personal addresses get 3x the reply rate. If you cannot find one, mark the lead as 'LinkedIn DM only' in your sheet."},
+  {n:"06",icon:"🎯",color:"#0D7A5F",title:"Score the Lead Using the Grand Slam Rubric",
+   body:"Apply the 7 green signals and 5 red flags from the Grand Slam Playbook (Score Leads tab). Record the score in your Scoring Scratch Pad sheet. Tag: Hot (7+), Warm (4-6), Cold (0-3). Only continue enriching Hot and Warm leads. Do not spend another minute on Cold leads."},
+  {n:"07",icon:"⚡",color:"#B8860B",title:"Identify The Gap, The Leak, and The Lift",
+   body:"For every HOT lead only: open the 3-Problem Method tab and identify all three connected problems specific to this business. The three must form a causal chain. Write all three in your Google Sheet before opening Notion — Notion is where they go once the research is complete."},
+  {n:"08",icon:"🗂️",color:"#7A5A00",title:"Enter Into Notion CRM",
+   body:"Once a lead has: founder name, contact method, and all three problems identified — create their Notion entry, fill every column, and set Lead Stage to 'Not Contacted'. This is the signal they are ready for outreach. Notion is your source of truth. Google Sheets is just the scouting scratch pad."},
+];
+
+const NICHES_3P = [
+  {niche:"Dental Clinic",icon:"🦷",
+   gap:"No online booking — patients can only call during office hours to schedule an appointment",
+   leak:"People searching for a dentist at 9 PM cannot book immediately and move on to whoever lets them — the clinic never knows they were there",
+   lift:"No email recall system means existing patients only return when they remember to call — no automated schedule, no loyalty, lower lifetime patient value",
+   chain:"No booking system → missed night-time enquiries → no recall campaign → patients drift to competitors at renewal time",
+   tip:"One Lovable booking site + Mailchimp recall sequence solves all three with a single integrated build."},
+  {niche:"Real Estate Agent",icon:"🏠",
+   gap:"Leads are managed in WhatsApp and mental notes — no CRM, no structured pipeline visibility",
+   leak:"60-70% of warm leads go cold because there is no follow-up system — they enquire once, get one response, then hear nothing for weeks",
+   lift:"Past clients are never systematically re-engaged — no referral campaign, no market update emails, the most valuable relationships left completely idle",
+   chain:"No CRM → unstructured follow-up → warm leads go cold → no referral system → income stays unpredictable",
+   tip:"Lovable landing page + Notion CRM setup + 3-email Mailchimp sequence addresses the full chain in one build."},
+  {niche:"Hair Salon or Beauty Studio",icon:"💆",
+   gap:"Booking is by phone or walk-in only — no online scheduling, no 24/7 availability for clients",
+   leak:"Clients who want to rebook after 6 PM cannot do so — they either call next day and forget, or book elsewhere out of convenience",
+   lift:"No birthday or rebooking reminder system means loyal clients drift away without the salon realising until revenue noticeably drops",
+   chain:"Phone-only booking → after-hours clients lost → no rebooking reminders → silent churn → revenue decline",
+   tip:"Lovable booking page + Mailchimp birthday and rebooking sequences covers all three with one connected system."},
+  {niche:"Business or Life Coach",icon:"🎯",
+   gap:"Discovery calls are booked via email back-and-forth — no automated scheduling link in bio, emails, or website",
+   leak:"Interested prospects lose momentum during the multi-email scheduling process and stop responding before ever getting on a call",
+   lift:"No email nurture sequence means followers who are not ready to buy today never receive the content that would convert them next month",
+   chain:"No booking link → friction in scheduling → warm leads cool off → no nurture → follower stays a follower forever",
+   tip:"Lovable coaching site with embedded Calendly + Mailchimp nurture sequence addresses all three with one build."},
+  {niche:"Restaurant or Cafe",icon:"🍽️",
+   gap:"All orders and reservations go through third-party platforms — the restaurant owns none of its own customer data",
+   leak:"Every transaction enriches the platform, not the restaurant — 15-30% commission per order, no direct customer contact, no way to reach regulars independently",
+   lift:"No loyalty or repeat-visit campaign means regulars return at random — no system to bring them back on a slow Tuesday or announce a special event",
+   chain:"Platform dependency → no customer data → no direct marketing → no loyalty system → revenue always at the platform's mercy",
+   tip:"Lovable ordering page + Mailchimp loyalty campaign + a simple menu site gives the restaurant full ownership of its own customers."},
+];
+
+const SCRIPTS = [
+  {id:"e1",tag:"Email 1 · The Gap · PAS",color:"#7A5A00",
+   title:"Email 1 — The Gap",
+   note:"Under 130 words. Reference one specific thing you found during enrichment — review count, missing booking button, outdated site. The specificity is what separates this from spam.",
+   body:`Subject: [First Name] — something I noticed about [Business Name]
+
+Hi [First Name],
+
+I was looking at [Business Name] on Google and noticed [specific gap — one precise sentence, e.g. there is no way for clients to book an appointment outside of business hours].
+
+For a business with your presence in [City], that one gap is likely costing you [specific consequence — new clients, bookings, or enquiries] every week.
+
+I build digital systems for [niche] businesses — websites, booking tools, and client management — that fix exactly this.
+
+I recently built something for a similar business: [Lovable demo link or Loom walkthrough].
+
+Worth a 15-minute conversation?
+
+[Calendly link]
+
+[Your name]`},
+  {id:"e2",tag:"Email 2 · The Leak · Day 3",color:"#0D7A5F",
+   title:"Email 2 — The Leak",
+   note:"This is NOT a follow-up. It reveals new information — the hidden cost of their Gap. The subject line must not contain the words 'following up' or 'checking in'.",
+   body:`Subject: The quiet cost of [reference the gap] at [Business Name]
+
+Hi [First Name],
+
+Something I have been thinking about since I reached out a few days ago.
+
+Most [niche] owners already know they need [fix for the gap]. What rarely gets talked about is what that gap costs silently, week after week.
+
+When a potential client finds your listing and cannot [take the natural next step — book, enquire, get a quote], they do not wait. They click the next result. You never know they were there.
+
+Across a month, that is likely [estimate: 3-6 missed clients] walking out the digital door.
+
+I have helped [niche] businesses stop this specific leak. Happy to walk you through how in 15 minutes.
+
+[Calendly link]
+
+[Your name]`},
+  {id:"e3",tag:"Email 3 · The Lift · Day 7",color:"#B8860B",
+   title:"Email 3 — The Lift and Demo",
+   note:"Your strongest email. It leads with a live Lovable demo. The link makes it real in a way words never can. Keep it short — the demo does the talking.",
+   body:`Subject: I built something for [Business Name]
+
+Hi [First Name],
+
+I went ahead and built a quick live demo of what a [solution type] could look like for [Business Name].
+
+Not a concept — you can click through it here: [Lovable demo link]
+Or watch the 90-second walkthrough: [Loom link]
+
+What it addresses:
+→ [The Gap — one line]
+→ [The Leak — one line]
+→ [The Lift — one line]
+
+If [3-5 new clients / more bookings / direct orders] a month would be worth it, this pays for itself within the first week.
+
+15 minutes to walk through it together?
+
+[Calendly link]
+
+[Your name]`},
+  {id:"li1",tag:"LinkedIn · Connection Request",color:"#0A66C2",
+   title:"LinkedIn Connection Request",
+   note:"Under 300 characters. No pitch. No link. Just a relevant reason to connect. Anything longer gets ignored or declined.",
+   body:`Hi [First Name], I help [niche] businesses in [City] with digital systems — websites, booking tools, and client management. Would love to connect.`},
+  {id:"li2",tag:"LinkedIn · First DM After Connecting",color:"#8B2E1F",
+   title:"LinkedIn First DM",
+   note:"Only send after they accept. Lead with a specific observation, not a pitch. The Loom link does the selling — your job is to get them to click it.",
+   body:`Thanks for connecting, [First Name].
+
+I noticed [Business Name] has [specific observation — e.g. great reviews but no way to book online]. I went ahead and built a quick demo that might be worth 90 seconds of your time.
+
+[Loom walkthrough link]
+
+No pitch — just wanted to show you what is possible for a business like yours.
+
+[Your name]`},
+  {id:"disc",tag:"Discovery Call · SPIN Framework",color:"#8B2E1F",
+   title:"Discovery Call Script",
+   note:"Your job on a discovery call is to listen, not pitch. Each question surfaces information that closes the deal — but only if you stay completely silent after asking it.",
+   body:`BEFORE THE CALL (5 minutes):
+Review their Notion entry — Gap, Leak, Lift, their exact words from the reply.
+
+SITUATION:
+"How are you currently handling new client enquiries that come in online?"
+
+PROBLEM:
+"What is the biggest challenge with how that works right now?"
+[Stay silent. Let them finish. Do not fill the pause.]
+
+IMPLICATION:
+"How much would it change things if you never missed an after-hours enquiry again?"
+
+NEED-PAYOFF:
+"If I could build a system that does that in 14 days, would that be worth exploring?"
+[Wait for the yes. Then stop talking.]
+
+CLOSE:
+"I will have a proposal to you within 24 hours. Does [time] tomorrow work to review it together?"`},
+  {id:"obj",tag:"Objection · AI Self-Build",color:"#B8860B",
+   title:"Objection: Can I Not Build This Myself With AI?",
+   note:"Say this calmly. It is educational, not defensive. Most clients drop the objection immediately once they understand what the last 30% actually involves.",
+   body:`"Honestly? You could try — I use these same kinds of tools to move fast. But here is what typically happens: most owners get to about 70% done, then stall on the part that actually matters — connecting it to a booking system, setting up payment collection, making sure it works on every device, and keeping it updated as things change.
+
+That last 30% is exactly what I specialise in.
+
+Think of it like accounting software — anyone can open QuickBooks, but you would still hire an accountant to make sure the numbers are right. I am not selling you a tool. I am selling you a finished system that works, and someone who is accountable for keeping it that way."`},
+];
+
+const PITCH_ITEMS = [
+  {icon:"💜",color:"#8B2E1F",name:"Lovable.dev Website or Landing Page",
+   price:"$300-$700",timeline:"5-10 days",required:true,
+   desc:"Your primary build tool. With Pro access you build a modern, fast, professional site in hours. The client sees a polished result in under a week. This is your anchor offer — the entry point for most clients.",
+   tools:["Lovable.dev Pro (your $25/month investment)"],
+   upsell:"Now let us add a CRM so no lead from this site ever goes cold."},
+  {icon:"⚡",color:"#7A5A00",name:"Booking System and Scheduling Page",
+   price:"$400-$900",timeline:"7-12 days",required:false,
+   desc:"A Lovable app with an embedded Calendly or booking form. Ideal for clinics, coaches, salons, and gyms. Solves The Gap for nearly every service-based business you will target.",
+   tools:["Lovable.dev Pro","Calendly (free tier)"],
+   upsell:"The next step is an email reminder sequence so clients do not forget their appointments."},
+  {icon:"📊",color:"#0D7A5F",name:"Notion CRM Setup for the Client",
+   price:"$150-$300",timeline:"2-3 days",required:false,
+   desc:"Set up a Notion database for their business: lead tracking, client pipeline, task management. Completely free for the client on Notion's free tier. You charge for the setup, training, and documentation.",
+   tools:["Notion (free for the client)"],
+   upsell:"I can now connect this to an email tool so your leads get followed up automatically."},
+  {icon:"📧",color:"#8B2E1F",name:"Email Marketing Setup with Mailchimp",
+   price:"$200-$450",timeline:"3-5 days",required:false,
+   desc:"Set up a Mailchimp account, build 3 automated sequences (welcome, nurture, rebooking), and configure the first campaign. Free for the client up to 500 contacts. You charge for strategy, setup, and copy.",
+   tools:["Mailchimp (free up to 500 contacts)"],
+   upsell:"Want me to manage a monthly campaign for you on retainer?"},
+  {icon:"🌟",color:"#B8860B",name:"Google Business Profile Optimisation",
+   price:"$100-$200",timeline:"1-2 days",required:false,
+   desc:"Completely free to execute — you charge for your expertise and time. Optimise their listing: update photos, write a keyword-rich description, set up Q&A, configure messaging, and show them how to request reviews consistently.",
+   tools:["Google Business Profile (free)"],
+   upsell:"Now let us build you a proper website that matches this polished listing."},
+  {icon:"🚀",color:"#B8860B",name:"GoHighLevel Funnel — Trial Strategy",
+   price:"$400-$800",timeline:"7-14 days",required:false,
+   desc:"Use GoHighLevel's 14-day free trial to build a complete sales funnel: landing page, email sequences, SMS follow-up, and CRM pipeline. Deliver the working system within the trial window. Charge for setup and strategy. The client subscribes to GHL directly at $97/month. You keep the setup fee.",
+   tools:["GoHighLevel 14-day free trial"],
+   upsell:"I can stay on as a monthly retainer to manage and optimise the funnel for you."},
+];
+
+const FAQS = [
+  {q:"I genuinely have no money right now. Can I start with zero spend?",
+   a:"Yes — for the first 7 days, everything is free. The one non-negotiable investment is Lovable.dev Pro at approximately $25 per month. Here is the math: your first deal, even at the lowest Starter price of $300, funds 12 months of Lovable Pro. The question is not whether $25 is affordable right now. It is whether one closed deal in 45 days is achievable following this playbook consistently. Based on this plan done properly, it is."},
+  {q:"Why Lovable.dev specifically? Can I use Bubble.io or Webflow instead?",
+   a:"Lovable builds faster and looks more modern by default for standard builds. Bubble.io is better for complex web apps with databases and user authentication — use it when the project genuinely needs that level of logic. For a landing page, booking site, or client portal, Lovable wins on speed and visual quality. Both can be in your stack — there is no rule that says pick only one."},
+  {q:"What if a client asks for something I cannot yet build?",
+   a:"Scope what you can deliver confidently. If the project requires a full database, user accounts, or complex backend logic — that is a Bubble.io project. Know the boundary between what Lovable handles and what needs Bubble. Be honest with clients about what each tool produces. Never promise what you cannot deliver. Never turn down a project — scope it to your current capability, charge accordingly, and learn the rest during the build."},
+  {q:"How many emails should I send per day without automation?",
+   a:"Start with 5 deeply personalised emails per day. Each email should take 10-15 minutes to personalise properly — that is about 75 minutes of quality outreach daily. Volume is not your advantage at this stage. Quality is. A deeply researched email to 5 HOT leads consistently outperforms 100 generic emails every single time. Scale volume only when your quality standard is locked in."},
+  {q:"What if I get no replies after sending all 3 emails to a lead?",
+   a:"Check three things in order. First: was the lead truly HOT (score 7+)? If you contacted Warm or Cold leads in your first batch, low reply rates are expected. Second: did your subject lines sound like marketing emails? Rewrite them to sound like messages from a real person. Third: was each email specifically personalised with something from your research? If all three were done correctly and still no reply — test a different niche before changing anything about your offer."},
+  {q:"Should I mention I am based in Nigeria when reaching out to international clients?",
+   a:"You are not required to volunteer your location in a cold email. Position yourself as a Digital Systems Engineer serving businesses globally — which is true. Your Lovable demos, your professional Gmail, your LinkedIn presence, and your portfolio site are what establish credibility. If a client asks directly, answer honestly and immediately follow with your portfolio link and demo. Results speak louder than geography every time."},
+  {q:"What if a client wants a refund after the project has started?",
+   a:"This is exactly why the 50% upfront rule exists. The deposit covers your time on the Blueprint and early Build phases. Your 1-page agreement should state that the deposit is non-refundable if work has commenced. Always get written approval of the Blueprint document before building anything. This single step eliminates the most common reason clients try to cancel — the discovery that the final product does not match their unspoken expectation."},
+  {q:"When should I start investing in automation tools like Make.com or Apollo.io?",
+   a:"When your manual process is maxed out — meaning you are sending 25-30 personalised emails per week, you have closed at least 3 deals, and your pipeline is consistent enough that automation would save meaningful time without sacrificing quality. Before that point, automation adds cost and complexity without adding proportional results. Manual first. Automate what is proven. This playbook is designed to get you to that threshold."},
+];
+
+/* ── 3 CORE SERVICES ────────────────────────────────────── */
+const SERVICES_3 = [
+  {
+    id:"reviews", icon:"⭐", color:"#7A5A00",
+    name:"Google Review Automation",
+    price:"$297–$497/month",
+    signal:"Under 50 reviews, last review over 3 months ago, or rating under 4.5",
+    when:"Lead with this when: low review count vs competitors, stale listing, or they say 'our phone isn't ringing like it used to'",
+    pitch:`"Right now, AI tools like ChatGPT, Google AI Mode, and Perplexity only recommend businesses with fresh, consistent reviews. Yours stopped getting reviews [X months] ago — which means AI is actively skipping you every time someone searches for a [niche] in [city]. I can set up a fully automated system that requests a review from every customer after every job. No manual effort. Just a steady drip of fresh reviews every week. That is what gets AI to recommend you. Investment is $297 a month."`,
+    ghl:"GHL Sub-account → Reputation → Settings → Request → Configure Google review link → Automations → New Workflow → Trigger: Appointment completed / tag added → Wait 2 hours → SMS Message 1 (check-in) → Wait 2 hours → SMS Message 2 (review link). Publish workflow.",
+    tool:"GoHighLevel (30-day free trial at gohighlevel.com). This is a GHL Reputation workflow. Zero extra software needed.",
+    lovable:"Build client a branded 'Review Dashboard' page in Lovable showing their review growth over time — screenshot it monthly for their Loom report. Charge $97/month extra for this reporting add-on.",
+    upsell:"After 60-90 days when they see reviews growing: 'Your listing is looking great — but I noticed your contact form has no automation behind it. People are filling it in and waiting days for a reply. Want to fix that too?'",
+  },
+  {
+    id:"speed", icon:"⚡", color:"#0D7A5F",
+    name:"Speed to Lead Automation",
+    price:"$197–$397/month",
+    signal:"Contact form on website, no CRM, response time over 1 hour, or they mention 'we get enquiries but they don't convert'",
+    when:"Lead with this when: they have a website with a contact form but no automation, or they mention losing leads before they can call back",
+    pitch:`"Here is a fact that shocks most business owners: if someone fills in your contact form and you don't call them within 60 seconds, there is a 70% chance they've already booked your competitor. Your competitors who have speed-to-lead automation are literally stealing your leads before you even see the notification. I can set up a system that triggers an instant call to your phone the moment a form is submitted — so you reach that lead first, every time. Takes about a day to set up. Runs automatically from there."`,
+    ghl:"GHL → Automations → New Workflow → Trigger: Form submitted → Action 1: Internal notification (push/email to owner) → Action 2: Outbound call to owner's number → Action 3: If not answered within 5 min → SMS to lead: 'Hi [name], we just received your enquiry — calling you now. If we missed you, here is our direct line: [number]'",
+    tool:"GoHighLevel handles the entire flow. The client needs a GHL sub-account with their phone number connected. No extra software required.",
+    lovable:"Build client a 'Lead Tracker' page in Lovable that pulls GHL webhook data and shows each enquiry, response time, and outcome. Upsell this as a $97/month reporting dashboard.",
+    upsell:"After showing improved lead response rates: 'Your enquiries are converting better now. The last gap is your phone — you still miss [X] calls a month after hours. Want me to put an AI receptionist on it?'",
+  },
+  {
+    id:"calls", icon:"📞", color:"#B8860B",
+    name:"AI Voice Receptionist",
+    price:"$297–$497/month (+ $0.14/min Bland AI usage)",
+    signal:"They mention missed calls, work-from-vehicle (plumbers, HVAC), after-hours call volume, or solo practice",
+    when:"Lead with this when: they are visibly missing calls, work in the field away from a phone, or they mention 'I always miss calls when I'm with a customer'",
+    pitch:`"Did you know 62% of calls to small businesses go unanswered — and 85% of people who reach voicemail hang up and call a competitor? Those are your highest-intent leads. They had their phone in their hand, they searched for you, they chose to call — and you missed it. I can set up an AI receptionist that answers every call in under one second, sounds completely human, handles common questions, quotes your prices, and books appointments directly into your calendar. It runs 24 hours a day for less than the cost of a part-time employee."`,
+    ghl:"Step 1: GHL → Settings → Phone → Missed Call Text-Back (instant, free, basic). Step 2 (full AI): Create Bland AI account at blandai.com → Create agent → Upload business PDF knowledge base → Connect Calendly API → Purchase phone number ($15/month) → Configure pathways (greeting → FAQ → booking) → Test with Norm → Publish. Step 3: Embed Bland AI widget in Lovable-built website.",
+    tool:"Start with GHL missed-call text-back (free, basic). Upgrade to Bland AI ($0.14/min) for full AI receptionist. Phone number costs $15/month from Bland or GHL.",
+    lovable:"Build client a 'Call Analytics Dashboard' in Lovable showing call volume, answered vs missed, booking conversion from calls. This becomes a $97-$197/month reporting retainer.",
+    upsell:"After receptionist is live: 'Your calls are being answered and bookings are up. Now let's make sure your website matches the professional image you are projecting — it still looks like 2018 and it's losing you credibility.' → Website project + monthly retainer.",
+  },
+];
+
+/* ── UPSELL LADDER ──────────────────────────────────────── */
+const UPSELL_STEPS = [
+  {
+    phase:"Month 1–2", icon:"⭐", color:"#7A5A00",
+    service:"Reviews Service ($297/month)",
+    action:"Run the 5-minute SMB audit. Show them the review gap vs competitors. Show the ChatGPT AI search test. Set up 2-message GHL review sequence.",
+    trigger:"The moment their reviews start coming in (usually within first week), their trust in you is established. This is your window.",
+    intro:`"Your reviews are picking up — I can see [X] new ones came in this month. While I was in your GHL account I noticed something else you're probably losing leads on. Worth a quick look?"`,
+    revenue:"$297/month",
+  },
+  {
+    phase:"Month 3–4", icon:"⚡", color:"#0D7A5F",
+    service:"+ Speed to Lead Automation (+$197–$297/month)",
+    action:"Show them their contact form submissions from the past 30 days. Ask how many they called back within the hour. The silence is your pitch.",
+    trigger:"Any mention of 'leads not converting' or 'I need to follow up better' is your green light.",
+    intro:`"I pulled your form submissions from last month — you had [X] enquiries. Based on your response pattern, you're likely keeping about [X]% of those. Want me to make it automatic so you reach every lead in under 60 seconds?"`,
+    revenue:"$494–$594/month combined",
+  },
+  {
+    phase:"Month 5–6", icon:"📞", color:"#B8860B",
+    service:"+ AI Voice Receptionist (+$297–$397/month)",
+    action:"Pull their GHL call log. Show missed calls. Run the Bland AI demo live on the call. Let them hear 'Karen' book a fake appointment.",
+    trigger:"Ask: 'How many calls do you think you miss per week when you're with a client?' — their answer is the pitch.",
+    intro:`"Your reviews are growing and your leads are converting faster. The last gap is your phone. You're still missing [X] calls a week. Want to hear what it sounds like when an AI answers for you? Give me 90 seconds."`,
+    revenue:"$791–$991/month combined",
+  },
+  {
+    phase:"Month 7+", icon:"🌐", color:"#8B2E1F",
+    service:"+ Website or App Rebuild (+$300–$800 one-off + $97–$197/month retainer)",
+    action:"Screenshot their current website next to their growing review count. The mismatch is obvious and they feel it too.",
+    trigger:"'Our website is pretty old' — said unprompted at any point. This is a Lovable project. Blueprint → Build → Bulletproof in 2 weeks.",
+    intro:`"Your reputation online has improved massively — fresh reviews, fast response, calls answered. But your website still looks like it's from 2015. It's undermining everything else you've built. I can rebuild it in Lovable in 2 weeks. Starter is $300–$500 one-off, and I'll maintain it for $97/month."`,
+    revenue:"$888–$1,188/month ongoing + one-off project fee",
+  },
+];
+
+/* ── GHL MASTERY ────────────────────────────────────────── */
+const GHL_STEPS = [
+  {
+    n:"01", icon:"🎯", color:"#7A5A00",
+    title:"What GoHighLevel Is and Why You Need It",
+    body:"GoHighLevel (GHL) is the all-in-one platform used by over 60,000 agencies worldwide to manage clients' CRM, automation, phone, SMS, email, reputation, and reporting — all from one dashboard. You run an agency-level account and create sub-accounts for each client. The client never needs to see the back-end unless you want them to. Start your 30-day free trial at gohighlevel.com. No credit card required for the trial. After the trial, the Starter plan is $97/month — this is covered by your first review service client.",
+  },
+  {
+    n:"02", icon:"🏗️", color:"#0D7A5F",
+    title:"Set Up Your Agency Account and First Sub-Account",
+    body:"When you log in to GHL: (1) Complete your agency profile. (2) Click 'Sub-Accounts' → 'Create Sub-Account'. (3) Enter the client's business name, address, and phone number. (4) This sub-account is their entire digital infrastructure — CRM, automations, phone, reputation. (5) Connect their Google Business Profile in the sub-account under Reputation → Settings. This is what enables review request tracking. Do this setup on a screen-share or record a Loom to show the client what you have built.",
+  },
+  {
+    n:"03", icon:"⭐", color:"#B8860B",
+    title:"Build the Review Automation (Service #1)",
+    body:"Inside the client's sub-account: (1) Reputation → Settings → Request → paste their Google Business Profile review link. (2) Automations → New Workflow → Name it 'Review Request Sequence'. (3) Trigger: contact tag added ('job-complete') or appointment status changed to 'completed'. (4) Action: Wait 2 hours → Send SMS: 'Hi [contact.first_name], thanks for choosing [business name] today! If you have 30 seconds, a quick Google review would mean the world to us: [review link]'. (5) Wait 2 days → If no review → Send SMS 2: 'Hi [name], [owner name] here from [business]. Just checking in — did everything go well? If so, a quick Google review really helps: [link]'. (6) Publish. Test with your own number.",
+  },
+  {
+    n:"04", icon:"⚡", color:"#8B2E1F",
+    title:"Build the Speed to Lead Workflow (Service #2)",
+    body:"Inside the client's sub-account: (1) Automations → New Workflow → Name it 'Speed to Lead'. (2) Trigger: Form submitted (select their Lovable/website form — you will need to embed the GHL form or use a webhook from the Lovable form). (3) Action 1: Internal notification → push notification to owner + email alert. (4) Action 2: GHL outbound call → calls owner's mobile number immediately. (5) If no answer (5 min): Action 3 → SMS to lead: 'Hi [name], we just received your enquiry — someone from our team will call you in the next few minutes. In the meantime: [Calendly link]'. (6) CRM: Create/update contact automatically. This workflow takes 20 minutes to build. Charge $197–$397/month for it running.",
+  },
+  {
+    n:"05", icon:"📞", color:"#8B2E1F",
+    title:"Set Up Missed Call Text-Back (Free Gateway to AI Receptionist)",
+    body:"The quickest win in GHL: Settings → Phone → Missed Call Text-Back → Toggle ON → Customise message: 'Hi, we just missed your call at [business name]. We will call you right back — or book directly here: [Calendly link]'. This goes out automatically every time a call is missed. Takes 3 minutes to set up. Pitch this as a free included feature on every service package. Then upsell: 'This sends a text when you miss a call. For $297 more per month I can have an AI that answers every call so you never miss one.'",
+  },
+  {
+    n:"06", icon:"🤖", color:"#0D7A5F",
+    title:"Add Bland AI for Full AI Receptionist (Service #3)",
+    body:"(1) Create Bland AI account at blandai.com. (2) Create a PDF knowledge base with: business name, address, hours, services, prices, FAQs, booking instructions. (3) Upload to Bland AI Knowledge Base. (4) Create Agent: Name (e.g. 'Karen'), voice (Karen sounds most human), enable interruption. (5) Connect Calendly or GHL calendar via API key. (6) Build pathways: Greeting → FAQ questions → Booking flow → Wrap-up. (7) Use Norm (Bland's AI setup assistant) — tell it exactly what you need in plain language. It builds the entire agent. (8) Test thoroughly. (9) Purchase a phone number ($15/month). (10) Port the number or redirect client's overflow calls to this number.",
+  },
+  {
+    n:"07", icon:"📊", color:"#B8860B",
+    title:"Monthly Client Reporting (Retainer Justification)",
+    body:"Every month, send each client a Loom (2-3 minutes, screen recorded) showing: (1) Review count this month vs last month. (2) Star rating trend. (3) GHL reputation dashboard screenshot. (4) Speed to Lead: enquiries received, response time achieved, leads converted. (5) Call stats: answered vs missed, bookings created. (6) One insight: 'Based on this data, here is what I recommend next month.' This Loom is what keeps them paying month after month. It shows visible proof the system is working. Record it in 5 minutes. It is the most valuable 5 minutes you spend on that client.",
+  },
+  {
+    n:"08", icon:"📚", color:"#7A5A00",
+    title:"Learning Resources — How to Master GHL for Free",
+    body:"(1) YouTube: search 'GoHighLevel tutorial 2026' — hundreds of free step-by-step videos. Channels: Robb Bailey, Nate Freedman, and the official GHL YouTube channel. (2) GHL Community: app.gohighlevel.com/communities — active forum with answers to every question. (3) GHL Support: 24/7 live chat inside the platform. Use it freely. (4) Bland AI: docs.bland.ai — full documentation plus Norm (their AI setup assistant). (5) n8n and Make.com: use these when you need a webhook bridge between Lovable forms and GHL. Both have free tiers and excellent YouTube tutorials. (6) Build everything on your own GHL sub-account first using a fake business — never experiment on a client's live account.",
+  },
+];
+
+/* ─────────────────────────────────────────────────────── */
+function Chevron({open}) {
+  return <span style={{color:"#6B5D3F",fontSize:19,display:"inline-block",
+    transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
+}
+
+function Check({checked,color}) {
+  return (
+    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#6B5D3F"}`,
+      background:checked?color:"transparent",display:"flex",alignItems:"center",
+      justifyContent:"center",flexShrink:0,marginTop:2,fontSize:11,
+      color:"#F5EFDF",fontWeight:800,transition:"all .15s"}}>
+      {checked?"✓":""}
+    </div>
   );
+}
 
-  const toggle = (id: string) => setTasks((p: any) => ({ ...p, [id]: !p[id] }));
+function ProgressBar({value,color,height=6}) {
+  return (
+    <div style={{background:"#E8DCC0",borderRadius:999,height,overflow:"hidden"}}>
+      <div style={{width:`${value}%`,height:"100%",background:color,
+        borderRadius:999,transition:"width .3s"}}/>
+    </div>
+  );
+}
+
+function SLabel({text,color}) {
+  return (
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+      letterSpacing:".08em",marginBottom:7}}>{text}</div>
+  );
+}
+
+function PlanPage() {
+  const [tab,setTab]              = useState("plan");
+  const [openWeek,setOpenWeek]    = useState(0);
+  const [openDay,setOpenDay]      = useState(null);
+  const [openScript,setOpenScript]= useState(null);
+  const [openFaq,setOpenFaq]      = useState(null);
+  const [openNiche,setOpenNiche]  = useState(null);
+  const [openStep,setOpenStep]    = useState(null);
+  const [openPitch,setOpenPitch]  = useState(null);
+  const [openSvc,setOpenSvc]      = useState(null);
+  const [openUps,setOpenUps]      = useState(null);
+  const [openGHL,setOpenGHL]      = useState(null);
+  const [done,setDone,syncMeta]   = useSyncedTaskMap("plan");
+
+  const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
+  const totalTasks     = allTasks.length;
+  const completedTasks = allTasks.filter(t=>done[t.id]).length;
+  const progress = totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
+  const progressColor = progress>=70?"#0D7A5F":progress>=35?"#B8860B":"#7A5A00";
+  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
+  const weekPct = w=>{
+    const t=w.days.flatMap(d=>d.tasks);
+    return t.length>0?Math.round((t.filter(x=>done[x.id]).length/t.length)*100):0;
+  };
+
+  const TABS=[
+    {id:"plan",     label:"📅 45-Day Plan"},
+    {id:"notion",   label:"🗂️ Notion CRM"},
+    {id:"research", label:"🔍 Lead Research"},
+    {id:"problems", label:"⚡ 3-Problem Method"},
+    {id:"scripts",  label:"📝 Scripts"},
+    {id:"pitch",    label:"💰 What to Pitch"},
+    {id:"match",    label:"🎯 Match & Pitch"},
+    {id:"upsell",   label:"📈 Upsell Ladder"},
+    {id:"ghl",      label:"🔧 GHL Mastery"},
+    {id:"faq",      label:"❓ FAQ"},
+  ];
 
   return (
-    <div className="pb-12">
-      <SaveBar meta={meta} title="45-Day Playbook" total={totalTasks} />
+    <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",
+      background:"#F5EFDF",minHeight:"100vh",color:"#1A1410"}}>
 
-      <div className="max-w-[880px] mx-auto px-4 pt-8 space-y-6">
-        <header>
-          <div className="text-[10px] uppercase tracking-widest text-gold-deep">Playbook · 45 Days</div>
-          <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">From Zero to First Client</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Manual outreach, high-value demos, Notion CRM, and a first close by Day 28. Every tick auto-saves and updates your rank and calendar.
-          </p>
-          <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="rounded-full border border-gold/40 bg-accent/20 px-3 py-1 font-semibold text-gold-deep">
-              {meta.completedCount} / {totalTasks} tasks complete
-            </span>
-            <span>{Math.round((meta.completedCount / Math.max(1, totalTasks)) * 100)}% through the campaign</span>
+      {/* HEADER */}
+      <div style={{background:"linear-gradient(160deg,#FBF6E9 0%,#FFFFFF 60%,#F5EFDF 100%)",
+        padding:"22px 16px 18px",borderBottom:"1px solid #E8DCC0"}}>
+        <div style={{maxWidth:880,margin:"0 auto"}}>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:"#0D7A5F",
+            textTransform:"uppercase",marginBottom:7,
+            display:"flex",alignItems:"center",gap:6}}>
+            <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
+              boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
+            45-Day Implementation Playbook — Zero Budget Edition
           </div>
-        </header>
-
-        {WEEKS.map((w) => (
-          <section key={w.week} className="rounded-2xl border border-border bg-card overflow-hidden">
-            <div className="p-5 border-b border-border" style={{ background: `linear-gradient(135deg, ${w.color}18, transparent)` }}>
-              <div className="text-[10px] uppercase tracking-widest text-gold-deep">Week {w.week} · {w.range}</div>
-              <h2 className="mt-1 font-display text-xl md:text-2xl font-bold">{w.icon} {w.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{w.goal}</p>
+          <h1 style={{margin:"0 0 7px",
+            fontSize:"clamp(21px,4.5vw,33px)",fontWeight:800,lineHeight:1.15,
+            background:"linear-gradient(135deg,#FFFFFF 30%,#B8860B 100%)",
+            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
+            From Zero to First Client — Manually
+          </h1>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6B5D3F",
+            maxWidth:580,lineHeight:1.65}}>
+            No automations. No paid lead tools. No batch sends. Every lead researched by hand,
+            scored on a rubric, enriched with 3 connected problems, and contacted personally from Gmail.
+            This is how you build a freelance business when every cent counts.
+          </p>
+          <div style={{background:"#FFFFFF",borderRadius:10,padding:"11px 14px",
+            border:"1px solid #E8DCC0"}}>
+            <div style={{display:"flex",justifyContent:"space-between",
+              alignItems:"center",marginBottom:7}}>
+              <span style={{fontSize:12,fontWeight:600,color:"#6B5D3F"}}>Overall Progress</span>
+              <span style={{fontSize:13,fontWeight:800,color:progressColor}}>
+                {completedTasks} / {totalTasks} tasks · {progress}%
+              </span>
             </div>
-            <div className="p-5 space-y-4">
-              {w.days.map((d) => {
-                const done = d.tasks.filter((t) => tasks[t.id]).length;
-                const pct = Math.round((done / d.tasks.length) * 100);
-                return (
-                  <div key={d.day} className="rounded-xl border border-border bg-background p-4">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div>
-                        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Day {d.day}</div>
-                        <div className="mt-0.5 font-display text-base font-bold flex items-center gap-2"><span>{d.icon}</span> {d.focus}</div>
+            <ProgressBar value={progress} color={progressColor} height={8}/>
+          </div>
+        </div>
+      </div>
+
+      {/* TABS */}
+      <div style={{background:"#FFFFFF",borderBottom:"1px solid #E8DCC0",
+        position:"sticky",top:0,zIndex:20}}>
+        <div style={{maxWidth:880,margin:"0 auto",
+          display:"flex",padding:"0 8px",overflowX:"auto"}}>
+          {TABS.map(t=>(
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{
+              background:"transparent",border:"none",
+              borderBottom:tab===t.id?"2px solid #7A5A00":"2px solid transparent",
+              color:tab===t.id?"#7A5A00":"#6B5D3F",
+              padding:"12px 13px",fontSize:12.5,
+              fontWeight:tab===t.id?600:500,
+              cursor:"pointer",whiteSpace:"nowrap",
+              transition:"all .15s",fontFamily:"inherit"}}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div style={{maxWidth:880,margin:"0 auto",padding:"18px 13px 60px"}}>
+
+        {/* 45-DAY PLAN */}
+        {tab==="plan"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
+              45-Day Action Plan
+            </h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 14px"}}>
+              Tap a week → tap a day → tick tasks as you complete them.
+              Every task is manual. Zero automations required.
+            </p>
+            {WEEKS.map((w,wi)=>{
+              const wp=weekPct(w); const wOpen=openWeek===wi;
+              return (
+                <div key={w.week} style={{marginBottom:9}}>
+                  <div onClick={()=>setOpenWeek(wOpen?null:wi)}
+                    style={{background:wOpen?"#FBF6E9":"#FFFFFF",
+                      border:`1px solid ${wOpen?w.color+"55":"#E8DCC0"}`,
+                      borderRadius:wOpen?"11px 11px 0 0":11,cursor:"pointer",
+                      padding:"13px 15px",display:"flex",alignItems:"center",gap:12}}>
+                    <div style={{width:37,height:37,borderRadius:9,
+                      background:w.color+"18",border:`1px solid ${w.color}35`,
+                      display:"flex",alignItems:"center",justifyContent:"center",
+                      fontSize:18,flexShrink:0}}>{w.icon}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",gap:7,alignItems:"center",
+                        flexWrap:"wrap",marginBottom:4}}>
+                        <span style={{fontWeight:700,fontSize:14,color:"#1A1410"}}>
+                          Week {w.week}: {w.title}
+                        </span>
+                        <span style={{fontSize:10,color:"#6B5D3F",background:"#E8DCC0",
+                          borderRadius:4,padding:"1px 6px"}}>{w.range}</span>
+                        {wp>0&&<span style={{fontSize:10.5,fontWeight:700,color:w.color}}>
+                          {wp}%
+                        </span>}
                       </div>
-                      <div className="text-right text-xs">
-                        <div className="font-semibold">{done} / {d.tasks.length}</div>
-                        <div className="text-muted-foreground">{pct}%</div>
-                      </div>
+                      <p style={{fontSize:11.5,color:"#6B5D3F",margin:"0 0 6px",lineHeight:1.4}}>
+                        {w.goal}
+                      </p>
+                      <ProgressBar value={wp} color={w.color} height={3}/>
                     </div>
-                    <div className="mt-2 h-1 rounded bg-muted overflow-hidden">
-                      <div className={`h-full ${pct === 100 ? "bg-emerald-500" : "bg-primary"}`} style={{ width: `${pct}%` }} />
+                    <Chevron open={wOpen}/>
+                  </div>
+                  {wOpen&&(
+                    <div style={{background:"#F5EFDF",
+                      border:`1px solid ${w.color}25`,borderTop:"none",
+                      borderRadius:"0 0 11px 11px",padding:"8px 11px 13px"}}>
+                      {w.days.map(d=>{
+                        const dk=`${wi}-${d.day}`; const dOpen=openDay===dk;
+                        const dDone=d.tasks.filter(t=>done[t.id]).length;
+                        const dComplete=dDone===d.tasks.length&&d.tasks.length>0;
+                        return (
+                          <div key={d.day} style={{marginTop:7}}>
+                            <div onClick={()=>setOpenDay(dOpen?null:dk)}
+                              style={{background:dOpen?"#FFFFFF":"#FFFFFF",
+                                border:`1px solid ${dComplete?w.color+"60":"#E8DCC0"}`,
+                                borderRadius:dOpen?"9px 9px 0 0":9,
+                                cursor:"pointer",padding:"10px 12px",
+                                display:"flex",alignItems:"center",gap:9}}>
+                              <span style={{fontSize:16,flexShrink:0}}>
+                                {dComplete?"✅":d.icon}
+                              </span>
+                              <div style={{flex:1,minWidth:0}}>
+                                <div style={{display:"flex",gap:6,
+                                  alignItems:"center",flexWrap:"wrap"}}>
+                                  <span style={{fontSize:10,fontWeight:700,
+                                    color:w.color,background:w.color+"18",
+                                    borderRadius:4,padding:"1px 6px"}}>
+                                    Day {d.day}
+                                  </span>
+                                  <span style={{fontSize:13,fontWeight:600,color:"#1A1410"}}>
+                                    {d.focus}
+                                  </span>
+                                </div>
+                                <div style={{fontSize:11,color:"#6B5D3F",marginTop:2}}>
+                                  {dDone}/{d.tasks.length} tasks
+                                </div>
+                              </div>
+                              <Chevron open={dOpen}/>
+                            </div>
+                            {dOpen&&(
+                              <div style={{background:"#F5EFDF",
+                                border:"1px solid #E8DCC0",borderTop:"none",
+                                borderRadius:"0 0 9px 9px",padding:"10px 12px 12px"}}>
+                                {d.note&&(
+                                  <div style={{background:w.color+"10",
+                                    border:`1px solid ${w.color}22`,
+                                    borderRadius:7,padding:"7px 10px",
+                                    marginBottom:10,fontSize:12,
+                                    color:w.color+"CC",lineHeight:1.5}}>
+                                    💡 {d.note}
+                                  </div>
+                                )}
+                                {d.tasks.map(t=>(
+                                  <div key={t.id} onClick={()=>toggle(t.id)}
+                                    style={{display:"flex",gap:9,alignItems:"flex-start",
+                                      padding:"8px 0",
+                                      borderBottom:"1px solid #FBF6E9",cursor:"pointer"}}>
+                                    <Check checked={!!done[t.id]} color={w.color}/>
+                                    <span style={{fontSize:13,lineHeight:1.55,
+                                      color:done[t.id]?"#6B5D3F":"#6B5D3F",
+                                      textDecoration:done[t.id]?"line-through":"none",
+                                      transition:"all .15s"}}>{t.text}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                    {d.note && (
-                      <p className="mt-3 text-xs italic text-muted-foreground border-l-2 border-gold/40 pl-3">{d.note}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* NOTION CRM */}
+        {tab==="notion"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
+              Notion CRM — Full Setup Guide
+            </h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
+              Notion on the free plan is your command centre.
+              Google Sheets is just the raw scouting pad. Every enriched lead lives in Notion.
+            </p>
+            <div style={{background:"#FFFFFF",border:"1px solid #6366F125",
+              borderRadius:11,padding:"14px 16px",marginBottom:18}}>
+              <SLabel text="The Lead Journey" color="#7A5A00"/>
+              <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:6}}>
+                {["📒 Notebook","→","📊 Google Sheets","→","🗂️ Notion CRM","→","📧 Gmail Outreach"].map((s,i)=>(
+                  s==="→"
+                    ?<span key={i} style={{color:"#6B5D3F",fontSize:14}}>→</span>
+                    :<span key={i} style={{background:"#E8DCC0",border:"1px solid #E8DCC0",
+                      borderRadius:6,padding:"4px 10px",fontSize:12,
+                      color:"#7A5A00",fontWeight:500}}>{s}</span>
+                ))}
+              </div>
+            </div>
+            <div style={{marginBottom:10}}>
+              <SLabel text="All 23 Database Properties" color="#0D7A5F"/>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:22}}>
+              {NOTION_COLS.map((c,i)=>(
+                <div key={i} style={{background:"#FFFFFF",border:"1px solid #E8DCC0",
+                  borderRadius:9,padding:"10px 13px",
+                  display:"flex",gap:11,alignItems:"flex-start"}}>
+                  <span style={{fontSize:18,flexShrink:0,marginTop:1}}>{c.icon}</span>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",gap:8,alignItems:"center",
+                      flexWrap:"wrap",marginBottom:3}}>
+                      <span style={{fontSize:13.5,fontWeight:700,color:"#1A1410"}}>
+                        {c.name}
+                      </span>
+                      <span style={{fontSize:10.5,background:"#E8DCC0",
+                        border:"1px solid #E8DCC0",borderRadius:5,
+                        padding:"1px 7px",color:"#7A5A00",fontWeight:600}}>
+                        {c.type}
+                      </span>
+                    </div>
+                    <p style={{fontSize:12,color:"#6B5D3F",margin:0,lineHeight:1.5}}>
+                      {c.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginBottom:10}}>
+              <SLabel text="The 6 Views to Create" color="#B8860B"/>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
+              {NOTION_VIEWS.map((v,i)=>(
+                <div key={i} style={{background:"#FFFFFF",border:"1px solid #E8DCC0",
+                  borderRadius:9,padding:"11px 14px"}}>
+                  <div style={{fontSize:13.5,fontWeight:700,color:"#1A1410",marginBottom:4}}>
+                    {v.name}
+                  </div>
+                  <p style={{fontSize:12.5,color:"#6B5D3F",margin:0,lineHeight:1.5}}>
+                    {v.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div style={{background:"#FFFFFF",border:"1px solid #EC489925",
+              borderRadius:10,padding:"13px 15px"}}>
+              <SLabel text="The Three Problem Columns — Non-Negotiable" color="#8B2E1F"/>
+              <p style={{fontSize:13,color:"#6B5D3F",margin:"0 0 12px",lineHeight:1.65}}>
+                The Gap, The Leak, and The Lift columns must be filled in before a single email is
+                written for that lead. They are the raw material for all 3 emails. See the
+                3-Problem Method tab for how to identify them.
+              </p>
+              {[["⚠️ The Gap","The visible, fixable problem in their digital presence — something you can see from their Google listing, website, or social media."],
+                ["💧 The Leak","What The Gap is silently costing them every week — lost leads, missed bookings, or revenue going to a competitor."],
+                ["🚀 The Lift","The upside they are missing — the clients they could be serving and the revenue they could be collecting if the system existed."]
+              ].map(([t,d],i)=>(
+                <div key={i} style={{background:"#FFFFFF",borderRadius:8,
+                  padding:"10px 12px",marginBottom:8,border:"1px solid #E8DCC0"}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#1A1410",marginBottom:4}}>{t}</div>
+                  <p style={{fontSize:12,color:"#6B5D3F",margin:0,lineHeight:1.55}}>{d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* LEAD RESEARCH */}
+        {tab==="research"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
+              Manual Lead Research — Step by Step
+            </h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
+              Every lead completes all 8 steps before you write a single word of outreach.
+              Tap each step to expand the full instructions.
+            </p>
+            <div style={{display:"flex",flexDirection:"column",gap:0}}>
+              {RESEARCH_STEPS.map((s,i)=>(
+                <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                  <div style={{display:"flex",flexDirection:"column",
+                    alignItems:"center",flexShrink:0,paddingTop:2}}>
+                    <div style={{width:36,height:36,borderRadius:9,
+                      background:s.color+"18",border:`1px solid ${s.color}40`,
+                      display:"flex",alignItems:"center",justifyContent:"center",
+                      fontSize:17}}>{s.icon}</div>
+                    {i<RESEARCH_STEPS.length-1&&(
+                      <div style={{width:2,height:20,background:"#E8DCC0",
+                        marginTop:4,marginBottom:4}}/>
                     )}
-                    <ul className="mt-3 space-y-2">
-                      {d.tasks.map((t) => (
-                        <li key={t.id}>
-                          <label className="flex items-start gap-3 cursor-pointer group">
-                            <input
-                              type="checkbox"
-                              checked={!!tasks[t.id]}
-                              onChange={() => toggle(t.id)}
-                              className="mt-0.5 h-4 w-4 rounded border-gold/40 accent-primary"
-                            />
-                            <span className={`text-sm leading-relaxed ${tasks[t.id] ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                              {t.text}
-                            </span>
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
+                  </div>
+                  <div onClick={()=>setOpenStep(openStep===i?null:i)}
+                    style={{background:openStep===i?"#FBF6E9":"#FFFFFF",
+                      border:`1px solid ${openStep===i?s.color:"#E8DCC0"}`,
+                      borderRadius:10,padding:"11px 13px",flex:1,
+                      marginBottom:10,cursor:"pointer",transition:"border-color .2s"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",
+                      alignItems:"center",gap:8}}>
+                      <div>
+                        <span style={{fontSize:9,fontWeight:700,color:s.color}}>{s.n}</span>
+                        {" "}<span style={{fontWeight:700,fontSize:13.5,color:"#1A1410"}}>
+                          {s.title}
+                        </span>
+                      </div>
+                      <Chevron open={openStep===i}/>
+                    </div>
+                    {openStep===i&&(
+                      <p style={{fontSize:13,color:"#6B5D3F",margin:"10px 0 0",
+                        lineHeight:1.65,borderTop:"1px solid #E8DCC0",paddingTop:10}}>
+                        {s.body}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{background:"#FFFFFF",border:"1px solid #F59E0B25",
+              borderRadius:10,padding:"13px 15px",marginTop:4}}>
+              <SLabel text="Time Per Lead Benchmark" color="#B8860B"/>
+              {[["Week 2 (first time)","25-35 min per HOT lead"],
+                ["Week 4 (with practice)","15-20 min per HOT lead"],
+                ["Week 6 (after 30+ leads)","10-14 min per HOT lead"]
+              ].map(([w,t],i)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",
+                  padding:"7px 0",borderBottom:"1px solid #E8DCC0"}}>
+                  <span style={{fontSize:13,color:"#6B5D3F"}}>{w}</span>
+                  <span style={{fontSize:13,fontWeight:600,color:"#B8860B"}}>{t}</span>
+                </div>
+              ))}
+              <p style={{fontSize:12,color:"#6B5D3F",margin:"10px 0 0",lineHeight:1.6}}>
+                The first 5 leads feel slow. By lead 20 the process becomes near-automatic.
+                Research quality stays high — only the speed improves.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 3-PROBLEM METHOD */}
+        {tab==="problems"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
+              The 3-Problem Method
+            </h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
+              Three connected problems. One email narrative. One solution.
+              This is what makes your outreach feel personal instead of generic.
+            </p>
+            <div style={{background:"#FFFFFF",border:"1px solid #6366F130",
+              borderRadius:12,padding:"16px",marginBottom:18}}>
+              <SLabel text="The Framework" color="#7A5A00"/>
+              {[["⚠️","The Gap","#7A5A00","The visible, fixable problem you found during research. Missing or broken in their digital presence.","→ Email 1 — PAS around The Gap"],
+                ["💧","The Leak","#0D7A5F","The hidden cost of The Gap. What it silently costs them every week in lost clients, missed bookings, or wasted spend.","→ Email 2 — Reveals the hidden cost"],
+                ["🚀","The Lift","#B8860B","The revenue they are not capturing. What they could be earning if The Gap were fixed and The Leak plugged.","→ Email 3 — Your demo solves all three"]
+              ].map(([ic,nm,col,desc,ref],i)=>(
+                <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                  <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+                    <div style={{width:36,height:36,borderRadius:9,background:col+"18",
+                      border:`1px solid ${col}40`,display:"flex",alignItems:"center",
+                      justifyContent:"center",fontSize:17}}>{ic}</div>
+                    {i<2&&<div style={{width:2,height:16,background:"#E8DCC0",
+                      marginTop:3,marginBottom:3}}/>}
+                  </div>
+                  <div style={{background:"#FFFFFF",border:"1px solid #E8DCC0",
+                    borderRadius:9,padding:"10px 13px",flex:1,marginBottom:8}}>
+                    <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",marginBottom:4}}>
+                      <span style={{fontWeight:700,fontSize:14,color:"#1A1410"}}>{nm}</span>
+                      <span style={{fontSize:10.5,color:col,background:col+"18",
+                        borderRadius:5,padding:"1px 7px",fontWeight:600}}>{ref}</span>
+                    </div>
+                    <p style={{fontSize:12.5,color:"#6B5D3F",margin:0,lineHeight:1.55}}>{desc}</p>
+                  </div>
+                </div>
+              ))}
+              <div style={{background:"#E8DCC0",borderRadius:8,padding:"11px 13px",
+                border:"1px solid #E8DCC0",marginTop:4}}>
+                <div style={{fontSize:12,fontWeight:700,color:"#8B2E1F",marginBottom:5}}>
+                  The Critical Rule
+                </div>
+                <p style={{fontSize:12.5,color:"#6B5D3F",margin:0,lineHeight:1.6}}>
+                  The three problems must form a causal chain — The Gap causes The Leak, The Leak
+                  prevents The Lift. If fixing The Gap would not logically address The Leak and unlock
+                  The Lift, they are not connected enough. Confusion leads to indecision.
+                  Indecision guarantees no sale.
+                </p>
+              </div>
+            </div>
+            <SLabel text="5 Niche Examples — Tap to Expand" color="#0D7A5F"/>
+            <div style={{display:"flex",flexDirection:"column",gap:9,marginTop:8}}>
+              {NICHES_3P.map((n,i)=>{
+                const isOpen=openNiche===i;
+                return (
+                  <div key={i} onClick={()=>setOpenNiche(isOpen?null:i)}
+                    style={{background:isOpen?"#FBF6E9":"#FFFFFF",
+                      border:`1px solid ${isOpen?"#0D7A5F":"#E8DCC0"}`,
+                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
+                    <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:10}}>
+                      <span style={{fontSize:22,flexShrink:0}}>{n.icon}</span>
+                      <span style={{flex:1,fontWeight:600,fontSize:14,color:"#1A1410"}}>
+                        {n.niche}
+                      </span>
+                      <Chevron open={isOpen}/>
+                    </div>
+                    {isOpen&&(
+                      <div style={{padding:"0 14px 16px",borderTop:"1px solid #E8DCC0"}}>
+                        {[["⚠️ The Gap","#7A5A00",n.gap],
+                          ["💧 The Leak","#0D7A5F",n.leak],
+                          ["🚀 The Lift","#B8860B",n.lift],
+                          ["🔗 The Chain","#8B2E1F",n.chain],
+                          ["💡 Your Solution","#8B2E1F",n.tip]
+                        ].map(([lbl,col,val],j)=>(
+                          <div key={j} style={{marginTop:12}}>
+                            <div style={{fontSize:10,fontWeight:700,color:col,
+                              textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>
+                              {lbl}
+                            </div>
+                            <p style={{fontSize:13,color:"#6B5D3F",margin:0,
+                              lineHeight:1.6,borderLeft:`2px solid ${col}40`,paddingLeft:10}}>
+                              {val}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
-          </section>
-        ))}
+          </div>
+        )}
 
-        <div className="rounded-xl border border-gold/40 bg-accent/20 p-5 text-sm">
-          <div className="text-[10px] uppercase tracking-widest text-gold-deep">Notion CRM</div>
-          <p className="mt-2 text-muted-foreground">
-            The entire pipeline lives inside Notion. If you use another tool it will slow you down and confuse your admin — stick with Notion for the full 45 days, then decide.
-          </p>
-        </div>
+        {/* SCRIPTS */}
+        {tab==="scripts"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
+              Scripts and Templates
+            </h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 14px",lineHeight:1.6}}>
+              Every script is a starting point. Personalise the bracketed sections with what you
+              found during enrichment — that is what makes it land.
+            </p>
+            <div style={{display:"flex",flexDirection:"column",gap:9}}>
+              {SCRIPTS.map((s,i)=>{
+                const isOpen=openScript===i;
+                return (
+                  <div key={i} onClick={()=>setOpenScript(isOpen?null:i)}
+                    style={{background:isOpen?"#FBF6E9":"#FFFFFF",
+                      border:`1px solid ${isOpen?s.color:"#E8DCC0"}`,
+                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
+                    <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:10}}>
+                      <div style={{flex:1}}>
+                        <div style={{display:"flex",gap:7,alignItems:"center",
+                          flexWrap:"wrap",marginBottom:2}}>
+                          <span style={{fontWeight:700,fontSize:13.5,color:"#1A1410"}}>
+                            {s.title}
+                          </span>
+                          <span style={{fontSize:10,color:s.color,background:s.color+"18",
+                            borderRadius:4,padding:"1px 6px",fontWeight:600}}>{s.tag}</span>
+                        </div>
+                      </div>
+                      <Chevron open={isOpen}/>
+                    </div>
+                    {isOpen&&(
+                      <div style={{padding:"0 14px 14px",borderTop:"1px solid #E8DCC0"}}>
+                        <pre style={{background:"#F5EFDF",borderRadius:8,padding:"12px 13px",
+                          marginTop:12,fontFamily:"'Courier New',monospace",fontSize:12,
+                          color:"#6B5D3F",lineHeight:1.85,
+                          borderLeft:`2px solid ${s.color}40`,
+                          whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
+                          {s.body}
+                        </pre>
+                        <div style={{marginTop:9,background:s.color+"10",
+                          border:`1px solid ${s.color}25`,borderRadius:7,
+                          padding:"7px 10px",fontSize:12,color:s.color,lineHeight:1.5}}>
+                          💡 {s.note}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* WHAT TO PITCH */}
+        {tab==="pitch"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
+              What to Pitch — Zero Budget Offer Stack
+            </h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
+              Six services you can deliver right now. One required investment.
+              Everything else runs on free tiers.
+            </p>
+            <div style={{background:"linear-gradient(135deg,#FBF6E9,#E8DCC0)",
+              border:"1px solid #8B5CF635",borderRadius:12,
+              padding:"16px",marginBottom:18}}>
+              <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                <span style={{fontSize:24,flexShrink:0}}>💜</span>
+                <div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#1A1410",marginBottom:4}}>
+                    The One Non-Negotiable: Lovable.dev Pro (~$25/month)
+                  </div>
+                  <p style={{fontSize:13,color:"#6B5D3F",margin:"0 0 10px",lineHeight:1.65}}>
+                    This is the single spend that makes the entire playbook possible. Your first
+                    deal — even at the lowest Starter price of $300 — funds 12 months of Pro
+                    access. Before the first deal closes, find a way to make this happen.
+                  </p>
+                  <div style={{fontSize:12,color:"#8B2E1F",fontWeight:600}}>
+                    Why it is worth it: you build a professional, click-through demo in hours.
+                    The demo is your pitch. No demo means no close.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:9}}>
+              {PITCH_ITEMS.map((p,i)=>{
+                const isOpen=openPitch===i;
+                return (
+                  <div key={i} onClick={()=>setOpenPitch(isOpen?null:i)}
+                    style={{background:isOpen?"#FBF6E9":"#FFFFFF",
+                      border:`1px solid ${isOpen?p.color:"#E8DCC0"}`,
+                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
+                    <div style={{padding:"13px 15px",display:"flex",
+                      alignItems:"center",gap:11}}>
+                      <div style={{width:38,height:38,borderRadius:9,
+                        background:p.color+"18",border:`1px solid ${p.color}35`,
+                        display:"flex",alignItems:"center",justifyContent:"center",
+                        fontSize:18,flexShrink:0}}>{p.icon}</div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:"flex",gap:7,alignItems:"center",
+                          flexWrap:"wrap",marginBottom:2}}>
+                          <span style={{fontWeight:700,fontSize:14,color:"#1A1410"}}>
+                            {p.name}
+                          </span>
+                          {p.required&&(
+                            <span style={{fontSize:10,fontWeight:700,color:"#8B2E1F",
+                              background:"#8B5CF618",borderRadius:4,padding:"1px 6px"}}>
+                              REQUIRED TOOL
+                            </span>
+                          )}
+                        </div>
+                        <div style={{display:"flex",gap:10}}>
+                          <span style={{fontSize:12,fontWeight:700,color:p.color}}>
+                            {p.price}
+                          </span>
+                          <span style={{fontSize:12,color:"#6B5D3F"}}>{p.timeline}</span>
+                        </div>
+                      </div>
+                      <Chevron open={isOpen}/>
+                    </div>
+                    {isOpen&&(
+                      <div style={{padding:"0 15px 16px",borderTop:"1px solid #E8DCC0"}}>
+                        <p style={{fontSize:13,color:"#6B5D3F",
+                          margin:"12px 0 12px",lineHeight:1.65}}>{p.desc}</p>
+                        <div style={{marginBottom:10}}>
+                          <div style={{fontSize:10,fontWeight:700,color:"#6B5D3F",
+                            textTransform:"uppercase",letterSpacing:".07em",marginBottom:6}}>
+                            Tools Used
+                          </div>
+                          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                            {p.tools.map((t,j)=>(
+                              <span key={j} style={{fontSize:12,background:"#E8DCC0",
+                                border:"1px solid #E8DCC0",borderRadius:5,
+                                padding:"3px 9px",color:"#6B5D3F"}}>{t}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <div style={{background:p.color+"10",
+                          border:`1px solid ${p.color}25`,
+                          borderRadius:7,padding:"8px 11px"}}>
+                          <div style={{fontSize:10,fontWeight:700,color:p.color,
+                            textTransform:"uppercase",letterSpacing:".07em",marginBottom:4}}>
+                            Upsell Trigger
+                          </div>
+                          <p style={{fontSize:12.5,color:"#1A1410",margin:0,
+                            fontStyle:"italic",lineHeight:1.5}}>{p.upsell}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{background:"#FFFFFF",border:"1px solid #10B98125",
+              borderRadius:10,padding:"14px 15px",marginTop:16}}>
+              <SLabel text="The Demo-First Close Strategy" color="#0D7A5F"/>
+              <p style={{fontSize:13,color:"#6B5D3F",margin:"0 0 10px",lineHeight:1.65}}>
+                Since every build happens on your single Lovable Pro account, use this workflow
+                for every HOT lead before Email 3 goes out:
+              </p>
+              {["Build a demo for their niche in Lovable — use a fictional version of their actual business name so it feels personal",
+                "Record a 90-second Loom walkthrough showing what it does and why it matters specifically for their type of business",
+                "Send the live Lovable URL and the Loom link in Email 3",
+                "Only rebuild it as their branded, real product after the 50% deposit clears",
+                "The deposit funds your time on the rebuild — your Lovable account handles the actual build cost"
+              ].map((tip,i)=>(
+                <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"flex-start"}}>
+                  <span style={{color:"#0D7A5F",flexShrink:0,fontWeight:700,fontSize:13}}>
+                    {i+1}.
+                  </span>
+                  <span style={{fontSize:13,color:"#6B5D3F",lineHeight:1.55}}>{tip}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* FAQ */}
+        {tab==="match"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>🎯 Match the Problem to the Service</h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
+              Never pitch all three services at once. Find their biggest gap. Show the one fix that solves it.
+              Confusion kills sales. One problem, one solution, one pitch.
+            </p>
+            <div style={{background:"#FFFFFF",border:"1px solid #6366F125",borderRadius:11,padding:"14px 16px",marginBottom:16}}>
+              <SLabel text="The Golden Rule" color="#7A5A00"/>
+              <p style={{fontSize:13,color:"#6B5D3F",margin:0,lineHeight:1.65}}>
+                You have found three problems during your audit. You pitch the ONE that is costing them the most
+                right now. The others become your upsell roadmap for months 3, 5, and 7.
+                The client stays because each service builds on the last. Your revenue compounds month after month.
+              </p>
+            </div>
+            <div style={{background:"#FFFFFF",border:"1px solid #F59E0B25",borderRadius:10,padding:"13px 15px",marginBottom:16}}>
+              <SLabel text="The AI Audit Pitch — Open Every Conversation With This" color="#B8860B"/>
+              <p style={{fontSize:13,color:"#6B5D3F",margin:"0 0 10px",lineHeight:1.65}}>
+                Before you mention any service, do this live on the call or in your Loom video:
+              </p>
+              <pre style={{background:"#F5EFDF",borderRadius:8,padding:"12px 13px",
+                fontFamily:"'Courier New',monospace",fontSize:12,color:"#6B5D3F",
+                lineHeight:1.85,borderLeft:"2px solid #F59E0B40",whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
+{`Open ChatGPT and type:
+"Find me a [their niche] in [their city] who can help me today."
+
+Show them the result.
+
+If THEIR business appears: "This is what's driving you business.
+Let's protect it and grow it."
+
+If a COMPETITOR appears: "That is your competitor getting the call
+that should be yours. I can fix that."
+
+Then be silent. Let that moment land.`}
+              </pre>
+            </div>
+            <SLabel text="The 3 Services — Tap to See Signal, Pitch and GHL Setup" color="#0D7A5F"/>
+            <div style={{marginTop:8,display:"flex",flexDirection:"column",gap:9}}>
+              {SERVICES_3.map((s,i)=>{
+                const isOpen=openSvc===i;
+                return(
+                  <div key={s.id} onClick={()=>setOpenSvc(isOpen?null:i)}
+                    style={{background:isOpen?"#FBF6E9":"#FFFFFF",
+                      border:`1px solid ${isOpen?s.color:"#E8DCC0"}`,
+                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
+                    <div style={{padding:"13px 15px",display:"flex",alignItems:"center",gap:12}}>
+                      <div style={{width:38,height:38,borderRadius:9,background:s.color+"18",
+                        border:`1px solid ${s.color}35`,display:"flex",alignItems:"center",
+                        justifyContent:"center",fontSize:20,flexShrink:0}}>{s.icon}</div>
+                      <div style={{flex:1}}>
+                        <div style={{fontWeight:700,fontSize:14,color:"#1A1410"}}>{s.name}</div>
+                        <div style={{fontSize:12,color:s.color,fontWeight:600,marginTop:2}}>{s.price}</div>
+                      </div>
+                      <Chevron open={isOpen}/>
+                    </div>
+                    {isOpen&&(
+                      <div style={{padding:"0 15px 16px",borderTop:"1px solid #E8DCC0"}}>
+                        {[
+                          ["🔍 Signal — When to Lead With This",s.signal,"#7A5A00"],
+                          ["⏰ When to Pitch It",s.when,"#0D7A5F"],
+                          ["🎤 Pitch Script",s.pitch,"#B8860B"],
+                          ["⚙️ GHL Setup Steps",s.ghl,"#8B2E1F"],
+                          ["🛠️ Tool Required",s.tool,"#0D7A5F"],
+                          ["💜 Lovable Add-On",s.lovable,"#8B2E1F"],
+                          ["📈 Upsell Trigger",s.upsell,"#B8860B"],
+                        ].map(([lbl,val,col])=>(
+                          <div key={lbl} style={{marginTop:12}}>
+                            <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"uppercase",
+                              letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
+                            <p style={{fontSize:13,color:"#6B5D3F",margin:0,lineHeight:1.65,
+                              borderLeft:`2px solid ${col}40`,paddingLeft:10,
+                              fontStyle:lbl.includes("Pitch")?"italic":"normal"}}>{val}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {tab==="upsell"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>📈 The Upsell Ladder</h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
+              One client, fully upsold over 7 months = $888–$1,188/month recurring.
+              Five such clients = $5,000–$6,000/month before you close a single new deal.
+            </p>
+            <div style={{background:"#FFFFFF",border:"1px solid #10B98125",borderRadius:11,padding:"14px 16px",marginBottom:16}}>
+              <SLabel text="The Compounding Math" color="#0D7A5F"/>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10,marginBottom:10}}>
+                {[
+                  ["1 client × Reviews only","$297/month","#7A5A00"],
+                  ["1 client × Reviews + Speed","$494–$594/month","#0D7A5F"],
+                  ["1 client × All 3 services","$791–$991/month","#B8860B"],
+                  ["1 client × All 3 + Website","$888–$1,188/month","#8B2E1F"],
+                ].map(([lbl,val,col])=>(
+                  <div key={lbl} style={{background:"#FFFFFF",border:"1px solid #E8DCC0",
+                    borderRadius:8,padding:"10px 12px"}}>
+                    <div style={{fontSize:11.5,color:"#6B5D3F",marginBottom:4,lineHeight:1.4}}>{lbl}</div>
+                    <div style={{fontSize:15,fontWeight:800,color:col}}>{val}</div>
+                  </div>
+                ))}
+              </div>
+              <p style={{fontSize:12,color:"#6B5D3F",margin:0,lineHeight:1.6}}>
+                The upsell only works because each service builds genuine trust and delivers visible results
+                before the next one is offered. Never stack services before the previous one has proved itself.
+                60–90 days per tier. Patience is the strategy.
+              </p>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:0}}>
+              {UPSELL_STEPS.map((u,i)=>{
+                const isOpen=openUps===i;
+                return(
+                  <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+                      <div style={{width:36,height:36,borderRadius:9,background:u.color+"18",
+                        border:`1px solid ${u.color}40`,display:"flex",alignItems:"center",
+                        justifyContent:"center",fontSize:17}}>{u.icon}</div>
+                      {i<UPSELL_STEPS.length-1&&<div style={{width:2,height:18,background:"#E8DCC0",
+                        marginTop:4,marginBottom:4}}/>}
+                    </div>
+                    <div onClick={()=>setOpenUps(isOpen?null:i)}
+                      style={{background:isOpen?"#FBF6E9":"#FFFFFF",
+                        border:`1px solid ${isOpen?u.color:"#E8DCC0"}`,
+                        borderRadius:10,padding:"11px 13px",flex:1,
+                        marginBottom:10,cursor:"pointer",transition:"border-color .2s"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                        <div>
+                          <div style={{fontSize:10,fontWeight:700,color:u.color,
+                            textTransform:"uppercase",letterSpacing:".07em",marginBottom:3}}>{u.phase}</div>
+                          <div style={{fontWeight:700,fontSize:13.5,color:"#1A1410"}}>{u.service}</div>
+                        </div>
+                        <div style={{textAlign:"right",flexShrink:0}}>
+                          <div style={{fontSize:13,fontWeight:800,color:u.color}}>{u.revenue}</div>
+                          <Chevron open={isOpen}/>
+                        </div>
+                      </div>
+                      {isOpen&&(
+                        <div style={{marginTop:12,paddingTop:12,borderTop:"1px solid #E8DCC0"}}>
+                          {[
+                            ["✅ What You Do",u.action,"#0D7A5F"],
+                            ["🎤 How You Introduce It",u.intro,"#B8860B"],
+                            ["🚦 The Trigger Signal",u.trigger,"#7A5A00"],
+                          ].map(([lbl,val,col])=>(
+                            <div key={lbl} style={{marginBottom:12}}>
+                              <div style={{fontSize:10,fontWeight:700,color:col,
+                                textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
+                              <p style={{fontSize:13,color:"#6B5D3F",margin:0,lineHeight:1.65,
+                                borderLeft:`2px solid ${col}40`,paddingLeft:10,
+                                fontStyle:lbl.includes("Introduce")?"italic":"normal"}}>{val}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {tab==="ghl"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>🔧 GHL Mastery Guide</h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
+              GoHighLevel is the engine behind all 3 services. Learn it on your own sub-account first.
+              Never experiment on a live client account.
+            </p>
+            <div style={{background:"#FFFFFF",border:"1px solid #F59E0B25",borderRadius:10,padding:"13px 15px",marginBottom:16}}>
+              <SLabel text="Your GHL Cost vs Revenue" color="#B8860B"/>
+              {[
+                ["GHL Starter Plan","$97/month","#8B2E1F"],
+                ["First review client covers it","$297/month income","#0D7A5F"],
+                ["Net after GHL is covered","$200/month from client 1","#0D7A5F"],
+                ["Every client after that","$297+/month pure profit","#0D7A5F"],
+              ].map(([lbl,val,col])=>(
+                <div key={lbl} style={{display:"flex",justifyContent:"space-between",
+                  padding:"7px 0",borderBottom:"1px solid #E8DCC0"}}>
+                  <span style={{fontSize:13,color:"#6B5D3F"}}>{lbl}</span>
+                  <span style={{fontSize:13,fontWeight:700,color:col}}>{val}</span>
+                </div>
+              ))}
+              <p style={{fontSize:12,color:"#6B5D3F",margin:"10px 0 0",lineHeight:1.6}}>
+                GHL pays for itself with your very first client. After that it is a pure force multiplier.
+                Start your 30-day free trial at <strong style={{color:"#B8860B"}}>gohighlevel.com</strong>
+              </p>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:0}}>
+              {GHL_STEPS.map((s,i)=>{
+                const isOpen=openGHL===i;
+                return(
+                  <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0}}>
+                      <div style={{width:36,height:36,borderRadius:9,background:s.color+"18",
+                        border:`1px solid ${s.color}40`,display:"flex",alignItems:"center",
+                        justifyContent:"center",fontSize:17}}>{s.icon}</div>
+                      {i<GHL_STEPS.length-1&&<div style={{width:2,height:20,background:"#E8DCC0",
+                        marginTop:4,marginBottom:4}}/>}
+                    </div>
+                    <div onClick={()=>setOpenGHL(isOpen?null:i)}
+                      style={{background:isOpen?"#FBF6E9":"#FFFFFF",
+                        border:`1px solid ${isOpen?s.color:"#E8DCC0"}`,
+                        borderRadius:10,padding:"11px 13px",flex:1,
+                        marginBottom:10,cursor:"pointer",transition:"border-color .2s"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                        <div>
+                          <span style={{fontSize:9,fontWeight:700,color:s.color}}>{s.n} </span>
+                          <span style={{fontWeight:700,fontSize:13.5,color:"#1A1410"}}>{s.title}</span>
+                        </div>
+                        <Chevron open={isOpen}/>
+                      </div>
+                      {isOpen&&(
+                        <p style={{fontSize:13,color:"#6B5D3F",margin:"10px 0 0",lineHeight:1.65,
+                          borderTop:"1px solid #E8DCC0",paddingTop:10}}>{s.body}</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {tab==="faq"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
+              Zero-Budget FAQ
+            </h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 14px"}}>
+              Every question answered for someone starting with no expendable funds
+              and no existing clients.
+            </p>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {FAQS.map((f,i)=>{
+                const isOpen=openFaq===i;
+                return (
+                  <div key={i} onClick={()=>setOpenFaq(isOpen?null:i)}
+                    style={{background:isOpen?"#FBF6E9":"#FFFFFF",
+                      border:`1px solid ${isOpen?"#7A5A00":"#E8DCC0"}`,
+                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
+                    <div style={{padding:"12px 14px",display:"flex",
+                      alignItems:"flex-start",gap:9}}>
+                      <span style={{color:"#7A5A00",fontSize:13,fontWeight:800,
+                        flexShrink:0,marginTop:1}}>Q</span>
+                      <span style={{flex:1,fontSize:13.5,fontWeight:600,
+                        color:"#1A1410",lineHeight:1.45}}>{f.q}</span>
+                      <Chevron open={isOpen}/>
+                    </div>
+                    {isOpen&&(
+                      <div style={{padding:"0 14px 13px",borderTop:"1px solid #E8DCC0"}}>
+                        <div style={{display:"flex",gap:9,marginTop:11,alignItems:"flex-start"}}>
+                          <span style={{color:"#0D7A5F",fontSize:13,fontWeight:800,flexShrink:0}}>
+                            A
+                          </span>
+                          <p style={{fontSize:13,color:"#6B5D3F",margin:0,lineHeight:1.65}}>
+                            {f.a}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
       </div>
+      <SaveBar status={syncMeta.status} lastSavedAt={syncMeta.lastSavedAt} pendingCount={syncMeta.pendingCount} onSave={syncMeta.saveNow} />
     </div>
   );
 }
+
