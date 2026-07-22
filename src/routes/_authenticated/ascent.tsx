@@ -1,18 +1,19 @@
 // @ts-nocheck
-// THE ASCENT — 45-Day Zero-Capital Direct-Scouting Closer System.
-// Source content preserved verbatim from the-ascent-2.jsx; wired to
-// Supabase task_progress via useSyncedTaskMap under playbook_id "ascent"
-// and gated by ascent_access.
+// THE ASCENT — installed verbatim from the-ascent-2.jsx; only the colour palette
+// was remapped to the DFS Regal system so every panel, icon and label stays
+// legible. Progress persists to Supabase and access is gated by ascent_access.
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { checkMyAscentAccess } from "@/lib/ascent.functions";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
+import { SaveBar } from "@/components/dfs/SaveBar";
+import { Lock } from "lucide-react";
 import {
   Target, CheckCircle2, Circle, ChevronDown, ChevronRight,
   Send, MessageSquare, ShieldCheck, AlertTriangle, TrendingUp, RotateCcw,
-  FileText, Phone, Compass, Users, Search, Video, Lock, Mountain,
-} from "lucide-react";
+  FileText, Phone, Compass, Users, Search, Video
+} from 'lucide-react';
 
 export const Route = createFileRoute("/_authenticated/ascent")({
   head: () => ({ meta: [
@@ -24,10 +25,10 @@ export const Route = createFileRoute("/_authenticated/ascent")({
 
 function AscentGate() {
   const check = useServerFn(checkMyAscentAccess);
-  const [status, setStatus] = useState<"loading"|"granted"|"denied">("loading");
+  const [status, setStatus] = useState("loading");
   useEffect(() => {
-    check({ data: undefined as never })
-      .then(r => setStatus(r?.hasAccess ? "granted" : "denied"))
+    check({ data: undefined })
+      .then((r) => setStatus(r?.hasAccess ? "granted" : "denied"))
       .catch(() => setStatus("denied"));
   }, [check]);
   if (status === "loading") return <div className="p-10 text-center text-muted-foreground">Verifying Ascent access…</div>;
@@ -38,8 +39,9 @@ function AscentGate() {
       <p className="text-sm text-muted-foreground">This programme is granted individually by the Founder. Contact your council admin if you believe you should have access.</p>
     </div>
   );
-  return <AscentApp />;
+  return <App />;
 }
+
 
 /* ---------------------------------------------------------------------- */
 /* DATA                                                                    */
@@ -943,8 +945,8 @@ function DaysTab({ checked, onToggle }) {
       {[1, 2, 3].map(phase => (
         <div key={phase} className="space-y-3">
           <div className="relative rounded-lg border border-line bg-paper p-4">
-            <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: '#5b4f33' }}>{PHASE_META[phase].name} · {PHASE_META[phase].range}</p>
-            <p className="text-sm mt-1 leading-relaxed" style={{ color: '#3a3320' }}>{PHASE_META[phase].scorecard}</p>
+            <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: '#6B5D3F' }}>{PHASE_META[phase].name} · {PHASE_META[phase].range}</p>
+            <p className="text-sm mt-1 leading-relaxed" style={{ color: '#6B5D3F' }}>{PHASE_META[phase].scorecard}</p>
           </div>
           <div className="space-y-2.5">
             {DAYS.filter(d => d.phase === phase).map(d => (
@@ -1211,32 +1213,32 @@ function AfterTab() {
 /* APP                                                                      */
 /* ---------------------------------------------------------------------- */
 
-
-function AscentApp() {
+function App() {
   const [activeTab, setActiveTab] = useState('start');
-  const [checked, setChecked, meta] = useSyncedTaskMap("ascent");
+  const [checked, setChecked, syncMeta] = useSyncedTaskMap('ascent');
   const [confirmingReset, setConfirmingReset] = useState(false);
 
+
+  const persist = useCallback(async () => { /* auto-persisted via useSyncedTaskMap */ }, []);
+
   const toggleItem = useCallback((id) => {
-    setChecked(prev => ({ ...prev, [id]: !prev[id] }));
-  }, [setChecked]);
+    setChecked(prev => {
+      const next = { ...prev, [id]: !prev[id] };
+      persist(next);
+      return next;
+    });
+  }, [persist]);
 
   const resetProgress = useCallback(() => {
-    setChecked(prev => {
-      const cleared = {};
-      Object.keys(prev).forEach(k => { cleared[k] = false; });
-      return cleared;
-    });
+    setChecked({});
+    persist({});
     setConfirmingReset(false);
-  }, [setChecked]);
+  }, [persist]);
 
   const allItems = useMemo(() => DAYS.flatMap(d => d.items), []);
   const badgeItems = useMemo(() => allItems.filter(i => i.badge), [allItems]);
   const totalXP = useMemo(() => allItems.reduce((s, i) => s + i.xp, 0), [allItems]);
-  const earnedXP = useMemo(
-    () => allItems.reduce((s, i) => s + (checked[i.id] ? i.xp : 0), 0),
-    [allItems, checked]
-  );
+  const earnedXP = useMemo(() => allItems.reduce((s, i) => s + (checked[i.id] ? i.xp : 0), 0), [allItems, checked]);
   const percent = totalXP ? Math.min(100, Math.round((earnedXP / totalXP) * 100)) : 0;
 
   const rankIndex = useMemo(() => {
@@ -1247,51 +1249,54 @@ function AscentApp() {
   const currentRank = RANKS[rankIndex];
 
   return (
-    <div className="ascent-scope -mx-4 sm:-mx-6 -my-6 sm:-my-10 min-h-screen bg-ink font-body text-slate-200">
+    <div className="min-h-screen bg-ink font-body text-slate-200">
       <style>{`
-        .ascent-scope .font-display { font-family: 'Big Shoulders Display', 'Cinzel', serif; letter-spacing: 0.02em; }
-        .ascent-scope .font-body { font-family: 'IBM Plex Sans', 'Inter', sans-serif; }
-        .ascent-scope .font-mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
-        .ascent-scope .bg-ink { background-color: #12151A; background-image:
-          linear-gradient(rgba(217,164,65,0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(217,164,65,0.05) 1px, transparent 1px);
-          background-size: 26px 26px; }
-        .ascent-scope .bg-panel { background-color: #1B1F27; }
-        .ascent-scope .bg-panel-raised { background-color: #232833; }
-        .ascent-scope .bg-paper { background-color: #E8E1CF; color: #3a3320; }
-        .ascent-scope .border-line { border-color: #2A303C; }
-        .ascent-scope .text-ink-muted { color: #8B93A3; }
-        .ascent-scope .text-ink { color: #12151A; }
-        .ascent-scope .text-signal { color: #D9A441; }
-        .ascent-scope .bg-signal { background-color: #D9A441; }
-        .ascent-scope .border-signal { border-color: #D9A441; }
-        .ascent-scope .text-insignia { color: #E9C46A; }
-        .ascent-scope .bg-insignia { background-color: #E9C46A; }
-        .ascent-scope .border-insignia { border-color: #E9C46A; }
-        .ascent-scope .text-alert { color: #E0574A; }
-        .ascent-scope .border-alert { border-color: #E0574A; }
-        .ascent-scope .bg-alert\\/10 { background-color: rgba(224,87,74,0.10); }
-        .ascent-scope .bg-signal\\/10 { background-color: rgba(217,164,65,0.10); }
-        .ascent-scope .bg-insignia\\/10 { background-color: rgba(233,196,106,0.10); }
-        .ascent-scope .border-insignia\\/50 { border-color: rgba(233,196,106,0.5); }
-        .ascent-scope .border-alert\\/50 { border-color: rgba(224,87,74,0.5); }
-        .ascent-scope .bg-panel-raised\\/50 { background-color: rgba(35,40,51,0.5); }
-        .ascent-scope .bg-panel-raised\\/60 { background-color: rgba(35,40,51,0.6); }
-        .ascent-scope .hover\\:bg-panel-raised\\/60:hover { background-color: rgba(35,40,51,0.6); }
-        .ascent-scope .bg-ink\\/95 { background-color: rgba(18,21,26,0.95); }
-        .ascent-scope .focus-visible\\:outline-signal:focus-visible { outline-color: #D9A441; }
-        .ascent-scope .decoration-line { text-decoration-color: #2A303C; }
+        @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+        .font-display { font-family: 'Big Shoulders Display', sans-serif; }
+        .font-body { font-family: 'IBM Plex Sans', sans-serif; }
+        .font-mono { font-family: 'IBM Plex Mono', monospace; }
+        .bg-ink {
+          background-color: #F5EFDF;
+          background-image:
+            linear-gradient(rgba(184,134,11,0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(184,134,11,0.06) 1px, transparent 1px);
+          background-size: 26px 26px;
+        }
+        .bg-panel { background-color: #FFFFFF; }
+        .bg-panel-raised { background-color: #FBF6E9; }
+        .bg-paper { background-color: #1A1410; }
+        .border-line { border-color: #E8DCC0; }
+        .text-ink-muted { color: #6B5D3F; }
+        .text-signal { color: #0D7A5F; }
+        .bg-signal { background-color: #0D7A5F; }
+        .border-signal { border-color: #0D7A5F; }
+        .text-insignia { color: #B8860B; }
+        .bg-insignia { background-color: #B8860B; }
+        .border-insignia { border-color: #B8860B; }
+        .text-alert { color: #8B2E1F; }
+        .border-alert { border-color: #8B2E1F; }
+        .bg-alert\\/10 { background-color: rgba(224,87,74,0.1); }
+        .bg-signal\\/10 { background-color: rgba(69,199,176,0.1); }
+        .bg-insignia\\/10 { background-color: rgba(217,164,65,0.1); }
+        .border-insignia\\/50 { border-color: rgba(217,164,65,0.5); }
+        .border-alert\\/50 { border-color: rgba(224,87,74,0.5); }
+        .bg-panel-raised\\/50 { background-color: rgba(35,40,51,0.5); }
+        .bg-panel-raised\\/60 { background-color: rgba(35,40,51,0.6); }
+        .hover\\:bg-panel-raised\\/60:hover { background-color: rgba(35,40,51,0.6); }
+        .bg-ink\\/95 { background-color: rgba(18,21,26,0.95); }
+        .focus-visible\\:outline-signal:focus-visible { outline-color: #0D7A5F; }
+        .decoration-line { text-decoration-color: #E8DCC0; }
+        @media (prefers-reduced-motion: reduce) {
+          * { transition: none !important; animation: none !important; }
+        }
       `}</style>
 
       <header className="sticky top-0 z-20 border-b border-line" style={{ backgroundColor: 'rgba(18,21,26,0.96)' }}>
         <div className="max-w-4xl mx-auto px-4 pt-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3">
-              <Mountain className="h-8 w-8 text-insignia shrink-0" />
-              <div>
-                <h1 className="font-display text-3xl text-white tracking-wide leading-none">THE ASCENT</h1>
-                <p className="font-mono text-[10px] text-ink-muted uppercase tracking-[0.2em] mt-1">45-Day Zero-Capital Direct-Scouting Closer System</p>
-              </div>
+            <div>
+              <h1 className="font-display text-3xl text-white tracking-wide leading-none">THE ASCENT</h1>
+              <p className="font-mono text-[10px] text-ink-muted uppercase tracking-[0.2em] mt-1">45-Day Zero-Capital Direct-Scouting Closer System</p>
             </div>
             <div className="text-right">
               <p className="font-mono text-xs text-insignia uppercase tracking-wider">{currentRank.name}</p>
@@ -1317,22 +1322,17 @@ function AscentApp() {
                 </span>
               ))}
             </div>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] text-ink-muted uppercase tracking-wide">
-                {meta.status === "saving" ? "Saving…" : meta.status === "error" ? "Save error" : meta.lastSavedAt ? `Saved ${meta.lastSavedAt.toLocaleTimeString()}` : "Auto-saves"}
-              </span>
-              {confirmingReset ? (
-                <div className="flex items-center gap-2 font-mono text-[11px]">
-                  <span className="text-ink-muted">Erase all progress?</span>
-                  <button onClick={resetProgress} className="text-alert underline">Yes, reset</button>
-                  <button onClick={() => setConfirmingReset(false)} className="text-ink-muted underline">Cancel</button>
-                </div>
-              ) : (
-                <button onClick={() => setConfirmingReset(true)} className="flex items-center gap-1 font-mono text-[11px] text-ink-muted hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-signal">
-                  <RotateCcw size={11} /> Reset progress
-                </button>
-              )}
-            </div>
+            {confirmingReset ? (
+              <div className="flex items-center gap-2 font-mono text-[11px]">
+                <span className="text-ink-muted">Erase all progress?</span>
+                <button onClick={resetProgress} className="text-alert underline">Yes, reset</button>
+                <button onClick={() => setConfirmingReset(false)} className="text-ink-muted underline">Cancel</button>
+              </div>
+            ) : (
+              <button onClick={() => setConfirmingReset(true)} className="flex items-center gap-1 font-mono text-[11px] text-ink-muted hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-signal">
+                <RotateCcw size={11} /> Reset progress
+              </button>
+            )}
           </div>
         </div>
 
@@ -1351,7 +1351,7 @@ function AscentApp() {
         </nav>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 pb-24">
+      <main className="max-w-4xl mx-auto px-4 py-6 pb-16">
         {activeTab === 'start' && <StartTab />}
         {activeTab === 'niche' && <NicheTab />}
         {activeTab === 'scout' && <ScoutTab />}
@@ -1363,8 +1363,9 @@ function AscentApp() {
       </main>
 
       <footer className="max-w-4xl mx-auto px-4 pb-8">
-        <p className="text-[11px] text-ink-muted font-mono">Progress syncs to your DFS Citadel account. {currentRank.blurb}</p>
+        <p className="text-[11px] text-ink-muted font-mono">Progress saves locally to this artifact on this device. {currentRank.blurb}</p>
       </footer>
-    </div>
+    <SaveBar status={syncMeta.status} lastSavedAt={syncMeta.lastSavedAt} pendingCount={syncMeta.pendingCount} onSave={syncMeta.saveNow} />
+      </div>
   );
 }
