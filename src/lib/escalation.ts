@@ -1,9 +1,13 @@
-// Shared escalation & velocity logic used by Report page (and future admin surfaces).
+// Shared escalation & velocity logic used by Report page, dashboard, and admin surfaces.
 // Rules provided by the founder:
 //   • <5 active days in last 14 days  → score < 20%, ₦7,000 fine + 2-week suspension
 //   • <6 active days in last 7 days   → score < 40%, ₦2,500 fine
-// We layer additional inputs (weekly cadence, playbook depth, streak) so the number
-// isn't binary. Everything is derived from `task_progress.completed_at`.
+// GRACE PERIOD: Escalation tracking begins on ESCALATION_START (2026-07-06).
+// Nothing before that date counts against a beneficiary. The 14-/7-day windows
+// clamp to `max(windowStart, ESCALATION_START)` so people are not punished for
+// history that predates the rule.
+
+export const ESCALATION_START = new Date("2026-07-06T00:00:00.000Z");
 
 export type ProgressRow = {
   playbook: string;
@@ -13,18 +17,20 @@ export type ProgressRow = {
 };
 
 export interface EscalationSnapshot {
-  score: number;                        // 0-100 (higher = safer)
+  score: number;
   band: "elite" | "healthy" | "watch" | "at_risk" | "critical";
   activeDaysLast7: number;
   activeDaysLast14: number;
-  currentStreak: number;                // consecutive days with ≥1 completion, ending today (or yesterday)
+  currentStreak: number;
   longestStreak: number;
   tasksLast7: number;
   tasksLast14: number;
-  fineNGN: number;                      // 0, 2500, or 7000
-  suspensionWeeks: number;              // 0 or 2
-  daysSinceLastActivity: number | null; // null if never active
-  reasons: string[];                    // human-readable factors
+  fineNGN: number;
+  suspensionWeeks: number;
+  daysSinceLastActivity: number | null;
+  reasons: string[];
+  gracePeriodActive: boolean;      // true when part of the tracking window is before ESCALATION_START
+  daysInGrace: number;             // how many of the 14 days are still in grace (informational)
 }
 
 const startOfDayISO = (d: Date) => {
@@ -33,7 +39,6 @@ const startOfDayISO = (d: Date) => {
   return nd.toISOString().slice(0, 10);
 };
 
-/** Set of YYYY-MM-DD strings where the beneficiary completed ≥1 task. */
 export function activeDaySet(rows: ProgressRow[]): Set<string> {
   const s = new Set<string>();
   for (const r of rows) {
@@ -55,18 +60,21 @@ function daysInWindow(days: Set<string>, from: Date, to: Date): number {
   return count;
 }
 
+function windowLength(from: Date, to: Date): number {
+  const a = new Date(from); a.setHours(0, 0, 0, 0);
+  const b = new Date(to); b.setHours(0, 0, 0, 0);
+  return Math.max(1, Math.floor((b.getTime() - a.getTime()) / 86_400_000) + 1);
+}
+
 function streaks(days: Set<string>, today: Date) {
-  // current streak: walk back from today until a day is missing
   let current = 0;
   const cur = new Date(today);
   cur.setHours(0, 0, 0, 0);
-  // allow "today not yet active but yesterday was" to still count
   if (!days.has(startOfDayISO(cur))) cur.setDate(cur.getDate() - 1);
   while (days.has(startOfDayISO(cur))) {
     current++;
     cur.setDate(cur.getDate() - 1);
   }
-  // longest streak: sort dates
   const sorted = [...days].sort();
   let longest = 0, run = 0;
   let prev: Date | null = null;
@@ -85,23 +93,30 @@ export function computeEscalation(
   now: Date = new Date(),
 ): EscalationSnapshot {
   const days = activeDaySet(rows);
-  const seven = new Date(now); seven.setDate(seven.getDate() - 6);   // inclusive 7-day window
-  const fourteen = new Date(now); fourteen.setDate(fourteen.getDate() - 13);
+
+  // Requested window bounds
+  const rawSeven = new Date(now); rawSeven.setDate(rawSeven.getDate() - 6);
+  const rawFourteen = new Date(now); rawFourteen.setDate(rawFourteen.getDate() - 13);
+
+  // Grace clamp — never count days before ESCALATION_START
+  const seven = rawSeven < ESCALATION_START ? new Date(ESCALATION_START) : rawSeven;
+  const fourteen = rawFourteen < ESCALATION_START ? new Date(ESCALATION_START) : rawFourteen;
+
+  // Target thresholds scale with the effective window length while inside grace.
+  const sevenLen = windowLength(seven, now);
+  const fourteenLen = windowLength(fourteen, now);
+  const target7 = Math.max(1, Math.round((6 / 7) * sevenLen));    // 6/7 rhythm
+  const target14 = Math.max(1, Math.round((10 / 14) * fourteenLen));
 
   const activeDaysLast7 = daysInWindow(days, seven, now);
   const activeDaysLast14 = daysInWindow(days, fourteen, now);
   const { current: currentStreak, longest: longestStreak } = streaks(days, now);
 
-  const withinLast = (windowDays: number) => {
-    const cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - (windowDays - 1));
-    return rows.filter(r =>
-      r.completed && r.completed_at && new Date(r.completed_at) >= cutoff,
-    ).length;
-  };
-  const tasksLast7 = withinLast(7);
-  const tasksLast14 = withinLast(14);
+  const withinLast = (from: Date) =>
+    rows.filter(r => r.completed && r.completed_at && new Date(r.completed_at) >= from).length;
+  const tasksLast7 = withinLast(seven);
+  const tasksLast14 = withinLast(fourteen);
 
-  // Days since last activity
   let daysSinceLastActivity: number | null = null;
   if (days.size > 0) {
     const latest = [...days].sort().at(-1)!;
@@ -109,41 +124,49 @@ export function computeEscalation(
     daysSinceLastActivity = Math.max(0, diff);
   }
 
-  // ── Score composition (0-100). Reasons collected alongside.
+  const gracePeriodActive = rawFourteen < ESCALATION_START;
+  const daysInGrace = gracePeriodActive
+    ? Math.min(14, Math.max(0, Math.ceil((ESCALATION_START.getTime() - rawFourteen.getTime()) / 86_400_000)))
+    : 0;
+
   const reasons: string[] = [];
-  // A. 14-day cadence (max 40)
-  //    hitting ≥10 active days = full 40; each missing day −4
-  const cadence14 = Math.max(0, Math.min(40, 40 - (10 - activeDaysLast14) * 4));
-  if (activeDaysLast14 < 10) reasons.push(`${activeDaysLast14}/10 active days in last 14`);
+  if (gracePeriodActive) {
+    reasons.push(`Grace period active — escalation tracking began ${startOfDayISO(ESCALATION_START)}`);
+  }
 
-  // B. 7-day cadence (max 30)
-  //    ≥6 active days = full 30
-  const cadence7 = Math.max(0, Math.min(30, 30 - (6 - activeDaysLast7) * 6));
-  if (activeDaysLast7 < 6) reasons.push(`${activeDaysLast7}/6 active days in last 7`);
+  // A. 14-day cadence (max 40) — scaled to target14
+  const cadence14 = Math.max(0, Math.min(40, Math.round((activeDaysLast14 / target14) * 40)));
+  if (activeDaysLast14 < target14) reasons.push(`${activeDaysLast14}/${target14} active days in tracked window (14d)`);
 
-  // C. Task volume (max 15) — 20 tasks in 14 days = full
+  // B. 7-day cadence (max 30) — scaled to target7
+  const cadence7 = Math.max(0, Math.min(30, Math.round((activeDaysLast7 / target7) * 30)));
+  if (activeDaysLast7 < target7) reasons.push(`${activeDaysLast7}/${target7} active days in tracked window (7d)`);
+
+  // C. Task volume (max 15) — 20 tasks in the tracked 14-day window = full
   const volume = Math.max(0, Math.min(15, Math.round((tasksLast14 / 20) * 15)));
-  if (tasksLast14 < 20) reasons.push(`${tasksLast14} tasks in last 14 days`);
+  if (tasksLast14 < 20) reasons.push(`${tasksLast14} tasks in tracked window (14d)`);
 
   // D. Streak bonus (max 15)
   const streakBonus = Math.min(15, currentStreak * 3);
-  if (currentStreak === 0) reasons.push("no active streak");
+  if (currentStreak === 0 && !gracePeriodActive) reasons.push("no active streak");
 
   let score = cadence14 + cadence7 + volume + streakBonus;
 
-  // ── Hard-rule enforcement (founder-specified)
+  // ── Hard-rule enforcement — ONLY when the full 14-day window is past the cutoff.
   let fineNGN = 0;
   let suspensionWeeks = 0;
 
-  if (activeDaysLast14 < 5) {
-    score = Math.min(score, 19);
-    fineNGN = 7000;
-    suspensionWeeks = 2;
-    reasons.unshift("Below 5 days work in last 14 → suspension + ₦7,000 fine");
-  } else if (activeDaysLast7 < 6) {
-    score = Math.min(score, 40);
-    if (fineNGN < 2500) fineNGN = 2500;
-    reasons.unshift("Below 6 days work in last 7 → ₦2,500 fine");
+  if (!gracePeriodActive) {
+    if (activeDaysLast14 < 5) {
+      score = Math.min(score, 19);
+      fineNGN = 7000;
+      suspensionWeeks = 2;
+      reasons.unshift("Below 5 days work in last 14 → suspension + ₦7,000 fine");
+    } else if (activeDaysLast7 < 6) {
+      score = Math.min(score, 40);
+      if (fineNGN < 2500) fineNGN = 2500;
+      reasons.unshift("Below 6 days work in last 7 → ₦2,500 fine");
+    }
   }
 
   score = Math.max(0, Math.min(100, Math.round(score)));
@@ -161,10 +184,10 @@ export function computeEscalation(
     tasksLast7, tasksLast14,
     fineNGN, suspensionWeeks,
     daysSinceLastActivity, reasons,
+    gracePeriodActive, daysInGrace,
   };
 }
 
-/** Velocity forecast: how long until first deal close (plan Day 26 milestone). */
 export function forecastFirstClose(
   rows: ProgressRow[],
   startDate: Date | null,
@@ -172,8 +195,8 @@ export function forecastFirstClose(
 ) {
   const planRows = rows.filter(r => r.playbook === "p_45day" && r.completed);
   const tasksDone = planRows.length;
-  const TOTAL_PLAN_TASKS = 220; // approx — plan has ~220 tickable tasks
-  const CLOSE_THRESHOLD = 130;  // ~Day 26 of 45-day plan
+  const TOTAL_PLAN_TASKS = 220;
+  const CLOSE_THRESHOLD = 130;
   const elapsedDays = startDate
     ? Math.max(1, Math.floor((now.getTime() - startDate.getTime()) / 86_400_000) + 1)
     : Math.max(1, new Set(planRows.map(r => (r.completed_at ?? "").slice(0, 10))).size);
@@ -190,6 +213,9 @@ export function forecastFirstClose(
 
 export function advice(snapshot: EscalationSnapshot, forecast: ReturnType<typeof forecastFirstClose>): string[] {
   const out: string[] = [];
+  if (snapshot.gracePeriodActive) {
+    out.push(`Grace period active — the new tracking system started ${startOfDayISO(ESCALATION_START)}. Use it to build a rhythm; the full 14-day rule kicks in once the window is entirely post-cutoff.`);
+  }
   if (snapshot.band === "critical") {
     out.push("You are one step from formal suspension. Log at least one task today and message your council admin now.");
   } else if (snapshot.band === "at_risk") {

@@ -1,903 +1,508 @@
 // @ts-nocheck
-// Playbook route — content provided by the user, wired to Supabase progress tracking.
+// 45-Day Implementation Playbook v2. Content owned by DFS; UI adopts app's Regal palette.
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
-import { useState, useMemo } from "react";
 
-/* ─── 45-DAY PLAN DATA ──────────────────────────────────── */
+export const Route = createFileRoute("/_authenticated/playbooks/plan")({
+  head: () => ({ meta: [{ title: "45-Day Implementation Playbook — DFS" }] }),
+  component: PlanPage,
+});
+
+/* ─── 45-DAY PLAN DATA (v2) ─────────────────────────────── */
 export const WEEKS = [
   {
-    week: 1, title: "Build Your Foundation", range: "Days 1–7", icon: "🏗️", color: "#6366F1",
-    goal: "Tools set up, niche locked, 2 demos built, portfolio site live. You are ready to go to market.",
-    days: [
-      { day: 1, focus: "Arsenal Setup — $0 Day", icon: "⚡",
-        note: "Total cost today: $0. You only spend money after your first client pays you.",
-        tasks: [
-          { id: "1a", text: "Sign up at Outscraper.com — free tier — your primary lead scraper" },
-          { id: "1b", text: "Create Apollo.io account — 50 free verified emails per month" },
-          { id: "1c", text: "Create Hunter.io account — 25 free email finds per month" },
-          { id: "1d", text: "Sign up for Notion — free tier is all you need to build your CRM pipeline" },
-          { id: "1e", text: "Create Make.com account — free, 1,000 operations per month" },
-          { id: "1f", text: "Set up Calendly with your real weekly availability" },
-          { id: "1g", text: "Install Loom and record a 30-second test clip to get comfortable" },
-          { id: "1h", text: "Update LinkedIn headline: 'Digital Systems Engineer | Web Apps & Automation'" },
-        ]},
-      { day: 2, focus: "Lock Niche & Market", icon: "🎯",
-        note: "ONE niche. ONE city. Breadth kills beginners. Depth closes deals.",
-        tasks: [
-          { id: "2a", text: "Pick ONE niche to start — dental, real estate, and beauty close fastest for beginners" },
-          { id: "2b", text: "Pick ONE city (any city with 100,000+ population works — anywhere in the world)" },
-          { id: "2c", text: "Open Google Maps → search '[niche] [city]' → scan 10 listings for weak or missing websites" },
-          { id: "2d", text: "Read 20 reviews across those listings — write down every 'hard to book' or 'no website' complaint you find" },
-          { id: "2e", text: "Write one sentence: 'I help [niche] businesses in [city] get [outcome] in [timeframe]'" },
-        ]},
-      { day: 3, focus: "Build Demo #1", icon: "🛠️",
-        note: "Done beats perfect. A working demo closes more clients than the best pitch ever will.",
-        tasks: [
-          { id: "3a", text: "Open Lovable, Bubble.io, or Base44 — whichever you're most comfortable with" },
-          { id: "3b", text: "Build a landing page for a fictional business in your chosen niche (give it a real-sounding name)" },
-          { id: "3c", text: "Include: hero headline, services list, contact form, and a booking button" },
-          { id: "3d", text: "Open it on your phone and fix anything that looks broken — it must be mobile-first" },
-          { id: "3e", text: "Publish it to a live URL — even a Bubble or Lovable subdomain works perfectly" },
-        ]},
-      { day: 4, focus: "Build Demo #2 + Record Looms", icon: "🎬",
-        note: "Two demos show range. The Loom walkthrough makes it real — people trust a voice explaining it.",
-        tasks: [
-          { id: "4a", text: "Build Demo #2 showing something different — booking system, CRM intake form, or multi-page site" },
-          { id: "4b", text: "Record a 90-second Loom for Demo #1 — explain what problem it solves, not just what it is" },
-          { id: "4c", text: "Record a 90-second Loom for Demo #2" },
-          { id: "4d", text: "Write a 100-word description for each demo: Problem → What You Built → Outcome" },
-          { id: "4e", text: "Save both Loom links — you will use these in your cold emails starting Day 17" },
-        ]},
-      { day: 5, focus: "Portfolio Site Live", icon: "🌐",
-        note: "Your portfolio site is your silent salesperson. It works while you sleep.",
-        tasks: [
-          { id: "5a", text: "Build your personal portfolio site using Lovable, Bubble.io, or Webflow" },
-          { id: "5b", text: "Pages needed: Home, Services (outcomes-first, no tool names), Case Studies (your 2 demos), Contact" },
-          { id: "5c", text: "Homepage headline: '[Your Name] — Digital Systems Engineer for [Niche] Businesses'" },
-          { id: "5d", text: "Embed Calendly on the Contact page — visitors must be able to book you immediately" },
-          { id: "5e", text: "Publish and test every link, button, and form on both desktop and mobile" },
-        ]},
-      { day: 6, focus: "Notion CRM Pipeline Setup", icon: "⚙️",
-        note: "Your CRM is your business operating system. Set it up right once — it runs your growth forever.",
-        tasks: [
-          { id: "6a", text: "Create a Notion database with pipeline stages: Scraped → Contacted → Replied → Call Booked → Proposal Sent → Closed → On Retainer" },
-          { id: "6b", text: "Add custom fields: Business Name, Owner Name, Niche, City, Website, Lead Score, Notes, Email" },
-          { id: "6c", text: "After each outreach email, log it in Notion manually or connect via Make.com to auto-update your contact records" },
-          { id: "6d", text: "Create a filtered Notion view called 'HOT Leads' — you will use this daily from Week 2 onwards" },
-          { id: "6e", text: "Set a reminder rule: any lead in 'Contacted' for more than 4 days with no reply → flag for follow-up" },
-        ]},
-      { day: 7, focus: "Test, Review & Calibrate", icon: "✅",
-        note: "Before moving to Week 2, confirm you have something to show AND something to track.",
-        tasks: [
-          { id: "7a", text: "Book a fake Calendly appointment with yourself — confirm the email notification arrives" },
-          { id: "7b", text: "Open both demo sites on your phone and take a screenshot — does it look professional?" },
-          { id: "7c", text: "Play both Loom videos — would a stranger instantly understand the problem being solved?" },
-          { id: "7d", text: "Write down 3 specific businesses by name that you want as clients before Day 30" },
-        ]},
-    ],
-  },
+    week:1, title:"Build Your Foundation", range:"Days 1-7",
+    icon:"🏗️", color:"#6366F1",
+    goal:"All free accounts live. Notion CRM built. Two Lovable demos recorded on Loom. You are ready to go to market with zero budget spent.",
+    days:[
+      {day:1, focus:"Free Account Arsenal", icon:"⚡",
+       note:"Total spend today: $0. The only money you will spend this week is Lovable Pro — and only when you start Day 4.",
+       tasks:[
+         {id:"1a",text:"Create a dedicated professional Gmail for outreach only: firstname.lastname@gmail.com — never use a personal or shared inbox"},
+         {id:"1b",text:"Sign up for Notion (free) at notion.so — this is your CRM, deal tracker, and knowledge base"},
+         {id:"1c",text:"Create a Google Sheets spreadsheet titled 'Lead Scouting Raw Data' — your notebook-to-digital bridge"},
+         {id:"1d",text:"Sign up for Calendly (free tier) and link it to your new Gmail — your discovery call booking link"},
+         {id:"1e",text:"Create a Loom account (free, 5-min videos) — your demo walkthroughs live here"},
+         {id:"1f",text:"Update LinkedIn headline: Digital Systems Engineer | Web Apps, Automation and CRM for Growing Businesses"},
+         {id:"1g",text:"Create Lovable.dev account — upgrade to Pro (~$25/month) only when you begin Day 4"},
+       ]},
+      {day:2, focus:"Build Your Notion CRM Database", icon:"🗂️",
+       note:"This database is your entire business operating system. Build it right once — you will use it every single day.",
+       tasks:[
+         {id:"2a",text:"Open Notion → New Page → Full-page Database (Table view). Name it: Lead Pipeline"},
+         {id:"2b",text:"Add all 23 columns listed in the Notion CRM tab — do not skip any, each one has a purpose"},
+         {id:"2c",text:"Create 5 views: All Leads (table), Hot Leads (filtered by Priority), Active Outreach (Stage = Contacted or Replied Positively), Pipeline Board (Kanban by Stage), Closed Won (Stage = Closed or Retainer)"},
+         {id:"2d",text:"Configure Lead Stage as a Select with these exact options in order: Not Contacted, Contacted, Replied Positively, Replied Negatively, Call Booked, Proposal Sent, Closed, Retainer"},
+         {id:"2e",text:"Add yourself as a test entry and fill every column — confirm every field works as expected"},
+       ]},
+      {day:3, focus:"Google Sheets Lead Tracker Setup", icon:"📊",
+       note:"Google Sheets is your raw scouting pad. Notion is your enriched command centre. Never confuse the two.",
+       tasks:[
+         {id:"3a",text:"Open your Lead Scouting Raw Data sheet → create columns: SMB Name | Phone | Website | Google Reviews | City | Country | Niche | Date Found | In Notion (Y/N)"},
+         {id:"3b",text:"Create a second tab called Scoring Scratch Pad — you apply the scoring rubric here before entering leads into Notion"},
+         {id:"3c",text:"Bold and color the header row — it must be easy to read quickly when transferring from a notebook"},
+         {id:"3d",text:"Practice: enter 3 fictional businesses and score them — confirm the flow feels comfortable"},
+       ]},
+      {day:4, focus:"Build Demo #1 on Lovable", icon:"🛠️",
+       note:"This is the day Lovable Pro earns its cost. A working demo closes more deals than three weeks of cold emails without one.",
+       tasks:[
+         {id:"4a",text:"Choose your first niche — dental, real estate, and beauty close fastest for beginners"},
+         {id:"4b",text:"Open Lovable.dev → New Project → describe it: landing page and online booking system for a [niche] business. Use a fictional but realistic business name."},
+         {id:"4c",text:"Iterate until it looks modern and professional: hero section, services list, booking form or calendar, contact section"},
+         {id:"4d",text:"Publish to a live Lovable URL — open it on your phone. If it looks wrong on mobile, fix it before moving on"},
+         {id:"4e",text:"Write a 100-word description: problem it solves, who it is for, what outcome it creates"},
+       ]},
+      {day:5, focus:"Build Demo #2 on Lovable", icon:"🛠️",
+       note:"Two demos show range. If Demo 1 was a website, make Demo 2 a booking system, client portal, or lead capture page.",
+       tasks:[
+         {id:"5a",text:"Choose a second niche — different from Day 4 — and build a second Lovable demo"},
+         {id:"5b",text:"Make it visually distinct from Demo 1 — different layout, different niche, different problem solved"},
+         {id:"5c",text:"Publish and test on mobile — every demo must be flawless on a phone screen"},
+         {id:"5d",text:"Write the 100-word outcome description for Demo 2"},
+       ]},
+      {day:6, focus:"Record Loom Walkthroughs for Both Demos", icon:"🎬",
+       note:"Keep each Loom under 90 seconds. Structure: problem it solves (10 sec) → what you built (60 sec) → how to get one (10 sec).",
+       tasks:[
+         {id:"6a",text:"Record 60-90 second Loom for Demo 1 — speak confidently, explain the problem before showing the solution"},
+         {id:"6b",text:"Record 60-90 second Loom for Demo 2"},
+         {id:"6c",text:"Watch both recordings immediately — retake if your voice lacks confidence or any part of the demo freezes"},
+         {id:"6d",text:"Save both Loom links in a Notion page titled 'Demo Assets' — these go into Email 3 for every lead"},
+       ]},
+      {day:7, focus:"LinkedIn Profile Audit and Week 1 Review", icon:"✅",
+       note:"Decision-makers check your LinkedIn before replying to your email. Make sure it does not undermine you.",
+       tasks:[
+         {id:"7a",text:"Update LinkedIn: professional photo, headline from Day 1, About section (3-5 lines on who you help and how)"},
+         {id:"7b",text:"Add your Lovable demo links to the LinkedIn Featured section"},
+         {id:"7c",text:"Open both demos on your phone — do they look sharp and professional? Refine if not before Week 2"},
+         {id:"7d",text:"Confirm Notion CRM has all columns and all 5 views working correctly"},
+         {id:"7e",text:"Write your Week 2 target in your notebook: which niche, which city or country, minimum leads to find"},
+       ]},
+    ]},
   {
-    week: 2, title: "Data Harvest", range: "Days 8–14", icon: "🔍", color: "#10B981",
-    goal: "60+ HOT leads (score 7+) loaded into Notion with verified emails, ready to contact.",
-    days: [
-      { day: 8, focus: "First Google Maps Scrape", icon: "🗺️",
-        note: "100 leads in 15 minutes. This is your superpower — most freelancers chase leads one by one forever.",
-        tasks: [
-          { id: "8a", text: "Google Maps → search '[niche] [city]' → manually scan top 10 listings, note weak or missing websites" },
-          { id: "8b", text: "Open Outscraper.com → paste same search → export 100 results as CSV" },
-          { id: "8c", text: "Repeat with 2 more search variations (e.g. 'dental clinic [city]', 'family dentist [city]')" },
-          { id: "8d", text: "Open the CSV → delete any obvious chains (McDonald's, Toni & Guy, Specsavers, etc.)" },
-          { id: "8e", text: "Target: 200+ raw leads in the CSV before moving to Day 9" },
-        ]},
-      { day: 9, focus: "Enrich Emails with Apollo.io", icon: "🔬",
-        note: "info@ goes to an employee. The owner's direct email gets 3× the reply rate. Apollo finds it.",
-        tasks: [
-          { id: "9a", text: "Import your cleaned CSV into Apollo.io — use the bulk domain enrichment feature" },
-          { id: "9b", text: "Export the enriched list with email addresses filled in" },
-          { id: "9c", text: "For any still missing: check the Google listing's 'About' tab — some businesses list email there directly" },
-          { id: "9d", text: "Visit /contact or footer of any remaining websites — the owner's email is usually there" },
-        ]},
-      { day: 10, focus: "Hunter.io Backup + Email Verify", icon: "🎯",
-        note: "Sending to invalid emails damages your sender reputation. Verify everything before you send.",
-        tasks: [
-          { id: "10a", text: "For any lead still missing an email: paste their domain into Hunter.io" },
-          { id: "10b", text: "Only use Hunter results rated 80% confidence or higher" },
-          { id: "10c", text: "Run your full email list through NeverBounce or ZeroBounce free trial to remove invalid addresses" },
-          { id: "10d", text: "Mark any 'risky' or 'unknown' emails as 'Low Confidence' in Notion" },
-        ]},
-      { day: 11, focus: "Score & Tag Every Lead", icon: "🔥",
-        note: "30 HOT leads beat 300 random ones every single time. This step separates closers from chasers.",
-        tasks: [
-          { id: "11a", text: "Open each lead's Google listing → apply the 7-signal scoring system → score in 60 seconds" },
-          { id: "11b", text: "Tag all leads scoring 7+ as HOT in Notion" },
-          { id: "11c", text: "Tag leads scoring 4–6 as WARM — these go into your automated Instantly.ai sequence" },
-          { id: "11d", text: "Archive or delete every franchise chain and government entity immediately — no exceptions" },
-        ]},
-      { day: 12, focus: "Load & Segment Notion CRM", icon: "📊",
-        note: "A well-organised CRM means you never lose track of a potential client again.",
-        tasks: [
-          { id: "12a", text: "Import your scored, verified list into your Notion CRM database" },
-          { id: "12b", text: "Tag each contact by: Niche, City, Score (HOT/WARM), and Priority (1, 2, 3)" },
-          { id: "12c", text: "Set all newly imported leads to the 'Scraped' pipeline stage" },
-          { id: "12d", text: "Goal check: do you have at least 30 HOT leads? If not, run another Outscraper batch today" },
-        ]},
-      { day: 13, focus: "Second Target Scrape", icon: "🌍",
-        note: "Two targets means two income streams. Don't put all your leads in one basket.",
-        tasks: [
-          { id: "13a", text: "Choose: second city in same country OR second niche in same city" },
-          { id: "13b", text: "Run a full Outscraper scrape for your second target" },
-          { id: "13c", text: "Enrich, score, and import this second batch using the same Day 8–12 process" },
-          { id: "13d", text: "Goal: 60 total HOT leads across both targets loaded in Notion by end of today" },
-        ]},
-      { day: 14, focus: "Build the Make.com Automation", icon: "🤖",
-        note: "Set this up once. Every future scrape auto-populates your CRM and triggers outreach.",
-        tasks: [
-          { id: "14a", text: "Open Make.com → create new scenario → add Outscraper as the trigger module" },
-          { id: "14b", text: "Add Apollo.io as next step to auto-enrich any new lead with an email address" },
-          { id: "14c", text: "Add Notion as final step to auto-create a contact record in your CRM database for each enriched lead" },
-          { id: "14d", text: "Test the full flow with 5 fake leads — confirm each step executes correctly" },
-          { id: "14e", text: "Schedule it to auto-run every Monday morning at 8 AM — the pipeline never stops filling" },
-        ]},
-    ],
-  },
+    week:2, title:"Manual Lead Harvest", range:"Days 8-14",
+    icon:"🔍", color:"#10B981",
+    goal:"Minimum 10 fully enriched HOT leads in Notion CRM with founder email, 3 connected problems identified, and ready for outreach.",
+    days:[
+      {day:8, focus:"Google Maps Scouting Session 1", icon:"🗺️",
+       note:"Your physical notebook is your best tool today. Move fast through listings — this is a scouting pass, not research. Enrichment starts tomorrow.",
+       tasks:[
+         {id:"8a",text:"Open Google Maps on your phone → search '[niche] [city]' → browse the first 25-30 listings"},
+         {id:"8b",text:"In your notebook, record for each: business name, phone, review count, whether a website link appears, and a quick gut-feel note (no site / outdated site / looks promising)"},
+         {id:"8c",text:"Flag businesses with under 30 reviews, no website, or a clearly outdated site — these are your highest-priority targets"},
+         {id:"8d",text:"Run 3 different search terms in the same niche: e.g. 'dentist', 'dental clinic', 'private dentist' — different terms surface different businesses"},
+         {id:"8e",text:"Target: 15-20 raw leads recorded in your notebook by end of today"},
+       ]},
+      {day:9, focus:"Transfer Notebook to Google Sheets", icon:"📋",
+       note:"Do this same evening or first thing next morning while the listings are still fresh in your memory.",
+       tasks:[
+         {id:"9a",text:"Open Google Sheets → create a new row for every business from your notebook"},
+         {id:"9b",text:"Fill: SMB Name | Phone | Website URL (or 'None') | Google Reviews | City | Country | Niche | Date Found"},
+         {id:"9c",text:"Visit each website briefly (30 seconds max): note in a comment cell — mobile-friendly Y/N, has online booking Y/N, looks modern Y/N"},
+         {id:"9d",text:"Highlight any row with no website or an obviously outdated one in yellow — these are Priority A"},
+       ]},
+      {day:10, focus:"Manual Enrichment — Top 5 Leads", icon:"🔬",
+       note:"Enrichment is where you earn your reply. A deeply researched email feels personal. A generic one gets deleted in 2 seconds.",
+       tasks:[
+         {id:"10a",text:"Pick your top 5 Priority A leads from Google Sheets"},
+         {id:"10b",text:"For each: search '[Business Name] [City] owner' or '[Business Name] LinkedIn' to find the founder, owner, or director by name"},
+         {id:"10c",text:"Open their LinkedIn profile — note full name, job title, profile URL, and whether they post content (active users reply faster)"},
+         {id:"10d",text:"Check their Facebook and Instagram: when did they last post? Any customer comments mentioning 'hard to book' or 'could not find contact'? This is your Gap evidence."},
+         {id:"10e",text:"Google '[Founder Name] [Business] email' or check the website /contact and /about pages — look for a personal email, not info@ or contact@"},
+       ]},
+      {day:11, focus:"Manual Enrichment — Next 5 Leads", icon:"🔬",
+       note:"Same process as Day 10. By your fifth lead today you should be completing enrichment in under 20 minutes per lead.",
+       tasks:[
+         {id:"11a",text:"Enrich leads 6-10 using the same Day 10 process"},
+         {id:"11b",text:"For any lead where you cannot find a direct email: note 'LinkedIn DM only' — they go into your LinkedIn outreach queue"},
+         {id:"11c",text:"End of today: 10 leads with founder name, contact method, and notes on their digital presence"},
+       ]},
+      {day:12, focus:"Score All Leads and Enter into Notion CRM", icon:"🎯",
+       note:"Score every lead using the 7 green signals and 5 red flags from the Grand Slam Playbook. Only Hot and Warm leads enter Notion.",
+       tasks:[
+         {id:"12a",text:"Open your Google Sheets Scoring Scratch Pad → apply the scoring rubric to each of your 10 leads"},
+         {id:"12b",text:"Tag each: 🔥 Hot (score 7+) · ⚡ Warm (score 4-6) · ❄️ Cold (score 0-3)"},
+         {id:"12c",text:"Enter every Hot and Warm lead into your Notion CRM database — fill every available column, set Stage to 'Not Contacted'"},
+         {id:"12d",text:"Archive Cold leads in Google Sheets only — do not enter them into Notion, do not contact them"},
+       ]},
+      {day:13, focus:"Identify 3 Connected Problems Per HOT Lead", icon:"⚡",
+       note:"This is the most important research step in the entire playbook. One hour here produces a week of highly targeted outreach that actually converts.",
+       tasks:[
+         {id:"13a",text:"Open the 3-Problem Method tab in this playbook — read the full framework before you begin"},
+         {id:"13b",text:"For each HOT lead: identify The Gap (what is visibly missing), The Leak (what it silently costs them), The Lift (the revenue they could capture)"},
+         {id:"13c",text:"Confirm all three form a causal chain — The Gap causes The Leak, and The Leak prevents The Lift"},
+         {id:"13d",text:"Enter The Gap, The Leak, and The Lift into the matching Notion columns for each HOT lead"},
+         {id:"13e",text:"Review: do all 3 problems point naturally to ONE solution — your Lovable demo? If not, rethink the connection before drafting any email"},
+       ]},
+      {day:14, focus:"Google Maps Scouting Session 2", icon:"🗺️",
+       note:"While you prepare outreach for Batch 1, the pipeline keeps moving. This habit separates consistent earners from one-time closers.",
+       tasks:[
+         {id:"14a",text:"Choose: second city in same country OR second niche in same city"},
+         {id:"14b",text:"Repeat the Day 8 scouting process — notebook, 15-20 raw leads, flagged Priority A entries"},
+         {id:"14c",text:"Do not enrich this batch yet — enrichment begins Day 18 after your first outreach wave is running"},
+       ]},
+    ]},
   {
-    week: 3, title: "Outreach Launch", range: "Days 15–21", icon: "📧", color: "#F59E0B",
-    goal: "50+ emails sent, first replies received, 3–5 discovery calls booked.",
-    days: [
-      { day: 15, focus: "Write Your 3-Email Sequence", icon: "✍️",
-        note: "Three emails. Three completely different angles. Never 'just following up' — always add new value.",
-        tasks: [
-          { id: "15a", text: "Write Email 1 (PAS formula): Problem (their digital gap) → Agitate (cost of staying invisible) → Solve (your offer). Max 120 words." },
-          { id: "15b", text: "Write Email 2 (Day 3 follow-up): Ask one specific question about their current process. No pitch at all." },
-          { id: "15c", text: "Write Email 3 (Day 7 follow-up): Share your Loom demo. 'I built a preview for businesses like yours — worth 90 seconds?'" },
-          { id: "15d", text: "Load all 3 emails into Instantly.ai as a sequence with 3-day gaps between each send" },
-          { id: "15e", text: "Send the sequence to your own email address and check how it renders on mobile" },
-        ]},
-      { day: 16, focus: "Build the Grand Slam Offer", icon: "💎",
-        note: "Your offer is what gets a yes. Not your website. Not your tools. The offer. Spend real time here.",
-        tasks: [
-          { id: "16a", text: "Write your Dream Outcome statement — what the client's life looks like after delivery (not the deliverable itself)" },
-          { id: "16b", text: "Pick your TOP 5 HOT leads and build a personalised demo using each one's actual business name" },
-          { id: "16c", text: "Record a 60–90 second Loom per lead showing them their personalised preview" },
-          { id: "16d", text: "Write your ease line: 'I need one hour of your time. I handle absolutely everything else.'" },
-          { id: "16e", text: "Set your guarantee: 'Live in 14 days or you don't pay until it is.'" },
-        ]},
-      { day: 17, focus: "Send Wave 1 — First 10 Emails", icon: "🚀",
-        note: "Your first 10 emails will teach you more than any course. Send them before you feel ready.",
-        tasks: [
-          { id: "17a", text: "Send your 5 personalised emails (with Loom demos) manually to your TOP 5 HOT leads" },
-          { id: "17b", text: "Send 5 more to HOT leads using your Email 1 template — personalise the opening line for each" },
-          { id: "17c", text: "NEVER mention Bubble.io, Lovable, Claude Code, or any tool name — sell the outcome only" },
-          { id: "17d", text: "Move all 10 leads in Notion from 'Scraped' → 'Contacted'" },
-          { id: "17e", text: "Set phone notifications for new email replies — you must respond within 2 hours" },
-        ]},
-      { day: 18, focus: "LinkedIn Parallel Outreach", icon: "💼",
-        note: "Email + LinkedIn doubles your touchpoints without doubling your effort.",
-        tasks: [
-          { id: "18a", text: "Search each of your Wave 1 leads on LinkedIn — find the owner, founder, or director" },
-          { id: "18b", text: "Send a connection request: 'Hi [Name], I help [niche] businesses with digital systems. Would love to connect.'" },
-          { id: "18c", text: "DO NOT pitch in the connection request — wait until they accept, then send one short relevant message" },
-          { id: "18d", text: "Post one piece of content on your LinkedIn today: an observation about digital gaps in your target niche" },
-        ]},
-      { day: 19, focus: "Wave 2 — Next 20 via Instantly", icon: "⚡",
-        note: "Now you use the automation. Wave 1 taught you what works. Wave 2 scales it.",
-        tasks: [
-          { id: "19a", text: "Import your next 20 HOT leads into Instantly.ai" },
-          { id: "19b", text: "Activate your 3-email sequence — confirm sending is set to business days only" },
-          { id: "19c", text: "Check Wave 1 subject lines — if open rate is under 30%, rewrite the subject before Wave 2 sends" },
-          { id: "19d", text: "Set daily send limit to 20 emails maximum — this protects your sender domain reputation" },
-        ]},
-      { day: 20, focus: "Monitor & Reply to Everything", icon: "🔔",
-        note: "Speed of reply is a competitive advantage. Most freelancers take days. You respond in hours.",
-        tasks: [
-          { id: "20a", text: "Check Instantly.ai dashboard — note open rate and reply rate for each sequence" },
-          { id: "20b", text: "Reply to EVERY response within 2 hours — positive, negative, or 'not interested'" },
-          { id: "20c", text: "For every positive reply: send your Calendly link and suggest 2 specific days and times" },
-          { id: "20d", text: "Move all replied leads in Notion from 'Contacted' → 'Replied'" },
-        ]},
-      { day: 21, focus: "Week 3 Metrics Review", icon: "📈",
-        note: "Numbers don't lie. Make ONE change for Week 4 based on what the data shows — not ten.",
-        tasks: [
-          { id: "21a", text: "Count: total emails sent, open rate %, reply rate %, calls booked" },
-          { id: "21b", text: "Open rate under 25%? Your subject line is the problem — rewrite it completely" },
-          { id: "21c", text: "Good open rate but low replies? Your offer isn't clear — tighten the Dream Outcome statement" },
-          { id: "21d", text: "Set Week 4 targets: minimum 3 discovery calls booked, 1 proposal sent" },
-        ]},
-    ],
-  },
+    week:3, title:"Outreach Launch", range:"Days 15-21",
+    icon:"📧", color:"#F59E0B",
+    goal:"5+ personalised emails sent manually from Gmail. LinkedIn requests to same leads. First replies tracked in Notion.",
+    days:[
+      {day:15, focus:"Draft Email 1 for Top 5 HOT Leads", icon:"✍️",
+       note:"Write each email individually. The goal is for the recipient to think you wrote it for them — because you did.",
+       tasks:[
+         {id:"15a",text:"Open the Scripts tab — read the Email 1 template and understand the PAS structure before writing a single word"},
+         {id:"15b",text:"For each of your top 5 HOT leads: personalise the opening line with something specific you noticed (review count, missing booking, outdated site date)"},
+         {id:"15c",text:"Reference your relevant Lovable demo or Loom link — this is the proof that makes the email real"},
+         {id:"15d",text:"Keep every email under 130 words. If it sounds like a template, rewrite the first two lines."},
+         {id:"15e",text:"Save each draft in Notion or Google Docs — review them tomorrow morning with fresh eyes before sending"},
+       ]},
+      {day:16, focus:"Send Email 1 Manually from Gmail", icon:"🚀",
+       note:"You are sending 5 emails. Not 500. That is the point. Every email goes from your Gmail to the founder's personal email — no tools, no batch sends.",
+       tasks:[
+         {id:"16a",text:"Reread each of your 5 drafts — make one final personalisation tweak per email if anything feels generic"},
+         {id:"16b",text:"Send them one by one from your dedicated Gmail — never BCC or CC multiple leads at once"},
+         {id:"16c",text:"After each send: open Notion → update Stage to 'Contacted' → set Last Contacted to today"},
+         {id:"16d",text:"Set phone notifications for Gmail replies — you must respond to any positive reply within 2 hours"},
+       ]},
+      {day:17, focus:"LinkedIn Connection Requests to Same 5 Leads", icon:"💼",
+       note:"Email and LinkedIn together doubles your touchpoints without doubling your effort. Use both channels — but not simultaneously on the same day.",
+       tasks:[
+         {id:"17a",text:"Search each of your 5 leads on LinkedIn by founder name → open their profile"},
+         {id:"17b",text:"Before requesting: comment thoughtfully on their most recent post — this warms them up before your connection request arrives"},
+         {id:"17c",text:"Send connection request with a personalised note (under 300 characters): 'Hi [Name], I help [niche] businesses in [City] with digital systems. Would love to connect.'"},
+         {id:"17d",text:"Do NOT mention your email or pitch in the connection request — that comes only after they accept"},
+         {id:"17e",text:"Tick the LinkedIn Connected checkbox in Notion for each lead where the request is sent"},
+       ]},
+      {day:18, focus:"Enrich the Day 14 Batch", icon:"🔬",
+       note:"While Batch 1 is in market, Batch 2 gets enriched. The pipeline never stops moving — this is how you avoid feast-and-famine.",
+       tasks:[
+         {id:"18a",text:"Transfer your Day 14 notebook entries to Google Sheets"},
+         {id:"18b",text:"Enrich the top 8-10 leads from this batch: founder name, email, LinkedIn, 3 connected problems"},
+         {id:"18c",text:"Score every enriched lead — enter Hot and Warm into Notion CRM with all columns filled"},
+       ]},
+      {day:19, focus:"Send Email 1 to Next 5 HOT Leads", icon:"📧",
+       note:"Second wave. Same process as Days 15-16. Each email individually written and manually sent.",
+       tasks:[
+         {id:"19a",text:"Draft personalised Email 1s for the next 5 HOT leads from your Day 18 enrichment"},
+         {id:"19b",text:"Send them manually from Gmail — one by one — update Notion Stage and Last Contacted date for each"},
+         {id:"19c",text:"Send LinkedIn connection requests to this second batch as well"},
+       ]},
+      {day:20, focus:"Monitor, Reply, and Update Notion", icon:"🔔",
+       note:"Speed of reply is your single biggest competitive advantage. Every hour of delay costs you the reply. Every unanswered reply costs you the deal.",
+       tasks:[
+         {id:"20a",text:"Check your Gmail — reply to every response within 2 hours. Positive, negative, or neutral — all get a reply."},
+         {id:"20b",text:"For positive replies: send your Calendly link and suggest 2 specific time slots — make booking effortless"},
+         {id:"20c",text:"Update Notion Stage for every reply: 'Replied Positively' or 'Replied Negatively'. Add their exact words to the Notes column."},
+         {id:"20d",text:"Check LinkedIn: accept new connections → send the DM to each one who accepts (see Scripts tab)"},
+       ]},
+      {day:21, focus:"Send Email 2 to Day 16 Non-Responders", icon:"📬",
+       note:"Email 2 is NOT a follow-up. It reveals The Leak — new information the lead has not thought about. The subject line must not say 'following up'.",
+       tasks:[
+         {id:"21a",text:"Identify which Day 16 leads have not replied — open their Notion entries"},
+         {id:"21b",text:"Draft Email 2 for each (see Scripts tab) — reference The Leak specifically identified in their Notion profile"},
+         {id:"21c",text:"Subject line must feel like a new conversation, not a reminder — see Scripts tab for proven subject line formulas"},
+         {id:"21d",text:"Send manually, update Notion Last Contacted date for each"},
+       ]},
+    ]},
   {
-    week: 4, title: "First Close", range: "Days 22–28", icon: "🏆", color: "#EC4899",
-    goal: "Run discovery calls, send proposals, close your first paid project.",
-    days: [
-      { day: 22, focus: "Discovery Calls — SPIN Framework", icon: "📞",
-        note: "Don't pitch on a discovery call. Listen first. The client tells you exactly how to close them.",
-        tasks: [
-          { id: "22a", text: "Before each call: spend 5 minutes on their Google listing and website — note one specific gap to reference" },
-          { id: "22b", text: "Situation: 'How are you currently handling new client enquiries that come in online?'" },
-          { id: "22c", text: "Problem: 'What's the biggest challenge with how that works right now?' — then be silent and listen fully" },
-          { id: "22d", text: "Implication: 'How much would it be worth if you never missed an after-hours lead again?'" },
-          { id: "22e", text: "Need-Payoff: 'If I could build a system that does that in 14 days, would that be worth exploring?' — wait for the yes" },
-        ]},
-      { day: 23, focus: "Send Proposals Within 24 Hours", icon: "📄",
-        note: "Proposals sent within 24 hours close at 3× the rate of those sent 3 days later.",
-        tasks: [
-          { id: "23a", text: "Use the 3-tier structure — Starter, Standard, Premium — always show all three options" },
-          { id: "23b", text: "Name the outcome first in each tier, then the deliverables — never the other way around" },
-          { id: "23c", text: "Include your delivery guarantee: 'Live in [X] days or I work for free until it is'" },
-          { id: "23d", text: "Send via Google Docs or Notion — not plain email body text — it looks more credible and is easier to share" },
-        ]},
-      { day: 24, focus: "Follow Up on Every Proposal", icon: "🔁",
-        note: "Most deals are lost not to a no but to silence. Follow up once, politely, with a new angle.",
-        tasks: [
-          { id: "24a", text: "48 hours after sending: 'Hi [Name], just checking you received the proposal — any questions I can answer?'" },
-          { id: "24b", text: "If no reply after 5 days: send one final message with a fresh angle or a time-limited availability slot" },
-          { id: "24c", text: "Proposals older than 10 days with no response → mark as 'Cold' in Notion and move forward" },
-        ]},
-      { day: 25, focus: "Handle Objections on Live Calls", icon: "🗣️",
-        note: "Objections are not rejections. They are questions that haven't been answered yet.",
-        tasks: [
-          { id: "25a", text: "'Can I build this myself with AI?' → 'You could — but most owners stall at 70%. That last 30% is what I specialise in.'" },
-          { id: "25b", text: "'Too expensive' → Move to the Starter package. Don't discount — reframe the value instead." },
-          { id: "25c", text: "'I need to think about it' → 'Of course — is there a specific part you're uncertain about? Happy to clarify right now.'" },
-          { id: "25d", text: "'Send me more examples' → Send your Loom demos and case study immediately — same day, not next day" },
-        ]},
-      { day: 26, focus: "Close & Collect 50% Deposit", icon: "💰",
-        note: "50% upfront is non-negotiable. It protects you AND signals that they are serious.",
-        tasks: [
-          { id: "26a", text: "Once they say yes: send a simple 1-page agreement via Google Docs within the hour" },
-          { id: "26b", text: "Send a Payoneer or Stripe payment link for 50% of the fee — do not start work until it clears" },
-          { id: "26c", text: "Send a kickoff questionnaire: brand colours, logo, domain access, social links, key services listed" },
-          { id: "26d", text: "Move the lead to 'Closed' in Notion. Then get to work." },
-        ]},
-      { day: 27, focus: "Begin Project — Blueprint Phase", icon: "📐",
-        note: "Blueprint first. Build second. Always. This one habit separates professionals from freelancers.",
-        tasks: [
-          { id: "27a", text: "Map out exactly what you're building: pages, features, integrations, data flows" },
-          { id: "27b", text: "Share the blueprint with the client and get written confirmation before opening any build tool" },
-          { id: "27c", text: "Set your internal deadline 2 days before your promised delivery date — buffer for the unexpected" },
-          { id: "27d", text: "Send the client a quick update message: 'Blueprint approved — build starts today. You'll hear from me in 2 days.'" },
-        ]},
-      { day: 28, focus: "Week 4 Review + Full Pipeline Audit", icon: "🔍",
-        note: "Honest audit. Don't skip this. What you measure, you can improve.",
-        tasks: [
-          { id: "28a", text: "Tally: discovery calls run, proposals sent, deals closed, revenue collected (actual, not invoiced)" },
-          { id: "28b", text: "Open Notion — what stage is every lead in? Which have been stuck in one stage too long?" },
-          { id: "28c", text: "No close yet? Diagnose ONE variable — lead quality, pitch clarity, or offer. Fix only that one thing." },
-          { id: "28d", text: "Set Week 5 target: deliver first project + upsell attempt + ask for 2 referrals" },
-        ]},
-    ],
-  },
+    week:4, title:"First Close", range:"Days 22-28",
+    icon:"🏆", color:"#EC4899",
+    goal:"Discovery calls run, proposals sent, first paid project closed, 50% deposit collected.",
+    days:[
+      {day:22, focus:"LinkedIn DMs to Accepted Connections", icon:"💬",
+       note:"Only DM after they accept. Your first DM is not a pitch — it is a personal observation and a Loom link. The demo does the selling.",
+       tasks:[
+         {id:"22a",text:"Check which connection requests from Days 17 and 19 have been accepted"},
+         {id:"22b",text:"Send each new connection the DM from the Scripts tab — mention one specific thing about their business and share the Loom walkthrough"},
+         {id:"22c",text:"Do not pitch in the DM. End with: 'Worth 15 minutes to explore?' — not a hard close"},
+         {id:"22d",text:"Log every DM sent in Notion: LinkedIn DM Sent checkbox ticked, Last Contacted updated"},
+       ]},
+      {day:23, focus:"Send Email 3 to Non-Responders — The Lift", icon:"🎯",
+       note:"This is your strongest email. It leads with a live Lovable demo built for their type of business. The link makes it real in a way words never can.",
+       tasks:[
+         {id:"23a",text:"Identify all Day 16 leads who have not replied to Email 1 or Email 2"},
+         {id:"23b",text:"Draft Email 3 for each — lead with the Loom walkthrough and the live Lovable demo URL"},
+         {id:"23c",text:"Make clear in one sentence: this demo addresses their specific Gap, Leak, and Lift — not a generic showcase"},
+         {id:"23d",text:"Send manually, update Notion Last Contacted"},
+       ]},
+      {day:24, focus:"Discovery Calls — SPIN Framework", icon:"📞",
+       note:"Your job on a discovery call is to listen, not pitch. The client tells you exactly how to close them if you ask the right questions.",
+       tasks:[
+         {id:"24a",text:"5 minutes before each call: review their Notion entry — Gap, Leak, Lift, their exact words from the reply"},
+         {id:"24b",text:"SITUATION: 'How are you currently handling new client enquiries that come in online?'"},
+         {id:"24c",text:"PROBLEM: 'What is the biggest challenge with how that works right now?' — then be completely silent. Do not fill the pause."},
+         {id:"24d",text:"IMPLICATION: 'How much would it change things if you never missed an after-hours enquiry again?'"},
+         {id:"24e",text:"NEED-PAYOFF: 'If I could build a system that does that in 14 days, would that be worth exploring?' — wait for the yes"},
+       ]},
+      {day:25, focus:"Send Proposals Within 24 Hours", icon:"📄",
+       note:"Proposals sent within 24 hours of a discovery call close at 3x the rate of proposals sent 3 days later. Do not wait.",
+       tasks:[
+         {id:"25a",text:"Use the 3-tier structure from the Grand Slam Playbook — Starter, Standard, and Premium — always show all three"},
+         {id:"25b",text:"Name the outcome first in each tier, then the deliverables — never the other way around"},
+         {id:"25c",text:"Include your delivery guarantee: 'Live in [X] days or I work at no charge until it is'"},
+         {id:"25d",text:"Send as a shared Google Doc link — professional and easy for them to share with a business partner"},
+       ]},
+      {day:26, focus:"Follow Up on Proposals", icon:"🔁",
+       note:"Most deals die in silence, not rejection. One polite follow-up after 48 hours recovers 20-30% of proposals that would otherwise go cold.",
+       tasks:[
+         {id:"26a",text:"48 hours after sending: 'Hi [Name], just checking you received the proposal — any questions I can answer?'"},
+         {id:"26b",text:"5 days with no response: send a value-add message — a fresh insight about their business or a case study result"},
+         {id:"26c",text:"Any proposal older than 10 days with no response: mark Notion Stage as 'Replied Negatively' and move on"},
+       ]},
+      {day:27, focus:"Handle Objections on Live Calls", icon:"🗣️",
+       note:"Objections are questions the client has not yet asked out loud. Your job is to answer them before they walk away.",
+       tasks:[
+         {id:"27a",text:"'Too expensive' → Do not discount. Move to the Starter tier. Reframe value: 'At $X, this pays for itself with the first new client it brings in'"},
+         {id:"27b",text:"'Can I not build this myself with AI?' → Use the exact script from the Scripts tab — calm, educational, never defensive"},
+         {id:"27c",text:"'I need to think about it' → 'Of course — is there a specific part you are uncertain about? I am happy to clarify right now.'"},
+         {id:"27d",text:"'Send me more examples' → Send your Loom demos same day, not next day — same-day response converts significantly better"},
+       ]},
+      {day:28, focus:"Close and Collect 50% Deposit", icon:"💰",
+       note:"50% upfront is non-negotiable. It protects you and qualifies them. A client unwilling to pay 50% upfront will also be difficult about the final 50%.",
+       tasks:[
+         {id:"28a",text:"Once they say yes: send a simple 1-page agreement via Google Docs within the hour"},
+         {id:"28b",text:"Send a Payoneer or bank transfer request for 50% of the project fee — do not start work until payment clears"},
+         {id:"28c",text:"Send a kickoff questionnaire: brand colours, logo file, domain access, key services, any existing content"},
+         {id:"28d",text:"Update Notion Stage to 'Closed'. Begin the Blueprint phase immediately."},
+       ]},
+    ]},
   {
-    week: 5, title: "Deliver & Expand", range: "Days 29–35", icon: "🚀", color: "#8B5CF6",
-    goal: "Deliver first project, collect full payment, upsell, get a real testimonial, expand to second target.",
-    days: [
-      { day: 29, focus: "Build Phase + New Scrape", icon: "⚙️",
-        note: "While you build the first project, the machine keeps running. Never stop filling the pipeline.",
-        tasks: [
-          { id: "29a", text: "Continue building Project 1 — send the client one update message or screenshot today" },
-          { id: "29b", text: "Run a new Outscraper batch for a fresh city or niche in the background" },
-          { id: "29c", text: "Enrich, score, and add the new HOT leads to Notion tagged as 'Scraped'" },
-          { id: "29d", text: "The pipeline never pauses — always building and prospecting at the same time" },
-        ]},
-      { day: 30, focus: "Deliver First Project", icon: "🎉",
-        note: "Delivery is a ceremony, not just a file transfer. Make the client feel the transformation.",
-        tasks: [
-          { id: "30a", text: "Book a 30-minute Calendly screen-share specifically for the delivery walkthrough" },
-          { id: "30b", text: "Walk through every page and feature — explain what each piece does for their business specifically" },
-          { id: "30c", text: "Send the Payoneer/Stripe final 50% payment link immediately after the walkthrough call" },
-          { id: "30d", text: "Set a 3-day check-in reminder in Notion: 'How is the site performing? Any questions?'" },
-        ]},
-      { day: 31, focus: "Upsell Day", icon: "📈",
-        note: "The best time to sell the next thing is right after delivering something great. Trust is at its peak.",
-        tasks: [
-          { id: "31a", text: "Send upsell email within 48 hours: 'Now that your site is live, the next step is automatic lead follow-up...'" },
-          { id: "31b", text: "Offer Standard package (CRM + email automation) if they started on Starter" },
-          { id: "31c", text: "Pitch the Care Retainer ($200–400/month) as a way to keep the system running and growing without effort" },
-        ]},
-      { day: 32, focus: "Testimonial + Case Study + Referrals", icon: "⭐",
-        note: "One happy client can bring three more. This step is worth as much as any cold email campaign.",
-        tasks: [
-          { id: "32a", text: "Send: 'Would you mind leaving a quick Google review? Here's the direct link: [URL]'" },
-          { id: "32b", text: "Ask for a LinkedIn recommendation — takes them 5 minutes, helps you for years" },
-          { id: "32c", text: "Send referral request: 'If you know other [niche] owners who could use this, I'd love an introduction'" },
-          { id: "32d", text: "Write your first real case study: Problem → What You Built → Specific Result (with a number if possible)" },
-        ]},
-      { day: 33, focus: "Portfolio Update + First LinkedIn Post", icon: "📣",
-        note: "Every case study is a future client magnet. Document before you move on.",
-        tasks: [
-          { id: "33a", text: "Add before-and-after screenshots to your portfolio site showing the transformation" },
-          { id: "33b", text: "Post the case study on LinkedIn (under 300 words): what the problem was, what you built, the result" },
-          { id: "33c", text: "Update your cold email template to reference this real case study by result" },
-        ]},
-      { day: 34, focus: "Launch Second Target", icon: "🌍",
-        note: "Everything you learned in Target 1 gives you a head start in Target 2. The curve is much faster now.",
-        tasks: [
-          { id: "34a", text: "Choose: new niche (e.g. beauty if you started dental) OR new country (e.g. UK if you started USA)" },
-          { id: "34b", text: "Run a fresh Outscraper scrape for the second target" },
-          { id: "34c", text: "Update your email template with niche-specific language — reference your new real case study" },
-          { id: "34d", text: "Send Wave 1 to top 10 HOT leads in the new target using your proven sequence" },
-        ]},
-      { day: 35, focus: "Week 5 Revenue Review", icon: "💵",
-        note: "Track actual money collected — not projected, not invoiced. What has cleared your Payoneer?",
-        tasks: [
-          { id: "35a", text: "Total revenue collected to date (money actually received)" },
-          { id: "35b", text: "Count active leads by pipeline stage in Notion" },
-          { id: "35c", text: "Any proposals outstanding over 5 days? Follow up today." },
-          { id: "35d", text: "Any retainer conversations started? Target: at least 1 retainer closed by Day 45." },
-        ]},
-    ],
-  },
+    week:5, title:"Deliver and Expand", range:"Days 29-35",
+    icon:"🚀", color:"#8B5CF6",
+    goal:"First project delivered and fully paid. Upsell conversation started. Real testimonial and case study secured. New batch in outreach.",
+    days:[
+      {day:29, focus:"Blueprint Phase — Map Before You Build", icon:"📐",
+       note:"Blueprint first. Build second. Every time. This one habit separates professionals from order-takers — and prevents expensive scope creep.",
+       tasks:[
+         {id:"29a",text:"Map exactly what you are building: pages, features, forms, integrations, data flows — in writing or a simple diagram"},
+         {id:"29b",text:"Share the blueprint with the client via Google Doc and get written confirmation before opening Lovable"},
+         {id:"29c",text:"Set your internal delivery deadline 2 days before the promised date — buffer is not laziness, it is professionalism"},
+         {id:"29d",text:"Send client update: 'Blueprint approved — build starts today. You will hear from me in 48 hours.'"},
+       ]},
+      {day:30, focus:"Build Phase and New Scouting Session", icon:"⚙️",
+       note:"While you build the first project, the pipeline keeps running. One scouting hour today prevents a gap in income 3 weeks from now.",
+       tasks:[
+         {id:"30a",text:"Continue building Project 1 in Lovable — send the client a progress screenshot or short Loom update"},
+         {id:"30b",text:"Use 60 minutes to run a new Google Maps scouting session for a fresh city or niche"},
+         {id:"30c",text:"Record raw leads in notebook — enrichment begins on Day 31"},
+       ]},
+      {day:31, focus:"Enrich New Batch and Enter Notion", icon:"🔬",
+       note:"Enriching the new batch while delivering a project is how you avoid the feast-and-famine cycle permanently.",
+       tasks:[
+         {id:"31a",text:"Transfer Day 30 notebook entries to Google Sheets"},
+         {id:"31b",text:"Enrich your top 8-10 leads: founder name, direct email, LinkedIn, 3 connected problems"},
+         {id:"31c",text:"Score and enter Hot and Warm leads into Notion CRM with all columns filled"},
+       ]},
+      {day:32, focus:"Send Email 1 to New Batch HOT Leads", icon:"📧",
+       note:"Outreach never stops — even during delivery weeks. Commit to a minimum of 5 outreach actions every week for the next 12 months.",
+       tasks:[
+         {id:"32a",text:"Draft and send personalised Email 1 to your top 5 HOT leads from the new batch"},
+         {id:"32b",text:"Send LinkedIn connection requests to the same 5 leads"},
+         {id:"32c",text:"Update Notion Stage and Last Contacted date for each"},
+       ]},
+      {day:33, focus:"Deliver Project 1 — Make It a Ceremony", icon:"🎉",
+       note:"Delivery is not a file transfer — it is the moment a client's business changes. Treat it that way and you earn the testimonial, the referral, and the retainer conversation.",
+       tasks:[
+         {id:"33a",text:"Book a 30-minute Calendly screen-share call specifically for the delivery walkthrough"},
+         {id:"33b",text:"Walk through every page and feature — explain what each piece does for their business specifically"},
+         {id:"33c",text:"Send the final 50% payment request immediately after the walkthrough call"},
+         {id:"33d",text:"Schedule a 3-day check-in: 'Quick 10 minutes — just checking everything is running smoothly'"},
+       ]},
+      {day:34, focus:"Upsell Conversation", icon:"📈",
+       note:"The best moment to sell the next thing is within 48 hours of a great delivery. Trust is at its peak and the door is wide open.",
+       tasks:[
+         {id:"34a",text:"Send upsell message: 'Now that [site/system] is live, the next natural step is [CRM / email automation / booking integration]. Want me to show you what that looks like?'"},
+         {id:"34b",text:"Offer the Care Retainer ($200-400/month): maintenance, updates, and priority support"},
+         {id:"34c",text:"If they want more now: propose the next Standard or Premium package based on their next most urgent problem"},
+       ]},
+      {day:35, focus:"Testimonial, Case Study and 2 Referrals", icon:"⭐",
+       note:"One happy client can bring three more. This step is worth more than any cold email campaign — and it costs you nothing but the ask.",
+       tasks:[
+         {id:"35a",text:"Ask: 'Would you mind leaving a quick Google review? Here is the direct link: [URL]'"},
+         {id:"35b",text:"Ask for a LinkedIn recommendation — 5 minutes of their time, years of credibility for you"},
+         {id:"35c",text:"Ask for referrals: 'If you know any other [niche] owners who could use this, I would love an introduction'"},
+         {id:"35d",text:"Write your first real case study: Problem → What You Built → Specific Result. Add it to your portfolio site and update your email templates to reference it."},
+       ]},
+    ]},
   {
-    week: 6, title: "Scale the Machine", range: "Days 36–42", icon: "⚙️", color: "#14B8A6",
-    goal: "Full automation running, second niche active, first retainer closed, LinkedIn content started.",
-    days: [
-      { day: 36, focus: "Full Automation Audit", icon: "🔧",
-        note: "A machine that runs on its own is worth more than any single project. Audit it before you scale it.",
-        tasks: [
-          { id: "36a", text: "Open Make.com — did the scenario run correctly this week without errors?" },
-          { id: "36b", text: "Verify Notion is updating pipeline stages from Instantly.ai reply triggers" },
-          { id: "36c", text: "Check Klaviyo is sending the nurture sequence to leads who didn't respond after 3 emails" },
-          { id: "36d", text: "Fix any broken automation steps — run a fresh 5-lead end-to-end test" },
-        ]},
-      { day: 37, focus: "Wave 3 with Real Case Study", icon: "📨",
-        note: "Now you pitch with proof. A cold email with a real case study converts at 2–3× the rate of one without.",
-        tasks: [
-          { id: "37a", text: "Update Email 1 to reference your real case study: '[Similar business] just got [specific result]...'" },
-          { id: "37b", text: "Send Wave 3 to 30 new HOT leads across both niches" },
-          { id: "37c", text: "For your TOP 5 new leads: build a personalised preview and send a Loom — same weapon, refined by experience" },
-          { id: "37d", text: "Test subject line: '[Name] — [Similar biz] just [result]. Could work for you too.'" },
-        ]},
-      { day: 38, focus: "Retainer Conversations", icon: "🔄",
-        note: "One retainer covers your tool costs. Two covers your salary. Three is profit. Start these conversations now.",
-        tasks: [
-          { id: "38a", text: "For every completed project: book a 15-minute 'what's next' call with the client" },
-          { id: "38b", text: "Pitch Care Retainer ($200–400/month): maintenance, updates, priority support" },
-          { id: "38c", text: "Pitch Growth Retainer ($400–800/month): Klaviyo campaigns, monthly analytics, CRM management" },
-          { id: "38d", text: "Close at least 1 retainer before Day 45 — this is your recurring income foundation" },
-        ]},
-      { day: 39, focus: "Klaviyo Nurture Sequence Setup", icon: "✉️",
-        note: "Most leads aren't ready to buy when you first email them. Klaviyo keeps you visible until they are.",
-        tasks: [
-          { id: "39a", text: "Create a Klaviyo audience: 'Cold Leads — 3+ emails sent, no reply after 14 days'" },
-          { id: "39b", text: "Set up a 4-email nurture sequence: value tip → case study → question → final offer" },
-          { id: "39c", text: "Space these emails 2 weeks apart — this is a long-game sequence, not a push" },
-          { id: "39d", text: "Connect Make.com: lead stuck in 'Contacted' for 14 days → auto-add to Klaviyo nurture audience" },
-        ]},
-      { day: 40, focus: "Weekly LinkedIn Content Post", icon: "📱",
-        note: "One post per week for 6 months builds more inbound leads than most ad campaigns. Start the habit today.",
-        tasks: [
-          { id: "40a", text: "Write a post under 250 words: share one honest insight from working with your first client" },
-          { id: "40b", text: "End with a CTA: 'If you run a [niche] business and relate to this, feel free to reach out'" },
-          { id: "40c", text: "Post it now. Authenticity outperforms polish on LinkedIn for new accounts. Done beats perfect." },
-        ]},
-      { day: 41, focus: "Raise Your Prices", icon: "💹",
-        note: "You are more valuable now than on Day 1. Your prices must reflect the track record you've built.",
-        tasks: [
-          { id: "41a", text: "After 2 closed deals: raise your Starter price by $100" },
-          { id: "41b", text: "After 3 closed deals: raise Standard by $200" },
-          { id: "41c", text: "Update your portfolio site pricing — always raise list prices, never offer discounts on old pricing to new clients" },
-        ]},
-      { day: 42, focus: "Full 6-Week Review", icon: "📊",
-        note: "The most important review of the entire 45 days. What you measure now, you can multiply in Month 2.",
-        tasks: [
-          { id: "42a", text: "Tally all-time: leads scraped, emails sent, open rate, reply rate, calls run, proposals sent, deals closed" },
-          { id: "42b", text: "Revenue collected to date — actual, not projected" },
-          { id: "42c", text: "Active retainers count — even one is a major win at this stage" },
-          { id: "42d", text: "Identify the single biggest bottleneck — where did most leads stop progressing?" },
-          { id: "42e", text: "Write: 'What I would do differently from Day 1' — that becomes your Month 2 strategy" },
-        ]},
-    ],
-  },
+    week:6, title:"Scale the Manual Machine", range:"Days 36-42",
+    icon:"⚙️", color:"#14B8A6",
+    goal:"Third scouting round complete. Full Notion pipeline active. LinkedIn content started. First retainer conversation open.",
+    days:[
+      {day:36, focus:"Scouting Session 3 — New Niche or Country", icon:"🗺️",
+       note:"Everything you learned in the first two niches makes the third faster. Patterns repeat. The research sharpens. The emails get better.",
+       tasks:[
+         {id:"36a",text:"Choose: new niche you have not yet targeted, OR a new country (UK or Australia are strong for English-language outreach)"},
+         {id:"36b",text:"Run a full Google Maps scouting session — 15-20 raw leads in notebook"},
+         {id:"36c",text:"If the new niche requires a different type of solution (e.g. restaurants need a different demo than coaches), update your Lovable demo accordingly"},
+       ]},
+      {day:37, focus:"Enrich, Score and Enter New Batch", icon:"🔬",
+       note:"By Week 6 you should be completing a full lead enrichment in under 15 minutes per lead. Quality stays high — speed just improves with repetition.",
+       tasks:[
+         {id:"37a",text:"Transfer, enrich, score, and enter 8-10 leads from Day 36 into Notion CRM"},
+         {id:"37b",text:"Identify 3 connected problems for each HOT lead in the new batch"},
+         {id:"37c",text:"Update your email templates to reference your real Project 1 result — replace any demo reference with the actual outcome"},
+       ]},
+      {day:38, focus:"Draft Emails Using Your Real Case Study", icon:"✍️",
+       note:"Every email you send from this point forward references a real result — not a demo, not a promise. This is your first major credibility upgrade.",
+       tasks:[
+         {id:"38a",text:"Draft Email 1 for your top 5 HOT leads from the new batch — open with a reference to your Project 1 result"},
+         {id:"38b",text:"Example opener: 'I recently helped a [niche] business in [City] go from missed enquiries to a fully automated booking system — live in 12 days.'"},
+         {id:"38c",text:"Save all 5 drafts and review them the next morning before sending"},
+       ]},
+      {day:39, focus:"Send Wave 3 Outreach", icon:"📧",
+       note:"Third wave. You have a real case study now. The email converts at a meaningfully higher rate than your first wave did.",
+       tasks:[
+         {id:"39a",text:"Send Email 1 to your top 5 HOT leads from the new batch — manually, one by one from Gmail"},
+         {id:"39b",text:"Send LinkedIn connection requests to the same 5 leads"},
+         {id:"39c",text:"Update Notion Stage and Last Contacted for each"},
+       ]},
+      {day:40, focus:"First LinkedIn Content Post", icon:"📱",
+       note:"One LinkedIn post per week for 6 months builds more inbound than most ad campaigns. Today you start that habit.",
+       tasks:[
+         {id:"40a",text:"Write a post under 250 words: share one honest observation from working with your first client — what was the before, what changed after"},
+         {id:"40b",text:"End with a CTA: 'If you run a [niche] business and this sounds familiar, feel free to reach out'"},
+         {id:"40c",text:"Post it now. Do not over-edit. Authenticity outperforms polish on LinkedIn every single time."},
+       ]},
+      {day:41, focus:"Weekly Follow-Up Sweep Across All Batches", icon:"🔄",
+       note:"This 30-minute weekly sweep ensures nothing falls through the cracks. It is worth more than 2 hours of new prospecting.",
+       tasks:[
+         {id:"41a",text:"Open Notion → Active Outreach view → review every lead in 'Contacted' status"},
+         {id:"41b",text:"Any lead contacted 3-4 days ago with no reply: send Email 2 (The Leak)"},
+         {id:"41c",text:"Any lead contacted 7 days ago with no reply: send Email 3 (The Lift + Demo)"},
+         {id:"41d",text:"Any lead with 3 emails sent and no reply: mark as 'Replied Negatively' in Notion — archive for a 30-day nurture re-contact"},
+       ]},
+      {day:42, focus:"Full 6-Week Review", icon:"📊",
+       note:"The most important 45 minutes of the entire playbook. What you measure now, you can multiply in Month 2.",
+       tasks:[
+         {id:"42a",text:"Count: total leads scouted, enriched, entered into Notion, emailed, replied, calls booked, proposals sent, deals closed"},
+         {id:"42b",text:"Revenue collected to date — actual money received, not invoiced"},
+         {id:"42c",text:"Open Notion Pipeline Board — where is every lead? Which have been stuck in one stage for too long?"},
+         {id:"42d",text:"Write one honest sentence: what single thing, if done differently, would have closed more deals in Month 1?"},
+       ]},
+    ]},
   {
-    week: 7, title: "Month 2 Launch", range: "Days 43–45", icon: "🌅", color: "#F97316",
-    goal: "Honest debrief complete, Month 2 targets set, first public proof shared.",
-    days: [
-      { day: 43, focus: "Month 1 Full Debrief", icon: "🪞",
-        note: "Entrepreneurs who review their numbers grow faster than those who only look forward.",
-        tasks: [
-          { id: "43a", text: "Pull all metrics from Notion, Instantly.ai, and Klaviyo into one Google Sheet" },
-          { id: "43b", text: "Calculate: revenue collected ÷ hours worked = your effective hourly rate. Is it improving?" },
-          { id: "43c", text: "Identify your #1 performing lead source and your #1 performing niche" },
-          { id: "43d", text: "Write 3 things that went better than expected and 3 things to improve in Month 2" },
-        ]},
-      { day: 44, focus: "Month 2 Planning Session", icon: "📋",
-        note: "Month 2 is where the machine becomes real. You have data, proof, and a system. Now scale it.",
-        tasks: [
-          { id: "44a", text: "Set specific Month 2 targets: X leads scraped, X emails sent, X calls, X proposals, X closes, X revenue" },
-          { id: "44b", text: "Decide: expand niche, expand country, or go deeper in your existing market?" },
-          { id: "44c", text: "Block calendar time for outreach, delivery, and weekly review — treat each like a client meeting" },
-          { id: "44d", text: "Plan your first paid tool upgrade based on what constrained you most in Month 1" },
-        ]},
-      { day: 45, focus: "Public Commitment + Keep Shipping", icon: "🏁",
-        note: "The public commitment makes it real. Share what you're building. It attracts clients and keeps you accountable.",
-        tasks: [
-          { id: "45a", text: "Post on LinkedIn: share your first real result, what you built, and where you're headed" },
-          { id: "45b", text: "Write a private commitment: 'By Day 90, I will have [X] clients, [Y] monthly recurring revenue'" },
-          { id: "45c", text: "Keep the outreach machine running — it never stops, even during active delivery weeks" },
-        ]},
-    ],
-  },
+    week:7, title:"Month 2 Launch", range:"Days 43-45",
+    icon:"🌅", color:"#F97316",
+    goal:"Full debrief complete. Month 2 targets set in writing. Public proof shared. Pipeline actively running.",
+    days:[
+      {day:43, focus:"Full Month 1 Debrief", icon:"🪞",
+       note:"Honest self-assessment is not self-criticism — it is the raw material of a better Month 2.",
+       tasks:[
+         {id:"43a",text:"Pull all numbers from Gmail, Notion, and Google Sheets into one summary document"},
+         {id:"43b",text:"Calculate: revenue collected divided by total hours worked = your effective hourly rate. Is it improving?"},
+         {id:"43c",text:"Identify your best-performing niche, best-performing email subject line, and best-performing outreach channel"},
+         {id:"43d",text:"Write 3 things that exceeded expectations and 3 things to improve in Month 2"},
+       ]},
+      {day:44, focus:"Month 2 Planning Session", icon:"📋",
+       note:"Month 2 is where compounding begins. You have data, proof, and a case study. The machine is faster now.",
+       tasks:[
+         {id:"44a",text:"Set specific Month 2 targets in writing: leads scouted, emails sent, calls, proposals, closes, revenue"},
+         {id:"44b",text:"Decide: expand niche, expand country, or go deeper in your existing market?"},
+         {id:"44c",text:"Plan when automation tools make financial sense — rule: only when manual volume maxes out and you have consistent revenue to fund them"},
+         {id:"44d",text:"Block weekly time in your calendar for: scouting, enrichment, email, calls, delivery, review — treat each like a client appointment"},
+       ]},
+      {day:45, focus:"Public Commitment and Keep Shipping", icon:"🏁",
+       note:"The public post makes it real. It attracts clients, keeps you accountable, and builds an audience of future students who want to learn from your journey.",
+       tasks:[
+         {id:"45a",text:"Post on LinkedIn: what you set out to do, what you built, what you learned, where you are headed in Month 2"},
+         {id:"45b",text:"Write a private commitment: 'By Day 90, I will have [X] clients and [Y] monthly recurring revenue'"},
+         {id:"45c",text:"The outreach machine never pauses — send at least 2 new personalised emails today. Day 45 is not a rest day. It is a relaunch."},
+       ]},
+    ]},
 ];
 
-/* ─── SCRIPTS DATA ──────────────────────────────────────── */
-const SCRIPTS = [
-  { id: "e1", tag: "Day 17 · Wave 1", color: "#6366F1",
-    title: "Cold Email #1 — PAS Formula",
-    note: "Under 120 words. Never mention tools by name. Sell the outcome.",
-    body: `Subject: [Name] — [City] competitors are getting leads you're missing
+/* ─── UI ─────────────────────────────────────────────────── */
+function PlanPage() {
+  const [tasks, setTasks, meta] = useSyncedTaskMap("p_45day");
 
-Hi [Name],
-
-I was looking at [Business Name]'s listing and noticed there's no way for potential clients to book online.
-
-Most [niche] businesses in [city] quietly lose 20–40% of new enquiries this way — people search at 10 PM, can't book, and move on to whoever responds first.
-
-I build automated booking and lead systems for [niche] businesses that capture and convert enquiries 24/7.
-
-I recently helped a similar business go from missed calls to 3× more booked appointments: [Loom link]
-
-Worth a 15-minute call? [Calendly link]
-
-[Your name]` },
-  { id: "e2", tag: "Day 3 after Email 1", color: "#10B981",
-    title: "Follow-Up Email #2 — One Question",
-    note: "No pitch. Just genuine curiosity. This tone gets 3× the reply rate of a salesy follow-up.",
-    body: `Subject: One question for you, [Name]
-
-Hi [Name],
-
-Quick question — how are you currently handling enquiries that come in outside of business hours?
-
-Most [niche] owners I speak with are either missing them entirely or spending the first hour of every morning catching up.
-
-Happy to share how I've solved this for others in a 3-minute demo if useful.
-
-[Your name]
-[Calendly link]` },
-  { id: "e3", tag: "Day 7 after Email 1", color: "#F59E0B",
-    title: "Follow-Up Email #3 — Demo Reveal",
-    note: "Highest-converting of the three. The personalised preview is the real weapon here.",
-    body: `Subject: I built something for [Business Name]
-
-Hi [Name],
-
-I took 30 minutes to put together a quick preview of what a modern booking system could look like for [Business Name].
-
-It's not live — just a demo — but it shows exactly how clients would book, how enquiries would be captured, and how automatic follow-ups would work.
-
-[Loom link / Demo URL]
-
-If 3 extra bookings a month would be worth it, this pays for itself in week one.
-
-Want to walk through it together?
-
-[Your name]
-[Calendly link]` },
-  { id: "lnk", tag: "Day 18 · LinkedIn", color: "#3B82F6",
-    title: "LinkedIn Connection Request",
-    note: "Under 50 words. No pitch. No link. Just a relevant reason to connect.",
-    body: `Hi [Name], I help [niche] businesses with digital systems — booking, lead capture, and client management. Would love to connect.` },
-  { id: "disc", tag: "Day 22 · Discovery Call", color: "#EC4899",
-    title: "Discovery Call — SPIN Framework",
-    note: "The most important skill on a discovery call is silence. Ask, then wait. Resist filling the silence.",
-    body: `SITUATION:
-"How are you currently handling new client enquiries online — is there a booking system in place?"
-
-PROBLEM:
-"What's the biggest challenge with how that works right now?"
-[Stop talking. Listen fully. Don't interrupt.]
-
-IMPLICATION:
-"How much would it be worth if you were fully booked 3 weeks in advance without chasing anyone?"
-
-NEED-PAYOFF:
-"If I could build a system that does exactly that in 14 days, would that be worth exploring?"
-[Wait for the yes.]
-
-CLOSE:
-"Great — I'll have a proposal to you within 24 hours. Does tomorrow at 10 AM work to review it together?"` },
-  { id: "ups", tag: "Day 31 · After Delivery", color: "#8B5CF6",
-    title: "Upsell Email — After Delivery",
-    note: "Send within 48 hours of delivery while satisfaction is at its absolute highest.",
-    body: `Subject: The natural next step for [Business Name]
-
-Hi [Name],
-
-Now that the site is live, I wanted to flag what most of my clients do next.
-
-The site captures attention — but without a CRM and email follow-up system behind it, leads can still slip through.
-
-I can add:
-→ Notion CRM setup (tracks every enquiry automatically)
-→ A 3-email follow-up sequence (sends itself when someone fills in your form)
-
-Configured and running in under 2 weeks. Investment: [Standard package price].
-
-I have a slot opening next week — interested?
-
-[Your name]` },
-  { id: "ref", tag: "Day 32", color: "#14B8A6",
-    title: "Referral Request Email",
-    note: "Warm introductions close at 5× the rate of cold emails. One referral is worth 50 cold contacts.",
-    body: `Subject: One small favour
-
-Hi [Name],
-
-Really glad the project came out well — thank you for being such a great client to work with.
-
-One small favour: if you know any other [niche] business owners who could use the same kind of system, I'd love an introduction. Just forward this email or drop me their name.
-
-And if you have 2 minutes — a quick Google review would mean a lot: [Direct review link]
-
-Thanks again,
-[Your name]` },
-  { id: "obj", tag: "Any Discovery Call", color: "#F97316",
-    title: "Objection: 'Can't I Use AI to Build This Myself?'",
-    note: "Say this calmly and with full confidence. It's educational, not defensive.",
-    body: `"Honestly? You could try — I use these same kinds of tools to move fast. But here's what typically happens: most owners get about 70% done, then stall on the part that actually matters for a real business — connecting it to a CRM, securing payments, making sure it works on every device, and keeping it maintained as things change.
-
-That 30% is what I specialise in.
-
-It's like accounting software — anyone can open QuickBooks, but you'd still hire an accountant to make sure your books are actually right. I'm not selling you a tool. I'm selling you a finished system that works, and the accountability to keep it running."` },
-];
-
-/* ─── FAQ DATA ──────────────────────────────────────────── */
-const FAQS = [
-  { q: "I have no clients yet. Where exactly do I start?",
-    a: "Open this guide. Complete every task on Day 1 in exact order — tool accounts first, then niche selection. Do not skip ahead. Your first outreach email goes out on Day 17, not Day 1. The 16 days before it are what make the email land." },
-  { q: "What if they ask for my portfolio and I only have demo projects?",
-    a: "Show them. A demo built with their niche in mind is more convincing than 10 generic client sites. Say: 'These are projects I built to show exactly what I deliver for [niche] businesses specifically.' Demos that look real close just as well as live client work — sometimes better." },
-  { q: "How do I talk about using AI tools without clients thinking they don't need me?",
-    a: "You don't mention the tools at all in your pitch. Sell the outcome, the process, and the accountability. If they ask directly: 'I use AI-accelerated tools to move faster than traditional developers — the architecture, integrations, and ongoing support are all mine.' An architect uses AutoCAD. You'd still hire the architect." },
-  { q: "What if a client asks for something I don't know how to build?",
-    a: "Scope it clearly first — get paid for what you know, then figure out the rest during the build. Tell them: 'I'll have a solution for that in the proposal.' Then research it. This is completely normal. Professionals learn on the job constantly — the key is never promising what you genuinely cannot deliver." },
-  { q: "How do I receive payments from clients in the USA, UK, and Australia?",
-    a: "Payoneer is your best option from Nigeria — it accepts USD, GBP, EUR, and AUD directly and transfers to your local bank account. Stripe works well for clients who prefer to pay by card. Set up both. Never send invoices and wait for manual bank transfers — always use a payment link." },
-  { q: "Should I use my own name or create a company name?",
-    a: "Start with your own name. It builds personal trust faster and requires zero legal setup. Once you've closed 5+ deals, consider a studio name like 'NextBlazer Systems' or 'Bolu Digital'. Personal brands attract first clients. Studio names attract referrals and bigger projects." },
-  { q: "How many cold emails should I send per day?",
-    a: "Start with 10–20 per day, manual or via Instantly.ai. Never exceed 50 per day on a new email domain — it damages your sender reputation. Warm up the domain for 2 weeks before bulk sending. Quality always beats volume: 30 personalised emails consistently outperform 300 generic ones." },
-  { q: "When should I start paying for tools?",
-    a: "After your first client pays you. Month 1 runs for approximately $40 total (one Outscraper batch + all free tiers). Add Instantly.ai at $37/month only once your pipeline has 50+ verified leads ready to send. Upgrade everything else only as revenue justifies it — never before." },
-  { q: "How long until I can realistically expect my first client?",
-    a: "Following this plan consistently: first HOT lead reply typically arrives between Day 17–21. First discovery call: Day 21–25. First close: Day 25–35 for most people following through. The variables in your control are lead quality (use the scoring system), offer clarity (use the Grand Slam framework), and speed of follow-up." },
-  { q: "What if I get replies but nobody converts?",
-    a: "This almost always means one of three things: (1) your offer isn't specific enough to their pain, (2) your price feels misaligned with the value you're describing, or (3) you're not following up fast enough after replies. Fix ONE variable at a time. Never change everything at once — you won't know what worked." },
-];
-
-/* ─── MILESTONES DATA ───────────────────────────────────── */
-const MILESTONES = [
-  { day: "Day 7",  label: "Foundation Ready",    icon: "🏗️", color: "#6366F1", revenue: "$0",           desc: "All tools live, 2 demos built, portfolio site published, Notion CRM pipeline configured." },
-  { day: "Day 14", label: "Pipeline Loaded",     icon: "📊", color: "#10B981", revenue: "$0",           desc: "60+ HOT leads scored, email-verified, and segmented in Notion. Make.com automation running." },
-  { day: "Day 21", label: "Outreach Active",     icon: "📧", color: "#F59E0B", revenue: "$0",           desc: "50+ emails sent, open rate tracked, first replies incoming, 3+ discovery calls booked." },
-  { day: "Day 28", label: "First Close",         icon: "🏆", color: "#EC4899", revenue: "$150–2,000",   desc: "First proposal accepted, 50% deposit collected, project blueprint approved, build started." },
-  { day: "Day 35", label: "First Delivery",      icon: "🎉", color: "#8B5CF6", revenue: "$300–4,000",   desc: "First project delivered, full payment collected, upsell email sent, testimonial and case study secured." },
-  { day: "Day 42", label: "Machine Running",     icon: "⚙️", color: "#14B8A6", revenue: "$500–6,500",   desc: "Full automation active, second niche live, LinkedIn content started, first retainer conversation open." },
-  { day: "Day 45", label: "Month 2 Ready",       icon: "🌅", color: "#F97316", revenue: "$500–8,000+",  desc: "Full debrief complete, Month 2 targets set, pipeline active, public proof published. Ready to scale." },
-];
-
-/* ─── PRINCIPLES DATA ───────────────────────────────────── */
-const PRINCIPLES = [
-  { num: "01", icon: "🎯", color: "#6366F1", title: "One Niche. One City. One Month.",        body: "The biggest beginner mistake is going broad. 'Dental clinics in Austin' closes 10× faster than 'any business that needs a website'. Specificity makes your email feel personal. Generality makes it feel like spam." },
-  { num: "02", icon: "⚡", color: "#10B981", title: "Demos Close. Pitches Don't.",             body: "A 90-second Loom walkthrough of a working product with their business name on it is worth more than three pages of beautifully written pitch copy. Build demos before you send a single email." },
-  { num: "03", icon: "💎", color: "#F59E0B", title: "Sell the Outcome. Never the Tool.",       body: "Never mention Bubble.io, Lovable, Claude Code, Cursor, or Base44 in a cold email or proposal. Sell what the client gets: 'More bookings. Less admin. A system that runs while you sleep.'" },
-  { num: "04", icon: "🔁", color: "#EC4899", title: "Follow Up Until You Get an Answer.",     body: "Most deals are not lost to rejection — they are lost to silence. A polite, value-adding follow-up on Day 3, then Day 7, then Day 14 is not being annoying. It is being professional. Silence is not a no." },
-  { num: "05", icon: "💰", color: "#8B5CF6", title: "50% Upfront. Always. No Exceptions.",    body: "A client who won't pay 50% upfront is a client who won't pay the final 50% either. This rule protects you and signals to them that you are serious. Start work only after the deposit clears — every time." },
-  { num: "06", icon: "📈", color: "#14B8A6", title: "Retainers Are the Real Business.",        body: "A project is income. A retainer is a salary. One retainer at $300/month covers all your tool costs. Five retainers at $300/month is $1,800/month of stable income before you close a single new deal." },
-  { num: "07", icon: "🤖", color: "#F97316", title: "AI Is Your Engine. Not Your Identity.",   body: "Claude Code, Cursor, and Lovable let you build in days what used to take weeks. Use them without apology. But to clients you are a Digital Systems Engineer who delivers fast, precise results. The tools are your competitive secret." },
-  { num: "08", icon: "🏃", color: "#6366F1", title: "Send the 10 Emails Before You're Ready.", body: "You will never feel fully ready. The demos will never be perfect enough. Send the first 10 emails on Day 17 as instructed, before you feel comfortable. Your first reply will teach you more than any amount of preparation ever could." },
-];
-
-/* ─── HELPER COMPONENTS ─────────────────────────────────── */
-function Chevron({ open }) {
-  return <span style={{ color: "#8A7C6D", fontSize: 19, display: "inline-block", transform: open ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>›</span>;
-}
-
-function Check({ checked, color }) {
-  return (
-    <div style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${checked ? color : "#8A7C6D"}`, background: checked ? color : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, fontSize: 11, color: "#F8F5EE", fontWeight: 800, transition: "all 0.15s" }}>
-      {checked ? "✓" : ""}
-    </div>
+  const totalTasks = useMemo(
+    () => WEEKS.reduce((n, w) => n + w.days.reduce((m, d) => m + d.tasks.length, 0), 0),
+    []
   );
-}
 
-function ProgressBar({ value, color, height = 6 }) {
-  return (
-    <div style={{ background: "#D9CFBB", borderRadius: 999, height, overflow: "hidden" }}>
-      <div style={{ width: `${value}%`, height: "100%", background: color, borderRadius: 999, transition: "width 0.3s ease" }} />
-    </div>
-  );
-}
-
-/* ─── MAIN COMPONENT ────────────────────────────────────── */
-function ImplementationPlaybook() {
-  const [tab, setTab]           = useState("plan");
-  const [openWeek, setOpenWeek] = useState(0);
-  const [openDay, setOpenDay]   = useState(null);
-  const [openScript, setOpenScript] = useState(null);
-  const [openFaq, setOpenFaq]   = useState(null);
-  const [done, setDone, saveMeta] = useSyncedTaskMap("p_45day");
-
-  const allTasks = useMemo(() => WEEKS.flatMap(w => w.days.flatMap(d => d.tasks)), []);
-  const totalTasks = allTasks.length;
-  const completedTasks = allTasks.filter(t => done[t.id]).length;
-  const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-
-  const weekPct = (w) => {
-    const tasks = w.days.flatMap(d => d.tasks);
-    return tasks.length > 0 ? Math.round((tasks.filter(t => done[t.id]).length / tasks.length) * 100) : 0;
-  };
-
-  const toggle = (id) => setDone(prev => ({ ...prev, [id]: !prev[id] }));
-
-  const progressColor = progress >= 70 ? "#10B981" : progress >= 35 ? "#F59E0B" : "#6366F1";
-
-  const TABS = [
-    { id: "plan",       label: "📅 45-Day Plan" },
-    { id: "scripts",    label: "📝 Scripts" },
-    { id: "milestones", label: "🎯 Milestones" },
-    { id: "faq",        label: "❓ FAQ" },
-    { id: "principles", label: "💡 Principles" },
-  ];
+  const toggle = (id: string) => setTasks((p: any) => ({ ...p, [id]: !p[id] }));
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "#F8F5EE", minHeight: "100vh", color: "#201A16" }}>
-      <SaveBar meta={saveMeta} title="45-Day Plan" total={totalTasks} />
+    <div className="pb-12">
+      <SaveBar meta={meta} title="45-Day Playbook" total={totalTasks} />
 
-
-      {/* ── HEADER ────────────────────────────────────────── */}
-      <div style={{ background: "linear-gradient(160deg,#FDF9F0 0%,#F8F5EE 60%,#F8F5EE 100%)", padding: "22px 16px 18px", borderBottom: "1px solid #D9CFBB" }}>
-        <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#10B981", textTransform: "uppercase", marginBottom: 7, display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", boxShadow: "0 0 6px #10B981", display: "inline-block" }} />
-            45-Day Implementation Playbook
-          </div>
-          <h1 style={{ margin: "0 0 7px", fontSize: "clamp(21px,4.5vw,33px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg,#FFFFFF 30%,#C99A3B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            From Zero to First Client
-          </h1>
-          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#6E6459", maxWidth: 560, lineHeight: 1.65 }}>
-            A beginner-friendly, day-by-day action guide to building a profitable international web development freelance business. 45 days. Real targets. Actionable every single day.
+      <div className="max-w-[880px] mx-auto px-4 pt-8 space-y-6">
+        <header>
+          <div className="text-[10px] uppercase tracking-widest text-gold-deep">Playbook · 45 Days</div>
+          <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">From Zero to First Client</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Manual outreach, high-value demos, Notion CRM, and a first close by Day 28. Every tick auto-saves and updates your rank and calendar.
           </p>
-          <div style={{ background: "#FFFFFF", borderRadius: 10, padding: "11px 14px", border: "1px solid #D9CFBB" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#6E6459" }}>Overall Progress</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: progressColor }}>{completedTasks} / {totalTasks} tasks · {progress}%</span>
+          <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="rounded-full border border-gold/40 bg-accent/20 px-3 py-1 font-semibold text-gold-deep">
+              {meta.completedCount} / {totalTasks} tasks complete
+            </span>
+            <span>{Math.round((meta.completedCount / Math.max(1, totalTasks)) * 100)}% through the campaign</span>
+          </div>
+        </header>
+
+        {WEEKS.map((w) => (
+          <section key={w.week} className="rounded-2xl border border-border bg-card overflow-hidden">
+            <div className="p-5 border-b border-border" style={{ background: `linear-gradient(135deg, ${w.color}18, transparent)` }}>
+              <div className="text-[10px] uppercase tracking-widest text-gold-deep">Week {w.week} · {w.range}</div>
+              <h2 className="mt-1 font-display text-xl md:text-2xl font-bold">{w.icon} {w.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{w.goal}</p>
             </div>
-            <ProgressBar value={progress} color={progressColor} height={8} />
-          </div>
-        </div>
-      </div>
-
-      {/* ── TABS ──────────────────────────────────────────── */}
-      <div style={{ background: "#F8F5EE", borderBottom: "1px solid #D9CFBB", position: "sticky", top: 0, zIndex: 20 }}>
-        <div style={{ maxWidth: 880, margin: "0 auto", display: "flex", padding: "0 8px", overflowX: "auto" }}>
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
-              background: "transparent", border: "none",
-              borderBottom: tab === t.id ? "2px solid #6366F1" : "2px solid transparent",
-              color: tab === t.id ? "#A5B4FC" : "#8A7C6D",
-              padding: "12px 13px", fontSize: 12.5, fontWeight: tab === t.id ? 600 : 500,
-              cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s", fontFamily: "inherit",
-            }}>{t.label}</button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── CONTENT ───────────────────────────────────────── */}
-      <div style={{ maxWidth: 880, margin: "0 auto", padding: "18px 13px 60px" }}>
-
-        {/* ════ 45-DAY PLAN ════════════════════════════════ */}
-        {tab === "plan" && (
-          <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>45-Day Action Plan</h2>
-            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Tap a week → expand a day → tick off tasks as you complete them.</p>
-            {WEEKS.map((w, wi) => {
-              const wp = weekPct(w);
-              const wOpen = openWeek === wi;
-              return (
-                <div key={w.week} style={{ marginBottom: 9 }}>
-                  <div onClick={() => setOpenWeek(wOpen ? null : wi)}
-                    style={{ background: wOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${wOpen ? w.color + "55" : "#D9CFBB"}`, borderRadius: wOpen ? "11px 11px 0 0" : 11, cursor: "pointer", padding: "13px 15px", display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 37, height: 37, borderRadius: 9, background: w.color + "18", border: `1px solid ${w.color}35`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{w.icon}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap", marginBottom: 4 }}>
-                        <span style={{ fontWeight: 700, fontSize: 14, color: "#1A140F" }}>Week {w.week}: {w.title}</span>
-                        <span style={{ fontSize: 10, color: "#8A7C6D", background: "#EDE7DA", borderRadius: 4, padding: "1px 6px" }}>{w.range}</span>
-                        {wp > 0 && <span style={{ fontSize: 10.5, fontWeight: 700, color: w.color }}>{wp}%</span>}
-                      </div>
-                      <p style={{ fontSize: 11.5, color: "#6E6459", margin: "0 0 6px", lineHeight: 1.4 }}>{w.goal}</p>
-                      <ProgressBar value={wp} color={w.color} height={3} />
-                    </div>
-                    <Chevron open={wOpen} />
-                  </div>
-
-                  {wOpen && (
-                    <div style={{ background: "#F5F0E4", border: `1px solid ${w.color}25`, borderTop: "none", borderRadius: "0 0 11px 11px", padding: "8px 11px 13px" }}>
-                      {w.days.map((d) => {
-                        const dk = `${wi}-${d.day}`;
-                        const dOpen = openDay === dk;
-                        const dDone = d.tasks.filter(t => done[t.id]).length;
-                        const dComplete = dDone === d.tasks.length;
-                        return (
-                          <div key={d.day} style={{ marginTop: 7 }}>
-                            <div onClick={() => setOpenDay(dOpen ? null : dk)}
-                              style={{ background: dOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${dComplete ? w.color + "60" : "#D9CFBB"}`, borderRadius: dOpen ? "9px 9px 0 0" : 9, cursor: "pointer", padding: "10px 12px", display: "flex", alignItems: "center", gap: 9 }}>
-                              <span style={{ fontSize: 16, flexShrink: 0 }}>{dComplete ? "✅" : d.icon}</span>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-                                  <span style={{ fontSize: 10, fontWeight: 700, color: w.color, background: w.color + "18", borderRadius: 4, padding: "1px 6px" }}>Day {d.day}</span>
-                                  <span style={{ fontSize: 13, fontWeight: 600, color: "#201A16" }}>{d.focus}</span>
-                                </div>
-                                <div style={{ fontSize: 11, color: "#8A7C6D", marginTop: 2 }}>{dDone}/{d.tasks.length} tasks</div>
-                              </div>
-                              <Chevron open={dOpen} />
-                            </div>
-                            {dOpen && (
-                              <div style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderTop: "none", borderRadius: "0 0 9px 9px", padding: "10px 12px 12px" }}>
-                                {d.note && (
-                                  <div style={{ background: w.color + "10", border: `1px solid ${w.color}22`, borderRadius: 7, padding: "7px 10px", marginBottom: 10, fontSize: 12, color: w.color + "CC", lineHeight: 1.5 }}>
-                                    💡 {d.note}
-                                  </div>
-                                )}
-                                {d.tasks.map(t => (
-                                  <div key={t.id} onClick={() => toggle(t.id)}
-                                    style={{ display: "flex", gap: 9, alignItems: "flex-start", padding: "8px 0", borderBottom: "1px solid #EDE7DA", cursor: "pointer" }}>
-                                    <Check checked={!!done[t.id]} color={w.color} />
-                                    <span style={{ fontSize: 13, color: done[t.id] ? "#8A7C6D" : "#3A2E24", lineHeight: 1.55, textDecoration: done[t.id] ? "line-through" : "none", transition: "all 0.15s" }}>{t.text}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* ════ SCRIPTS ════════════════════════════════════ */}
-        {tab === "scripts" && (
-          <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Scripts & Templates</h2>
-            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Ready to copy. Replace the brackets, personalise one line, and send.</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-              {SCRIPTS.map((s, i) => {
-                const isOpen = openScript === i;
+            <div className="p-5 space-y-4">
+              {w.days.map((d) => {
+                const done = d.tasks.filter((t) => tasks[t.id]).length;
+                const pct = Math.round((done / d.tasks.length) * 100);
                 return (
-                  <div key={s.id} onClick={() => setOpenScript(isOpen ? null : i)}
-                    style={{ background: isOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${isOpen ? s.color : "#D9CFBB"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
-                    <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap", marginBottom: 2 }}>
-                          <span style={{ fontWeight: 700, fontSize: 13.5, color: "#1A140F" }}>{s.title}</span>
-                          <span style={{ fontSize: 10, color: s.color, background: s.color + "18", borderRadius: 4, padding: "1px 6px", fontWeight: 600 }}>{s.tag}</span>
-                        </div>
+                  <div key={d.day} className="rounded-xl border border-border bg-background p-4">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div>
+                        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Day {d.day}</div>
+                        <div className="mt-0.5 font-display text-base font-bold flex items-center gap-2"><span>{d.icon}</span> {d.focus}</div>
                       </div>
-                      <Chevron open={isOpen} />
+                      <div className="text-right text-xs">
+                        <div className="font-semibold">{done} / {d.tasks.length}</div>
+                        <div className="text-muted-foreground">{pct}%</div>
+                      </div>
                     </div>
-                    {isOpen && (
-                      <div style={{ padding: "0 14px 14px", borderTop: "1px solid #D9CFBB" }}>
-                        <div style={{ background: "#FFFFFF", borderRadius: 8, padding: "12px 13px", marginTop: 12, fontFamily: "'Courier New', monospace", fontSize: 12, color: "#6E6459", lineHeight: 1.85, borderLeft: `2px solid ${s.color}40`, whiteSpace: "pre-wrap" }}>
-                          {s.body}
-                        </div>
-                        <div style={{ marginTop: 9, background: s.color + "10", border: `1px solid ${s.color}25`, borderRadius: 7, padding: "7px 10px", fontSize: 12, color: s.color, lineHeight: 1.5 }}>
-                          💡 {s.note}
-                        </div>
-                      </div>
+                    <div className="mt-2 h-1 rounded bg-muted overflow-hidden">
+                      <div className={`h-full ${pct === 100 ? "bg-emerald-500" : "bg-primary"}`} style={{ width: `${pct}%` }} />
+                    </div>
+                    {d.note && (
+                      <p className="mt-3 text-xs italic text-muted-foreground border-l-2 border-gold/40 pl-3">{d.note}</p>
                     )}
+                    <ul className="mt-3 space-y-2">
+                      {d.tasks.map((t) => (
+                        <li key={t.id}>
+                          <label className="flex items-start gap-3 cursor-pointer group">
+                            <input
+                              type="checkbox"
+                              checked={!!tasks[t.id]}
+                              onChange={() => toggle(t.id)}
+                              className="mt-0.5 h-4 w-4 rounded border-gold/40 accent-primary"
+                            />
+                            <span className={`text-sm leading-relaxed ${tasks[t.id] ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                              {t.text}
+                            </span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 );
               })}
             </div>
-          </div>
-        )}
+          </section>
+        ))}
 
-        {/* ════ MILESTONES ══════════════════════════════════ */}
-        {tab === "milestones" && (
-          <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>45-Day Milestones</h2>
-            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 18px" }}>Seven checkpoints. Use these as your north star — not a rigid schedule.</p>
-            {MILESTONES.map((m, i) => (
-              <div key={m.day} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 9, background: m.color + "18", border: `1px solid ${m.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{m.icon}</div>
-                  {i < MILESTONES.length - 1 && <div style={{ width: 2, height: 26, background: "#D9CFBB", marginTop: 4, marginBottom: 4 }} />}
-                </div>
-                <div style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 10, padding: "11px 13px", flex: 1, marginBottom: 10 }}>
-                  <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap", marginBottom: 5 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: m.color, background: m.color + "18", borderRadius: 4, padding: "1px 7px" }}>{m.day}</span>
-                    <span style={{ fontWeight: 700, fontSize: 14, color: "#1A140F" }}>{m.label}</span>
-                    <span style={{ fontSize: 11.5, fontWeight: 700, color: "#10B981", marginLeft: "auto" }}>{m.revenue}</span>
-                  </div>
-                  <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.5 }}>{m.desc}</p>
-                </div>
-              </div>
-            ))}
-            <div style={{ background: "#0A1020", border: "1px solid #10B98125", borderRadius: 10, padding: "13px 15px", marginTop: 4 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>📈 Conservative 45-Day Revenue Projection</div>
-              {[
-                { label: "1–2 Starter Packages",  range: "$300–1,200" },
-                { label: "0–1 Standard Package",  range: "$0–1,500" },
-                { label: "0–1 Retainer Started",  range: "$0–400" },
-              ].map((r, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #D9CFBB" }}>
-                  <span style={{ fontSize: 13, color: "#6E6459" }}>{r.label}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{r.range}</span>
-                </div>
-              ))}
-              <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 10 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#1A140F" }}>45-Day Total</span>
-                <span style={{ fontSize: 20, fontWeight: 800, color: "#10B981" }}>$300–3,100+</span>
-              </div>
-              <p style={{ fontSize: 12, color: "#8A7C6D", margin: "8px 0 0", lineHeight: 1.6 }}>Conservative, assuming 1–2 closed deals. Following the daily outreach routine consistently pushes the higher end. Month 2 and 3 will be significantly higher as the pipeline compounds.</p>
-            </div>
-          </div>
-        )}
-
-        {/* ════ FAQ ════════════════════════════════════════ */}
-        {tab === "faq" && (
-          <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Beginner FAQ</h2>
-            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>The questions every new freelancer asks, answered directly.</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {FAQS.map((f, i) => {
-                const isOpen = openFaq === i;
-                return (
-                  <div key={i} onClick={() => setOpenFaq(isOpen ? null : i)}
-                    style={{ background: isOpen ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${isOpen ? "#6366F1" : "#D9CFBB"}`, borderRadius: 11, cursor: "pointer", overflow: "hidden" }}>
-                    <div style={{ padding: "12px 14px", display: "flex", alignItems: "flex-start", gap: 9 }}>
-                      <span style={{ color: "#6366F1", fontSize: 13, fontWeight: 800, flexShrink: 0, marginTop: 1 }}>Q</span>
-                      <span style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: "#201A16", lineHeight: 1.45 }}>{f.q}</span>
-                      <Chevron open={isOpen} />
-                    </div>
-                    {isOpen && (
-                      <div style={{ padding: "0 14px 13px", borderTop: "1px solid #D9CFBB" }}>
-                        <div style={{ display: "flex", gap: 9, marginTop: 11, alignItems: "flex-start" }}>
-                          <span style={{ color: "#10B981", fontSize: 13, fontWeight: 800, flexShrink: 0 }}>A</span>
-                          <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65 }}>{f.a}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ════ PRINCIPLES ══════════════════════════════════ */}
-        {tab === "principles" && (
-          <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>8 Core Principles</h2>
-            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Rules that separate freelancers who close from those who stay stuck. Return to these whenever you feel lost.</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-              {PRINCIPLES.map((p) => (
-                <div key={p.num} style={{ background: "#FFFFFF", border: `1px solid ${p.color}22`, borderRadius: 11, padding: "13px 14px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 19 }}>{p.icon}</span>
-                    <div>
-                      <div style={{ fontSize: 9.5, fontWeight: 700, color: p.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>Principle {p.num}</div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#1A140F", marginTop: 1 }}>{p.title}</div>
-                    </div>
-                  </div>
-                  <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65, borderLeft: `2px solid ${p.color}40`, paddingLeft: 11 }}>{p.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+        <div className="rounded-xl border border-gold/40 bg-accent/20 p-5 text-sm">
+          <div className="text-[10px] uppercase tracking-widest text-gold-deep">Notion CRM</div>
+          <p className="mt-2 text-muted-foreground">
+            The entire pipeline lives inside Notion. If you use another tool it will slow you down and confuse your admin — stick with Notion for the full 45 days, then decide.
+          </p>
+        </div>
       </div>
     </div>
   );
 }
-export const Route = createFileRoute("/_authenticated/playbooks/plan")({
-  head: () => ({ meta: [{ title: "ImplementationPlaybook — DFS Citadel" }] }),
-  component: ImplementationPlaybook,
-});

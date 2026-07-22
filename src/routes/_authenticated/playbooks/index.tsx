@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { Motto } from "@/components/dfs/Brand";
-import { Calendar, Flame, Target, Globe, ArrowRight } from "lucide-react";
+import { Calendar, Flame, Target, Globe, ArrowRight, Calculator } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/playbooks/")({
   head: () => ({ meta: [{ title: "The Playbooks — DFS Citadel" }] }),
@@ -11,42 +11,11 @@ export const Route = createFileRoute("/_authenticated/playbooks/")({
 });
 
 const PLAYBOOKS = [
-  {
-    slug: "plan",
-    key: "p_45day",
-    title: "45-Day Implementation Playbook",
-    tagline: "From Zero to First Client",
-    body: "Day-by-day action plan across 6 weeks — foundation, harvest, outreach, close, deliver, scale.",
-    icon: Calendar,
-    accent: "from-indigo-500/25 to-transparent",
-  },
-  {
-    slug: "grand-slam",
-    key: "p_grandslam",
-    title: "Grand Slam Offer System",
-    tagline: "The Closer's Arsenal",
-    body: "7 phases from Google Maps to first retainer, plus the Grand Slam offer builder and value ladder.",
-    icon: Flame,
-    accent: "from-amber-500/25 to-transparent",
-  },
-  {
-    slug: "prospecting",
-    key: "p_prospecting",
-    title: "SMB Prospecting Guide",
-    tagline: "From Google Maps to Closed Deal",
-    body: "12 niches with exact search terms, hot / cold signal scoring, and the full outreach tool stack.",
-    icon: Target,
-    accent: "from-emerald-500/25 to-transparent",
-  },
-  {
-    slug: "global",
-    key: "p_global",
-    title: "Global Freelance Playbook",
-    tagline: "The Worldwide Machine",
-    body: "7 countries, 12 niches, positioning, pricing tiers, and the 30-day international launch plan.",
-    icon: Globe,
-    accent: "from-rose-500/25 to-transparent",
-  },
+  { slug: "plan",           key: "p_45day",        title: "45-Day Implementation Playbook", tagline: "From Zero to First Client",     body: "Day-by-day plan across 7 weeks — foundation, harvest, outreach, first close, deliver, scale, launch month 2.", icon: Calendar,   accent: "from-indigo-500/25 to-transparent" },
+  { slug: "grand-slam",     key: "p_grandslam",    title: "Grand Slam Offer System",         tagline: "The Closer's Arsenal",          body: "7 phases from Google Maps to first retainer, plus the Grand Slam offer builder and value ladder.",             icon: Flame,      accent: "from-amber-500/25 to-transparent" },
+  { slug: "prospecting",    key: "p_prospecting",  title: "SMB Prospecting Guide",           tagline: "From Google Maps to Closed Deal", body: "12 niches with exact search terms, hot / cold signal scoring, and the full outreach tool stack.",             icon: Target,     accent: "from-emerald-500/25 to-transparent" },
+  { slug: "global",         key: "p_global",       title: "Global Freelance Playbook",       tagline: "The Worldwide Machine",         body: "7 countries, 12 niches, positioning, pricing tiers, and the 30-day international launch plan.",              icon: Globe,      accent: "from-rose-500/25 to-transparent" },
+  { slug: "smb-calculator", key: "p_smb_calc",     title: "SMB Performance Calculator",      tagline: "Powered by Claude AI",          body: "Enter a prospect's numbers → discover their revenue leak → export a branded PDF per tab.",                    icon: Calculator, accent: "from-sky-500/25 to-transparent" },
 ];
 
 function PlaybooksIndex() {
@@ -55,23 +24,19 @@ function PlaybooksIndex() {
 
   useEffect(() => {
     if (!user) return;
-    (async () => {
-      const { data } = await supabase
-        .from("task_progress")
-        .select("playbook, completed")
-        .eq("user_id", user.id)
-        .eq("completed", true);
-      const map: Record<string, number> = {};
-      (data ?? []).forEach((r) => { map[r.playbook] = (map[r.playbook] ?? 0) + 1; });
-      setCounts(map);
-    })();
+    supabase.from("task_progress").select("playbook, completed").eq("user_id", user.id).eq("completed", true)
+      .then(({ data }) => {
+        const map: Record<string, number> = {};
+        (data ?? []).forEach((r) => { map[r.playbook] = (map[r.playbook] ?? 0) + 1; });
+        setCounts(map);
+      });
   }, [user]);
 
   return (
     <div className="space-y-8">
       <header>
         <Motto />
-        <h1 className="mt-2 font-display text-4xl font-bold">The Four Playbooks</h1>
+        <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">The Playbooks</h1>
         <p className="mt-2 text-muted-foreground max-w-2xl">
           The complete Digital Systems Engineering curriculum. Every checkbox you tick is synced to the Citadel — your rank and XP move with your work.
         </p>
@@ -80,6 +45,7 @@ function PlaybooksIndex() {
       <div className="grid md:grid-cols-2 gap-5">
         {PLAYBOOKS.map((p) => {
           const done = counts[p.key] ?? 0;
+          const isCalc = p.slug === "smb-calculator";
           return (
             <Link
               key={p.slug}
@@ -88,16 +54,16 @@ function PlaybooksIndex() {
             >
               <div className={`pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-gradient-to-br ${p.accent} blur-3xl`} />
               <div className="relative flex items-start gap-4">
-                <div className="rounded-xl border border-gold/30 bg-accent/30 p-3">
+                <div className="rounded-xl border border-gold/30 bg-accent/30 p-3 shrink-0">
                   <p.icon className="h-6 w-6 text-gold-deep" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="text-[10px] uppercase tracking-widest text-gold-deep">{p.tagline}</div>
-                  <div className="mt-1 font-display text-xl font-bold">{p.title}</div>
+                  <div className="mt-1 font-display text-lg md:text-xl font-bold">{p.title}</div>
                   <p className="mt-2 text-sm text-muted-foreground">{p.body}</p>
                   <div className="mt-4 flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      <span className="font-semibold text-foreground">{done}</span> tasks completed
+                      {isCalc ? "Calculator · PDF export" : (<><span className="font-semibold text-foreground">{done}</span> tasks completed</>)}
                     </span>
                     <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary group-hover:gap-2 transition-all">
                       Open <ArrowRight className="h-4 w-4" />
@@ -114,7 +80,7 @@ function PlaybooksIndex() {
         <div className="text-[10px] uppercase tracking-widest text-gold-deep">Cadence</div>
         <h2 className="mt-1 font-display text-2xl font-bold">Weekly report ritual</h2>
         <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-          Every Sunday, file a weekly report from the dashboard — outreach count, calls booked, wins, blockers. Reports feed the council escalation queue: any beneficiary who misses two consecutive weeks or logs zero outreach for seven days is auto-flagged for a mentor call.
+          Every Sunday, <Link to="/weekly-report" className="text-primary font-semibold hover:underline">file a weekly report</Link> — outreach count, calls booked, wins, blockers. Reports feed the council escalation queue: any beneficiary who misses two consecutive weeks or logs zero outreach for seven days is auto-flagged for a mentor call.
         </p>
       </section>
     </div>
