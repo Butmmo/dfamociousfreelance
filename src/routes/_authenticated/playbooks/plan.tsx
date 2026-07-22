@@ -1742,8 +1742,8 @@ Then be silent. Let that moment land.`}
         )}
 
       </div>
+      <SaveBar status={syncMeta.status} lastSavedAt={syncMeta.lastSavedAt} pendingCount={syncMeta.pendingCount} onSave={syncMeta.saveNow} />
     </div>
   );
 }
 
-// SaveBar mounted inline via portal not available; ensured via marker replacement.
