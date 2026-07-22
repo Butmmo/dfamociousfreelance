@@ -7,7 +7,7 @@
 // clamp to `max(windowStart, ESCALATION_START)` so people are not punished for
 // history that predates the rule.
 
-export const ESCALATION_START = new Date("2026-07-06T00:00:00.000Z");
+export const ESCALATION_START = new Date("2026-07-27T00:00:00.000Z");
 
 export type ProgressRow = {
   playbook: string;
