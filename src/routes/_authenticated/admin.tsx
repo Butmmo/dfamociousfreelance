@@ -277,6 +277,19 @@ function Admin() {
 
                   <button onClick={() => doEscalate(b.id, "at_risk")} className="rounded-md border border-gold py-1.5 text-gold-deep hover:bg-gold/10">Flag at-risk</button>
                   <button onClick={() => doEscalate(b.id, "critical")} className="rounded-md border border-crimson py-1.5 text-crimson hover:bg-crimson/10">Critical</button>
+                  {isSuperAdmin && (
+                    <button
+                      onClick={() => toggleAscent(b.id, ascentSet.has(b.id))}
+                      className={`col-span-2 inline-flex items-center justify-center gap-1 rounded-md py-1.5 border ${
+                        ascentSet.has(b.id)
+                          ? "border-gold bg-gold/15 text-gold-deep"
+                          : "border-border hover:bg-muted"
+                      }`}
+                    >
+                      <Mountain className="h-3.5 w-3.5" />
+                      {ascentSet.has(b.id) ? "Revoke Ascent access" : "Grant Ascent access"}
+                    </button>
+                  )}
                   <button onClick={() => setCheckinTarget(b.id)} className="col-span-2 inline-flex items-center justify-center gap-1 rounded-md bg-primary py-1.5 text-primary-foreground hover:bg-primary/90"><MessageSquare className="h-3.5 w-3.5" /> Log check-in</button>
                 </div>
               </div>
