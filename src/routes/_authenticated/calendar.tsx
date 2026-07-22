@@ -246,7 +246,7 @@ function CalendarPage() {
                 const st = dayStatus(d);
                 const dt = dayOfPlan(d.day);
                 const isTodayDay = isToday(dt);
-                const behind = !st.complete && isPast(dt);
+                const behind = !st.complete && isPast(dt) && isTrackable(dt);
                 const upcoming = !!dt && dt.getTime() > new Date().setHours(0, 0, 0, 0);
 
                 const tone = st.complete ? "bg-emerald-500/10 border-emerald-500/40"
