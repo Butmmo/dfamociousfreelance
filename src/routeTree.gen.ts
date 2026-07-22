@@ -17,8 +17,10 @@ import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authent
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
+import { Route as AuthenticatedAscentRouteImport } from './routes/_authenticated/ascent'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
+import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './routes/_authenticated/playbooks/smb-calculator'
 import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/_authenticated/playbooks/prospecting'
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
 import { Route as AuthenticatedPlaybooksGrandSlamRouteImport } from './routes/_authenticated/playbooks/grand-slam'
@@ -64,6 +66,11 @@ const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAscentRoute = AuthenticatedAscentRouteImport.update({
+  id: '/ascent',
+  path: '/ascent',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -73,6 +80,12 @@ const AuthenticatedPlaybooksIndexRoute =
   AuthenticatedPlaybooksIndexRouteImport.update({
     id: '/playbooks/',
     path: '/playbooks/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksSmbCalculatorRoute =
+  AuthenticatedPlaybooksSmbCalculatorRouteImport.update({
+    id: '/playbooks/smb-calculator',
+    path: '/playbooks/smb-calculator',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPlaybooksProspectingRoute =
@@ -105,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/ascent': typeof AuthenticatedAscentRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
@@ -113,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
+  '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesByTo {
@@ -120,6 +135,7 @@ export interface FileRoutesByTo {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/ascent': typeof AuthenticatedAscentRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
@@ -128,6 +144,7 @@ export interface FileRoutesByTo {
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
+  '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/playbooks': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesById {
@@ -137,6 +154,7 @@ export interface FileRoutesById {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/ascent': typeof AuthenticatedAscentRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
@@ -145,6 +163,7 @@ export interface FileRoutesById {
   '/_authenticated/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/_authenticated/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
+  '/_authenticated/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/_authenticated/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRouteTypes {
@@ -154,6 +173,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
+    | '/ascent'
     | '/calendar'
     | '/dashboard'
     | '/report'
@@ -162,6 +182,7 @@ export interface FileRouteTypes {
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
     | '/playbooks/prospecting'
+    | '/playbooks/smb-calculator'
     | '/playbooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -169,6 +190,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
+    | '/ascent'
     | '/calendar'
     | '/dashboard'
     | '/report'
@@ -177,6 +199,7 @@ export interface FileRouteTypes {
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
     | '/playbooks/prospecting'
+    | '/playbooks/smb-calculator'
     | '/playbooks'
   id:
     | '__root__'
@@ -185,6 +208,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/ascent'
     | '/_authenticated/calendar'
     | '/_authenticated/dashboard'
     | '/_authenticated/report'
@@ -193,6 +217,7 @@ export interface FileRouteTypes {
     | '/_authenticated/playbooks/grand-slam'
     | '/_authenticated/playbooks/plan'
     | '/_authenticated/playbooks/prospecting'
+    | '/_authenticated/playbooks/smb-calculator'
     | '/_authenticated/playbooks/'
   fileRoutesById: FileRoutesById
 }
@@ -261,6 +286,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCalendarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ascent': {
+      id: '/_authenticated/ascent'
+      path: '/ascent'
+      fullPath: '/ascent'
+      preLoaderRoute: typeof AuthenticatedAscentRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -273,6 +305,13 @@ declare module '@tanstack/react-router' {
       path: '/playbooks'
       fullPath: '/playbooks/'
       preLoaderRoute: typeof AuthenticatedPlaybooksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/smb-calculator': {
+      id: '/_authenticated/playbooks/smb-calculator'
+      path: '/playbooks/smb-calculator'
+      fullPath: '/playbooks/smb-calculator'
+      preLoaderRoute: typeof AuthenticatedPlaybooksSmbCalculatorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/playbooks/prospecting': {
@@ -308,6 +347,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAscentRoute: typeof AuthenticatedAscentRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
@@ -316,11 +356,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlaybooksGrandSlamRoute: typeof AuthenticatedPlaybooksGrandSlamRoute
   AuthenticatedPlaybooksPlanRoute: typeof AuthenticatedPlaybooksPlanRoute
   AuthenticatedPlaybooksProspectingRoute: typeof AuthenticatedPlaybooksProspectingRoute
+  AuthenticatedPlaybooksSmbCalculatorRoute: typeof AuthenticatedPlaybooksSmbCalculatorRoute
   AuthenticatedPlaybooksIndexRoute: typeof AuthenticatedPlaybooksIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAscentRoute: AuthenticatedAscentRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
@@ -330,6 +372,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlaybooksPlanRoute: AuthenticatedPlaybooksPlanRoute,
   AuthenticatedPlaybooksProspectingRoute:
     AuthenticatedPlaybooksProspectingRoute,
+  AuthenticatedPlaybooksSmbCalculatorRoute:
+    AuthenticatedPlaybooksSmbCalculatorRoute,
   AuthenticatedPlaybooksIndexRoute: AuthenticatedPlaybooksIndexRoute,
 }
 
