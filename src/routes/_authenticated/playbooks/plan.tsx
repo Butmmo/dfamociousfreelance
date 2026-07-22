@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/playbooks/plan")({
 });
 
 
-const WEEKS = [
+export const WEEKS = [
   {
     week:1, title:"Build Your Foundation", range:"Days 1-7",
     icon:"🏗️", color:"#7A5A00",
