@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { WEEKS } from "./playbooks/plan";
 import { CheckCircle2, Circle, CalendarDays, Flame, Lock, ArrowRight, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { ESCALATION_START } from "@/lib/escalation";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
