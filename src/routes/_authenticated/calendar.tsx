@@ -184,11 +184,12 @@ function CalendarPage() {
               ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-700"
               : isTodayCell
               ? "bg-gold/15 border-gold ring-1 ring-gold text-gold-deep"
-              : dayObj && !isFuture && !st?.complete
+              : dayObj && !isFuture && !st?.complete && isTrackable(cd)
               ? "bg-crimson/10 border-crimson/40 text-crimson"
               : dayObj
               ? "bg-background border-border"
               : "bg-muted/20 border-transparent text-muted-foreground";
+
             return (
               <div key={i} className={`aspect-square rounded-md border p-1 flex flex-col text-[10px] ${tone}`}>
                 <div className="flex items-center justify-between">
