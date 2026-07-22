@@ -99,6 +99,10 @@ function CalendarPage() {
   };
   const isToday = (d: Date | null) => d?.getTime() === today.getTime();
   const isPast = (d: Date | null) => !!d && d.getTime() < today.getTime();
+  // Grace period: never mark days before ESCALATION_START as "behind" — the
+  // programme was paused for this build; tracking resumes on 27 Jul 2026.
+  const isTrackable = (d: Date | null) => !!d && d.getTime() >= ESCALATION_START.getTime();
+
 
   const total = daysMeta.length;
   const completeCount = daysMeta.filter((d) => dayStatus(d).complete).length;
