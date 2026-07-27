@@ -37,12 +37,15 @@ function resolveRank(xp: number): { current: Rank; next: Rank | null } {
   return { current, next };
 }
 
-const PLAYBOOK_META: Record<string, { title: string; slug: string; icon: any }> = {
-  p_45day:       { title: "45-Day Plan",        slug: "plan",         icon: Calendar },
-  p_grandslam:   { title: "Grand Slam Offer",   slug: "grand-slam",   icon: Flame },
-  p_prospecting: { title: "SMB Prospecting",    slug: "prospecting",  icon: Target },
-  p_global:      { title: "Global Playbook",    slug: "global",       icon: Globe },
-};
+// Order shown on the dashboard: Global → SMB Prospecting → Grand Slam → 45-Day → SMB Calculator.
+// Only the 45-Day Plan generates XP. Other playbooks are preparatory / active tools.
+const PLAYBOOK_LIST: Array<{ key: string; title: string; slug: string; icon: any; xp?: boolean; note?: string }> = [
+  { key: "p_global",       title: "Global Playbook",           slug: "global",         icon: Globe },
+  { key: "p_prospecting",  title: "SMB Prospecting",           slug: "prospecting",    icon: Target },
+  { key: "p_grandslam",    title: "Grand Slam Offer",          slug: "grand-slam",     icon: Flame },
+  { key: "p_45day",        title: "45-Day Plan",               slug: "plan",           icon: Calendar, xp: true },
+  { key: "p_smb_calc",     title: "SMB Performance Calculator",slug: "smb-calculator", icon: Sparkles, note: "Client tool" },
+];
 
 const BAND_TONE: Record<string, { label: string; bg: string; text: string }> = {
   elite:    { label: "Elite",    bg: "bg-emerald-500/10", text: "text-emerald-500" },
@@ -77,7 +80,9 @@ function Dashboard() {
 
   const completedRows = useMemo(() => progressRows.filter(r => r.completed), [progressRows]);
   const totalCompleted = completedRows.length;
-  const xp = totalCompleted * XP_PER_TASK;
+  // XP is derived from the 45-Day Plan only. Other playbooks are preparation, not scoring surfaces.
+  const planCompleted = useMemo(() => completedRows.filter(r => r.playbook === "p_45day").length, [completedRows]);
+  const xp = planCompleted * XP_PER_TASK;
   const { current: rank, next } = useMemo(() => resolveRank(xp), [xp]);
   const RankIcon = rank.icon;
   const progressToNext = next ? Math.min(100, Math.round(((xp - rank.min) / (next.min - rank.min)) * 100)) : 100;
@@ -249,25 +254,31 @@ function Dashboard() {
         <div className="flex items-end justify-between">
           <div>
             <h2 className="font-display text-2xl font-bold">Begin today's forge</h2>
-            <p className="text-sm text-muted-foreground">Each playbook writes to your rank in real time.</p>
+            <p className="text-sm text-muted-foreground">Only the 45-Day Plan writes to your rank. The rest are your preparation and active tools.</p>
           </div>
           <Link to="/playbooks" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2 transition-all">
             All playbooks <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Object.entries(PLAYBOOK_META).map(([key, m]) => {
-            const done = perPlaybook[key] ?? 0;
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {PLAYBOOK_LIST.map((m) => {
+            const done = perPlaybook[m.key] ?? 0;
             return (
               <Link
-                key={key}
+                key={m.key}
                 to={`/playbooks/${m.slug}` as any}
                 className="group rounded-xl border border-border bg-card p-5 hover:border-gold hover:shadow-regal transition"
               >
                 <m.icon className="h-6 w-6 text-gold-deep group-hover:text-primary transition" />
                 <div className="mt-4 font-display font-semibold">{m.title}</div>
                 <div className="mt-2 text-xs text-muted-foreground">
-                  <span className="font-semibold text-foreground">{done}</span> tasks · {done * XP_PER_TASK} XP earned
+                  {m.xp ? (
+                    <><span className="font-semibold text-foreground">{done}</span> tasks · {done * XP_PER_TASK} XP earned</>
+                  ) : m.note ? (
+                    <span className="text-gold-deep font-semibold">{m.note}</span>
+                  ) : (
+                    <><span className="font-semibold text-foreground">{done}</span> tasks completed</>
+                  )}
                 </div>
               </Link>
             );
