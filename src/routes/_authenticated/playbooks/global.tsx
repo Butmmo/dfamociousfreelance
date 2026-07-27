@@ -402,10 +402,7 @@ function GlobalPlaybook() {
   const tabs = [
     { id: "countries", label: "🌍 Countries" },
     { id: "businesses", label: "💼 Niches" },
-    { id: "machine", label: "⚙️ Lead Machine" },
     { id: "positioning", label: "🤖 AI Edge" },
-    { id: "pricing", label: "💰 Pricing" },
-    { id: "calendar", label: "📅 30-Day Plan" },
   ];
 
   return (
@@ -414,15 +411,15 @@ function GlobalPlaybook() {
       {/* HEADER */}
       <div style={{ background: "linear-gradient(160deg, #FDF9F0 0%, #F8F5EE 60%, #F8F5EE 100%)", padding: "28px 20px 22px", borderBottom: "1px solid #D9CFBB" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#10B981", textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 7 }}>
-            <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "#10B981", boxShadow: "0 0 6px #10B981" }} />
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#0D7A5F", textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 7 }}>
+            <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "#0D7A5F", boxShadow: "0 0 6px #0D7A5F" }} />
             International Expansion Playbook
           </div>
-          <h1 style={{ margin: "0 0 10px 0", fontSize: "clamp(24px, 5vw, 38px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg, #FFFFFF 30%, #C99A3B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            Your Global Freelance Machine
+          <h1 style={{ margin: "0 0 10px 0", fontSize: "clamp(24px, 5vw, 38px)", fontWeight: 800, lineHeight: 1.15, color: "#1A1410" }}>
+            Your <span style={{ color: "#7A5A00" }}>Global Freelance</span> Machine
           </h1>
           <p style={{ margin: 0, fontSize: 13.5, color: "#6E6459", maxWidth: 580, lineHeight: 1.65 }}>
-            7 countries · 12 niches · lead pipeline · AI-edge positioning · pricing · 30-day calendar — built around your stack: Bubble.io, Notion, Klaviyo, Make, Kajabi, Adalo, FlutterFlow.
+            7 countries · 12 niches · AI-edge positioning — built around your stack: Go High Level, Lovable, Notion, Make, n8n, Klaviyo.
           </p>
         </div>
       </div>

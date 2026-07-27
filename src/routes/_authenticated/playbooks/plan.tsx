@@ -850,8 +850,8 @@ function PlanPage() {
     {id:"research", label:"🔍 Lead Research"},
     {id:"problems", label:"⚡ 3-Problem Method"},
     {id:"scripts",  label:"📝 Scripts"},
-    {id:"pitch",    label:"💰 What to Pitch"},
-    {id:"match",    label:"🎯 Match & Pitch"},
+    {id:"pitch",    label:"📈 Secondary Upsell Ladder"},
+    {id:"match",    label:"💰 What to Pitch"},
     {id:"upsell",   label:"📈 Upsell Ladder"},
     {id:"ghl",      label:"🔧 GHL Mastery"},
     {id:"faq",      label:"❓ FAQ"},
@@ -874,9 +874,8 @@ function PlanPage() {
           </div>
           <h1 style={{margin:"0 0 7px",
             fontSize:"clamp(21px,4.5vw,33px)",fontWeight:800,lineHeight:1.15,
-            background:"linear-gradient(135deg,#FFFFFF 30%,#B8860B 100%)",
-            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
-            From Zero to First Client — Manually
+            color:"#1A1410"}}>
+            From Zero to First Client — <span style={{color:"#7A5A00"}}>Manually</span>
           </h1>
           <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6B5D3F",
             maxWidth:580,lineHeight:1.65}}>
