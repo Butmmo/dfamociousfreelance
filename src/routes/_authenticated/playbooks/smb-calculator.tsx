@@ -290,7 +290,7 @@ function SmbCalculator() {
       )}
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto gap-1 border-b border-border mb-4">
+      <div className="flex overflow-x-auto gap-1 border-b border-border mb-4 relative">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -302,20 +302,59 @@ function SmbCalculator() {
             <t.icon className="h-3.5 w-3.5" /> {t.label}
           </button>
         ))}
-        <button
-          onClick={exportPdf}
-          disabled={exporting}
-          className="ml-auto inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-primary hover:underline disabled:opacity-60"
-        >
-          {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
-          Download PDF
-        </button>
+        <div className="ml-auto relative">
+          <button
+            onClick={() => setPdfMenuOpen((v) => !v)}
+            disabled={exporting}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-primary hover:underline disabled:opacity-60"
+          >
+            {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+            Download PDF
+          </button>
+          {pdfMenuOpen && (
+            <div className="absolute right-0 top-full mt-1 z-40 w-72 rounded-xl border border-border bg-card shadow-regal p-3 text-xs">
+              <button
+                onClick={() => exportPdf("current")}
+                className="w-full text-left rounded-md px-3 py-2 hover:bg-muted font-semibold"
+              >
+                Current tab only ({TABS.find(t => t.id === tab)?.label})
+              </button>
+              <button
+                onClick={() => exportPdf("all")}
+                className="w-full text-left rounded-md px-3 py-2 hover:bg-muted font-semibold"
+              >
+                All tabs (single PDF)
+              </button>
+              <div className="mt-2 border-t border-border pt-2">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">Pick specific tabs</div>
+                {TABS.map((t) => (
+                  <label key={t.id} className="flex items-center gap-2 py-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!pdfSelection[t.id]}
+                      onChange={(e) => setPdfSelection((s) => ({ ...s, [t.id]: e.target.checked }))}
+                      className="accent-primary"
+                    />
+                    <span>{t.label}</span>
+                  </label>
+                ))}
+                <button
+                  onClick={() => exportPdf("selected")}
+                  className="mt-2 w-full rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
+                >
+                  Download selected
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div ref={panelRef} className="rounded-2xl border border-border bg-card p-6">
+      <div className="rounded-2xl border border-border bg-card p-6">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-accent/20 px-3 py-1 text-[10px] font-semibold text-gold-deep">
           <Sparkles className="h-3 w-3" /> Powered by Claude AI
         </div>
+
 
         {tab === "profile" && (
           <div className="space-y-5">
