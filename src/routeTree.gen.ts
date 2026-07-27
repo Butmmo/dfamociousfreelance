@@ -20,6 +20,7 @@ import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAscentRouteRouteImport } from './routes/_authenticated/ascent/route'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
+import { Route as AuthenticatedAscentIndexRouteImport } from './routes/_authenticated/ascent/index'
 import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './routes/_authenticated/playbooks/smb-calculator'
 import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/_authenticated/playbooks/prospecting'
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
@@ -84,6 +85,12 @@ const AuthenticatedPlaybooksIndexRoute =
     path: '/playbooks/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAscentIndexRoute =
+  AuthenticatedAscentIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAscentRouteRoute,
+  } as any)
 const AuthenticatedPlaybooksSmbCalculatorRoute =
   AuthenticatedPlaybooksSmbCalculatorRouteImport.update({
     id: '/playbooks/smb-calculator',
@@ -137,13 +144,13 @@ export interface FileRoutesByFullPath {
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
+  '/ascent/': typeof AuthenticatedAscentIndexRoute
   '/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
-  '/ascent': typeof AuthenticatedAscentRouteRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
+  '/ascent': typeof AuthenticatedAscentIndexRoute
   '/playbooks': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesById {
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/_authenticated/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
   '/_authenticated/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
+  '/_authenticated/ascent/': typeof AuthenticatedAscentIndexRoute
   '/_authenticated/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRouteTypes {
@@ -195,13 +204,13 @@ export interface FileRouteTypes {
     | '/playbooks/plan'
     | '/playbooks/prospecting'
     | '/playbooks/smb-calculator'
+    | '/ascent/'
     | '/playbooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/accept-invite'
     | '/auth'
-    | '/ascent'
     | '/admin'
     | '/calendar'
     | '/dashboard'
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/playbooks/plan'
     | '/playbooks/prospecting'
     | '/playbooks/smb-calculator'
+    | '/ascent'
     | '/playbooks'
   id:
     | '__root__'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/_authenticated/playbooks/plan'
     | '/_authenticated/playbooks/prospecting'
     | '/_authenticated/playbooks/smb-calculator'
+    | '/_authenticated/ascent/'
     | '/_authenticated/playbooks/'
   fileRoutesById: FileRoutesById
 }
@@ -321,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ascent/': {
+      id: '/_authenticated/ascent/'
+      path: '/'
+      fullPath: '/ascent/'
+      preLoaderRoute: typeof AuthenticatedAscentIndexRouteImport
+      parentRoute: typeof AuthenticatedAscentRouteRoute
+    }
     '/_authenticated/playbooks/smb-calculator': {
       id: '/_authenticated/playbooks/smb-calculator'
       path: '/playbooks/smb-calculator'
@@ -368,11 +386,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAscentRouteRouteChildren {
   AuthenticatedAscentCurriculumRoute: typeof AuthenticatedAscentCurriculumRoute
+  AuthenticatedAscentIndexRoute: typeof AuthenticatedAscentIndexRoute
 }
 
 const AuthenticatedAscentRouteRouteChildren: AuthenticatedAscentRouteRouteChildren =
   {
     AuthenticatedAscentCurriculumRoute: AuthenticatedAscentCurriculumRoute,
+    AuthenticatedAscentIndexRoute: AuthenticatedAscentIndexRoute,
   }
 
 const AuthenticatedAscentRouteRouteWithChildren =
