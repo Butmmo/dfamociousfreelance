@@ -17,7 +17,6 @@ import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authent
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
-import { Route as AuthenticatedAscentRouteImport } from './routes/_authenticated/ascent'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
 import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './routes/_authenticated/playbooks/smb-calculator'
@@ -25,6 +24,7 @@ import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
 import { Route as AuthenticatedPlaybooksGrandSlamRouteImport } from './routes/_authenticated/playbooks/grand-slam'
 import { Route as AuthenticatedPlaybooksGlobalRouteImport } from './routes/_authenticated/playbooks/global'
+import { Route as AuthenticatedAscentCurriculumRouteImport } from './routes/_authenticated/ascent/curriculum'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -64,11 +64,6 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAscentRoute = AuthenticatedAscentRouteImport.update({
-  id: '/ascent',
-  path: '/ascent',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -112,17 +107,23 @@ const AuthenticatedPlaybooksGlobalRoute =
     path: '/playbooks/global',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAscentCurriculumRoute =
+  AuthenticatedAscentCurriculumRouteImport.update({
+    id: '/ascent/curriculum',
+    path: '/ascent/curriculum',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/ascent': typeof AuthenticatedAscentRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
+  '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
@@ -135,11 +136,11 @@ export interface FileRoutesByTo {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/ascent': typeof AuthenticatedAscentRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
+  '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
@@ -154,11 +155,11 @@ export interface FileRoutesById {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/ascent': typeof AuthenticatedAscentRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
+  '/_authenticated/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/_authenticated/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
   '/_authenticated/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
@@ -173,11 +174,11 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
-    | '/ascent'
     | '/calendar'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
+    | '/ascent/curriculum'
     | '/playbooks/global'
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
@@ -190,11 +191,11 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
-    | '/ascent'
     | '/calendar'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
+    | '/ascent/curriculum'
     | '/playbooks/global'
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
@@ -208,11 +209,11 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/_authenticated/admin'
-    | '/_authenticated/ascent'
     | '/_authenticated/calendar'
     | '/_authenticated/dashboard'
     | '/_authenticated/report'
     | '/_authenticated/weekly-report'
+    | '/_authenticated/ascent/curriculum'
     | '/_authenticated/playbooks/global'
     | '/_authenticated/playbooks/grand-slam'
     | '/_authenticated/playbooks/plan'
@@ -286,13 +287,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCalendarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/ascent': {
-      id: '/_authenticated/ascent'
-      path: '/ascent'
-      fullPath: '/ascent'
-      preLoaderRoute: typeof AuthenticatedAscentRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -342,16 +336,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksGlobalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ascent/curriculum': {
+      id: '/_authenticated/ascent/curriculum'
+      path: '/ascent/curriculum'
+      fullPath: '/ascent/curriculum'
+      preLoaderRoute: typeof AuthenticatedAscentCurriculumRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedAscentRoute: typeof AuthenticatedAscentRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
+  AuthenticatedAscentCurriculumRoute: typeof AuthenticatedAscentCurriculumRoute
   AuthenticatedPlaybooksGlobalRoute: typeof AuthenticatedPlaybooksGlobalRoute
   AuthenticatedPlaybooksGrandSlamRoute: typeof AuthenticatedPlaybooksGrandSlamRoute
   AuthenticatedPlaybooksPlanRoute: typeof AuthenticatedPlaybooksPlanRoute
@@ -362,11 +363,11 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedAscentRoute: AuthenticatedAscentRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
+  AuthenticatedAscentCurriculumRoute: AuthenticatedAscentCurriculumRoute,
   AuthenticatedPlaybooksGlobalRoute: AuthenticatedPlaybooksGlobalRoute,
   AuthenticatedPlaybooksGrandSlamRoute: AuthenticatedPlaybooksGrandSlamRoute,
   AuthenticatedPlaybooksPlanRoute: AuthenticatedPlaybooksPlanRoute,
