@@ -24,6 +24,7 @@ function WeeklyReportPage() {
   const [demos, setDemos] = useState(0);
   const [calls, setCalls] = useState(0);
   const [clients, setClients] = useState(0);
+  const [revenueNgn, setRevenueNgn] = useState(0);
   const [wins, setWins] = useState("");
   const [blockers, setBlockers] = useState("");
   const [nextWeek, setNextWeek] = useState("");
@@ -49,6 +50,7 @@ function WeeklyReportPage() {
       wins: wins.trim(),
       blockers: blockers.trim(),
       next_week: nextWeek.trim(),
+      revenue_ngn: revenueNgn,
       filed_at: new Date().toISOString(),
     };
     const { error } = await supabase.from("weekly_reports").insert({
@@ -68,7 +70,7 @@ function WeeklyReportPage() {
     }
     toast.success("Report filed. Council notified.");
     setWins(""); setBlockers(""); setNextWeek("");
-    setOutreach(0); setDemos(0); setCalls(0); setClients(0);
+    setOutreach(0); setDemos(0); setCalls(0); setClients(0); setRevenueNgn(0);
     const { data } = await supabase
       .from("weekly_reports")
       .select("*")
@@ -89,6 +91,9 @@ function WeeklyReportPage() {
           Every Sunday. Even zero counts. The council reads cadence, not perfection — a filed report of nothing beats a missed one.
           Your <Link to="/report" className="text-primary font-semibold hover:underline">Field Report</Link> aggregates these into your escalation score.
         </p>
+        <div className="mt-3 rounded-lg border border-crimson/40 bg-crimson/5 px-4 py-2.5 text-xs text-crimson max-w-2xl">
+          <strong>Missed filing = ₦2,500 fine</strong> and a hit to your escalation rating. File it — even if every count is zero.
+        </div>
       </header>
 
       <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-6 space-y-6">
@@ -98,6 +103,8 @@ function WeeklyReportPage() {
           <NumField label="Calls booked" value={calls} onChange={setCalls} />
           <NumField label="Clients closed" value={clients} onChange={setClients} />
         </div>
+
+        <NumField label="Revenue this week (₦)" value={revenueNgn} onChange={setRevenueNgn} big />
 
         <TextArea label="Wins this week" value={wins} onChange={setWins} placeholder="What went well? Any breakthroughs?" />
         <TextArea label="Blockers" value={blockers} onChange={setBlockers} placeholder="What's stuck? What would you ask your mentor?" />
@@ -149,7 +156,7 @@ function WeeklyReportPage() {
   );
 }
 
-function NumField({ label, value, onChange }: { label: string; value: number; onChange: (n: number) => void }) {
+function NumField({ label, value, onChange, big }: { label: string; value: number; onChange: (n: number) => void; big?: boolean }) {
   return (
     <label className="block">
       <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
@@ -158,7 +165,7 @@ function NumField({ label, value, onChange }: { label: string; value: number; on
         min={0}
         value={value}
         onChange={(e) => onChange(Math.max(0, parseInt(e.target.value || "0", 10)))}
-        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 font-display text-xl font-bold"
+        className={`mt-1 w-full rounded-md border border-input bg-background px-3 py-2 font-display font-bold ${big ? "text-2xl" : "text-xl"}`}
       />
     </label>
   );
