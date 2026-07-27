@@ -3,7 +3,7 @@
 export const ASCENT_PLAYBOOK_KEY = "ascent" as const;
 
 export type AscentRank = { name: string; threshold: number; blurb: string };
-export type AscentItem = { id: string; xp: number; text: string; badge?: string };
+export type AscentItem = { id: string; xp: number; text: string; badge?: boolean; emoji?: string };
 export type AscentDay = { day: number; phase: number; title: string; objective: string; items: AscentItem[] };
 
 export const ASCENT_TABS = [
