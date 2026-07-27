@@ -845,16 +845,16 @@ function PlanPage() {
   };
 
   const TABS=[
-    {id:"plan",     label:"📅 45-Day Plan"},
-    {id:"notion",   label:"🗂️ Notion CRM"},
-    {id:"research", label:"🔍 Lead Research"},
-    {id:"problems", label:"⚡ 3-Problem Method"},
-    {id:"scripts",  label:"📝 Scripts"},
-    {id:"pitch",    label:"📈 Secondary Upsell Ladder"},
-    {id:"match",    label:"💰 What to Pitch"},
-    {id:"upsell",   label:"📈 Upsell Ladder"},
-    {id:"ghl",      label:"🔧 GHL Mastery"},
-    {id:"faq",      label:"❓ FAQ"},
+    {id:"plan",     label:"1. 📅 45-Day Plan"},
+    {id:"notion",   label:"2. 🗂️ Notion CRM"},
+    {id:"research", label:"3. 🔍 Lead Research"},
+    {id:"problems", label:"4. ⚡ 3-Problem Method"},
+    {id:"scripts",  label:"5. 📝 Scripts"},
+    {id:"match",    label:"6. 💰 What to Pitch"},
+    {id:"upsell",   label:"7. 📈 Upsell Ladder"},
+    {id:"ghl",      label:"8. 🔧 GHL Mastery"},
+    {id:"pitch",    label:"9. 📈 Secondary Upsell Ladder"},
+    {id:"faq",      label:"10. ❓ FAQ"},
   ];
 
   return (

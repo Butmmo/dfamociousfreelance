@@ -11,10 +11,10 @@ export const Route = createFileRoute("/_authenticated/playbooks/")({
 });
 
 const PLAYBOOKS = [
-  { slug: "plan",           key: "p_45day",        title: "45-Day Implementation Playbook", tagline: "From Zero to First Client",     body: "Day-by-day plan across 7 weeks — foundation, harvest, outreach, first close, deliver, scale, launch month 2.", icon: Calendar,   accent: "from-indigo-500/25 to-transparent" },
-  { slug: "grand-slam",     key: "p_grandslam",    title: "Grand Slam Offer System",         tagline: "The Closer's Arsenal",          body: "7 phases from Google Maps to first retainer, plus the Grand Slam offer builder and value ladder.",             icon: Flame,      accent: "from-amber-500/25 to-transparent" },
-  { slug: "prospecting",    key: "p_prospecting",  title: "SMB Prospecting Guide",           tagline: "From Google Maps to Closed Deal", body: "12 niches with exact search terms, hot / cold signal scoring, and the full outreach tool stack.",             icon: Target,     accent: "from-emerald-500/25 to-transparent" },
   { slug: "global",         key: "p_global",       title: "Global Freelance Playbook",       tagline: "The Worldwide Machine",         body: "7 countries, 12 niches, positioning, pricing tiers, and the 30-day international launch plan.",              icon: Globe,      accent: "from-rose-500/25 to-transparent" },
+  { slug: "prospecting",    key: "p_prospecting",  title: "SMB Prospecting Guide",           tagline: "From Google Maps to Closed Deal", body: "12 niches with exact search terms, hot / cold signal scoring, and the full outreach tool stack.",             icon: Target,     accent: "from-emerald-500/25 to-transparent" },
+  { slug: "grand-slam",     key: "p_grandslam",    title: "Grand Slam Offer System",         tagline: "The Closer's Arsenal",          body: "7 phases from Google Maps to first retainer, plus the Grand Slam offer builder and value ladder.",             icon: Flame,      accent: "from-amber-500/25 to-transparent" },
+  { slug: "plan",           key: "p_45day",        title: "45-Day Implementation Playbook", tagline: "From Zero to First Client",     body: "Day-by-day plan across 7 weeks — foundation, harvest, outreach, first close, deliver, scale, launch month 2.", icon: Calendar,   accent: "from-indigo-500/25 to-transparent" },
   { slug: "smb-calculator", key: "p_smb_calc",     title: "SMB Performance Calculator",      tagline: "Powered by Claude AI",          body: "Enter a prospect's numbers → discover their revenue leak → export a branded PDF per tab.",                    icon: Calculator, accent: "from-sky-500/25 to-transparent" },
 ];
 
