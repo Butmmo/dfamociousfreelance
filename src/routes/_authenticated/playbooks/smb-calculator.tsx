@@ -1,10 +1,9 @@
 // @ts-nocheck
-// SMB Performance Calculator — re-themed to DFS Regal palette.
-// Per-tab PDF export via jsPDF + html2canvas. Data model powered by Claude AI insight.
+// SMB Performance Calculator — DFS Regal palette.
+// PDF export renders directly with jsPDF (per-tab pages, DFS + Claude AI branding).
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { Download, Sparkles, Building2, Star, Zap, Phone, DollarSign, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -63,7 +62,10 @@ function SmbCalculator() {
   const [monthlyCalls, setCalls] = useState(120);
   const [missedPct, setMissed] = useState(45);
   const [exporting, setExporting] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const [pdfSelection, setPdfSelection] = useState<Record<string, boolean>>({
+    profile: true, reviews: true, speed: true, calls: true, report: true,
+  });
+  const [pdfMenuOpen, setPdfMenuOpen] = useState(false);
 
   const applyPreset = (key: string) => {
     const p = PRESETS[key];
@@ -89,43 +91,161 @@ function SmbCalculator() {
   }, [monthlyCalls, missedPct, avgValue]);
   const totalLost = reviewLost + speedLost + callLost;
 
-  const exportPdf = async () => {
-    if (!panelRef.current) return;
-    setExporting(true);
-    try {
-      const canvas = await html2canvas(panelRef.current, { backgroundColor: "#F8F5EE", scale: 2 });
-      const img = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({ orientation: "p", unit: "pt", format: "a4" });
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      // Header
-      pdf.setFillColor(122, 90, 0);
-      pdf.rect(0, 0, pageW, 60, "F");
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont("helvetica", "bold"); pdf.setFontSize(16);
-      pdf.text("DFS Citadel", 24, 26);
-      pdf.setFont("helvetica", "normal"); pdf.setFontSize(10);
-      pdf.text(`SMB Performance Calculator · ${TABS.find((t) => t.id === tab)?.label} · Powered by Claude AI`, 24, 44);
-      pdf.text(new Date().toLocaleString(), pageW - 24, 44, { align: "right" });
-      if (smbName) { pdf.setFontSize(11); pdf.text(`SMB: ${smbName}`, pageW - 24, 26, { align: "right" }); }
+  // Build the text content for each tab.
+  const tabContent = (id: string): { title: string; lines: Array<[string, string]>; footer?: string } => {
+    if (id === "profile") return {
+      title: "Business Profile",
+      lines: [
+        ["Business type", PRESETS[bizKey].label],
+        ["Avg value per customer / job", fmt(avgValue)],
+        ["Monthly customers / jobs", String(monthlyCusts)],
+        ["Estimated monthly revenue", fmt(monthlyCusts * avgValue)],
+      ],
+    };
+    if (id === "reviews") return {
+      title: "Review Health Audit",
+      lines: [
+        ["Your reviews", String(yourReviews)],
+        ["Top competitor reviews", String(compReviews)],
+        ["Google rating", yourRating.toFixed(1)],
+        ["Last review received", RECENCY.find(r => r.id === lastReview)?.label ?? "—"],
+        ["Revenue lost / month", fmt(reviewLost)],
+      ],
+    };
+    if (id === "speed") return {
+      title: "Speed to Lead",
+      lines: [
+        ["Monthly online enquiries", String(monthlyEnq)],
+        ["Typical response time", RESPONSE.find(r => r.id === responseId)?.label ?? "—"],
+        ["Revenue lost / month", fmt(speedLost)],
+      ],
+    };
+    if (id === "calls") return {
+      title: "Missed Calls",
+      lines: [
+        ["Monthly calls received", String(monthlyCalls)],
+        ["Missed call rate", `${missedPct}%`],
+        ["Missed calls / month", String(Math.round(monthlyCalls * missedPct / 100))],
+        ["Revenue lost / month", fmt(callLost)],
+      ],
+    };
+    // report
+    const services = [
+      { name: "Google Review Automation", price: "$297–$497/mo", loss: reviewLost, gain: 0.15 },
+      { name: "Speed-to-Lead Automation", price: "$197–$397/mo", loss: speedLost, gain: 0.35 },
+      { name: "AI Voice Receptionist",     price: "$297–$497/mo", loss: callLost, gain: 0.30 },
+    ].sort((a, b) => b.loss - a.loss);
+    return {
+      title: "Revenue Recovery Report",
+      lines: [
+        ["Total monthly leak", fmt(totalLost)],
+        ["Total annual leak", fmt(totalLost * 12)],
+        ...services.map((s, i): [string, string] => [
+          `Priority ${i + 1}: ${s.name}`,
+          `${s.price} · recovery ~${fmt(Math.round(s.loss * s.gain))}/mo`,
+        ]),
+      ],
+      footer: "Priority ranking based on annual recovery potential.",
+    };
+  };
 
-      const imgW = pageW - 48;
-      const imgH = (canvas.height * imgW) / canvas.width;
-      let remaining = imgH;
-      let y = 72;
-      const maxPerPage = pageH - 80;
-      // Simple single-fit — scale down if too tall
-      if (imgH <= maxPerPage) {
-        pdf.addImage(img, "PNG", 24, y, imgW, imgH);
-      } else {
-        const scale = maxPerPage / imgH;
-        pdf.addImage(img, "PNG", 24, y, imgW * scale, maxPerPage);
-      }
-      pdf.setFontSize(8); pdf.setTextColor(120, 120, 120);
-      pdf.text("D'Famocious Freelance Scholarship — Confidential", 24, pageH - 16);
-      pdf.save(`${smbName || "smb"}-${tab}-${Date.now()}.pdf`);
-      toast.success("PDF exported.");
+  const drawPage = (pdf: jsPDF, tabId: string, tabLabel: string, pageIdx: number, pageTotal: number) => {
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    // Header band (deep gold)
+    pdf.setFillColor(122, 90, 0);
+    pdf.rect(0, 0, pageW, 74, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(18);
+    pdf.text("DFS Citadel", 32, 30);
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(9);
+    pdf.text("D'Famocious Freelance Scholarship", 32, 46);
+    pdf.setFontSize(8); pdf.setTextColor(240, 220, 170);
+    pdf.text("Powered by D'Famocious Group", 32, 60);
+    // Right side header
+    pdf.setTextColor(255, 255, 255); pdf.setFontSize(9);
+    pdf.text(`SMB Performance Calculator — ${tabLabel}`, pageW - 32, 30, { align: "right" });
+    pdf.setFontSize(8); pdf.setTextColor(240, 220, 170);
+    pdf.text("⟡ Powered by Claude AI", pageW - 32, 46, { align: "right" });
+    pdf.setTextColor(255, 255, 255); pdf.setFontSize(8);
+    pdf.text(new Date().toLocaleString(), pageW - 32, 60, { align: "right" });
+
+    // Subject line
+    let y = 108;
+    pdf.setTextColor(26, 20, 16);
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(20);
+    pdf.text(tabContent(tabId).title, 32, y);
+    if (smbName) {
+      y += 20;
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(11);
+      pdf.setTextColor(107, 93, 63);
+      pdf.text(`Prospect: ${smbName}`, 32, y);
+    }
+    y += 24;
+
+    // Body: key/value table
+    const { lines, footer } = tabContent(tabId);
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(11);
+    lines.forEach(([k, v]) => {
+      // Row background alternating
+      pdf.setFillColor(248, 245, 238);
+      pdf.rect(32, y - 12, pageW - 64, 22, "F");
+      pdf.setTextColor(107, 93, 63);
+      pdf.text(k, 40, y + 3);
+      pdf.setTextColor(26, 20, 16);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(v, pageW - 40, y + 3, { align: "right" });
+      pdf.setFont("helvetica", "normal");
+      y += 26;
+    });
+
+    // Total leak callout for report tab
+    if (tabId === "report") {
+      y += 12;
+      pdf.setFillColor(184, 32, 32);
+      pdf.rect(32, y, pageW - 64, 60, "F");
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+      pdf.text("MONTHLY REVENUE AT RISK", 44, y + 22);
+      pdf.setFontSize(28);
+      pdf.text(fmt(totalLost), 44, y + 50);
+    }
+
+    if (footer) {
+      pdf.setFont("helvetica", "italic"); pdf.setFontSize(9); pdf.setTextColor(120, 110, 90);
+      pdf.text(footer, 32, pageH - 60);
+    }
+
+    // Footer
+    pdf.setDrawColor(217, 207, 187);
+    pdf.line(32, pageH - 40, pageW - 32, pageH - 40);
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(8); pdf.setTextColor(140, 130, 110);
+    pdf.text("D'Famocious Freelance Scholarship — Confidential · Powered by D'Famocious Group", 32, pageH - 24);
+    pdf.text(`Page ${pageIdx} / ${pageTotal}`, pageW - 32, pageH - 24, { align: "right" });
+  };
+
+  const exportPdf = async (mode: "current" | "selected" | "all") => {
+    setExporting(true);
+    setPdfMenuOpen(false);
+    try {
+      let ids: string[];
+      if (mode === "current") ids = [tab];
+      else if (mode === "all") ids = TABS.map(t => t.id);
+      else ids = TABS.map(t => t.id).filter(id => pdfSelection[id]);
+      if (ids.length === 0) { toast.error("Select at least one tab."); return; }
+
+      const pdf = new jsPDF({ orientation: "p", unit: "pt", format: "a4" });
+      ids.forEach((id, i) => {
+        if (i > 0) pdf.addPage();
+        const label = TABS.find(t => t.id === id)?.label ?? id;
+        drawPage(pdf, id, label, i + 1, ids.length);
+      });
+      const stem = (smbName || "smb").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+      const suffix = mode === "current" ? tab : mode;
+      pdf.save(`dfs-smb-calculator-${stem}-${suffix}.pdf`);
+      toast.success("PDF downloaded.");
     } catch (e: any) {
+      console.error(e);
       toast.error(e?.message ?? "Export failed");
     } finally {
       setExporting(false);
@@ -170,7 +290,7 @@ function SmbCalculator() {
       )}
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto gap-1 border-b border-border mb-4">
+      <div className="flex overflow-x-auto gap-1 border-b border-border mb-4 relative">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -182,20 +302,59 @@ function SmbCalculator() {
             <t.icon className="h-3.5 w-3.5" /> {t.label}
           </button>
         ))}
-        <button
-          onClick={exportPdf}
-          disabled={exporting}
-          className="ml-auto inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-primary hover:underline disabled:opacity-60"
-        >
-          {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
-          Download PDF
-        </button>
+        <div className="ml-auto relative">
+          <button
+            onClick={() => setPdfMenuOpen((v) => !v)}
+            disabled={exporting}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-primary hover:underline disabled:opacity-60"
+          >
+            {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+            Download PDF
+          </button>
+          {pdfMenuOpen && (
+            <div className="absolute right-0 top-full mt-1 z-40 w-72 rounded-xl border border-border bg-card shadow-regal p-3 text-xs">
+              <button
+                onClick={() => exportPdf("current")}
+                className="w-full text-left rounded-md px-3 py-2 hover:bg-muted font-semibold"
+              >
+                Current tab only ({TABS.find(t => t.id === tab)?.label})
+              </button>
+              <button
+                onClick={() => exportPdf("all")}
+                className="w-full text-left rounded-md px-3 py-2 hover:bg-muted font-semibold"
+              >
+                All tabs (single PDF)
+              </button>
+              <div className="mt-2 border-t border-border pt-2">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">Pick specific tabs</div>
+                {TABS.map((t) => (
+                  <label key={t.id} className="flex items-center gap-2 py-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!pdfSelection[t.id]}
+                      onChange={(e) => setPdfSelection((s) => ({ ...s, [t.id]: e.target.checked }))}
+                      className="accent-primary"
+                    />
+                    <span>{t.label}</span>
+                  </label>
+                ))}
+                <button
+                  onClick={() => exportPdf("selected")}
+                  className="mt-2 w-full rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
+                >
+                  Download selected
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div ref={panelRef} className="rounded-2xl border border-border bg-card p-6">
+      <div className="rounded-2xl border border-border bg-card p-6">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-accent/20 px-3 py-1 text-[10px] font-semibold text-gold-deep">
           <Sparkles className="h-3 w-3" /> Powered by Claude AI
         </div>
+
 
         {tab === "profile" && (
           <div className="space-y-5">
