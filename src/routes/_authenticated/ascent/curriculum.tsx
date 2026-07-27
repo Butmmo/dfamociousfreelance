@@ -3,12 +3,10 @@
 // was remapped to the DFS Regal system so every panel, icon and label stays
 // legible. Progress persists to Supabase and access is gated by ascent_access.
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { checkMyAscentAccess } from "@/lib/ascent.functions";
+import React, { useState, useMemo, useCallback } from "react";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
-import { Lock } from "lucide-react";
+import { RANKS, DAYS, ASCENT_TABS as TABS, ASCENT_PLAYBOOK_KEY } from "@/lib/ascent-data";
 import {
   Target, CheckCircle2, Circle, ChevronDown, ChevronRight,
   Send, MessageSquare, ShieldCheck, AlertTriangle, TrendingUp, RotateCcw,
@@ -17,30 +15,11 @@ import {
 
 export const Route = createFileRoute("/_authenticated/ascent/curriculum")({
   head: () => ({ meta: [
-    { title: "The Ascent — DFS Citadel" },
+    { title: "The Ascent — Curriculum" },
     { name: "description", content: "45-Day Zero-Capital Direct-Scouting Closer System." },
   ] }),
-  component: AscentGate,
+  component: App,
 });
-
-function AscentGate() {
-  const check = useServerFn(checkMyAscentAccess);
-  const [status, setStatus] = useState("loading");
-  useEffect(() => {
-    check({ data: undefined })
-      .then((r) => setStatus(r?.hasAccess ? "granted" : "denied"))
-      .catch(() => setStatus("denied"));
-  }, [check]);
-  if (status === "loading") return <div className="p-10 text-center text-muted-foreground">Verifying Ascent access…</div>;
-  if (status === "denied") return (
-    <div className="max-w-xl mx-auto mt-10 rounded-2xl border border-gold/40 bg-card p-10 text-center space-y-3 shadow-regal">
-      <Lock className="h-10 w-10 text-gold-deep mx-auto" />
-      <h1 className="font-display text-2xl">The Ascent is invitation-only</h1>
-      <p className="text-sm text-muted-foreground">This programme is granted individually by the Founder. Contact your council admin if you believe you should have access.</p>
-    </div>
-  );
-  return <App />;
-}
 
 
 /* ---------------------------------------------------------------------- */
