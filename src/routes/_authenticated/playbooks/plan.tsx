@@ -27,7 +27,7 @@ export const WEEKS = [
          {id:"1d",text:"Sign up for Calendly (free tier) and link it to your new Gmail — your discovery call booking link"},
          {id:"1e",text:"Create a Loom account (free, 5-min videos) — your demo walkthroughs live here"},
          {id:"1f",text:"Update LinkedIn headline: Digital Systems Engineer | Web Apps, Automation and CRM for Growing Businesses"},
-         {id:"1g",text:"Create Lovable.dev account — upgrade to Pro (~$25/month) only when you begin Day 4"},
+         {id:"1g",text:"Create your Lovable.dev account using this invite link → https://lovable.dev/invite/60XF22Z — you get 10 bonus credits the moment you sign up through it. Upgrade to Pro (~$25/month) only when you begin Day 4"},
        ]},
       {day:2, focus:"Build Your Notion CRM Database", icon:"🗂️",
        note:"This database is your entire business operating system. Build it right once — you will use it every single day.",

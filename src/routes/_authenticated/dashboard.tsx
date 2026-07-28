@@ -42,9 +42,6 @@ function resolveRank(xp: number): { current: Rank; next: Rank | null } {
 const PLAYBOOK_LIST: Array<{ key: string; title: string; slug: string; icon: any; xp?: boolean; note?: string }> = [
   { key: "p_global",       title: "Global Playbook",           slug: "global",         icon: Globe },
   { key: "p_prospecting",  title: "SMB Prospecting",           slug: "prospecting",    icon: Target },
-  { key: "p_grandslam",    title: "Grand Slam Offer",          slug: "grand-slam",     icon: Flame },
-  { key: "p_45day",        title: "45-Day Plan",               slug: "plan",           icon: Calendar, xp: true },
-  { key: "p_smb_calc",     title: "SMB Performance Calculator",slug: "smb-calculator", icon: Sparkles, note: "Client tool" },
 ];
 
 const BAND_TONE: Record<string, { label: string; bg: string; text: string }> = {

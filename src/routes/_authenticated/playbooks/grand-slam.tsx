@@ -143,6 +143,8 @@ const HOT = [
   { pts: 2, label: "Under 25 Google reviews total", why: "Low digital engagement = your opening" },
   { pts: 2, label: "Independently owned, single location only", why: "You're emailing the actual decision-maker" },
   { pts: 2, label: "Reviews mention 'hard to book' or 'hard to contact'", why: "Customers are already calling for your solution" },
+  { pts: 2, label: "Since Last Review — no new Google review in over a week", why: "Silent flywheel: reputation isn't compounding, they need your review-request automation" },
+  { pts: 2, label: "Reviews not Responded — fewer than 40% of reviews have an owner reply", why: "Owner is disengaged from reputation management — easy win to pitch a done-for-you response system" },
   { pts: 1, label: "Business is 3–10 years old", why: "Budget exists; too busy to fix it themselves" },
   { pts: 1, label: "High-margin niche: dental, legal, med spa, real estate", why: "Fast, obvious ROI makes your fee easy to justify" },
 ];
@@ -285,7 +287,7 @@ Boluwatife Famokunwa
     { id: "gslam",   label: "💎 Grand Slam" },
     { id: "score",   label: "🎯 Score Leads" },
     { id: "ladder",  label: "📈 Value Ladder" },
-    { id: "tools",   label: "🛠️ Tools" },
+    { id: "tools",   label: "🛠️ Automated Lead Gen. Tools" },
   ];
 
   const card = { background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 12 };
@@ -307,7 +309,7 @@ Boluwatife Famokunwa
             </span>
           </div>
 
-          <h1 style={{ margin: "0 0 6px", fontSize: "clamp(19px,4vw,28px)", fontWeight: 800, lineHeight: 1.2, background: "linear-gradient(130deg,#FFFFFF 20%,#C99A3B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <h1 style={{ margin: "0 0 6px", fontSize: "clamp(19px,4vw,28px)", fontWeight: 800, lineHeight: 1.2, background: "linear-gradient(130deg,#1A140F 20%,#C99A3B 70%,#8B0000 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Grand Slam Offer Implementation System
           </h1>
           <p style={{ margin: "0 0 16px", fontSize: 12.5, color: "#4A5568", lineHeight: 1.7, maxWidth: 560 }}>
