@@ -309,7 +309,7 @@ Boluwatife Famokunwa
             </span>
           </div>
 
-          <h1 style={{ margin: "0 0 6px", fontSize: "clamp(19px,4vw,28px)", fontWeight: 800, lineHeight: 1.2, background: "linear-gradient(130deg,#FFFFFF 20%,#C99A3B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <h1 style={{ margin: "0 0 6px", fontSize: "clamp(19px,4vw,28px)", fontWeight: 800, lineHeight: 1.2, background: "linear-gradient(130deg,#1A140F 20%,#C99A3B 70%,#8B0000 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Grand Slam Offer Implementation System
           </h1>
           <p style={{ margin: "0 0 16px", fontSize: 12.5, color: "#4A5568", lineHeight: 1.7, maxWidth: 560 }}>
