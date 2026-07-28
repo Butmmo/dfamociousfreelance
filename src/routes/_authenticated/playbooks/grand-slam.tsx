@@ -287,7 +287,7 @@ Boluwatife Famokunwa
     { id: "gslam",   label: "💎 Grand Slam" },
     { id: "score",   label: "🎯 Score Leads" },
     { id: "ladder",  label: "📈 Value Ladder" },
-    { id: "tools",   label: "🛠️ Tools" },
+    { id: "tools",   label: "🛠️ Automated Lead Gen. Tools" },
   ];
 
   const card = { background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 12 };
