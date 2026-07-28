@@ -291,10 +291,6 @@ function ProspectingGuide() {
   const TABS = [
     { id: "maps",    label: "🗺️ Map Searches" },
     { id: "email",   label: "📧 Get Emails" },
-    { id: "qualify", label: "🎯 Qualify Leads" },
-    { id: "offer",   label: "💎 Grand Slam" },
-    { id: "ladder",  label: "📈 Value Ladder" },
-    { id: "stack",   label: "🛠️ Tool Stack" },
   ];
 
   return (
