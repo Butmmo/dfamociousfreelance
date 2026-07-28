@@ -303,11 +303,11 @@ function ProspectingGuide() {
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", boxShadow: "0 0 6px #10B981", display: "inline-block" }} />
             SMB Prospecting Playbook
           </div>
-          <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px, 4.5vw, 34px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg,#FFFFFF 30%,#C99A3B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px, 4.5vw, 34px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(135deg,#1A140F 20%,#C99A3B 70%,#8B0000 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             From Google Maps to Closed Deal
           </h1>
           <p style={{ margin: 0, fontSize: 13, color: "#6E6459", maxWidth: 560, lineHeight: 1.65 }}>
-            Exact searches · Email extraction · Lead scoring · Grand Slam Offer · Value ladder — built for web development freelancing on a lean budget.
+            Exact searches · Email extraction — built for web development freelancing on a lean budget.
           </p>
         </div>
       </div>
