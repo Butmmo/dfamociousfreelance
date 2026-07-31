@@ -1322,11 +1322,6 @@ function PlanPage() {
         )}
 
         {/* WHAT TO PITCH */}
-            </div>
-          </div>
-        )}
-
-        {/* FAQ */}
         {tab==="match"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>🎯 Match the Problem to the Service</h2>
