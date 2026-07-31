@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { DfsMark, DfgMark, Motto, DFG_CREST } from "@/components/dfs/Brand";
+import { DfsMark, DfgMark, Motto } from "@/components/dfs/Brand";
+import dfsCombined from "@/assets/dfs_combined.png.asset.json";
 import founderAsset from "@/assets/founder.jpg.asset.json";
 import {
   Crown, Shield, Target, Flame, BookOpen, TrendingUp, Globe, Calendar, Lock, Award,
@@ -162,7 +163,7 @@ function Landing() {
           </div>
           <div className="relative">
             <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-gold/20 via-transparent to-crimson/20 blur-2xl" />
-            <img src={DFG_CREST} alt="D'Famocious Group crest" className="relative mx-auto w-full max-w-md drop-shadow-2xl" />
+            <img src={dfsCombined.url} alt="DFS — D'Famocious Freelance Scholarship, a D'Famocious Group institution" className="relative mx-auto w-full max-w-md drop-shadow-2xl" />
           </div>
         </div>
       </section>
