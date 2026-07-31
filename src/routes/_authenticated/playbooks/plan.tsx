@@ -28,6 +28,8 @@ export const WEEKS = [
          {id:"1e",text:"Create a Loom account (free, 5-min videos) — your demo walkthroughs live here"},
          {id:"1f",text:"Update LinkedIn headline: Digital Systems Engineer | Web Apps, Automation and CRM for Growing Businesses"},
          {id:"1g",text:"Create your Lovable.dev account using this invite link → https://lovable.dev/invite/60XF22Z — you get 10 bonus credits the moment you sign up through it. Upgrade to Pro (~$25/month) only when you begin Day 4"},
+         {id:"1h",text:"Sign up at https://ContactOut.com — this is how you find the owner's personal email during lead research"},
+         {id:"1i",text:"Install the ContactOut extension on your Chrome browser on your laptop. If you do not have a laptop, mark this as done"},
        ]},
       {day:2, focus:"Build Your Notion CRM Database", icon:"🗂️",
        note:"This database is your entire business operating system. Build it right once — you will use it every single day.",
@@ -454,18 +456,20 @@ const RESEARCH_STEPS = [
    body:"Open Google Maps on your phone. Search '[niche] [city]'. Browse 25-30 listings. In your physical notebook, record: business name, phone, review count, whether a website appears, and a quick note on what looks weak. Move fast — this is scouting, not research. Aim for 15-20 entries per session."},
   {n:"02",icon:"📒",color:"#0D7A5F",title:"Transfer Notebook to Google Sheets",
    body:"Same evening or next morning: open your raw data sheet and create a row for each listing. Columns: SMB Name | Phone | Website (or None) | Reviews | City | Country | Niche | Date Found. Visit each website briefly (30 seconds max) and note: mobile-friendly? Has booking? Modern design? Use a comment cell."},
-  {n:"03",icon:"💼",color:"#B8860B",title:"Find the Founder on LinkedIn",
-   body:"Search '[Business Name] [City]' on LinkedIn. Find the Owner, Founder, Director, or MD. Note: full name, job title, profile URL. Check whether they post content — active LinkedIn users respond to DMs 2-3x faster than inactive ones. If not on LinkedIn, check the website About page or Facebook."},
-  {n:"04",icon:"📘",color:"#8B2E1F",title:"Check Facebook and Instagram",
+  {n:"03",icon:"🔎",color:"#B8860B",title:'Search for "owner at [BUSINESS NAME]" on Google',
+   body:"Open Google and search exactly: owner at [BUSINESS NAME]. Add the city if the name is common. Google surfaces the LinkedIn profile of the owner, founder, director or MD faster than searching inside LinkedIn itself. Note the full name and job title from the search result snippet."},
+  {n:"04",icon:"💼",color:"#0A66C2",title:"Follow the Google Search Result into LinkedIn",
+   body:"Click straight through from the Google result into the LinkedIn profile. Confirm they are the decision-maker for that business, then save the profile URL into your sheet. Check whether they post content — active LinkedIn users respond to DMs 2-3x faster than inactive ones."},
+  {n:"05",icon:"📧",color:"#8B2E1F",title:"Use ContactOut to Get the Owner's Personal Email",
+   body:"With the LinkedIn profile open, use the ContactOut Chrome extension on your laptop (or contactout.com on mobile) to reveal the owner's personal email — @gmail.com and similar personal addresses. Personal emails get roughly 3x the reply rate of info@ or contact@. Save it to your sheet. If ContactOut returns nothing, fall back to the website /contact page, then mark the lead 'LinkedIn DM only'."},
+  {n:"06",icon:"📘",color:"#8B2E1F",title:"Check Facebook and Instagram",
    body:"Search the business name on both platforms. Note: when did they last post? Are customers commenting with pain points like 'hard to book' or 'never got a reply'? A business with an active Instagram but no booking system is a perfect target — they have the audience but no system to convert it."},
-  {n:"05",icon:"🔍",color:"#8B2E1F",title:"Find the Direct Email via Google Search",
-   body:"Try: '[Founder Name] [Business Name] email' or '[Founder Name] [City] contact'. Then check the website /contact and /about pages. Look for a personal email, not info@ or contact@ — personal addresses get 3x the reply rate. If you cannot find one, mark the lead as 'LinkedIn DM only' in your sheet."},
-  {n:"06",icon:"🎯",color:"#0D7A5F",title:"Score the Lead Using the Grand Slam Rubric",
-   body:"Apply the 7 green signals and 5 red flags from the Grand Slam Playbook (Score Leads tab). Record the score in your Scoring Scratch Pad sheet. Tag: Hot (7+), Warm (4-6), Cold (0-3). Only continue enriching Hot and Warm leads. Do not spend another minute on Cold leads."},
-  {n:"07",icon:"⚡",color:"#B8860B",title:"Identify The Gap, The Leak, and The Lift",
-   body:"For every HOT lead only: open the 3-Problem Method tab and identify all three connected problems specific to this business. The three must form a causal chain. Write all three in your Google Sheet before opening Notion — Notion is where they go once the research is complete."},
-  {n:"08",icon:"🗂️",color:"#7A5A00",title:"Enter Into Notion CRM",
-   body:"Once a lead has: founder name, contact method, and all three problems identified — create their Notion entry, fill every column, and set Lead Stage to 'Not Contacted'. This is the signal they are ready for outreach. Notion is your source of truth. Google Sheets is just the scouting scratch pad."},
+  {n:"07",icon:"🎯",color:"#0D7A5F",title:"Score the Lead Using the Grand Slam Rubric",
+   body:"Apply the green signals and red flags from the Grand Slam Playbook (Score Leads tab), including 'Since Last Review' and 'Reviews not Responded'. Record the score in your Scoring Scratch Pad sheet. Tag: Hot (7+), Warm (4-6), Cold (0-3). Only continue enriching Hot and Warm leads."},
+  {n:"08",icon:"⚡",color:"#B8860B",title:"Identify The Gap, The Leak, and The Lift",
+   body:"For every HOT lead only: open the 3-Problem Method tab and identify all three connected problems — always framed around their Google reviews, because Review Automation is the single system you sell first. The three must form a causal chain. Write all three in your Google Sheet before opening Notion."},
+  {n:"09",icon:"🗂️",color:"#7A5A00",title:"Enter Into Notion CRM",
+   body:"Once a lead has: founder name, personal email from ContactOut, and all three problems identified — create their Notion entry, fill every column, and set Lead Stage to 'Not Contacted'. This is the signal they are ready for outreach. Notion is your source of truth. Google Sheets is just the scouting scratch pad."},
 ];
 
 const NICHES_3P = [
@@ -502,70 +506,50 @@ const NICHES_3P = [
 ];
 
 const SCRIPTS = [
-  {id:"e1",tag:"Email 1 · The Gap · PAS",color:"#7A5A00",
+  {id:"e1",tag:"Email 1 · The Gap · Day 0",color:"#7A5A00",
    title:"Email 1 — The Gap",
-   note:"Under 130 words. Reference one specific thing you found during enrichment — review count, missing booking button, outdated site. The specificity is what separates this from spam.",
-   body:`Subject: [First Name] — something I noticed about [Business Name]
+   note:"Send on Day 0. Short, specific, and about their reviews only. You are asking permission to send a video — nothing else. Never pitch a second service here.",
+   body:`Subject: Noticed this on your Google page
 
-Hi [First Name],
-
-I was looking at [Business Name] on Google and noticed [specific gap — one precise sentence, e.g. there is no way for clients to book an appointment outside of business hours].
-
-For a business with your presence in [City], that one gap is likely costing you [specific consequence — new clients, bookings, or enquiries] every week.
-
-I build digital systems for [niche] businesses — websites, booking tools, and client management — that fix exactly this.
-
-I recently built something for a similar business: [Lovable demo link or Loom walkthrough].
-
-Worth a 15-minute conversation?
-
-[Calendly link]
-
-[Your name]`},
+Hey [FIRST NAME]-I was looking at [BUSINESS NAME] on Google and noticed something with your reviews I thought you'd want to see. There's a pretty clear gap between you and [COMPETITOR), and I found a simple way to close it. I recorded a quick 2-minute video walking through what I mean. Would it be okay if I sent it over?`},
   {id:"e2",tag:"Email 2 · The Leak · Day 3",color:"#0D7A5F",
-   title:"Email 2 — The Leak",
-   note:"This is NOT a follow-up. It reveals new information — the hidden cost of their Gap. The subject line must not contain the words 'following up' or 'checking in'.",
-   body:`Subject: The quiet cost of [reference the gap] at [Business Name]
+   title:"Email 2 — The Specific Leak",
+   note:"Send 3 days after Email 1. This reveals the cost of the review gap. Still only about reviews — the Review Automation System is the one and only solution you sell at first contact.",
+   body:`Subject: "Quick number on that review gap" (or: "The part most owners miss")
 
-Hi [First Name],
+Hey [FIRST NAME] — following up on my note from earlier this week.
 
-Something I have been thinking about since I reached out a few days ago.
+Here's the part that's easy to miss: the gap between [BUSINESS NAME] and [COMPETITOR] isn't just cosmetic. Harvard Business School found that a one-star increase in rating can lift revenue by 5-9% — run that in reverse, and every week this gap stays open, some number of people are quietly choosing [COMPETITOR] without you ever knowing you were in the running.
 
-Most [niche] owners already know they need [fix for the gap]. What rarely gets talked about is what that gap costs silently, week after week.
+If it'd help, I can put together a quick estimate of what this gap is actually costing [BUSINESS NAME] — want me to send it over?
 
-When a potential client finds your listing and cannot [take the natural next step — book, enquire, get a quote], they do not wait. They click the next result. You never know they were there.
+[SENDER NAME]
 
-Across a month, that is likely [estimate: 3-6 missed clients] walking out the digital door.
-
-I have helped [niche] businesses stop this specific leak. Happy to walk you through how in 15 minutes.
-
-[Calendly link]
-
-[Your name]`},
+P.S. — Still happy to send that 2-minute video from my last note if you'd rather see it first.`},
   {id:"e3",tag:"Email 3 · The Lift · Day 7",color:"#B8860B",
-   title:"Email 3 — The Lift and Demo",
-   note:"Your strongest email. It leads with a live Lovable demo. The link makes it real in a way words never can. Keep it short — the demo does the talking.",
-   body:`Subject: I built something for [Business Name]
+   title:"Email 3 — The Specific Lift",
+   note:"Send 7 days after Email 1. Proof and outcome. Show what life looks like once the review system is running.",
+   body:`Subject: "What it looks like once this is fixed" (or: "Last note on this, [FIRST NAME]")
 
-Hi [First Name],
+Hey [FIRST NAME] — last note from me on this, promise.
 
-I went ahead and built a quick live demo of what a [solution type] could look like for [Business Name].
+Wanted to show you the other side of it. We recently worked with [CLIENT NAME], a business in a pretty similar spot — solid reputation, just quiet on Google next to the competition. A few months after putting a simple review system in place, they'd passed the competitor they used to lose to and started hearing "I saw your reviews and figured I'd try you" from new customers.
 
-Not a concept — you can click through it here: [Lovable demo link]
-Or watch the 90-second walkthrough: [Loom link]
+That's really the whole shift: once happy customers have an easy way to say so publicly, they don't just lift your rating — they become the reason new people trust you before they've even walked in, and often the reason their friends hear about you too.
 
-What it addresses:
-→ [The Gap — one line]
-→ [The Leak — one line]
-→ [The Lift — one line]
+Want me to show you what that'd look like for [BUSINESS NAME]? Happy to send the video over, or grab 10 minutes on a call — whichever's easier.
 
-If [3-5 new clients / more bookings / direct orders] a month would be worth it, this pays for itself within the first week.
+[SENDER NAME]`},
+  {id:"e4",tag:"Email 4 · The Breakup · Day 12",color:"#8B2E1F",
+   title:"Email 4 — The Breakup",
+   note:"Send 12 days after Email 1 if there is still no reply. The breakup email frequently outperforms every other email in the sequence. Send it, then close the file and move on.",
+   body:`Subject: "Should I close your file?" (or: "Wrong timing?")
 
-15 minutes to walk through it together?
+Hey [FIRST NAME] — I've sent a couple notes about the review gap between [BUSINESS NAME] and [COMPETITOR] and haven't heard back, which is totally fine — probably just bad timing or not a priority right now.
 
-[Calendly link]
+I'll close your file on my end so I'm not cluttering your inbox. If that changes, just reply — happy to pick this back up, or send over that 2-minute video whenever you're curious.
 
-[Your name]`},
+[SENDER NAME]`},
   {id:"li1",tag:"LinkedIn · Connection Request",color:"#0A66C2",
    title:"LinkedIn Connection Request",
    note:"Under 300 characters. No pitch. No link. Just a relevant reason to connect. Anything longer gets ignored or declined.",
@@ -614,56 +598,30 @@ That last 30% is exactly what I specialise in.
 Think of it like accounting software — anyone can open QuickBooks, but you would still hire an accountant to make sure the numbers are right. I am not selling you a tool. I am selling you a finished system that works, and someone who is accountable for keeping it that way."`},
 ];
 
-const PITCH_ITEMS = [
-  {icon:"💜",color:"#8B2E1F",name:"Lovable.dev Website or Landing Page",
-   price:"$300-$700",timeline:"5-10 days",required:true,
-   desc:"Your primary build tool. With Pro access you build a modern, fast, professional site in hours. The client sees a polished result in under a week. This is your anchor offer — the entry point for most clients.",
-   tools:["Lovable.dev Pro (your $25/month investment)"],
-   upsell:"Now let us add a CRM so no lead from this site ever goes cold."},
-  {icon:"⚡",color:"#7A5A00",name:"Booking System and Scheduling Page",
-   price:"$400-$900",timeline:"7-12 days",required:false,
-   desc:"A Lovable app with an embedded Calendly or booking form. Ideal for clinics, coaches, salons, and gyms. Solves The Gap for nearly every service-based business you will target.",
-   tools:["Lovable.dev Pro","Calendly (free tier)"],
-   upsell:"The next step is an email reminder sequence so clients do not forget their appointments."},
-  {icon:"📊",color:"#0D7A5F",name:"Notion CRM Setup for the Client",
-   price:"$150-$300",timeline:"2-3 days",required:false,
-   desc:"Set up a Notion database for their business: lead tracking, client pipeline, task management. Completely free for the client on Notion's free tier. You charge for the setup, training, and documentation.",
-   tools:["Notion (free for the client)"],
-   upsell:"I can now connect this to an email tool so your leads get followed up automatically."},
-  {icon:"📧",color:"#8B2E1F",name:"Email Marketing Setup with Mailchimp",
-   price:"$200-$450",timeline:"3-5 days",required:false,
-   desc:"Set up a Mailchimp account, build 3 automated sequences (welcome, nurture, rebooking), and configure the first campaign. Free for the client up to 500 contacts. You charge for strategy, setup, and copy.",
-   tools:["Mailchimp (free up to 500 contacts)"],
-   upsell:"Want me to manage a monthly campaign for you on retainer?"},
-  {icon:"🌟",color:"#B8860B",name:"Google Business Profile Optimisation",
-   price:"$100-$200",timeline:"1-2 days",required:false,
-   desc:"Completely free to execute — you charge for your expertise and time. Optimise their listing: update photos, write a keyword-rich description, set up Q&A, configure messaging, and show them how to request reviews consistently.",
-   tools:["Google Business Profile (free)"],
-   upsell:"Now let us build you a proper website that matches this polished listing."},
-  {icon:"🚀",color:"#B8860B",name:"GoHighLevel Funnel — Trial Strategy",
-   price:"$400-$800",timeline:"7-14 days",required:false,
-   desc:"Use GoHighLevel's 14-day free trial to build a complete sales funnel: landing page, email sequences, SMS follow-up, and CRM pipeline. Deliver the working system within the trial window. Charge for setup and strategy. The client subscribes to GHL directly at $97/month. You keep the setup fee.",
-   tools:["GoHighLevel 14-day free trial"],
-   upsell:"I can stay on as a monthly retainer to manage and optimise the funnel for you."},
-];
 
 const FAQS = [
+  {q:"Why do we only sell the Google Review Automation System to a new client?",
+   a:"Focus is the whole strategy. One product means one pitch, one demo, one objection set, and one delivery process — so you get sharper every single week instead of starting from zero on every call. It also protects the client relationship: reviews are the fastest visible win, so trust is established before anything else is offered. Speed to Lead, the AI Voice Receptionist, and the website rebuild are not lost revenue — they are your upsell ladder, sold later to a client who has already seen you deliver."},
+  {q:"A prospect asked me for a website on the first call. Do I sell it?",
+   a:"On a first-time buyer, no. Acknowledge it, note it in Notion under the upsell ladder, and bring the conversation back to the review gap you opened with. Say: 'That is absolutely something I do — let us fix the thing that is costing you customers this month first, and we will look at the site once your reviews are moving.' You will sell that website at a higher price in month 7, to a client who already trusts you."},
+  {q:"How do I find the owner's personal email?",
+   a:"Google 'owner at [BUSINESS NAME]', follow the search result into their LinkedIn profile, then use the ContactOut Chrome extension on your laptop — or contactout.com on mobile — to reveal their personal (@gmail and similar) email. Personal addresses reply roughly 3x more often than info@ or contact@. If ContactOut returns nothing, check the website contact page, and if there is still nothing, mark the lead 'LinkedIn DM only'."},
+  {q:"What exactly is my email cadence per lead?",
+   a:"Four emails, all about the review gap. Day 0 — The Gap (permission to send a 2-minute video). Day 3 — The Specific Leak (what the gap is costing them). Day 7 — The Specific Lift (proof from a comparable client). Day 12 — The Breakup (should I close your file?). All four are in the Scripts tab, verbatim. After Day 12 with no reply, close the file and move on."},
+  {q:"Does the Breakup email really work?",
+   a:"It is often the highest-replying email in the whole sequence, because it removes pressure instead of adding it. Send it exactly as written, do not add a pitch to it, and genuinely close the file afterwards. Leads who reply to a breakup email are usually ready to talk."},
   {q:"I genuinely have no money right now. Can I start with zero spend?",
    a:"Yes — for the first 7 days, everything is free. The one non-negotiable investment is Lovable.dev Pro at approximately $25 per month. Here is the math: your first deal, even at the lowest Starter price of $300, funds 12 months of Lovable Pro. The question is not whether $25 is affordable right now. It is whether one closed deal in 45 days is achievable following this playbook consistently. Based on this plan done properly, it is."},
-  {q:"Why Lovable.dev specifically? Can I use Bubble.io or Webflow instead?",
-   a:"Lovable builds faster and looks more modern by default for standard builds. Bubble.io is better for complex web apps with databases and user authentication — use it when the project genuinely needs that level of logic. For a landing page, booking site, or client portal, Lovable wins on speed and visual quality. Both can be in your stack — there is no rule that says pick only one."},
-  {q:"What if a client asks for something I cannot yet build?",
-   a:"Scope what you can deliver confidently. If the project requires a full database, user accounts, or complex backend logic — that is a Bubble.io project. Know the boundary between what Lovable handles and what needs Bubble. Be honest with clients about what each tool produces. Never promise what you cannot deliver. Never turn down a project — scope it to your current capability, charge accordingly, and learn the rest during the build."},
   {q:"How many emails should I send per day without automation?",
    a:"Start with 5 deeply personalised emails per day. Each email should take 10-15 minutes to personalise properly — that is about 75 minutes of quality outreach daily. Volume is not your advantage at this stage. Quality is. A deeply researched email to 5 HOT leads consistently outperforms 100 generic emails every single time. Scale volume only when your quality standard is locked in."},
-  {q:"What if I get no replies after sending all 3 emails to a lead?",
-   a:"Check three things in order. First: was the lead truly HOT (score 7+)? If you contacted Warm or Cold leads in your first batch, low reply rates are expected. Second: did your subject lines sound like marketing emails? Rewrite them to sound like messages from a real person. Third: was each email specifically personalised with something from your research? If all three were done correctly and still no reply — test a different niche before changing anything about your offer."},
+  {q:"What if I get no replies after the full 4-email sequence?",
+   a:"Check three things in order. First: was the lead truly HOT (score 7+)? Second: did your subject lines sound like marketing emails? They should read like a note from a real person. Third: was the review gap you named specific and verifiable — an actual competitor name, an actual review count? If all three were done correctly and still no reply, test a different niche before changing anything about the offer."},
   {q:"Should I mention I am based in Nigeria when reaching out to international clients?",
-   a:"You are not required to volunteer your location in a cold email. Position yourself as a Digital Systems Engineer serving businesses globally — which is true. Your Lovable demos, your professional Gmail, your LinkedIn presence, and your portfolio site are what establish credibility. If a client asks directly, answer honestly and immediately follow with your portfolio link and demo. Results speak louder than geography every time."},
+   a:"You are not required to volunteer your location in a cold email. Position yourself as a Digital Systems Engineer serving businesses globally — which is true. Your demos, your professional Gmail, your LinkedIn presence, and your portfolio are what establish credibility. If a client asks directly, answer honestly and immediately follow with your portfolio link and demo. Results speak louder than geography every time."},
   {q:"What if a client wants a refund after the project has started?",
-   a:"This is exactly why the 50% upfront rule exists. The deposit covers your time on the Blueprint and early Build phases. Your 1-page agreement should state that the deposit is non-refundable if work has commenced. Always get written approval of the Blueprint document before building anything. This single step eliminates the most common reason clients try to cancel — the discovery that the final product does not match their unspoken expectation."},
+   a:"This is exactly why the 50% upfront rule exists. The deposit covers your time on setup and configuration. Your 1-page agreement should state that the deposit is non-refundable once work has commenced. Always get written approval of the plan before building anything — this single step eliminates the most common reason clients try to cancel."},
   {q:"When should I start investing in automation tools like Make.com or Apollo.io?",
-   a:"When your manual process is maxed out — meaning you are sending 25-30 personalised emails per week, you have closed at least 3 deals, and your pipeline is consistent enough that automation would save meaningful time without sacrificing quality. Before that point, automation adds cost and complexity without adding proportional results. Manual first. Automate what is proven. This playbook is designed to get you to that threshold."},
+   a:"When your manual process is maxed out — meaning you are sending 25-30 personalised emails per week, you have closed at least 3 deals, and your pipeline is consistent enough that automation would save meaningful time without sacrificing quality. Before that point, automation adds cost and complexity without adding proportional results. Manual first. Automate what is proven."},
 ];
 
 /* ── 3 CORE SERVICES ────────────────────────────────────── */
@@ -722,6 +680,7 @@ const UPSELL_STEPS = [
     action:"Show them their contact form submissions from the past 30 days. Ask how many they called back within the hour. The silence is your pitch.",
     trigger:"Any mention of 'leads not converting' or 'I need to follow up better' is your green light.",
     intro:`"I pulled your form submissions from last month — you had [X] enquiries. Based on your response pattern, you're likely keeping about [X]% of those. Want me to make it automatic so you reach every lead in under 60 seconds?"`,
+    email:`Hey [FIRST NAME] - your reviews are working. You've added 31 since we started. Here s the next thing I'd look at: every call and website message that comes in while you re on a job. I've got something that catches those - answers them the second they come in, and books the appointment for you. Happy to show you what that'd look like for your shop?`,
     revenue:"$494–$594/month combined",
   },
   {
@@ -730,6 +689,7 @@ const UPSELL_STEPS = [
     action:"Pull their GHL call log. Show missed calls. Run the Bland AI demo live on the call. Let them hear 'Karen' book a fake appointment.",
     trigger:"Ask: 'How many calls do you think you miss per week when you're with a client?' — their answer is the pitch.",
     intro:`"Your reviews are growing and your leads are converting faster. The last gap is your phone. You're still missing [X] calls a week. Want to hear what it sounds like when an AI answers for you? Give me 90 seconds."`,
+    email:`Hey [FIRST NAME] - your reviews are working. You've added 31 since we started. Here s the next thing I'd look at: every call and website message that comes in while you re on a job. I've got something that catches those - answers them the second they come in, and books the appointment for you. Happy to show you what that'd look like for your shop?`,
     revenue:"$791–$991/month combined",
   },
   {
@@ -738,6 +698,7 @@ const UPSELL_STEPS = [
     action:"Screenshot their current website next to their growing review count. The mismatch is obvious and they feel it too.",
     trigger:"'Our website is pretty old' — said unprompted at any point. This is a Lovable project. Blueprint → Build → Bulletproof in 2 weeks.",
     intro:`"Your reputation online has improved massively — fresh reviews, fast response, calls answered. But your website still looks like it's from 2015. It's undermining everything else you've built. I can rebuild it in Lovable in 2 weeks. Starter is $300–$500 one-off, and I'll maintain it for $97/month."`,
+    email:`Hey [FIRST NAME], everything we've built so far sends people to your website which means it's now doing more work than ever. I think the next big opportunity here for us is to give it a refresh so it's easier to use on a phone and makes booking a job simple, so more of those visitors actually reach out. Happy to show you what that could look like.`,
     revenue:"$888–$1,188/month ongoing + one-off project fee",
   },
 ];
@@ -853,8 +814,7 @@ function PlanPage() {
     {id:"match",    label:"6. 💰 What to Pitch"},
     {id:"upsell",   label:"7. 📈 Upsell Ladder"},
     {id:"ghl",      label:"8. 🔧 GHL Mastery"},
-    {id:"pitch",    label:"9. 📈 Secondary Upsell Ladder"},
-    {id:"faq",      label:"10. ❓ FAQ"},
+    {id:"faq",      label:"9. ❓ FAQ"},
   ];
 
   return (
@@ -1133,7 +1093,8 @@ function PlanPage() {
               Manual Lead Research — Step by Step
             </h2>
             <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
-              Every lead completes all 8 steps before you write a single word of outreach.
+              Every lead completes all 9 steps before you write a single word of outreach.
+              Steps 3 to 5 are the contact chain: Google → LinkedIn → ContactOut.
               Tap each step to expand the full instructions.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:0}}>
@@ -1206,6 +1167,23 @@ function PlanPage() {
               Three connected problems. One email narrative. One solution.
               This is what makes your outreach feel personal instead of generic.
             </p>
+            <div style={{background:"#FBF6E9",border:"1px solid #8B2E1F35",borderRadius:12,
+              padding:"14px 16px",marginBottom:16}}>
+              <SLabel text="Focus — One Solution Only" color="#8B2E1F"/>
+              <p style={{fontSize:13,color:"#1A1410",margin:"0 0 8px",lineHeight:1.65}}>
+                We are building you into an expert on three products — but the one and only solution
+                you offer a brand-new client is the <strong>Google Review Automation System</strong>.
+                Nothing else.
+              </p>
+              <p style={{fontSize:13,color:"#6B5D3F",margin:0,lineHeight:1.65}}>
+                So all three problems must be framed around their reviews: <strong>The Gap</strong> is the
+                visible review gap between them and a named competitor. <strong>The Leak</strong> is the
+                customers quietly choosing that competitor every week. <strong>The Lift</strong> is what
+                happens once fresh reviews start arriving automatically. Speed to Lead, the AI Voice
+                Receptionist and a website rebuild are upsells for months 3, 5 and 7 — never part of the
+                first pitch.
+              </p>
+            </div>
             <div style={{background:"#FFFFFF",border:"1px solid #6366F130",
               borderRadius:12,padding:"16px",marginBottom:18}}>
               <SLabel text="The Framework" color="#7A5A00"/>
@@ -1344,130 +1322,6 @@ function PlanPage() {
         )}
 
         {/* WHAT TO PITCH */}
-        {tab==="pitch"&&(
-          <div>
-            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>
-              What to Pitch — Zero Budget Offer Stack
-            </h2>
-            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 16px",lineHeight:1.6}}>
-              Six services you can deliver right now. One required investment.
-              Everything else runs on free tiers.
-            </p>
-            <div style={{background:"linear-gradient(135deg,#FBF6E9,#E8DCC0)",
-              border:"1px solid #8B5CF635",borderRadius:12,
-              padding:"16px",marginBottom:18}}>
-              <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
-                <span style={{fontSize:24,flexShrink:0}}>💜</span>
-                <div>
-                  <div style={{fontSize:14,fontWeight:700,color:"#1A1410",marginBottom:4}}>
-                    The One Non-Negotiable: Lovable.dev Pro (~$25/month)
-                  </div>
-                  <p style={{fontSize:13,color:"#6B5D3F",margin:"0 0 10px",lineHeight:1.65}}>
-                    This is the single spend that makes the entire playbook possible. Your first
-                    deal — even at the lowest Starter price of $300 — funds 12 months of Pro
-                    access. Before the first deal closes, find a way to make this happen.
-                  </p>
-                  <div style={{fontSize:12,color:"#8B2E1F",fontWeight:600}}>
-                    Why it is worth it: you build a professional, click-through demo in hours.
-                    The demo is your pitch. No demo means no close.
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",gap:9}}>
-              {PITCH_ITEMS.map((p,i)=>{
-                const isOpen=openPitch===i;
-                return (
-                  <div key={i} onClick={()=>setOpenPitch(isOpen?null:i)}
-                    style={{background:isOpen?"#FBF6E9":"#FFFFFF",
-                      border:`1px solid ${isOpen?p.color:"#E8DCC0"}`,
-                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
-                    <div style={{padding:"13px 15px",display:"flex",
-                      alignItems:"center",gap:11}}>
-                      <div style={{width:38,height:38,borderRadius:9,
-                        background:p.color+"18",border:`1px solid ${p.color}35`,
-                        display:"flex",alignItems:"center",justifyContent:"center",
-                        fontSize:18,flexShrink:0}}>{p.icon}</div>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{display:"flex",gap:7,alignItems:"center",
-                          flexWrap:"wrap",marginBottom:2}}>
-                          <span style={{fontWeight:700,fontSize:14,color:"#1A1410"}}>
-                            {p.name}
-                          </span>
-                          {p.required&&(
-                            <span style={{fontSize:10,fontWeight:700,color:"#8B2E1F",
-                              background:"#8B5CF618",borderRadius:4,padding:"1px 6px"}}>
-                              REQUIRED TOOL
-                            </span>
-                          )}
-                        </div>
-                        <div style={{display:"flex",gap:10}}>
-                          <span style={{fontSize:12,fontWeight:700,color:p.color}}>
-                            {p.price}
-                          </span>
-                          <span style={{fontSize:12,color:"#6B5D3F"}}>{p.timeline}</span>
-                        </div>
-                      </div>
-                      <Chevron open={isOpen}/>
-                    </div>
-                    {isOpen&&(
-                      <div style={{padding:"0 15px 16px",borderTop:"1px solid #E8DCC0"}}>
-                        <p style={{fontSize:13,color:"#6B5D3F",
-                          margin:"12px 0 12px",lineHeight:1.65}}>{p.desc}</p>
-                        <div style={{marginBottom:10}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#6B5D3F",
-                            textTransform:"uppercase",letterSpacing:".07em",marginBottom:6}}>
-                            Tools Used
-                          </div>
-                          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                            {p.tools.map((t,j)=>(
-                              <span key={j} style={{fontSize:12,background:"#E8DCC0",
-                                border:"1px solid #E8DCC0",borderRadius:5,
-                                padding:"3px 9px",color:"#6B5D3F"}}>{t}</span>
-                            ))}
-                          </div>
-                        </div>
-                        <div style={{background:p.color+"10",
-                          border:`1px solid ${p.color}25`,
-                          borderRadius:7,padding:"8px 11px"}}>
-                          <div style={{fontSize:10,fontWeight:700,color:p.color,
-                            textTransform:"uppercase",letterSpacing:".07em",marginBottom:4}}>
-                            Upsell Trigger
-                          </div>
-                          <p style={{fontSize:12.5,color:"#1A1410",margin:0,
-                            fontStyle:"italic",lineHeight:1.5}}>{p.upsell}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <div style={{background:"#FFFFFF",border:"1px solid #10B98125",
-              borderRadius:10,padding:"14px 15px",marginTop:16}}>
-              <SLabel text="The Demo-First Close Strategy" color="#0D7A5F"/>
-              <p style={{fontSize:13,color:"#6B5D3F",margin:"0 0 10px",lineHeight:1.65}}>
-                Since every build happens on your single Lovable Pro account, use this workflow
-                for every HOT lead before Email 3 goes out:
-              </p>
-              {["Build a demo for their niche in Lovable — use a fictional version of their actual business name so it feels personal",
-                "Record a 90-second Loom walkthrough showing what it does and why it matters specifically for their type of business",
-                "Send the live Lovable URL and the Loom link in Email 3",
-                "Only rebuild it as their branded, real product after the 50% deposit clears",
-                "The deposit funds your time on the rebuild — your Lovable account handles the actual build cost"
-              ].map((tip,i)=>(
-                <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"flex-start"}}>
-                  <span style={{color:"#0D7A5F",flexShrink:0,fontWeight:700,fontSize:13}}>
-                    {i+1}.
-                  </span>
-                  <span style={{fontSize:13,color:"#6B5D3F",lineHeight:1.55}}>{tip}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* FAQ */}
         {tab==="match"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>🎯 Match the Problem to the Service</h2>
@@ -1614,6 +1468,7 @@ Then be silent. Let that moment land.`}
                           {[
                             ["✅ What You Do",u.action,"#0D7A5F"],
                             ["🎤 How You Introduce It",u.intro,"#B8860B"],
+                            ...(u.email?[["📧 Upsell Email Copy — Send This",u.email,"#8B2E1F"]]:[]),
                             ["🚦 The Trigger Signal",u.trigger,"#7A5A00"],
                           ].map(([lbl,val,col])=>(
                             <div key={lbl} style={{marginBottom:12}}>
