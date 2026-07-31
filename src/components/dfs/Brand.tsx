@@ -1,4 +1,4 @@
-import dfsLogo from "@/assets/dfs_logo.png.asset.json";
+import dfsLogo from "@/assets/dfs_logo_nobg.png.asset.json";
 import dfgCrest from "@/assets/dfg_crest.png.asset.json";
 
 export const DFS_LOGO = dfsLogo.url;
