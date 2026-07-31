@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DfsMark, DfgMark, Motto } from "@/components/dfs/Brand";
-import dfsCombined from "@/assets/dfs_logo_nobg.png.asset.json";
+import dfsCombined from "@/assets/dfs_combined_v2.png.asset.json";
 import founderAsset from "@/assets/founder.jpg.asset.json";
 import {
   Crown, Shield, Target, Flame, BookOpen, TrendingUp, Globe, Calendar, Lock, Award,
@@ -127,7 +127,7 @@ function Landing() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-royal opacity-[0.04]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,oklch(0.78_0.13_80/0.08),transparent_40%)]" />
-        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32 grid md:grid-cols-2 gap-12 items-center">
+        <div className="relative mx-auto max-w-7xl px-6 pt-8 pb-16 md:pt-10 md:pb-24 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <Motto />
             <h1 className="mt-6 font-display text-5xl md:text-7xl font-bold leading-[1.05]">
