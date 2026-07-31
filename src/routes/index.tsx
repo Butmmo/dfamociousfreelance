@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DfsMark, DfgMark, Motto } from "@/components/dfs/Brand";
-import dfsCombined from "@/assets/dfs_logo_nobg.png.asset.json";
+import dfsCombined from "@/assets/dfs_combined_v2.png.asset.json";
 import founderAsset from "@/assets/founder.jpg.asset.json";
 import {
   Crown, Shield, Target, Flame, BookOpen, TrendingUp, Globe, Calendar, Lock, Award,
