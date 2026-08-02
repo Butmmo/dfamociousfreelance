@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "@/lib/use-session";
@@ -10,7 +10,7 @@ import {
 import { listAscentAccess, grantAscent, revokeAscent } from "@/lib/ascent.functions";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { Mountain } from "lucide-react";
+import { Mountain, FileText } from "lucide-react";
 import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
