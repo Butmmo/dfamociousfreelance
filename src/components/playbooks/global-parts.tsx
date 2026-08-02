@@ -9,9 +9,9 @@ const COUNTRIES = [
     highlight: "Highest rates + largest SMB pool on Earth. Every major city has hundreds of businesses needing your exact stack.",
     reasons: [
       "Highest freelance rates globally — $75–200/hr is completely normal",
-      "Massive no-code movement — Bubble.io's largest community is here",
+      "Massive no-code movement — Lovable's largest community is here",
       "Every city has hundreds of businesses needing CRM, websites, and automation",
-      "Huge appetite for email marketing (Klaviyo) and workflow automation",
+      "Huge appetite for email marketing (Go High Level) and workflow automation",
     ],
     niches: ["Coaches", "Real Estate Agents", "Fitness Studios", "E-commerce"],
     platforms: ["Google Maps", "Yelp", "LinkedIn", "Alignable"],
@@ -107,90 +107,90 @@ const BUSINESSES = [
   {
     id: 1, icon: "🏠", name: "Real Estate Agencies & Agents", deal: "$1,200–2,500",
     pain: "Tons of listings and leads — zero tracking. No CRM, no automated follow-up, outdated or nonexistent website.",
-    product: "Property listing site (Bubble.io) + Notion CRM pipeline + Klaviyo email drip sequences for lead nurturing",
+    product: "Property listing site (Lovable) + Notion CRM pipeline + Go High Level email drip sequences for lead nurturing",
     pitch: '"You\'re losing warm leads every week because nothing follows them up automatically. I\'ll build a system that captures, tracks, and converts leads 24/7."',
     find: "Google Maps: \"real estate agent [city]\", Zillow agent directory, local estate agency networks",
-    tools: ["Bubble.io", "Notion CRM", "Klaviyo", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Go High Level", "Make / Zapier / n8n"],
   },
   {
     id: 2, icon: "🎯", name: "Business & Life Coaches", deal: "$800–2,000",
     pain: "Selling expertise but stuck with manual booking, no course platform, no email sequences, and zero upsell funnel.",
-    product: "Kajabi or Bubble.io course + coaching website + Klaviyo email sequences + booking calendar integration",
+    product: "Lovable or Lovable course + coaching website + Go High Level email sequences + booking calendar integration",
     pitch: '"Your expertise deserves better infrastructure. Let me build a system where clients book, pay, and access your content automatically — even while you sleep."',
     find: "LinkedIn, Google Maps: \"business coach [city]\", Instagram, coaching directory sites",
-    tools: ["Kajabi", "Bubble.io", "Klaviyo", "Zapier"],
+    tools: ["Lovable", "Lovable", "Go High Level", "Make / Zapier / n8n"],
   },
   {
     id: 3, icon: "🦷", name: "Dental & Medical Clinics", deal: "$1,500–3,500",
     pain: "No online booking, no automated reminders, chaotic patient management, generic or missing website.",
-    product: "Adalo/Bubble.io booking app + clinic website + Notion CRM for patient management + SMS/email reminders",
+    product: "Lovable/Lovable booking app + clinic website + Notion CRM for patient management + SMS/email reminders",
     pitch: '"Clinics lose up to 30% of appointments to no-shows. An automated SMS + email reminder system pays for itself in the first month alone."',
     find: "Google Maps: \"dentist / doctor / clinic [city]\", Yelp, Healthgrades, Zocdoc",
-    tools: ["Adalo", "Bubble.io", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 4, icon: "💪", name: "Fitness Studios & Personal Trainers", deal: "$900–2,000",
     pain: "Class scheduling, membership management, and new client acquisition are all completely manual.",
-    product: "Adalo/FlutterFlow class booking app + membership website + Klaviyo retention campaigns + Notion CRM",
+    product: "Lovable class booking app + membership website + Go High Level retention campaigns + Notion CRM",
     pitch: '"Let your members book classes, track progress, and renew memberships without you lifting a finger. I\'ll build the whole system in 2 weeks."',
     find: "Google Maps: \"gym / fitness studio [city]\", Instagram, Mindbody directory",
-    tools: ["Adalo", "FlutterFlow", "Klaviyo", "Notion CRM"],
+    tools: ["Lovable", "Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 5, icon: "⚖️", name: "Solo Law Firms & Small Legal Practices", deal: "$1,500–4,000",
     pain: "Drowning in manual intake, no digital client portal, prestigious firm with a website that looks like 2005.",
-    product: "Professional law firm website + client intake portal (Bubble.io) + Notion CRM + appointment scheduling",
+    product: "Professional law firm website + client intake portal (Lovable) + Notion CRM + appointment scheduling",
     pitch: '"Your firm deserves a digital presence that matches your expertise. I\'ll also save your staff 10+ hours a week with automated client intake — right away."',
     find: "Google Maps: \"solicitor [UK] / attorney [US] [city]\", Martindale-Hubbell, Avvo",
-    tools: ["Bubble.io", "CMS Builder", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 6, icon: "🛒", name: "Independent E-Commerce Sellers", deal: "$700–1,800",
     pain: "Selling on Etsy/Amazon but don't own their customer data. Every sale enriches the platform, not them.",
-    product: "Own e-commerce store (Bubble.io/CMS) + Klaviyo email marketing + Notion CRM for customer data ownership",
+    product: "Own e-commerce store (Lovable) + Go High Level email marketing + Notion CRM for customer data ownership",
     pitch: '"Every time someone buys on Etsy, that customer data goes to Etsy — not you. Let me build you a store you own, plus a marketing machine that brings them back repeatedly."',
     find: "Etsy sellers, local markets, Instagram sellers, Google Maps: \"boutique / shop [city]\"",
-    tools: ["Bubble.io", "CMS Builder", "Klaviyo", "Notion CRM"],
+    tools: ["Lovable", "Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 7, icon: "🍽️", name: "Restaurants & Food Businesses", deal: "$1,000–2,500",
     pain: "Paying Uber Eats/DoorDash 15–30% commission per order. No loyalty system. No way to re-engage past customers.",
-    product: "Custom ordering platform (Bubble.io) + loyalty/rewards system + Klaviyo promotions + restaurant website",
+    product: "Custom ordering platform (Lovable) + loyalty/rewards system + Go High Level promotions + restaurant website",
     pitch: '"Stop paying Uber Eats 30% per order. Own your ordering system and keep your full margins. I can have it live in 3 weeks."',
     find: "Google Maps: \"restaurant [city]\", Yelp, TripAdvisor, OpenTable listings",
-    tools: ["Bubble.io", "Klaviyo", "Zapier", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Make / Zapier / n8n", "Notion CRM"],
   },
   {
     id: 8, icon: "🧠", name: "Therapists & Mental Health Professionals", deal: "$600–1,500",
     pain: "Extremely busy, minimal tech skills. Need automation for booking, intake forms, session reminders, and secure client communication.",
-    product: "Booking website + digital intake forms + Notion CRM + Zapier/Klaviyo automated session reminders",
+    product: "Booking website + digital intake forms + Notion CRM + Make / Zapier / n8n automated session reminders",
     pitch: '"You focus on healing people. I\'ll build a system that fills your calendar, sends reminders, and handles your admin — so you can focus on what matters."',
     find: "Psychology Today directory, Google Maps: \"therapist / counsellor [city]\"",
-    tools: ["Bubble.io", "CMS Builder", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 9, icon: "📊", name: "Accountants & Financial Advisors", deal: "$1,000–2,500",
     pain: "Independent practices trying to compete with big firms but no digital client portal, no professional presence, outdated website.",
-    product: "Professional website + secure client document portal (Bubble.io) + Notion CRM + Klaviyo financial tips newsletter",
+    product: "Professional website + secure client document portal (Lovable) + Notion CRM + Go High Level financial tips newsletter",
     pitch: '"Your big competitors have polished digital client portals. I can give your practice the exact same experience at a fraction of their overhead cost."',
     find: "LinkedIn, Google Maps: \"accountant / financial advisor [city]\", AICPA / ICAEW directories",
-    tools: ["Bubble.io", "Notion CRM", "Klaviyo", "CMS Builder"],
+    tools: ["Lovable", "Notion CRM", "Go High Level", "Lovable"],
   },
   {
     id: 10, icon: "🎊", name: "Event Planners & Wedding Coordinators", deal: "$800–2,000",
     pain: "Juggling vendors, clients, timelines, budgets — all in messy spreadsheets. No CRM. Portfolio website absent or outdated.",
-    product: "Portfolio website + Notion CRM for vendor/client management + Klaviyo seasonal campaigns + Zapier automations",
+    product: "Portfolio website + Notion CRM for vendor/client management + Go High Level seasonal campaigns + Zapier automations",
     pitch: '"Let your website do the selling while you focus on running brilliant events. I\'ll also build you a system where vendors and clients always know exactly what\'s happening."',
     find: "Google Maps: \"wedding planner / event coordinator [city]\", The Knot, WeddingWire",
-    tools: ["CMS Builder", "Notion CRM", "Klaviyo", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Go High Level", "Make / Zapier / n8n"],
   },
   {
     id: 11, icon: "💆", name: "Beauty Salons, Spas & Aesthetic Clinics", deal: "$700–1,800",
     pain: "Booking still done by phone. Loyal clients with zero retention system. Reviews and referrals happen purely by chance.",
-    product: "Adalo/Bubble.io booking system + CMS website + Klaviyo birthday promos + rebooking campaigns + Notion CRM",
+    product: "Lovable/Lovable booking system + CMS website + Go High Level birthday promos + rebooking campaigns + Notion CRM",
     pitch: '"Imagine your salon filling up automatically every week because the system sends \"time for your next appointment\" messages. That\'s exactly what I\'ll build you."',
     find: "Google Maps: \"hair salon / spa / med spa [city]\", Instagram, Fresha directory",
-    tools: ["Adalo", "Bubble.io", "Klaviyo", "Notion CRM"],
+    tools: ["Lovable", "Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 12, icon: "🔧", name: "Contractors & Home Service Providers", deal: "$500–1,200",
@@ -198,7 +198,7 @@ const BUSINESSES = [
     product: "Professional CMS website + Notion CRM + Zapier quote-request automation + Google review request system",
     pitch: '"When someone searches \"electrician near me\" at 11 PM, your website should appear and capture their details automatically. Right now you\'re completely invisible online."',
     find: "Google Maps: \"plumber / electrician / HVAC [city]\", HomeAdvisor (US), Checkatrade (UK), hipages (AU)",
-    tools: ["CMS Builder", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
 ];
 
@@ -208,7 +208,7 @@ const PHASES = [
     steps: [
       "Pick 2 niches to start — recommended: Real Estate + Coaches (high deal value, clear pain)",
       "Pick 2 countries — recommended: USA + UK (English, highest rates, familiar tools)",
-      "Build your portfolio site using Bubble.io or Lovable — use your own tools as proof",
+      "Build your portfolio site using Lovable or Lovable — use your own tools as proof",
       "Create 2–3 demo projects as case studies. Demos count. Clients want to see the work, not credentials.",
       "Record a Loom video walkthrough of each demo — this is your sales asset",
     ],
@@ -218,7 +218,7 @@ const PHASES = [
     steps: [
       "Google Maps scraping → use Outscraper.com or PhantomBuster (both have free tiers)",
       "Target: businesses with no website, poor website, or no Google reviews",
-      "Export: business name, email, phone, website → Google Sheets or Airtable",
+      "Export: business name, email, phone, website → Google Sheets or Notion",
       "LinkedIn Sales Navigator (free trial) → filter: Owner/Founder + 1–50 employees + target country",
       "UK bonus: Companies House API — completely free public business database",
       "USA bonus: Yelp and Yellow Pages scraping via Outscraper adds thousands more leads",
@@ -239,7 +239,7 @@ const PHASES = [
     steps: [
       "Notion CRM — you already know this! Manage all leads in clear pipeline stages",
       "Stages: Scraped → Contacted → Replied → Discovery Call → Proposal Sent → Closed",
-      "Klaviyo nurture sequence → for leads who don't reply (value emails, case studies, tips)",
+      "Go High Level nurture sequence → for leads who don't reply (value emails, case studies, tips)",
       "Make.com trigger: new lead auto-created in Notion + follow-up sequence fires automatically",
       "30-minute weekly review: move leads through stages, kill dead ones, test new subject lines",
     ],
@@ -264,12 +264,12 @@ const PACKAGES = [
   },
   {
     name: "Standard", icon: "⚡", color: "#6366F1", price: "$800–1,500",
-    includes: ["Full multi-page website", "Notion CRM setup + pipeline", "Klaviyo email automation", "Booking/calendar integration"],
+    includes: ["Full multi-page website", "Notion CRM setup + pipeline", "Go High Level email automation", "Booking/calendar integration"],
     bestFor: "Coaches, Therapists, Accountants, Event Planners",
   },
   {
     name: "Premium", icon: "🚀", color: "#F59E0B", price: "$2,000–4,000",
-    includes: ["Custom web app (Bubble.io)", "Full automation stack (Make.com/Zapier)", "CRM + email marketing", "Client portal or booking system"],
+    includes: ["Custom web app (Lovable)", "Full automation stack (Make.com/Zapier)", "CRM + email marketing", "Client portal or booking system"],
     bestFor: "Clinics, Law Firms, Real Estate, Restaurants",
   },
   {
@@ -303,7 +303,7 @@ const METHODOLOGY = [
 const DIY_COMPARISON = [
   { factor: "Time to launch", diy: "40–80 hrs of trial, error, tutorials", you: "7–14 days, fully done for you" },
   { factor: "Data architecture", diy: "Generic, often breaks at scale", you: "Designed properly from day one" },
-  { factor: "CRM / email / payments", diy: "Missing, or hacked together", you: "Fully integrated (Notion, Klaviyo, Stripe)" },
+  { factor: "CRM / email / payments", diy: "Missing, or hacked together", you: "Fully integrated (Notion, Go High Level, Stripe)" },
   { factor: "Security & hosting", diy: "Overlooked until something breaks", you: "Handled, monitored, documented" },
   { factor: "Ongoing updates", diy: "You're on your own", you: "Retainer support included" },
   { factor: "Opportunity cost", diy: "2–3 weeks not spent on your business", you: "Zero — you stay focused on clients" },
@@ -317,8 +317,8 @@ const WEEKLY_PLAN = [
     days: [
       { d: "Day 1", focus: "Lock Your Focus", tasks: "Choose 2 launch countries (USA + UK recommended) and 2 niches (Real Estate + Coaches). Write your Blueprint → Build → Bulletproof pitch in your own words." },
       { d: "Day 2", focus: "Brand Setup", tasks: "Set up a professional email, update your LinkedIn headline to \"Digital Systems Engineer,\" create your free Calendly." },
-      { d: "Day 3", focus: "Build Demo #1", tasks: "Build a real estate listing demo in Bubble.io — use a fictional or local agency as the subject." },
-      { d: "Day 4", focus: "Build Demo #2", tasks: "Build a coaching or booking demo in Kajabi or Adalo." },
+      { d: "Day 3", focus: "Build Demo #1", tasks: "Build a real estate listing demo in Lovable — use a fictional or local agency as the subject." },
+      { d: "Day 4", focus: "Build Demo #2", tasks: "Build a coaching or booking demo in Lovable or Lovable." },
       { d: "Day 5", focus: "Record & Package", tasks: "Record a 90-second Loom walkthrough of each demo. Write a short case-study style description for both." },
       { d: "Day 6", focus: "Portfolio Site", tasks: "Build your own site — homepage, 2 case studies, services framed as outcomes (never tool names), Calendly embed." },
       { d: "Day 7", focus: "Tool Stack Setup", tasks: "Create accounts on Outscraper, Apollo.io, and Instantly.ai. Build your Notion CRM pipeline: Scraped → Contacted → Replied → Call Booked → Proposal → Closed." },
@@ -527,7 +527,7 @@ export function GlobalParts({ tab }) {
             <div style={{ background: "#0A1020", border: "1px solid #D9CFBB", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 12 }}>🔄 Your Full Automation Stack (Make.com Flow)</div>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5 }}>
-                {["Outscraper", "→", "Apollo.io", "→", "Instantly.ai", "→", "Make.com", "→", "Notion CRM", "→", "Klaviyo"].map((item, i) => (
+                {["Outscraper", "→", "Apollo.io", "→", "Instantly.ai", "→", "Make.com", "→", "Notion CRM", "→", "Go High Level"].map((item, i) => (
                   item === "→"
                     ? <span key={i} style={{ color: "#8A7C6D", fontSize: 15 }}>→</span>
                     : <span key={i} style={{ background: "#EDE7DA", border: "1px solid #1E2E46", borderRadius: 7, padding: "5px 10px", fontSize: 12, color: "#A5B4FC", fontWeight: 500 }}>{item}</span>
@@ -584,7 +584,7 @@ export function GlobalParts({ tab }) {
             <div style={{ marginTop: 14, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 10 }}>💡 Build Your Portfolio Before You Have Clients</div>
               <p style={{ fontSize: 13, color: "#6E6459", margin: "0 0 10px", lineHeight: 1.6 }}>You don't need paying clients to start. Build 3 demo projects for your top niches:</p>
-              {["A real estate listing site → Bubble.io (your proof of complex app building)", "A salon booking app → Adalo (your proof of mobile-first design)", "A coaching platform → Kajabi (your proof of course + marketing automation)"].map((item, i) => (
+              {["A real estate listing site → Lovable (your proof of complex app building)", "A salon booking app → Lovable (your proof of mobile-first design)", "A coaching platform → Lovable (your proof of course + marketing automation)"].map((item, i) => (
                 <InfoRow key={i} color="#10B981">{item}</InfoRow>
               ))}
               <p style={{ fontSize: 12.5, color: "#6E6459", margin: "10px 0 0", lineHeight: 1.6 }}>Host all three on your portfolio site. Record a Loom walkthrough of each. That's your social proof — and it costs you nothing but time.</p>

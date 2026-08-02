@@ -172,7 +172,7 @@ const OFFER_PARTS = [
 
 const HOOKS = [
   { tier: "Starter Hook", headline: "\"Your Business Found Online — In 10 Days\"", target: "Tradespeople · Solo coaches · Small salons", bonus: "Free Google Business Profile audit included" },
-  { tier: "Standard Hook", headline: "\"A Booking System That Fills Your Calendar Automatically\"", target: "Clinics · Gyms · Therapists · Accountants", bonus: "First 3 months of Klaviyo email setup free" },
+  { tier: "Standard Hook", headline: "\"A Booking System That Fills Your Calendar Automatically\"", target: "Clinics · Gyms · Therapists · Accountants", bonus: "First 3 months of Go High Level email setup free" },
   { tier: "Premium Hook", headline: "\"Stop Paying Third Parties a Cut. Own Your Entire Sales System.\"", target: "Restaurants · Real estate agencies · E-commerce brands", bonus: "90-day check-in call + analytics report included" },
 ];
 
@@ -184,13 +184,13 @@ const LADDER = [
     what: "Multi-page website + Notion CRM setup + Calendly booking integration.",
     upsell: "\"Now let's add email marketing so those visitors become repeat customers.\"" },
   { rung: 3, icon: "⚡", color: "#8B5CF6", name: "Custom System", price: "$2,000–4,000", yours: true,
-    what: "Custom Bubble.io or Adalo app + Make.com automation + CRM + Klaviyo email marketing.",
+    what: "Custom Lovable or Lovable app + Make.com automation + CRM + Go High Level email marketing.",
     upsell: "\"Let me stay on as your tech partner so this keeps performing and growing.\"" },
   { rung: 4, icon: "🔄", color: "#F59E0B", name: "Care Retainer", price: "$200–400/mo", yours: true,
     what: "Monthly updates, uptime monitoring, content changes, priority support.",
     upsell: "\"Want me to also run your email campaigns every month?\"" },
   { rung: 5, icon: "📈", color: "#EC4899", name: "Growth Retainer", price: "$400–800/mo", yours: true,
-    what: "Klaviyo campaigns designed and sent monthly + analytics report + CRM hygiene.",
+    what: "Go High Level campaigns designed and sent monthly + analytics report + CRM hygiene.",
     upsell: "\"Want me to bring in a specialist who can run paid ads that feed directly into this system?\"" },
   { rung: 6, icon: "📣", color: "#4B5563", name: "Paid Ads Management", price: "Refer out + fee", yours: false,
     what: "Partner with a trusted Google / Meta ads specialist. You earn a referral fee or revenue share. Stay as the relationship owner.",
@@ -219,7 +219,7 @@ const TOOLS = [
   ]},
   { cat: "CRM & Nurture", color: "#EC4899", items: [
     { name: "Notion CRM", tier: "Free (3 users)", url: "notion.com/crm", desc: "Your lead pipeline — you already know this. Stages: Scraped → Contacted → Replied → Call → Proposal → Closed." },
-    { name: "Klaviyo", tier: "Free (<250 contacts)", url: "klaviyo.com", desc: "Nurture sequence for leads who don't reply. You already know this too — use it!" },
+    { name: "Go High Level", tier: "Free (<250 contacts)", url: "klaviyo.com", desc: "Nurture sequence for leads who don't reply. You already know this too — use it!" },
   ]},
   { cat: "Close & Deliver", color: "#14B8A6", items: [
     { name: "Calendly", tier: "Free", url: "calendly.com", desc: "Auto-schedule discovery calls from email replies. Embed in your cold email signature." },
@@ -235,7 +235,7 @@ const MONTH1_COST = [
   { tool: "Hunter.io", cost: "$0" },
   { tool: "Make.com", cost: "$0" },
   { tool: "Notion CRM", cost: "$0" },
-  { tool: "Klaviyo", cost: "$0" },
+  { tool: "Go High Level", cost: "$0" },
   { tool: "Calendly", cost: "$0" },
   { tool: "Loom", cost: "$0" },
   { tool: "Instantly.ai (when you're ready)", cost: "$37/mo" },

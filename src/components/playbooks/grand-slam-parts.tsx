@@ -162,13 +162,13 @@ const LADDER = [
     what: "Multi-page website + Notion CRM setup + Calendly booking integration. The full digital shop front.",
     up: `"Now let's add email marketing so those visitors keep coming back as repeat customers."` },
   { num: "03", icon: "⚡", color: "#8B5CF6", name: "Custom System", price: "$2,000–4,000", tag: "One-time", yours: true,
-    what: "Custom Bubble.io or Adalo app + Make.com automation + CRM + Klaviyo email marketing. The full stack.",
+    what: "Custom Lovable or Lovable app + Make.com automation + CRM + Go High Level email marketing. The full stack.",
     up: `"Let me stay on as your tech partner so this keeps performing and growing."` },
   { num: "04", icon: "🔄", color: "#F59E0B", name: "Care Retainer", price: "$200–400", tag: "/month", yours: true,
     what: "Monthly updates, uptime monitoring, content changes, priority support. Passive recurring income for you.",
     up: `"Want me to also manage your email campaigns every month?"` },
   { num: "05", icon: "📈", color: "#EC4899", name: "Growth Retainer", price: "$400–800", tag: "/month", yours: true,
-    what: "Klaviyo campaigns designed and sent monthly + analytics report + CRM hygiene. Real growth work.",
+    what: "Go High Level campaigns designed and sent monthly + analytics report + CRM hygiene. Real growth work.",
     up: `"Want me to bring in a paid ads specialist to feed leads directly into this system?"` },
   { num: "06", icon: "📣", color: "#6E6459", name: "Paid Ads Management", price: "Refer + 10–20%", tag: "Partner", yours: false,
     what: "Partner with a trusted Google/Meta ads specialist. You earn a referral fee and stay as the client's primary relationship owner." },
@@ -195,7 +195,7 @@ const TOOL_CATS = [
   ]},
   { cat: "CRM & Nurture", color: "#EC4899", tools: [
     { name: "Notion CRM", cost: "Free · 3 users", url: "notion.com/crm", desc: "Your full pipeline. Stages: Scraped → Contacted → Replied → Discovery Call → Proposal → Closed." },
-    { name: "Klaviyo", cost: "Free · <250 contacts", url: "klaviyo.com", desc: "Email nurture sequences for leads who don't respond immediately. Stay visible until they're ready." },
+    { name: "Go High Level", cost: "Free · <250 contacts", url: "klaviyo.com", desc: "Email nurture sequences for leads who don't respond immediately. Stay visible until they're ready." },
   ]},
   { cat: "Close & Get Paid", color: "#14B8A6", tools: [
     { name: "Calendly", cost: "Free", url: "calendly.com", desc: "Auto-schedule discovery calls from email replies. Put your link in every email signature you send." },
@@ -207,7 +207,7 @@ const TOOL_CATS = [
 
 const HOOKS = [
   { tier: "Starter", color: "#10B981", headline: '"Your Business Found Online — In 10 Days"', target: "Tradespeople · Solo coaches · Small salons", bonus: "Free Google Business Profile audit included" },
-  { tier: "Standard", color: "#6366F1", headline: '"A Booking System That Fills Your Calendar Automatically"', target: "Clinics · Gyms · Therapists · Accountants", bonus: "First 3 months of Klaviyo email setup free" },
+  { tier: "Standard", color: "#6366F1", headline: '"A Booking System That Fills Your Calendar Automatically"', target: "Clinics · Gyms · Therapists · Accountants", bonus: "First 3 months of Go High Level email setup free" },
   { tier: "Premium", color: "#EC4899", headline: '"Stop Paying Third Parties a Cut. Own Your Entire Sales System."', target: "Restaurants · Real estate agencies · E-commerce brands", bonus: "90-day check-in call + analytics report included" },
 ];
 
