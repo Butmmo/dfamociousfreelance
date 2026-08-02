@@ -244,3 +244,25 @@ export const listCheckIns = createServerFn({ method: "POST" })
     if (error) throw error;
     return rows ?? [];
   });
+
+/* ── Weekly reports (admin view) ─────────────────────────── */
+
+export const listAllWeeklyReports = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { data: reports, error } = await context.supabase
+      .from("weekly_reports")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) throw error;
+    const { data: profiles } = await context.supabase
+      .from("profiles")
+      .select("id,email,full_name,rank");
+    const byId = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    return (reports ?? []).map((r: any) => ({
+      ...r,
+      profile: byId.get(r.user_id) ?? null,
+    }));
+  });
