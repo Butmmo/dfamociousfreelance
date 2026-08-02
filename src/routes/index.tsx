@@ -36,8 +36,8 @@ const PLAYBOOKS = [
   {
     icon: Globe,
     tag: "The Worldwide Machine",
-    title: "Global Freelance Playbook",
-    body: "Seven countries, twelve niches, positioning and pricing tiers — plus the modern stack: Go High Level, Lovable, Notion, Make, n8n and Klaviyo.",
+    title: "Global SMB Engine",
+    body: "Seven countries, twelve niches, positioning and pricing tiers — plus the modern stack: Go High Level, Notion, Lovable and Make / Zapier / n8n.",
   },
   {
     icon: Target,

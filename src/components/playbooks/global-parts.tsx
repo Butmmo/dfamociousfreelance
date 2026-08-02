@@ -118,7 +118,7 @@ const BUSINESSES = [
     product: "Lovable or Lovable course + coaching website + Go High Level email sequences + booking calendar integration",
     pitch: '"Your expertise deserves better infrastructure. Let me build a system where clients book, pay, and access your content automatically — even while you sleep."',
     find: "LinkedIn, Google Maps: \"business coach [city]\", Instagram, coaching directory sites",
-    tools: ["Lovable", "Lovable", "Go High Level", "Make / Zapier / n8n"],
+    tools: ["Lovable", "Go High Level", "Make / Zapier / n8n"],
   },
   {
     id: 3, icon: "🦷", name: "Dental & Medical Clinics", deal: "$1,500–3,500",
@@ -126,7 +126,7 @@ const BUSINESSES = [
     product: "Lovable/Lovable booking app + clinic website + Notion CRM for patient management + SMS/email reminders",
     pitch: '"Clinics lose up to 30% of appointments to no-shows. An automated SMS + email reminder system pays for itself in the first month alone."',
     find: "Google Maps: \"dentist / doctor / clinic [city]\", Yelp, Healthgrades, Zocdoc",
-    tools: ["Lovable", "Lovable", "Notion CRM", "Make / Zapier / n8n"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 4, icon: "💪", name: "Fitness Studios & Personal Trainers", deal: "$900–2,000",
@@ -134,7 +134,7 @@ const BUSINESSES = [
     product: "Lovable class booking app + membership website + Go High Level retention campaigns + Notion CRM",
     pitch: '"Let your members book classes, track progress, and renew memberships without you lifting a finger. I\'ll build the whole system in 2 weeks."',
     find: "Google Maps: \"gym / fitness studio [city]\", Instagram, Mindbody directory",
-    tools: ["Lovable", "Lovable", "Go High Level", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 5, icon: "⚖️", name: "Solo Law Firms & Small Legal Practices", deal: "$1,500–4,000",
@@ -142,7 +142,7 @@ const BUSINESSES = [
     product: "Professional law firm website + client intake portal (Lovable) + Notion CRM + appointment scheduling",
     pitch: '"Your firm deserves a digital presence that matches your expertise. I\'ll also save your staff 10+ hours a week with automated client intake — right away."',
     find: "Google Maps: \"solicitor [UK] / attorney [US] [city]\", Martindale-Hubbell, Avvo",
-    tools: ["Lovable", "Lovable", "Notion CRM", "Make / Zapier / n8n"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 6, icon: "🛒", name: "Independent E-Commerce Sellers", deal: "$700–1,800",
@@ -150,7 +150,7 @@ const BUSINESSES = [
     product: "Own e-commerce store (Lovable) + Go High Level email marketing + Notion CRM for customer data ownership",
     pitch: '"Every time someone buys on Etsy, that customer data goes to Etsy — not you. Let me build you a store you own, plus a marketing machine that brings them back repeatedly."',
     find: "Etsy sellers, local markets, Instagram sellers, Google Maps: \"boutique / shop [city]\"",
-    tools: ["Lovable", "Lovable", "Go High Level", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 7, icon: "🍽️", name: "Restaurants & Food Businesses", deal: "$1,000–2,500",
@@ -166,7 +166,7 @@ const BUSINESSES = [
     product: "Booking website + digital intake forms + Notion CRM + Make / Zapier / n8n automated session reminders",
     pitch: '"You focus on healing people. I\'ll build a system that fills your calendar, sends reminders, and handles your admin — so you can focus on what matters."',
     find: "Psychology Today directory, Google Maps: \"therapist / counsellor [city]\"",
-    tools: ["Lovable", "Lovable", "Notion CRM", "Make / Zapier / n8n"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 9, icon: "📊", name: "Accountants & Financial Advisors", deal: "$1,000–2,500",
@@ -174,7 +174,7 @@ const BUSINESSES = [
     product: "Professional website + secure client document portal (Lovable) + Notion CRM + Go High Level financial tips newsletter",
     pitch: '"Your big competitors have polished digital client portals. I can give your practice the exact same experience at a fraction of their overhead cost."',
     find: "LinkedIn, Google Maps: \"accountant / financial advisor [city]\", AICPA / ICAEW directories",
-    tools: ["Lovable", "Notion CRM", "Go High Level", "Lovable"],
+    tools: ["Lovable", "Notion CRM", "Go High Level"],
   },
   {
     id: 10, icon: "🎊", name: "Event Planners & Wedding Coordinators", deal: "$800–2,000",
@@ -190,7 +190,7 @@ const BUSINESSES = [
     product: "Lovable/Lovable booking system + CMS website + Go High Level birthday promos + rebooking campaigns + Notion CRM",
     pitch: '"Imagine your salon filling up automatically every week because the system sends \"time for your next appointment\" messages. That\'s exactly what I\'ll build you."',
     find: "Google Maps: \"hair salon / spa / med spa [city]\", Instagram, Fresha directory",
-    tools: ["Lovable", "Lovable", "Go High Level", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 12, icon: "🔧", name: "Contractors & Home Service Providers", deal: "$500–1,200",
