@@ -222,13 +222,9 @@ export function GrandSlamParts({ tab }) {
   const [gso, setGso] = useState({ dream: "", proof: "", speed: "", ease: "" });
   const [copied, setCopied] = useState(false);
 
-  const toggle = (id) => setDone(d => ({ ...d, [id]: !d[id] }));
   const toggleScore = (key) => setScoreChecks(s => ({ ...s, [key]: !s[key] }));
   const updateGso = (id, val) => setGso(g => ({ ...g, [id]: val }));
 
-  const totalTasks = PHASES.reduce((acc, p) => acc + p.tasks.length, 0);
-  const doneTasks = Object.values(done).filter(Boolean).length;
-  const progress = Math.round((doneTasks / totalTasks) * 100);
 
   const totalScore = Object.entries(scoreChecks).reduce((sum, [k, v]) => {
     if (!v) return sum;
