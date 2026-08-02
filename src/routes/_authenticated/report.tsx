@@ -17,10 +17,11 @@ const XP_PER_TASK = 10;
 
 const PLAYBOOK_META: Record<string, { title: string; slug: string }> = {
   p_45day:       { title: "45-Day Plan",      slug: "plan" },
-  p_grandslam:   { title: "Grand Slam Offer", slug: "grand-slam" },
-  p_prospecting: { title: "SMB Prospecting",  slug: "prospecting" },
-  p_global:      { title: "Global Playbook",  slug: "global" },
+  p_global:      { title: "Global SMB Engine", slug: "global-smb-engine" },
+  p_prospecting: { title: "Global SMB Engine", slug: "global-smb-engine" },
+  p_grandslam:   { title: "Global SMB Engine", slug: "global-smb-engine" },
 };
+
 
 const BAND_STYLE: Record<string, { label: string; ring: string; bg: string; text: string; note: string }> = {
   elite:    { label: "Elite",    ring: "ring-emerald-500", bg: "bg-emerald-500/10", text: "text-emerald-500", note: "You're pacing at the top. Council watches with pride." },
