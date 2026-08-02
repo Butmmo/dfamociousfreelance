@@ -25,6 +25,7 @@ import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './route
 import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/_authenticated/playbooks/prospecting'
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
 import { Route as AuthenticatedPlaybooksGrandSlamRouteImport } from './routes/_authenticated/playbooks/grand-slam'
+import { Route as AuthenticatedPlaybooksGlobalSmbEngineRouteImport } from './routes/_authenticated/playbooks/global-smb-engine'
 import { Route as AuthenticatedPlaybooksGlobalRouteImport } from './routes/_authenticated/playbooks/global'
 import { Route as AuthenticatedAscentReportRouteImport } from './routes/_authenticated/ascent/report'
 import { Route as AuthenticatedAscentCurriculumRouteImport } from './routes/_authenticated/ascent/curriculum'
@@ -118,6 +119,12 @@ const AuthenticatedPlaybooksGrandSlamRoute =
     path: '/playbooks/grand-slam',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPlaybooksGlobalSmbEngineRoute =
+  AuthenticatedPlaybooksGlobalSmbEngineRouteImport.update({
+    id: '/playbooks/global-smb-engine',
+    path: '/playbooks/global-smb-engine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPlaybooksGlobalRoute =
   AuthenticatedPlaybooksGlobalRouteImport.update({
     id: '/playbooks/global',
@@ -164,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/ascent/report': typeof AuthenticatedAscentReportRoute
   '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
+  '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
@@ -185,6 +193,7 @@ export interface FileRoutesByTo {
   '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/ascent/report': typeof AuthenticatedAscentReportRoute
   '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
+  '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
@@ -209,6 +218,7 @@ export interface FileRoutesById {
   '/_authenticated/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/_authenticated/ascent/report': typeof AuthenticatedAscentReportRoute
   '/_authenticated/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
+  '/_authenticated/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/_authenticated/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/_authenticated/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/ascent/curriculum'
     | '/ascent/report'
     | '/playbooks/global'
+    | '/playbooks/global-smb-engine'
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
     | '/playbooks/prospecting'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/ascent/curriculum'
     | '/ascent/report'
     | '/playbooks/global'
+    | '/playbooks/global-smb-engine'
     | '/playbooks/grand-slam'
     | '/playbooks/plan'
     | '/playbooks/prospecting'
@@ -277,6 +289,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ascent/curriculum'
     | '/_authenticated/ascent/report'
     | '/_authenticated/playbooks/global'
+    | '/_authenticated/playbooks/global-smb-engine'
     | '/_authenticated/playbooks/grand-slam'
     | '/_authenticated/playbooks/plan'
     | '/_authenticated/playbooks/prospecting'
@@ -406,6 +419,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksGrandSlamRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/playbooks/global-smb-engine': {
+      id: '/_authenticated/playbooks/global-smb-engine'
+      path: '/playbooks/global-smb-engine'
+      fullPath: '/playbooks/global-smb-engine'
+      preLoaderRoute: typeof AuthenticatedPlaybooksGlobalSmbEngineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/playbooks/global': {
       id: '/_authenticated/playbooks/global'
       path: '/playbooks/global'
@@ -474,6 +494,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
   AuthenticatedPlaybooksGlobalRoute: typeof AuthenticatedPlaybooksGlobalRoute
+  AuthenticatedPlaybooksGlobalSmbEngineRoute: typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   AuthenticatedPlaybooksGrandSlamRoute: typeof AuthenticatedPlaybooksGrandSlamRoute
   AuthenticatedPlaybooksPlanRoute: typeof AuthenticatedPlaybooksPlanRoute
   AuthenticatedPlaybooksProspectingRoute: typeof AuthenticatedPlaybooksProspectingRoute
@@ -489,6 +510,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
   AuthenticatedPlaybooksGlobalRoute: AuthenticatedPlaybooksGlobalRoute,
+  AuthenticatedPlaybooksGlobalSmbEngineRoute:
+    AuthenticatedPlaybooksGlobalSmbEngineRoute,
   AuthenticatedPlaybooksGrandSlamRoute: AuthenticatedPlaybooksGrandSlamRoute,
   AuthenticatedPlaybooksPlanRoute: AuthenticatedPlaybooksPlanRoute,
   AuthenticatedPlaybooksProspectingRoute:
