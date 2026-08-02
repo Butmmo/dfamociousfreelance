@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authenticated/weekly-report'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAscentRouteRouteImport } from './routes/_authenticated/ascent/route'
@@ -64,6 +65,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCouncilReportsRoute =
+  AuthenticatedCouncilReportsRouteImport.update({
+    id: '/council-reports',
+    path: '/council-reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
@@ -142,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/ascent': typeof AuthenticatedAscentRouteRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -161,6 +169,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -183,6 +192,7 @@ export interface FileRoutesById {
   '/_authenticated/ascent': typeof AuthenticatedAscentRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
+  '/_authenticated/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/ascent'
     | '/admin'
     | '/calendar'
+    | '/council-reports'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/calendar'
+    | '/council-reports'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
@@ -245,6 +257,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ascent'
     | '/_authenticated/admin'
     | '/_authenticated/calendar'
+    | '/_authenticated/council-reports'
     | '/_authenticated/dashboard'
     | '/_authenticated/report'
     | '/_authenticated/weekly-report'
@@ -315,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/council-reports': {
+      id: '/_authenticated/council-reports'
+      path: '/council-reports'
+      fullPath: '/council-reports'
+      preLoaderRoute: typeof AuthenticatedCouncilReportsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/calendar': {
@@ -430,6 +450,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAscentRouteRoute: typeof AuthenticatedAscentRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
+  AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
@@ -443,6 +464,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAscentRouteRoute: AuthenticatedAscentRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
+  AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
