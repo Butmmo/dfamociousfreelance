@@ -35,21 +35,9 @@ const PILLARS = [
 const PLAYBOOKS = [
   {
     icon: Globe,
-    tag: "The Worldwide Machine",
-    title: "Global Freelance Playbook",
-    body: "Seven countries, twelve niches, positioning and pricing tiers — plus the modern stack: Go High Level, Lovable, Notion, Make, n8n and Klaviyo.",
-  },
-  {
-    icon: Target,
-    tag: "From Google Maps to Closed Deal",
-    title: "SMB Prospecting Guide",
-    body: "Exact search terms per niche, hot / cold signal scoring, and the outreach motion that turns a map pin into a booked call.",
-  },
-  {
-    icon: Flame,
-    tag: "The Closer's Arsenal",
-    title: "Grand Slam Offer System",
-    body: "Lead scoring with review-gap signals, offer construction, and the value ladder that carries a client from first invoice to retainer.",
+    tag: "Markets · Leads · Offer",
+    title: "Global SMB Engine",
+    body: "Seven countries and twelve niches, the exact Google Maps search terms per niche, hot / cold lead scoring with review-gap signals, and the Grand Slam offer builder — merged into one engine on the DFS stack: Go High Level, Notion, Lovable, Make / Zapier / n8n.",
   },
   {
     icon: Calendar,

@@ -16,16 +16,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authenticated/weekly-report'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAscentRouteRouteImport } from './routes/_authenticated/ascent/route'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
 import { Route as AuthenticatedAscentIndexRouteImport } from './routes/_authenticated/ascent/index'
 import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './routes/_authenticated/playbooks/smb-calculator'
-import { Route as AuthenticatedPlaybooksProspectingRouteImport } from './routes/_authenticated/playbooks/prospecting'
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
-import { Route as AuthenticatedPlaybooksGrandSlamRouteImport } from './routes/_authenticated/playbooks/grand-slam'
-import { Route as AuthenticatedPlaybooksGlobalRouteImport } from './routes/_authenticated/playbooks/global'
+import { Route as AuthenticatedPlaybooksGlobalSmbEngineRouteImport } from './routes/_authenticated/playbooks/global-smb-engine'
 import { Route as AuthenticatedAscentReportRouteImport } from './routes/_authenticated/ascent/report'
 import { Route as AuthenticatedAscentCurriculumRouteImport } from './routes/_authenticated/ascent/curriculum'
 import { Route as AuthenticatedAscentCouncilRouteImport } from './routes/_authenticated/ascent/council'
@@ -66,6 +65,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCouncilReportsRoute =
+  AuthenticatedCouncilReportsRouteImport.update({
+    id: '/council-reports',
+    path: '/council-reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
@@ -100,28 +105,16 @@ const AuthenticatedPlaybooksSmbCalculatorRoute =
     path: '/playbooks/smb-calculator',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPlaybooksProspectingRoute =
-  AuthenticatedPlaybooksProspectingRouteImport.update({
-    id: '/playbooks/prospecting',
-    path: '/playbooks/prospecting',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedPlaybooksPlanRoute =
   AuthenticatedPlaybooksPlanRouteImport.update({
     id: '/playbooks/plan',
     path: '/playbooks/plan',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPlaybooksGrandSlamRoute =
-  AuthenticatedPlaybooksGrandSlamRouteImport.update({
-    id: '/playbooks/grand-slam',
-    path: '/playbooks/grand-slam',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPlaybooksGlobalRoute =
-  AuthenticatedPlaybooksGlobalRouteImport.update({
-    id: '/playbooks/global',
-    path: '/playbooks/global',
+const AuthenticatedPlaybooksGlobalSmbEngineRoute =
+  AuthenticatedPlaybooksGlobalSmbEngineRouteImport.update({
+    id: '/playbooks/global-smb-engine',
+    path: '/playbooks/global-smb-engine',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAscentReportRoute =
@@ -156,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/ascent': typeof AuthenticatedAscentRouteRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -163,10 +157,8 @@ export interface FileRoutesByFullPath {
   '/ascent/council': typeof AuthenticatedAscentCouncilRoute
   '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/ascent/report': typeof AuthenticatedAscentReportRoute
-  '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
-  '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
+  '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
-  '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/ascent/': typeof AuthenticatedAscentIndexRoute
   '/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
@@ -177,6 +169,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -184,10 +177,8 @@ export interface FileRoutesByTo {
   '/ascent/council': typeof AuthenticatedAscentCouncilRoute
   '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/ascent/report': typeof AuthenticatedAscentReportRoute
-  '/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
-  '/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
+  '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
-  '/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/ascent': typeof AuthenticatedAscentIndexRoute
   '/playbooks': typeof AuthenticatedPlaybooksIndexRoute
@@ -201,6 +192,7 @@ export interface FileRoutesById {
   '/_authenticated/ascent': typeof AuthenticatedAscentRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
+  '/_authenticated/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -208,10 +200,8 @@ export interface FileRoutesById {
   '/_authenticated/ascent/council': typeof AuthenticatedAscentCouncilRoute
   '/_authenticated/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
   '/_authenticated/ascent/report': typeof AuthenticatedAscentReportRoute
-  '/_authenticated/playbooks/global': typeof AuthenticatedPlaybooksGlobalRoute
-  '/_authenticated/playbooks/grand-slam': typeof AuthenticatedPlaybooksGrandSlamRoute
+  '/_authenticated/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
-  '/_authenticated/playbooks/prospecting': typeof AuthenticatedPlaybooksProspectingRoute
   '/_authenticated/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/_authenticated/ascent/': typeof AuthenticatedAscentIndexRoute
   '/_authenticated/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
@@ -225,6 +215,7 @@ export interface FileRouteTypes {
     | '/ascent'
     | '/admin'
     | '/calendar'
+    | '/council-reports'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
@@ -232,10 +223,8 @@ export interface FileRouteTypes {
     | '/ascent/council'
     | '/ascent/curriculum'
     | '/ascent/report'
-    | '/playbooks/global'
-    | '/playbooks/grand-slam'
+    | '/playbooks/global-smb-engine'
     | '/playbooks/plan'
-    | '/playbooks/prospecting'
     | '/playbooks/smb-calculator'
     | '/ascent/'
     | '/playbooks/'
@@ -246,6 +235,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/calendar'
+    | '/council-reports'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
@@ -253,10 +243,8 @@ export interface FileRouteTypes {
     | '/ascent/council'
     | '/ascent/curriculum'
     | '/ascent/report'
-    | '/playbooks/global'
-    | '/playbooks/grand-slam'
+    | '/playbooks/global-smb-engine'
     | '/playbooks/plan'
-    | '/playbooks/prospecting'
     | '/playbooks/smb-calculator'
     | '/ascent'
     | '/playbooks'
@@ -269,6 +257,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ascent'
     | '/_authenticated/admin'
     | '/_authenticated/calendar'
+    | '/_authenticated/council-reports'
     | '/_authenticated/dashboard'
     | '/_authenticated/report'
     | '/_authenticated/weekly-report'
@@ -276,10 +265,8 @@ export interface FileRouteTypes {
     | '/_authenticated/ascent/council'
     | '/_authenticated/ascent/curriculum'
     | '/_authenticated/ascent/report'
-    | '/_authenticated/playbooks/global'
-    | '/_authenticated/playbooks/grand-slam'
+    | '/_authenticated/playbooks/global-smb-engine'
     | '/_authenticated/playbooks/plan'
-    | '/_authenticated/playbooks/prospecting'
     | '/_authenticated/playbooks/smb-calculator'
     | '/_authenticated/ascent/'
     | '/_authenticated/playbooks/'
@@ -343,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/council-reports': {
+      id: '/_authenticated/council-reports'
+      path: '/council-reports'
+      fullPath: '/council-reports'
+      preLoaderRoute: typeof AuthenticatedCouncilReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/calendar': {
       id: '/_authenticated/calendar'
       path: '/calendar'
@@ -385,13 +379,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksSmbCalculatorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/playbooks/prospecting': {
-      id: '/_authenticated/playbooks/prospecting'
-      path: '/playbooks/prospecting'
-      fullPath: '/playbooks/prospecting'
-      preLoaderRoute: typeof AuthenticatedPlaybooksProspectingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/playbooks/plan': {
       id: '/_authenticated/playbooks/plan'
       path: '/playbooks/plan'
@@ -399,18 +386,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/playbooks/grand-slam': {
-      id: '/_authenticated/playbooks/grand-slam'
-      path: '/playbooks/grand-slam'
-      fullPath: '/playbooks/grand-slam'
-      preLoaderRoute: typeof AuthenticatedPlaybooksGrandSlamRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/playbooks/global': {
-      id: '/_authenticated/playbooks/global'
-      path: '/playbooks/global'
-      fullPath: '/playbooks/global'
-      preLoaderRoute: typeof AuthenticatedPlaybooksGlobalRouteImport
+    '/_authenticated/playbooks/global-smb-engine': {
+      id: '/_authenticated/playbooks/global-smb-engine'
+      path: '/playbooks/global-smb-engine'
+      fullPath: '/playbooks/global-smb-engine'
+      preLoaderRoute: typeof AuthenticatedPlaybooksGlobalSmbEngineRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/ascent/report': {
@@ -470,13 +450,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAscentRouteRoute: typeof AuthenticatedAscentRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
+  AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
-  AuthenticatedPlaybooksGlobalRoute: typeof AuthenticatedPlaybooksGlobalRoute
-  AuthenticatedPlaybooksGrandSlamRoute: typeof AuthenticatedPlaybooksGrandSlamRoute
+  AuthenticatedPlaybooksGlobalSmbEngineRoute: typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   AuthenticatedPlaybooksPlanRoute: typeof AuthenticatedPlaybooksPlanRoute
-  AuthenticatedPlaybooksProspectingRoute: typeof AuthenticatedPlaybooksProspectingRoute
   AuthenticatedPlaybooksSmbCalculatorRoute: typeof AuthenticatedPlaybooksSmbCalculatorRoute
   AuthenticatedPlaybooksIndexRoute: typeof AuthenticatedPlaybooksIndexRoute
 }
@@ -485,14 +464,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAscentRouteRoute: AuthenticatedAscentRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
+  AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
-  AuthenticatedPlaybooksGlobalRoute: AuthenticatedPlaybooksGlobalRoute,
-  AuthenticatedPlaybooksGrandSlamRoute: AuthenticatedPlaybooksGrandSlamRoute,
+  AuthenticatedPlaybooksGlobalSmbEngineRoute:
+    AuthenticatedPlaybooksGlobalSmbEngineRoute,
   AuthenticatedPlaybooksPlanRoute: AuthenticatedPlaybooksPlanRoute,
-  AuthenticatedPlaybooksProspectingRoute:
-    AuthenticatedPlaybooksProspectingRoute,
   AuthenticatedPlaybooksSmbCalculatorRoute:
     AuthenticatedPlaybooksSmbCalculatorRoute,
   AuthenticatedPlaybooksIndexRoute: AuthenticatedPlaybooksIndexRoute,

@@ -1,7 +1,5 @@
 // @ts-nocheck
 // Playbook route — content provided by the user, wired to Supabase progress tracking.
-import { createFileRoute } from "@tanstack/react-router";
-import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { useState } from "react";
 
 const COUNTRIES = [
@@ -11,9 +9,9 @@ const COUNTRIES = [
     highlight: "Highest rates + largest SMB pool on Earth. Every major city has hundreds of businesses needing your exact stack.",
     reasons: [
       "Highest freelance rates globally — $75–200/hr is completely normal",
-      "Massive no-code movement — Bubble.io's largest community is here",
+      "Massive no-code movement — Lovable's largest community is here",
       "Every city has hundreds of businesses needing CRM, websites, and automation",
-      "Huge appetite for email marketing (Klaviyo) and workflow automation",
+      "Huge appetite for email marketing (Go High Level) and workflow automation",
     ],
     niches: ["Coaches", "Real Estate Agents", "Fitness Studios", "E-commerce"],
     platforms: ["Google Maps", "Yelp", "LinkedIn", "Alignable"],
@@ -109,90 +107,90 @@ const BUSINESSES = [
   {
     id: 1, icon: "🏠", name: "Real Estate Agencies & Agents", deal: "$1,200–2,500",
     pain: "Tons of listings and leads — zero tracking. No CRM, no automated follow-up, outdated or nonexistent website.",
-    product: "Property listing site (Bubble.io) + Notion CRM pipeline + Klaviyo email drip sequences for lead nurturing",
+    product: "Property listing site (Lovable) + Notion CRM pipeline + Go High Level email drip sequences for lead nurturing",
     pitch: '"You\'re losing warm leads every week because nothing follows them up automatically. I\'ll build a system that captures, tracks, and converts leads 24/7."',
     find: "Google Maps: \"real estate agent [city]\", Zillow agent directory, local estate agency networks",
-    tools: ["Bubble.io", "Notion CRM", "Klaviyo", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Go High Level", "Make / Zapier / n8n"],
   },
   {
     id: 2, icon: "🎯", name: "Business & Life Coaches", deal: "$800–2,000",
     pain: "Selling expertise but stuck with manual booking, no course platform, no email sequences, and zero upsell funnel.",
-    product: "Kajabi or Bubble.io course + coaching website + Klaviyo email sequences + booking calendar integration",
+    product: "Lovable or Lovable course + coaching website + Go High Level email sequences + booking calendar integration",
     pitch: '"Your expertise deserves better infrastructure. Let me build a system where clients book, pay, and access your content automatically — even while you sleep."',
     find: "LinkedIn, Google Maps: \"business coach [city]\", Instagram, coaching directory sites",
-    tools: ["Kajabi", "Bubble.io", "Klaviyo", "Zapier"],
+    tools: ["Lovable", "Go High Level", "Make / Zapier / n8n"],
   },
   {
     id: 3, icon: "🦷", name: "Dental & Medical Clinics", deal: "$1,500–3,500",
     pain: "No online booking, no automated reminders, chaotic patient management, generic or missing website.",
-    product: "Adalo/Bubble.io booking app + clinic website + Notion CRM for patient management + SMS/email reminders",
+    product: "Lovable/Lovable booking app + clinic website + Notion CRM for patient management + SMS/email reminders",
     pitch: '"Clinics lose up to 30% of appointments to no-shows. An automated SMS + email reminder system pays for itself in the first month alone."',
     find: "Google Maps: \"dentist / doctor / clinic [city]\", Yelp, Healthgrades, Zocdoc",
-    tools: ["Adalo", "Bubble.io", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 4, icon: "💪", name: "Fitness Studios & Personal Trainers", deal: "$900–2,000",
     pain: "Class scheduling, membership management, and new client acquisition are all completely manual.",
-    product: "Adalo/FlutterFlow class booking app + membership website + Klaviyo retention campaigns + Notion CRM",
+    product: "Lovable class booking app + membership website + Go High Level retention campaigns + Notion CRM",
     pitch: '"Let your members book classes, track progress, and renew memberships without you lifting a finger. I\'ll build the whole system in 2 weeks."',
     find: "Google Maps: \"gym / fitness studio [city]\", Instagram, Mindbody directory",
-    tools: ["Adalo", "FlutterFlow", "Klaviyo", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 5, icon: "⚖️", name: "Solo Law Firms & Small Legal Practices", deal: "$1,500–4,000",
     pain: "Drowning in manual intake, no digital client portal, prestigious firm with a website that looks like 2005.",
-    product: "Professional law firm website + client intake portal (Bubble.io) + Notion CRM + appointment scheduling",
+    product: "Professional law firm website + client intake portal (Lovable) + Notion CRM + appointment scheduling",
     pitch: '"Your firm deserves a digital presence that matches your expertise. I\'ll also save your staff 10+ hours a week with automated client intake — right away."',
     find: "Google Maps: \"solicitor [UK] / attorney [US] [city]\", Martindale-Hubbell, Avvo",
-    tools: ["Bubble.io", "CMS Builder", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 6, icon: "🛒", name: "Independent E-Commerce Sellers", deal: "$700–1,800",
     pain: "Selling on Etsy/Amazon but don't own their customer data. Every sale enriches the platform, not them.",
-    product: "Own e-commerce store (Bubble.io/CMS) + Klaviyo email marketing + Notion CRM for customer data ownership",
+    product: "Own e-commerce store (Lovable) + Go High Level email marketing + Notion CRM for customer data ownership",
     pitch: '"Every time someone buys on Etsy, that customer data goes to Etsy — not you. Let me build you a store you own, plus a marketing machine that brings them back repeatedly."',
     find: "Etsy sellers, local markets, Instagram sellers, Google Maps: \"boutique / shop [city]\"",
-    tools: ["Bubble.io", "CMS Builder", "Klaviyo", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 7, icon: "🍽️", name: "Restaurants & Food Businesses", deal: "$1,000–2,500",
     pain: "Paying Uber Eats/DoorDash 15–30% commission per order. No loyalty system. No way to re-engage past customers.",
-    product: "Custom ordering platform (Bubble.io) + loyalty/rewards system + Klaviyo promotions + restaurant website",
+    product: "Custom ordering platform (Lovable) + loyalty/rewards system + Go High Level promotions + restaurant website",
     pitch: '"Stop paying Uber Eats 30% per order. Own your ordering system and keep your full margins. I can have it live in 3 weeks."',
     find: "Google Maps: \"restaurant [city]\", Yelp, TripAdvisor, OpenTable listings",
-    tools: ["Bubble.io", "Klaviyo", "Zapier", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Make / Zapier / n8n", "Notion CRM"],
   },
   {
     id: 8, icon: "🧠", name: "Therapists & Mental Health Professionals", deal: "$600–1,500",
     pain: "Extremely busy, minimal tech skills. Need automation for booking, intake forms, session reminders, and secure client communication.",
-    product: "Booking website + digital intake forms + Notion CRM + Zapier/Klaviyo automated session reminders",
+    product: "Booking website + digital intake forms + Notion CRM + Make / Zapier / n8n automated session reminders",
     pitch: '"You focus on healing people. I\'ll build a system that fills your calendar, sends reminders, and handles your admin — so you can focus on what matters."',
     find: "Psychology Today directory, Google Maps: \"therapist / counsellor [city]\"",
-    tools: ["Bubble.io", "CMS Builder", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
   {
     id: 9, icon: "📊", name: "Accountants & Financial Advisors", deal: "$1,000–2,500",
     pain: "Independent practices trying to compete with big firms but no digital client portal, no professional presence, outdated website.",
-    product: "Professional website + secure client document portal (Bubble.io) + Notion CRM + Klaviyo financial tips newsletter",
+    product: "Professional website + secure client document portal (Lovable) + Notion CRM + Go High Level financial tips newsletter",
     pitch: '"Your big competitors have polished digital client portals. I can give your practice the exact same experience at a fraction of their overhead cost."',
     find: "LinkedIn, Google Maps: \"accountant / financial advisor [city]\", AICPA / ICAEW directories",
-    tools: ["Bubble.io", "Notion CRM", "Klaviyo", "CMS Builder"],
+    tools: ["Lovable", "Notion CRM", "Go High Level"],
   },
   {
     id: 10, icon: "🎊", name: "Event Planners & Wedding Coordinators", deal: "$800–2,000",
     pain: "Juggling vendors, clients, timelines, budgets — all in messy spreadsheets. No CRM. Portfolio website absent or outdated.",
-    product: "Portfolio website + Notion CRM for vendor/client management + Klaviyo seasonal campaigns + Zapier automations",
+    product: "Portfolio website + Notion CRM for vendor/client management + Go High Level seasonal campaigns + Zapier automations",
     pitch: '"Let your website do the selling while you focus on running brilliant events. I\'ll also build you a system where vendors and clients always know exactly what\'s happening."',
     find: "Google Maps: \"wedding planner / event coordinator [city]\", The Knot, WeddingWire",
-    tools: ["CMS Builder", "Notion CRM", "Klaviyo", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Go High Level", "Make / Zapier / n8n"],
   },
   {
     id: 11, icon: "💆", name: "Beauty Salons, Spas & Aesthetic Clinics", deal: "$700–1,800",
     pain: "Booking still done by phone. Loyal clients with zero retention system. Reviews and referrals happen purely by chance.",
-    product: "Adalo/Bubble.io booking system + CMS website + Klaviyo birthday promos + rebooking campaigns + Notion CRM",
+    product: "Lovable/Lovable booking system + CMS website + Go High Level birthday promos + rebooking campaigns + Notion CRM",
     pitch: '"Imagine your salon filling up automatically every week because the system sends \"time for your next appointment\" messages. That\'s exactly what I\'ll build you."',
     find: "Google Maps: \"hair salon / spa / med spa [city]\", Instagram, Fresha directory",
-    tools: ["Adalo", "Bubble.io", "Klaviyo", "Notion CRM"],
+    tools: ["Lovable", "Go High Level", "Notion CRM"],
   },
   {
     id: 12, icon: "🔧", name: "Contractors & Home Service Providers", deal: "$500–1,200",
@@ -200,7 +198,7 @@ const BUSINESSES = [
     product: "Professional CMS website + Notion CRM + Zapier quote-request automation + Google review request system",
     pitch: '"When someone searches \"electrician near me\" at 11 PM, your website should appear and capture their details automatically. Right now you\'re completely invisible online."',
     find: "Google Maps: \"plumber / electrician / HVAC [city]\", HomeAdvisor (US), Checkatrade (UK), hipages (AU)",
-    tools: ["CMS Builder", "Notion CRM", "Zapier"],
+    tools: ["Lovable", "Notion CRM", "Make / Zapier / n8n"],
   },
 ];
 
@@ -210,7 +208,7 @@ const PHASES = [
     steps: [
       "Pick 2 niches to start — recommended: Real Estate + Coaches (high deal value, clear pain)",
       "Pick 2 countries — recommended: USA + UK (English, highest rates, familiar tools)",
-      "Build your portfolio site using Bubble.io or Lovable — use your own tools as proof",
+      "Build your portfolio site using Lovable or Lovable — use your own tools as proof",
       "Create 2–3 demo projects as case studies. Demos count. Clients want to see the work, not credentials.",
       "Record a Loom video walkthrough of each demo — this is your sales asset",
     ],
@@ -220,7 +218,7 @@ const PHASES = [
     steps: [
       "Google Maps scraping → use Outscraper.com or PhantomBuster (both have free tiers)",
       "Target: businesses with no website, poor website, or no Google reviews",
-      "Export: business name, email, phone, website → Google Sheets or Airtable",
+      "Export: business name, email, phone, website → Google Sheets or Notion",
       "LinkedIn Sales Navigator (free trial) → filter: Owner/Founder + 1–50 employees + target country",
       "UK bonus: Companies House API — completely free public business database",
       "USA bonus: Yelp and Yellow Pages scraping via Outscraper adds thousands more leads",
@@ -241,7 +239,7 @@ const PHASES = [
     steps: [
       "Notion CRM — you already know this! Manage all leads in clear pipeline stages",
       "Stages: Scraped → Contacted → Replied → Discovery Call → Proposal Sent → Closed",
-      "Klaviyo nurture sequence → for leads who don't reply (value emails, case studies, tips)",
+      "Go High Level nurture sequence → for leads who don't reply (value emails, case studies, tips)",
       "Make.com trigger: new lead auto-created in Notion + follow-up sequence fires automatically",
       "30-minute weekly review: move leads through stages, kill dead ones, test new subject lines",
     ],
@@ -266,12 +264,12 @@ const PACKAGES = [
   },
   {
     name: "Standard", icon: "⚡", color: "#6366F1", price: "$800–1,500",
-    includes: ["Full multi-page website", "Notion CRM setup + pipeline", "Klaviyo email automation", "Booking/calendar integration"],
+    includes: ["Full multi-page website", "Notion CRM setup + pipeline", "Go High Level email automation", "Booking/calendar integration"],
     bestFor: "Coaches, Therapists, Accountants, Event Planners",
   },
   {
     name: "Premium", icon: "🚀", color: "#F59E0B", price: "$2,000–4,000",
-    includes: ["Custom web app (Bubble.io)", "Full automation stack (Make.com/Zapier)", "CRM + email marketing", "Client portal or booking system"],
+    includes: ["Custom web app (Lovable)", "Full automation stack (Make.com/Zapier)", "CRM + email marketing", "Client portal or booking system"],
     bestFor: "Clinics, Law Firms, Real Estate, Restaurants",
   },
   {
@@ -305,7 +303,7 @@ const METHODOLOGY = [
 const DIY_COMPARISON = [
   { factor: "Time to launch", diy: "40–80 hrs of trial, error, tutorials", you: "7–14 days, fully done for you" },
   { factor: "Data architecture", diy: "Generic, often breaks at scale", you: "Designed properly from day one" },
-  { factor: "CRM / email / payments", diy: "Missing, or hacked together", you: "Fully integrated (Notion, Klaviyo, Stripe)" },
+  { factor: "CRM / email / payments", diy: "Missing, or hacked together", you: "Fully integrated (Notion, Go High Level, Stripe)" },
   { factor: "Security & hosting", diy: "Overlooked until something breaks", you: "Handled, monitored, documented" },
   { factor: "Ongoing updates", diy: "You're on your own", you: "Retainer support included" },
   { factor: "Opportunity cost", diy: "2–3 weeks not spent on your business", you: "Zero — you stay focused on clients" },
@@ -319,8 +317,8 @@ const WEEKLY_PLAN = [
     days: [
       { d: "Day 1", focus: "Lock Your Focus", tasks: "Choose 2 launch countries (USA + UK recommended) and 2 niches (Real Estate + Coaches). Write your Blueprint → Build → Bulletproof pitch in your own words." },
       { d: "Day 2", focus: "Brand Setup", tasks: "Set up a professional email, update your LinkedIn headline to \"Digital Systems Engineer,\" create your free Calendly." },
-      { d: "Day 3", focus: "Build Demo #1", tasks: "Build a real estate listing demo in Bubble.io — use a fictional or local agency as the subject." },
-      { d: "Day 4", focus: "Build Demo #2", tasks: "Build a coaching or booking demo in Kajabi or Adalo." },
+      { d: "Day 3", focus: "Build Demo #1", tasks: "Build a real estate listing demo in Lovable — use a fictional or local agency as the subject." },
+      { d: "Day 4", focus: "Build Demo #2", tasks: "Build a coaching or booking demo in Lovable or Lovable." },
       { d: "Day 5", focus: "Record & Package", tasks: "Record a 90-second Loom walkthrough of each demo. Write a short case-study style description for both." },
       { d: "Day 6", focus: "Portfolio Site", tasks: "Build your own site — homepage, 2 case studies, services framed as outcomes (never tool names), Calendly embed." },
       { d: "Day 7", focus: "Tool Stack Setup", tasks: "Create accounts on Outscraper, Apollo.io, and Instantly.ai. Build your Notion CRM pipeline: Scraped → Contacted → Replied → Call Booked → Proposal → Closed." },
@@ -393,59 +391,14 @@ function Block({ label, color, children }) {
   );
 }
 
-function GlobalPlaybook() {
-  const [tab, setTab] = useState("countries");
+export function GlobalParts({ tab }) {
   const [openCountry, setOpenCountry] = useState(null);
   const [openBiz, setOpenBiz] = useState(null);
   const [openWeek, setOpenWeek] = useState(0);
 
-  const tabs = [
-    { id: "countries", label: "🌍 Countries" },
-    { id: "businesses", label: "💼 Niches" },
-    { id: "positioning", label: "🤖 AI Edge" },
-  ];
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "#F8F5EE", minHeight: "100vh", color: "#201A16" }}>
-
-      {/* HEADER */}
-      <div style={{ background: "linear-gradient(160deg, #FDF9F0 0%, #F8F5EE 60%, #F8F5EE 100%)", padding: "28px 20px 22px", borderBottom: "1px solid #D9CFBB" }}>
-        <div style={{ maxWidth: 860, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#0D7A5F", textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 7 }}>
-            <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "#0D7A5F", boxShadow: "0 0 6px #0D7A5F" }} />
-            International Expansion Playbook
-          </div>
-          <h1 style={{ margin: "0 0 10px 0", fontSize: "clamp(24px, 5vw, 38px)", fontWeight: 800, lineHeight: 1.15, color: "#1A1410" }}>
-            Your <span style={{ color: "#7A5A00" }}>Global Freelance</span> Machine
-          </h1>
-          <p style={{ margin: 0, fontSize: 13.5, color: "#6E6459", maxWidth: 580, lineHeight: 1.65 }}>
-            7 countries · 12 niches · AI-edge positioning — built around your stack: Go High Level, Lovable, Notion, Make, n8n, Klaviyo.
-          </p>
-        </div>
-      </div>
-
-      {/* TABS */}
-      <div style={{ background: "#F8F5EE", borderBottom: "1px solid #D9CFBB", position: "sticky", top: 0, zIndex: 20 }}>
-        <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", padding: "0 8px", overflowX: "auto" }}>
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
-              background: "transparent",
-              border: "none",
-              borderBottom: tab === t.id ? "2px solid #6366F1" : "2px solid transparent",
-              color: tab === t.id ? "#A5B4FC" : "#8A7C6D",
-              padding: "13px 15px",
-              fontSize: 13,
-              fontWeight: tab === t.id ? 600 : 500,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              transition: "all 0.15s",
-              fontFamily: "inherit",
-            }}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: "#201A16" }}>
 
       {/* PAGE CONTENT */}
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "22px 14px 56px" }}>
@@ -574,7 +527,7 @@ function GlobalPlaybook() {
             <div style={{ background: "#0A1020", border: "1px solid #D9CFBB", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 12 }}>🔄 Your Full Automation Stack (Make.com Flow)</div>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5 }}>
-                {["Outscraper", "→", "Apollo.io", "→", "Instantly.ai", "→", "Make.com", "→", "Notion CRM", "→", "Klaviyo"].map((item, i) => (
+                {["Outscraper", "→", "Apollo.io", "→", "Instantly.ai", "→", "Make.com", "→", "Notion CRM", "→", "Go High Level"].map((item, i) => (
                   item === "→"
                     ? <span key={i} style={{ color: "#8A7C6D", fontSize: 15 }}>→</span>
                     : <span key={i} style={{ background: "#EDE7DA", border: "1px solid #1E2E46", borderRadius: 7, padding: "5px 10px", fontSize: 12, color: "#A5B4FC", fontWeight: 500 }}>{item}</span>
@@ -631,7 +584,7 @@ function GlobalPlaybook() {
             <div style={{ marginTop: 14, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 10 }}>💡 Build Your Portfolio Before You Have Clients</div>
               <p style={{ fontSize: 13, color: "#6E6459", margin: "0 0 10px", lineHeight: 1.6 }}>You don't need paying clients to start. Build 3 demo projects for your top niches:</p>
-              {["A real estate listing site → Bubble.io (your proof of complex app building)", "A salon booking app → Adalo (your proof of mobile-first design)", "A coaching platform → Kajabi (your proof of course + marketing automation)"].map((item, i) => (
+              {["A real estate listing site → Lovable (your proof of complex app building)", "A salon booking app → Lovable (your proof of mobile-first design)", "A coaching platform → Lovable (your proof of course + marketing automation)"].map((item, i) => (
                 <InfoRow key={i} color="#10B981">{item}</InfoRow>
               ))}
               <p style={{ fontSize: 12.5, color: "#6E6459", margin: "10px 0 0", lineHeight: 1.6 }}>Host all three on your portfolio site. Record a Loom walkthrough of each. That's your social proof — and it costs you nothing but time.</p>
@@ -710,103 +663,6 @@ function GlobalPlaybook() {
         )}
 
         {/* ─────────────── POSITIONING TAB ─────────────── */}
-        {tab === "positioning" && (
-          <div>
-            <div style={{ marginBottom: 20 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 5px", color: "#1A140F" }}>Your AI Edge, Positioned Right</h2>
-              <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: 0, lineHeight: 1.6 }}>The tools are your advantage in private. In front of clients, you sell outcomes and a process — never the tool names.</p>
-            </div>
-
-            <div style={{ background: "#0A1020", border: "1px solid #6366F125", borderRadius: 12, padding: "16px", marginBottom: 18 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 10 }}>💡 The Core Principle</div>
-              <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65 }}>
-                An architect uses CAD software, but nobody skips hiring an architect because "I could open AutoCAD myself." The software is how they work — the value is the judgment, the integration, and the accountability. That's exactly how to position Claude Code, Lovable, Base44, Cursor, and Gemini: as how you deliver, never as what you're selling.
-              </p>
-            </div>
-
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#1A140F", marginBottom: 3 }}>Your Named Process</div>
-              <p style={{ fontSize: 12, color: "#8A7C6D", margin: 0, lineHeight: 1.5 }}>Give clients a proprietary-sounding system instead of a list of tools.</p>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 0, marginBottom: 20 }}>
-              {METHODOLOGY.map((m, i) => (
-                <div key={m.name} style={{ display: "flex", gap: 13, alignItems: "flex-start" }}>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 10, background: m.color + "18", border: `1px solid ${m.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{m.icon}</div>
-                    {i < METHODOLOGY.length - 1 && <div style={{ width: 2, flex: 1, minHeight: 26, background: "#D9CFBB", marginTop: 4, marginBottom: 4 }} />}
-                  </div>
-                  <div style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 10, padding: "11px 14px", flex: 1, marginBottom: 10 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: m.color }}>{m.step}</span>
-                      <span style={{ fontWeight: 700, fontSize: 14, color: "#1A140F" }}>{m.name}</span>
-                      <span style={{ fontSize: 10.5, color: "#8A7C6D", background: "#EDE7DA", borderRadius: 5, padding: "2px 7px" }}>{m.duration}</span>
-                    </div>
-                    <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.55 }}>{m.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#1A140F", marginBottom: 3 }}>Say This, Not That</div>
-              <p style={{ fontSize: 12, color: "#8A7C6D", margin: 0, lineHeight: 1.5 }}>Exact phrasing for proposals, calls, and your website.</p>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 20 }}>
-              {SAY_DONT.map((s, i) => (
-                <div key={i} style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 10, padding: "12px 14px" }}>
-                  <div style={{ display: "flex", gap: 8, marginBottom: 7, alignItems: "flex-start" }}>
-                    <span style={{ color: "#EF4444", fontSize: 13, flexShrink: 0 }}>✕</span>
-                    <span style={{ fontSize: 12.5, color: "#64748B", lineHeight: 1.5, textDecoration: "line-through" }}>{s.dont}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                    <span style={{ color: "#10B981", fontSize: 13, flexShrink: 0 }}>✓</span>
-                    <span style={{ fontSize: 13, color: "#201A16", lineHeight: 1.5, fontWeight: 500 }}>{s.say}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ background: "linear-gradient(135deg, #0A1020 0%, #0F1A14 100%)", border: "1px solid #10B98135", borderRadius: 12, padding: "16px", marginBottom: 18 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 10 }}>🎯 Your Secret Weapon: The Personalized Preview</div>
-              <p style={{ fontSize: 13, color: "#6E6459", margin: "0 0 11px", lineHeight: 1.65 }}>
-                Most freelancers pitch with words. You can pitch with a working preview. For your top 10–15 leads each week, spend 20–30 minutes building a lightweight clickable mockup using their real business name, pulling colors or logo straight from their Google listing.
-              </p>
-              <div style={{ fontFamily: "'Courier New', monospace", fontSize: 12, color: "#6EE7B7", lineHeight: 1.7, borderLeft: "2px solid #10B98140", paddingLeft: 12, marginBottom: 10 }}>
-                "I noticed [Business Name] didn't have online booking, so I went ahead and mocked this up for you — no obligation, just wanted you to see what's possible. [link / 60-sec Loom]"
-              </div>
-              <p style={{ fontSize: 12, color: "#8A7C6D", margin: 0, lineHeight: 1.55 }}>
-                This is tangible proof instead of a sales pitch, and almost nobody else moves fast enough to do this at scale. Reserve it for your highest-value leads — it's a time investment, not a mass tactic.
-              </p>
-            </div>
-
-            <div style={{ background: "#0A1020", border: "1px solid #F59E0B25", borderRadius: 12, padding: "16px", marginBottom: 18 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 10 }}>🗣️ When They Ask: "Can't I Just Build This Myself With AI?"</div>
-              <div style={{ fontSize: 13, color: "#201A16", lineHeight: 1.7, fontStyle: "italic", borderLeft: "2px solid #F59E0B40", paddingLeft: 13 }}>
-                {OBJECTION_SCRIPT}
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#1A140F", marginBottom: 3 }}>DIY With AI vs. Hiring You</div>
-              <p style={{ fontSize: 12, color: "#8A7C6D", margin: 0, lineHeight: 1.5 }}>Keep this mental model handy on every call.</p>
-            </div>
-            <div style={{ background: "#FFFFFF", border: "1px solid #D9CFBB", borderRadius: 12, overflow: "hidden" }}>
-              {DIY_COMPARISON.map((row, i) => (
-                <div key={i} style={{ padding: "12px 14px", borderBottom: i < DIY_COMPARISON.length - 1 ? "1px solid #D9CFBB" : "none" }}>
-                  <div style={{ fontSize: 11.5, fontWeight: 700, color: "#1A140F", marginBottom: 7 }}>{row.factor}</div>
-                  <div style={{ display: "flex", gap: 7, marginBottom: 5, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: "#EF4444", background: "#EF444415", borderRadius: 5, padding: "1px 6px", flexShrink: 0, marginTop: 1 }}>DIY</span>
-                    <span style={{ fontSize: 12, color: "#64748B", lineHeight: 1.5 }}>{row.diy}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: "#10B981", background: "#10B98115", borderRadius: 5, padding: "1px 6px", flexShrink: 0, marginTop: 1 }}>YOU</span>
-                    <span style={{ fontSize: 12.5, color: "#6E6459", lineHeight: 1.5 }}>{row.you}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* ─────────────── CALENDAR TAB ─────────────── */}
         {tab === "calendar" && (
@@ -876,7 +732,3 @@ function GlobalPlaybook() {
   );
 }
 
-export const Route = createFileRoute("/_authenticated/playbooks/global")({
-  head: () => ({ meta: [{ title: "GlobalPlaybook — DFS Citadel" }] }),
-  component: GlobalPlaybook,
-});

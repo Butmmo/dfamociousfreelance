@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "@/lib/use-session";
@@ -10,7 +10,7 @@ import {
 import { listAscentAccess, grantAscent, revokeAscent } from "@/lib/ascent.functions";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { Mountain } from "lucide-react";
+import { Mountain, FileText } from "lucide-react";
 import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -131,7 +131,11 @@ function Admin() {
           {isSuperAdmin && <span className="ml-2 rounded-full bg-gold px-3 py-1 text-xs font-bold text-onyx">SUPER ADMIN</span>}
         </h1>
         <p className="text-muted-foreground">Issue invitations, appoint admins, assign mentors, and manage the escalation cadence.</p>
+        <Link to="/council-reports" className="mt-3 inline-flex items-center gap-2 rounded-md border border-gold bg-accent/30 px-4 py-2 text-sm font-semibold text-gold-deep hover:bg-accent/60">
+          <FileText className="h-4 w-4" /> View weekly filings
+        </Link>
       </div>
+
 
       {/* Invite */}
       <section className="rounded-2xl border border-gold bg-card p-6 shadow-regal">

@@ -37,12 +37,12 @@ function resolveRank(xp: number): { current: Rank; next: Rank | null } {
   return { current, next };
 }
 
-// Order shown on the dashboard: Global → SMB Prospecting → Grand Slam → 45-Day → SMB Calculator.
+// Order shown on the dashboard: Global SMB Engine → 45-Day → SMB Calculator.
 // Only the 45-Day Plan generates XP. Other playbooks are preparatory / active tools.
 const PLAYBOOK_LIST: Array<{ key: string; title: string; slug: string; icon: any; xp?: boolean; note?: string }> = [
-  { key: "p_global",       title: "Global Playbook",           slug: "global",         icon: Globe },
-  { key: "p_prospecting",  title: "SMB Prospecting",           slug: "prospecting",    icon: Target },
+  { key: "p_global", title: "Global SMB Engine", slug: "global-smb-engine", icon: Globe },
 ];
+
 
 const BAND_TONE: Record<string, { label: string; bg: string; text: string }> = {
   elite:    { label: "Elite",    bg: "bg-emerald-500/10", text: "text-emerald-500" },
