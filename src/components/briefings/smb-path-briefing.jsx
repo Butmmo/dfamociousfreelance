@@ -123,7 +123,7 @@ export default function SmbPathBriefing() {
             {VITALS.map((v) => {
               const t = TONE[v.tone];
               return (
-                <div key={v.label} style={{ background: "#201A16", border: `1px solid ${t.bd}`, borderRadius: 10, padding: "10px 12px" }}>
+                <div key={v.label} style={{ background: "#FFFFFF", border: `1px solid ${t.bd}`, borderRadius: 10, padding: "10px 12px" }}>
                   <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, marginBottom: 4 }}>{v.label}</div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: t.c, marginBottom: 3 }}>{v.value}</div>
                   <div style={{ fontSize: 10.5, color: MUTED, lineHeight: 1.4 }}>{v.note}</div>
@@ -165,7 +165,7 @@ export default function SmbPathBriefing() {
               problems almost every local business already has: not enough reviews, slow response to new leads, missed
               calls, and eventually, a website that undersells them.
             </p>
-            <div style={{ background: "#201A16", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+            <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: GOLD_DEEP, marginBottom: 10 }}>The Motion, In Five Steps</div>
               {[
                 ["Scout", "Google Maps, one niche, one city or country at a time."],
@@ -256,7 +256,7 @@ export default function SmbPathBriefing() {
       </div>
 
       {/* CTA FOOTER */}
-      <div style={{ borderTop: `1px solid ${BORDER}`, background: "#201A16" }}>
+      <div style={{ borderTop: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>Once You've Chosen This Path</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
@@ -276,7 +276,7 @@ function PointList({ items, tone, mark }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {items.map((it) => (
-        <div key={it.title} style={{ display: "flex", gap: 10, background: "#201A16", border: `1px solid ${BORDER}`, borderRadius: 11, padding: "12px 14px" }}>
+        <div key={it.title} style={{ display: "flex", gap: 10, background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 11, padding: "12px 14px" }}>
           <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: "50%", background: t.bg, color: t.c, fontSize: 12, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{mark}</span>
           <div>
             <div style={{ fontWeight: 700, fontSize: 13, color: INK, marginBottom: 3 }}>{it.title}</div>

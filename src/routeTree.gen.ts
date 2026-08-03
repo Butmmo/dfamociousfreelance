@@ -22,8 +22,26 @@ import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
 import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './routes/_authenticated/playbooks/smb-calculator'
+import { Route as AuthenticatedPlaybooksRevenueEngineRouteImport } from './routes/_authenticated/playbooks/revenue-engine'
+import { Route as AuthenticatedPlaybooksPodcastProspectingRouteImport } from './routes/_authenticated/playbooks/podcast-prospecting'
+import { Route as AuthenticatedPlaybooksPodcastCalculatorRouteImport } from './routes/_authenticated/playbooks/podcast-calculator'
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
+import { Route as AuthenticatedPlaybooksMinistrySystemsRouteImport } from './routes/_authenticated/playbooks/ministry-systems'
+import { Route as AuthenticatedPlaybooksMinistryProspectingRouteImport } from './routes/_authenticated/playbooks/ministry-prospecting'
+import { Route as AuthenticatedPlaybooksMinistryCalculatorRouteImport } from './routes/_authenticated/playbooks/ministry-calculator'
 import { Route as AuthenticatedPlaybooksGlobalSmbEngineRouteImport } from './routes/_authenticated/playbooks/global-smb-engine'
+import { Route as AuthenticatedPlaybooksEcommerceProspectingRouteImport } from './routes/_authenticated/playbooks/ecommerce-prospecting'
+import { Route as AuthenticatedPlaybooksEcommerceCalculatorRouteImport } from './routes/_authenticated/playbooks/ecommerce-calculator'
+import { Route as AuthenticatedPlaybooksCareProspectingRouteImport } from './routes/_authenticated/playbooks/care-prospecting'
+import { Route as AuthenticatedPlaybooksCareCalculatorRouteImport } from './routes/_authenticated/playbooks/care-calculator'
+import { Route as AuthenticatedPlaybooksCareBridgeRouteImport } from './routes/_authenticated/playbooks/care-bridge'
+import { Route as AuthenticatedPlaybooksBroadcastEngineRouteImport } from './routes/_authenticated/playbooks/broadcast-engine'
+import { Route as AuthenticatedPlaybooksAuthorityProspectingRouteImport } from './routes/_authenticated/playbooks/authority-prospecting'
+import { Route as AuthenticatedPlaybooksAuthorityEngineRouteImport } from './routes/_authenticated/playbooks/authority-engine'
+import { Route as AuthenticatedPlaybooksAuthorityCalculatorRouteImport } from './routes/_authenticated/playbooks/authority-calculator'
+import { Route as AuthenticatedPlaybooksAscentTargetingRouteImport } from './routes/_authenticated/playbooks/ascent-targeting'
+import { Route as AuthenticatedPlaybooksAscentMachineRouteImport } from './routes/_authenticated/playbooks/ascent-machine'
+import { Route as AuthenticatedPlaybooksAscentCalculatorRouteImport } from './routes/_authenticated/playbooks/ascent-calculator'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -93,16 +111,124 @@ const AuthenticatedPlaybooksSmbCalculatorRoute =
     path: '/playbooks/smb-calculator',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPlaybooksRevenueEngineRoute =
+  AuthenticatedPlaybooksRevenueEngineRouteImport.update({
+    id: '/playbooks/revenue-engine',
+    path: '/playbooks/revenue-engine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksPodcastProspectingRoute =
+  AuthenticatedPlaybooksPodcastProspectingRouteImport.update({
+    id: '/playbooks/podcast-prospecting',
+    path: '/playbooks/podcast-prospecting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksPodcastCalculatorRoute =
+  AuthenticatedPlaybooksPodcastCalculatorRouteImport.update({
+    id: '/playbooks/podcast-calculator',
+    path: '/playbooks/podcast-calculator',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPlaybooksPlanRoute =
   AuthenticatedPlaybooksPlanRouteImport.update({
     id: '/playbooks/plan',
     path: '/playbooks/plan',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPlaybooksMinistrySystemsRoute =
+  AuthenticatedPlaybooksMinistrySystemsRouteImport.update({
+    id: '/playbooks/ministry-systems',
+    path: '/playbooks/ministry-systems',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksMinistryProspectingRoute =
+  AuthenticatedPlaybooksMinistryProspectingRouteImport.update({
+    id: '/playbooks/ministry-prospecting',
+    path: '/playbooks/ministry-prospecting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksMinistryCalculatorRoute =
+  AuthenticatedPlaybooksMinistryCalculatorRouteImport.update({
+    id: '/playbooks/ministry-calculator',
+    path: '/playbooks/ministry-calculator',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPlaybooksGlobalSmbEngineRoute =
   AuthenticatedPlaybooksGlobalSmbEngineRouteImport.update({
     id: '/playbooks/global-smb-engine',
     path: '/playbooks/global-smb-engine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksEcommerceProspectingRoute =
+  AuthenticatedPlaybooksEcommerceProspectingRouteImport.update({
+    id: '/playbooks/ecommerce-prospecting',
+    path: '/playbooks/ecommerce-prospecting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksEcommerceCalculatorRoute =
+  AuthenticatedPlaybooksEcommerceCalculatorRouteImport.update({
+    id: '/playbooks/ecommerce-calculator',
+    path: '/playbooks/ecommerce-calculator',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksCareProspectingRoute =
+  AuthenticatedPlaybooksCareProspectingRouteImport.update({
+    id: '/playbooks/care-prospecting',
+    path: '/playbooks/care-prospecting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksCareCalculatorRoute =
+  AuthenticatedPlaybooksCareCalculatorRouteImport.update({
+    id: '/playbooks/care-calculator',
+    path: '/playbooks/care-calculator',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksCareBridgeRoute =
+  AuthenticatedPlaybooksCareBridgeRouteImport.update({
+    id: '/playbooks/care-bridge',
+    path: '/playbooks/care-bridge',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksBroadcastEngineRoute =
+  AuthenticatedPlaybooksBroadcastEngineRouteImport.update({
+    id: '/playbooks/broadcast-engine',
+    path: '/playbooks/broadcast-engine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksAuthorityProspectingRoute =
+  AuthenticatedPlaybooksAuthorityProspectingRouteImport.update({
+    id: '/playbooks/authority-prospecting',
+    path: '/playbooks/authority-prospecting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksAuthorityEngineRoute =
+  AuthenticatedPlaybooksAuthorityEngineRouteImport.update({
+    id: '/playbooks/authority-engine',
+    path: '/playbooks/authority-engine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksAuthorityCalculatorRoute =
+  AuthenticatedPlaybooksAuthorityCalculatorRouteImport.update({
+    id: '/playbooks/authority-calculator',
+    path: '/playbooks/authority-calculator',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksAscentTargetingRoute =
+  AuthenticatedPlaybooksAscentTargetingRouteImport.update({
+    id: '/playbooks/ascent-targeting',
+    path: '/playbooks/ascent-targeting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksAscentMachineRoute =
+  AuthenticatedPlaybooksAscentMachineRouteImport.update({
+    id: '/playbooks/ascent-machine',
+    path: '/playbooks/ascent-machine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlaybooksAscentCalculatorRoute =
+  AuthenticatedPlaybooksAscentCalculatorRouteImport.update({
+    id: '/playbooks/ascent-calculator',
+    path: '/playbooks/ascent-calculator',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -117,8 +243,26 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
+  '/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
+  '/playbooks/ascent-machine': typeof AuthenticatedPlaybooksAscentMachineRoute
+  '/playbooks/ascent-targeting': typeof AuthenticatedPlaybooksAscentTargetingRoute
+  '/playbooks/authority-calculator': typeof AuthenticatedPlaybooksAuthorityCalculatorRoute
+  '/playbooks/authority-engine': typeof AuthenticatedPlaybooksAuthorityEngineRoute
+  '/playbooks/authority-prospecting': typeof AuthenticatedPlaybooksAuthorityProspectingRoute
+  '/playbooks/broadcast-engine': typeof AuthenticatedPlaybooksBroadcastEngineRoute
+  '/playbooks/care-bridge': typeof AuthenticatedPlaybooksCareBridgeRoute
+  '/playbooks/care-calculator': typeof AuthenticatedPlaybooksCareCalculatorRoute
+  '/playbooks/care-prospecting': typeof AuthenticatedPlaybooksCareProspectingRoute
+  '/playbooks/ecommerce-calculator': typeof AuthenticatedPlaybooksEcommerceCalculatorRoute
+  '/playbooks/ecommerce-prospecting': typeof AuthenticatedPlaybooksEcommerceProspectingRoute
   '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
+  '/playbooks/ministry-calculator': typeof AuthenticatedPlaybooksMinistryCalculatorRoute
+  '/playbooks/ministry-prospecting': typeof AuthenticatedPlaybooksMinistryProspectingRoute
+  '/playbooks/ministry-systems': typeof AuthenticatedPlaybooksMinistrySystemsRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
+  '/playbooks/podcast-calculator': typeof AuthenticatedPlaybooksPodcastCalculatorRoute
+  '/playbooks/podcast-prospecting': typeof AuthenticatedPlaybooksPodcastProspectingRoute
+  '/playbooks/revenue-engine': typeof AuthenticatedPlaybooksRevenueEngineRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
@@ -133,8 +277,26 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
+  '/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
+  '/playbooks/ascent-machine': typeof AuthenticatedPlaybooksAscentMachineRoute
+  '/playbooks/ascent-targeting': typeof AuthenticatedPlaybooksAscentTargetingRoute
+  '/playbooks/authority-calculator': typeof AuthenticatedPlaybooksAuthorityCalculatorRoute
+  '/playbooks/authority-engine': typeof AuthenticatedPlaybooksAuthorityEngineRoute
+  '/playbooks/authority-prospecting': typeof AuthenticatedPlaybooksAuthorityProspectingRoute
+  '/playbooks/broadcast-engine': typeof AuthenticatedPlaybooksBroadcastEngineRoute
+  '/playbooks/care-bridge': typeof AuthenticatedPlaybooksCareBridgeRoute
+  '/playbooks/care-calculator': typeof AuthenticatedPlaybooksCareCalculatorRoute
+  '/playbooks/care-prospecting': typeof AuthenticatedPlaybooksCareProspectingRoute
+  '/playbooks/ecommerce-calculator': typeof AuthenticatedPlaybooksEcommerceCalculatorRoute
+  '/playbooks/ecommerce-prospecting': typeof AuthenticatedPlaybooksEcommerceProspectingRoute
   '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
+  '/playbooks/ministry-calculator': typeof AuthenticatedPlaybooksMinistryCalculatorRoute
+  '/playbooks/ministry-prospecting': typeof AuthenticatedPlaybooksMinistryProspectingRoute
+  '/playbooks/ministry-systems': typeof AuthenticatedPlaybooksMinistrySystemsRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
+  '/playbooks/podcast-calculator': typeof AuthenticatedPlaybooksPodcastCalculatorRoute
+  '/playbooks/podcast-prospecting': typeof AuthenticatedPlaybooksPodcastProspectingRoute
+  '/playbooks/revenue-engine': typeof AuthenticatedPlaybooksRevenueEngineRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/playbooks': typeof AuthenticatedPlaybooksIndexRoute
 }
@@ -151,8 +313,26 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
+  '/_authenticated/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
+  '/_authenticated/playbooks/ascent-machine': typeof AuthenticatedPlaybooksAscentMachineRoute
+  '/_authenticated/playbooks/ascent-targeting': typeof AuthenticatedPlaybooksAscentTargetingRoute
+  '/_authenticated/playbooks/authority-calculator': typeof AuthenticatedPlaybooksAuthorityCalculatorRoute
+  '/_authenticated/playbooks/authority-engine': typeof AuthenticatedPlaybooksAuthorityEngineRoute
+  '/_authenticated/playbooks/authority-prospecting': typeof AuthenticatedPlaybooksAuthorityProspectingRoute
+  '/_authenticated/playbooks/broadcast-engine': typeof AuthenticatedPlaybooksBroadcastEngineRoute
+  '/_authenticated/playbooks/care-bridge': typeof AuthenticatedPlaybooksCareBridgeRoute
+  '/_authenticated/playbooks/care-calculator': typeof AuthenticatedPlaybooksCareCalculatorRoute
+  '/_authenticated/playbooks/care-prospecting': typeof AuthenticatedPlaybooksCareProspectingRoute
+  '/_authenticated/playbooks/ecommerce-calculator': typeof AuthenticatedPlaybooksEcommerceCalculatorRoute
+  '/_authenticated/playbooks/ecommerce-prospecting': typeof AuthenticatedPlaybooksEcommerceProspectingRoute
   '/_authenticated/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
+  '/_authenticated/playbooks/ministry-calculator': typeof AuthenticatedPlaybooksMinistryCalculatorRoute
+  '/_authenticated/playbooks/ministry-prospecting': typeof AuthenticatedPlaybooksMinistryProspectingRoute
+  '/_authenticated/playbooks/ministry-systems': typeof AuthenticatedPlaybooksMinistrySystemsRoute
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
+  '/_authenticated/playbooks/podcast-calculator': typeof AuthenticatedPlaybooksPodcastCalculatorRoute
+  '/_authenticated/playbooks/podcast-prospecting': typeof AuthenticatedPlaybooksPodcastProspectingRoute
+  '/_authenticated/playbooks/revenue-engine': typeof AuthenticatedPlaybooksRevenueEngineRoute
   '/_authenticated/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
   '/_authenticated/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
@@ -169,8 +349,26 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/report'
     | '/weekly-report'
+    | '/playbooks/ascent-calculator'
+    | '/playbooks/ascent-machine'
+    | '/playbooks/ascent-targeting'
+    | '/playbooks/authority-calculator'
+    | '/playbooks/authority-engine'
+    | '/playbooks/authority-prospecting'
+    | '/playbooks/broadcast-engine'
+    | '/playbooks/care-bridge'
+    | '/playbooks/care-calculator'
+    | '/playbooks/care-prospecting'
+    | '/playbooks/ecommerce-calculator'
+    | '/playbooks/ecommerce-prospecting'
     | '/playbooks/global-smb-engine'
+    | '/playbooks/ministry-calculator'
+    | '/playbooks/ministry-prospecting'
+    | '/playbooks/ministry-systems'
     | '/playbooks/plan'
+    | '/playbooks/podcast-calculator'
+    | '/playbooks/podcast-prospecting'
+    | '/playbooks/revenue-engine'
     | '/playbooks/smb-calculator'
     | '/playbooks/'
   fileRoutesByTo: FileRoutesByTo
@@ -185,8 +383,26 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/report'
     | '/weekly-report'
+    | '/playbooks/ascent-calculator'
+    | '/playbooks/ascent-machine'
+    | '/playbooks/ascent-targeting'
+    | '/playbooks/authority-calculator'
+    | '/playbooks/authority-engine'
+    | '/playbooks/authority-prospecting'
+    | '/playbooks/broadcast-engine'
+    | '/playbooks/care-bridge'
+    | '/playbooks/care-calculator'
+    | '/playbooks/care-prospecting'
+    | '/playbooks/ecommerce-calculator'
+    | '/playbooks/ecommerce-prospecting'
     | '/playbooks/global-smb-engine'
+    | '/playbooks/ministry-calculator'
+    | '/playbooks/ministry-prospecting'
+    | '/playbooks/ministry-systems'
     | '/playbooks/plan'
+    | '/playbooks/podcast-calculator'
+    | '/playbooks/podcast-prospecting'
+    | '/playbooks/revenue-engine'
     | '/playbooks/smb-calculator'
     | '/playbooks'
   id:
@@ -202,8 +418,26 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/report'
     | '/_authenticated/weekly-report'
+    | '/_authenticated/playbooks/ascent-calculator'
+    | '/_authenticated/playbooks/ascent-machine'
+    | '/_authenticated/playbooks/ascent-targeting'
+    | '/_authenticated/playbooks/authority-calculator'
+    | '/_authenticated/playbooks/authority-engine'
+    | '/_authenticated/playbooks/authority-prospecting'
+    | '/_authenticated/playbooks/broadcast-engine'
+    | '/_authenticated/playbooks/care-bridge'
+    | '/_authenticated/playbooks/care-calculator'
+    | '/_authenticated/playbooks/care-prospecting'
+    | '/_authenticated/playbooks/ecommerce-calculator'
+    | '/_authenticated/playbooks/ecommerce-prospecting'
     | '/_authenticated/playbooks/global-smb-engine'
+    | '/_authenticated/playbooks/ministry-calculator'
+    | '/_authenticated/playbooks/ministry-prospecting'
+    | '/_authenticated/playbooks/ministry-systems'
     | '/_authenticated/playbooks/plan'
+    | '/_authenticated/playbooks/podcast-calculator'
+    | '/_authenticated/playbooks/podcast-prospecting'
+    | '/_authenticated/playbooks/revenue-engine'
     | '/_authenticated/playbooks/smb-calculator'
     | '/_authenticated/playbooks/'
   fileRoutesById: FileRoutesById
@@ -308,6 +542,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksSmbCalculatorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/playbooks/revenue-engine': {
+      id: '/_authenticated/playbooks/revenue-engine'
+      path: '/playbooks/revenue-engine'
+      fullPath: '/playbooks/revenue-engine'
+      preLoaderRoute: typeof AuthenticatedPlaybooksRevenueEngineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/podcast-prospecting': {
+      id: '/_authenticated/playbooks/podcast-prospecting'
+      path: '/playbooks/podcast-prospecting'
+      fullPath: '/playbooks/podcast-prospecting'
+      preLoaderRoute: typeof AuthenticatedPlaybooksPodcastProspectingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/podcast-calculator': {
+      id: '/_authenticated/playbooks/podcast-calculator'
+      path: '/playbooks/podcast-calculator'
+      fullPath: '/playbooks/podcast-calculator'
+      preLoaderRoute: typeof AuthenticatedPlaybooksPodcastCalculatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/playbooks/plan': {
       id: '/_authenticated/playbooks/plan'
       path: '/playbooks/plan'
@@ -315,11 +570,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/playbooks/ministry-systems': {
+      id: '/_authenticated/playbooks/ministry-systems'
+      path: '/playbooks/ministry-systems'
+      fullPath: '/playbooks/ministry-systems'
+      preLoaderRoute: typeof AuthenticatedPlaybooksMinistrySystemsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/ministry-prospecting': {
+      id: '/_authenticated/playbooks/ministry-prospecting'
+      path: '/playbooks/ministry-prospecting'
+      fullPath: '/playbooks/ministry-prospecting'
+      preLoaderRoute: typeof AuthenticatedPlaybooksMinistryProspectingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/ministry-calculator': {
+      id: '/_authenticated/playbooks/ministry-calculator'
+      path: '/playbooks/ministry-calculator'
+      fullPath: '/playbooks/ministry-calculator'
+      preLoaderRoute: typeof AuthenticatedPlaybooksMinistryCalculatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/playbooks/global-smb-engine': {
       id: '/_authenticated/playbooks/global-smb-engine'
       path: '/playbooks/global-smb-engine'
       fullPath: '/playbooks/global-smb-engine'
       preLoaderRoute: typeof AuthenticatedPlaybooksGlobalSmbEngineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/ecommerce-prospecting': {
+      id: '/_authenticated/playbooks/ecommerce-prospecting'
+      path: '/playbooks/ecommerce-prospecting'
+      fullPath: '/playbooks/ecommerce-prospecting'
+      preLoaderRoute: typeof AuthenticatedPlaybooksEcommerceProspectingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/ecommerce-calculator': {
+      id: '/_authenticated/playbooks/ecommerce-calculator'
+      path: '/playbooks/ecommerce-calculator'
+      fullPath: '/playbooks/ecommerce-calculator'
+      preLoaderRoute: typeof AuthenticatedPlaybooksEcommerceCalculatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/care-prospecting': {
+      id: '/_authenticated/playbooks/care-prospecting'
+      path: '/playbooks/care-prospecting'
+      fullPath: '/playbooks/care-prospecting'
+      preLoaderRoute: typeof AuthenticatedPlaybooksCareProspectingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/care-calculator': {
+      id: '/_authenticated/playbooks/care-calculator'
+      path: '/playbooks/care-calculator'
+      fullPath: '/playbooks/care-calculator'
+      preLoaderRoute: typeof AuthenticatedPlaybooksCareCalculatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/care-bridge': {
+      id: '/_authenticated/playbooks/care-bridge'
+      path: '/playbooks/care-bridge'
+      fullPath: '/playbooks/care-bridge'
+      preLoaderRoute: typeof AuthenticatedPlaybooksCareBridgeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/broadcast-engine': {
+      id: '/_authenticated/playbooks/broadcast-engine'
+      path: '/playbooks/broadcast-engine'
+      fullPath: '/playbooks/broadcast-engine'
+      preLoaderRoute: typeof AuthenticatedPlaybooksBroadcastEngineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/authority-prospecting': {
+      id: '/_authenticated/playbooks/authority-prospecting'
+      path: '/playbooks/authority-prospecting'
+      fullPath: '/playbooks/authority-prospecting'
+      preLoaderRoute: typeof AuthenticatedPlaybooksAuthorityProspectingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/authority-engine': {
+      id: '/_authenticated/playbooks/authority-engine'
+      path: '/playbooks/authority-engine'
+      fullPath: '/playbooks/authority-engine'
+      preLoaderRoute: typeof AuthenticatedPlaybooksAuthorityEngineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/authority-calculator': {
+      id: '/_authenticated/playbooks/authority-calculator'
+      path: '/playbooks/authority-calculator'
+      fullPath: '/playbooks/authority-calculator'
+      preLoaderRoute: typeof AuthenticatedPlaybooksAuthorityCalculatorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/ascent-targeting': {
+      id: '/_authenticated/playbooks/ascent-targeting'
+      path: '/playbooks/ascent-targeting'
+      fullPath: '/playbooks/ascent-targeting'
+      preLoaderRoute: typeof AuthenticatedPlaybooksAscentTargetingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/ascent-machine': {
+      id: '/_authenticated/playbooks/ascent-machine'
+      path: '/playbooks/ascent-machine'
+      fullPath: '/playbooks/ascent-machine'
+      preLoaderRoute: typeof AuthenticatedPlaybooksAscentMachineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/playbooks/ascent-calculator': {
+      id: '/_authenticated/playbooks/ascent-calculator'
+      path: '/playbooks/ascent-calculator'
+      fullPath: '/playbooks/ascent-calculator'
+      preLoaderRoute: typeof AuthenticatedPlaybooksAscentCalculatorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
   }
@@ -333,8 +693,26 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
+  AuthenticatedPlaybooksAscentCalculatorRoute: typeof AuthenticatedPlaybooksAscentCalculatorRoute
+  AuthenticatedPlaybooksAscentMachineRoute: typeof AuthenticatedPlaybooksAscentMachineRoute
+  AuthenticatedPlaybooksAscentTargetingRoute: typeof AuthenticatedPlaybooksAscentTargetingRoute
+  AuthenticatedPlaybooksAuthorityCalculatorRoute: typeof AuthenticatedPlaybooksAuthorityCalculatorRoute
+  AuthenticatedPlaybooksAuthorityEngineRoute: typeof AuthenticatedPlaybooksAuthorityEngineRoute
+  AuthenticatedPlaybooksAuthorityProspectingRoute: typeof AuthenticatedPlaybooksAuthorityProspectingRoute
+  AuthenticatedPlaybooksBroadcastEngineRoute: typeof AuthenticatedPlaybooksBroadcastEngineRoute
+  AuthenticatedPlaybooksCareBridgeRoute: typeof AuthenticatedPlaybooksCareBridgeRoute
+  AuthenticatedPlaybooksCareCalculatorRoute: typeof AuthenticatedPlaybooksCareCalculatorRoute
+  AuthenticatedPlaybooksCareProspectingRoute: typeof AuthenticatedPlaybooksCareProspectingRoute
+  AuthenticatedPlaybooksEcommerceCalculatorRoute: typeof AuthenticatedPlaybooksEcommerceCalculatorRoute
+  AuthenticatedPlaybooksEcommerceProspectingRoute: typeof AuthenticatedPlaybooksEcommerceProspectingRoute
   AuthenticatedPlaybooksGlobalSmbEngineRoute: typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
+  AuthenticatedPlaybooksMinistryCalculatorRoute: typeof AuthenticatedPlaybooksMinistryCalculatorRoute
+  AuthenticatedPlaybooksMinistryProspectingRoute: typeof AuthenticatedPlaybooksMinistryProspectingRoute
+  AuthenticatedPlaybooksMinistrySystemsRoute: typeof AuthenticatedPlaybooksMinistrySystemsRoute
   AuthenticatedPlaybooksPlanRoute: typeof AuthenticatedPlaybooksPlanRoute
+  AuthenticatedPlaybooksPodcastCalculatorRoute: typeof AuthenticatedPlaybooksPodcastCalculatorRoute
+  AuthenticatedPlaybooksPodcastProspectingRoute: typeof AuthenticatedPlaybooksPodcastProspectingRoute
+  AuthenticatedPlaybooksRevenueEngineRoute: typeof AuthenticatedPlaybooksRevenueEngineRoute
   AuthenticatedPlaybooksSmbCalculatorRoute: typeof AuthenticatedPlaybooksSmbCalculatorRoute
   AuthenticatedPlaybooksIndexRoute: typeof AuthenticatedPlaybooksIndexRoute
 }
@@ -347,9 +725,44 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
+  AuthenticatedPlaybooksAscentCalculatorRoute:
+    AuthenticatedPlaybooksAscentCalculatorRoute,
+  AuthenticatedPlaybooksAscentMachineRoute:
+    AuthenticatedPlaybooksAscentMachineRoute,
+  AuthenticatedPlaybooksAscentTargetingRoute:
+    AuthenticatedPlaybooksAscentTargetingRoute,
+  AuthenticatedPlaybooksAuthorityCalculatorRoute:
+    AuthenticatedPlaybooksAuthorityCalculatorRoute,
+  AuthenticatedPlaybooksAuthorityEngineRoute:
+    AuthenticatedPlaybooksAuthorityEngineRoute,
+  AuthenticatedPlaybooksAuthorityProspectingRoute:
+    AuthenticatedPlaybooksAuthorityProspectingRoute,
+  AuthenticatedPlaybooksBroadcastEngineRoute:
+    AuthenticatedPlaybooksBroadcastEngineRoute,
+  AuthenticatedPlaybooksCareBridgeRoute: AuthenticatedPlaybooksCareBridgeRoute,
+  AuthenticatedPlaybooksCareCalculatorRoute:
+    AuthenticatedPlaybooksCareCalculatorRoute,
+  AuthenticatedPlaybooksCareProspectingRoute:
+    AuthenticatedPlaybooksCareProspectingRoute,
+  AuthenticatedPlaybooksEcommerceCalculatorRoute:
+    AuthenticatedPlaybooksEcommerceCalculatorRoute,
+  AuthenticatedPlaybooksEcommerceProspectingRoute:
+    AuthenticatedPlaybooksEcommerceProspectingRoute,
   AuthenticatedPlaybooksGlobalSmbEngineRoute:
     AuthenticatedPlaybooksGlobalSmbEngineRoute,
+  AuthenticatedPlaybooksMinistryCalculatorRoute:
+    AuthenticatedPlaybooksMinistryCalculatorRoute,
+  AuthenticatedPlaybooksMinistryProspectingRoute:
+    AuthenticatedPlaybooksMinistryProspectingRoute,
+  AuthenticatedPlaybooksMinistrySystemsRoute:
+    AuthenticatedPlaybooksMinistrySystemsRoute,
   AuthenticatedPlaybooksPlanRoute: AuthenticatedPlaybooksPlanRoute,
+  AuthenticatedPlaybooksPodcastCalculatorRoute:
+    AuthenticatedPlaybooksPodcastCalculatorRoute,
+  AuthenticatedPlaybooksPodcastProspectingRoute:
+    AuthenticatedPlaybooksPodcastProspectingRoute,
+  AuthenticatedPlaybooksRevenueEngineRoute:
+    AuthenticatedPlaybooksRevenueEngineRoute,
   AuthenticatedPlaybooksSmbCalculatorRoute:
     AuthenticatedPlaybooksSmbCalculatorRoute,
   AuthenticatedPlaybooksIndexRoute: AuthenticatedPlaybooksIndexRoute,
