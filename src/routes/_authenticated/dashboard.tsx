@@ -39,9 +39,8 @@ function resolveRank(xp: number): { current: Rank; next: Rank | null } {
 
 // Order shown on the dashboard: Global SMB Engine → 45-Day → SMB Calculator.
 // Only the 45-Day Plan generates XP. Other playbooks are preparatory / active tools.
-const PLAYBOOK_LIST: Array<{ key: string; title: string; slug: string; icon: any; xp?: boolean; note?: string }> = [
-  { key: "p_global", title: "Global SMB Engine", slug: "global-smb-engine", icon: Globe },
-];
+// The first playbook of whichever path the beneficiary runs (the market /
+// prospecting engine). Only the 45-Day plan generates XP.
 
 
 const BAND_TONE: Record<string, { label: string; bg: string; text: string }> = {
@@ -258,24 +257,18 @@ function Dashboard() {
           </Link>
         </div>
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {PLAYBOOK_LIST.map((m) => {
-            const done = perPlaybook[m.key] ?? 0;
+          {dashPlaybooks.map((m) => {
+            const done = m.key ? perPlaybook[m.key] ?? 0 : 0;
             return (
               <Link
-                key={m.key}
+                key={m.slug}
                 to={`/playbooks/${m.slug}` as any}
                 className="group rounded-xl border border-border bg-card p-5 hover:border-gold hover:shadow-regal transition"
               >
-                <m.icon className="h-6 w-6 text-gold-deep group-hover:text-primary transition" />
+                <Globe className="h-6 w-6 text-gold-deep group-hover:text-primary transition" />
                 <div className="mt-4 font-display font-semibold">{m.title}</div>
                 <div className="mt-2 text-xs text-muted-foreground">
-                  {m.xp ? (
-                    <><span className="font-semibold text-foreground">{done}</span> tasks · {done * XP_PER_TASK} XP earned</>
-                  ) : m.note ? (
-                    <span className="text-gold-deep font-semibold">{m.note}</span>
-                  ) : (
-                    <><span className="font-semibold text-foreground">{done}</span> tasks completed</>
-                  )}
+                  <><span className="font-semibold text-foreground">{done}</span> tasks completed</>
                 </div>
               </Link>
             );
