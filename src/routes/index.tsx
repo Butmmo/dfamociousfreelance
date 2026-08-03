@@ -5,11 +5,11 @@ import founderAsset from "@/assets/founder.jpg.asset.json";
 import {
   Crown, Shield, Target, Flame, BookOpen, TrendingUp, Globe, Calendar, Lock, Award,
   Calculator, LayoutDashboard, LineChart, Users, Bell, CheckCircle2, Mail, Sparkles,
-  MessageSquare, Bot, Star, Timer, ArrowRight, Gauge, FileDown, Repeat,
+  MessageSquare, Bot, Star, Timer, ArrowRight, Gauge, FileDown, Repeat, Compass,
 } from "lucide-react";
 
 const DESC =
-  "An invitation-only training citadel by D'Famocious Group. Playbooks, a 45-day forge, XP ranks, live escalation tracking, The Ascent high-ticket program, and AI-powered client tooling.";
+  "An invitation-only training citadel by D'Famocious Group. Seven Paths of Digital Engineering, a 45-day forge, XP ranks, live escalation tracking, weekly council cadence and AI-powered client tooling.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -62,8 +62,14 @@ const SYSTEMS = [
   { icon: Mail, t: "Report Cadence", d: "Weekly progress emails to beneficiaries, cohort digests to admins, and the full Citadel report to the founder." },
 ];
 
-const ASCENT_TABS = [
-  "Start Here", "Pick Your Lane", "Scout", "45 Days", "Scripts", "Mastery", "Toolkit", "Day 46+",
+const SEVEN_PATHS = [
+  { emoji: "🏪", t: "SMB Optimisation System", d: "Local service businesses. Google Review Automation as the single entry offer, then a full upsell ladder into speed-to-lead, AI voice and rebuilds.", live: true },
+  { emoji: "⛰️", t: "High-Ticket Closing Machine", d: "Commission-only closing for other people's high-ticket offers. No product to build, no ads to run — and its own closer rank ladder.", live: false },
+  { emoji: "🛒", t: "Revenue Recovery Engine", d: "E-commerce abandoned-revenue recovery. You install the flows that bring back carts, browsers and lapsed buyers, and get paid from money you return.", live: false },
+  { emoji: "🤝", t: "The Care Bridge", d: "Senior and home-care rapid-response intake. A demographic tailwind nobody can switch off, won on answering families first.", live: false },
+  { emoji: "⛪", t: "Digital Ministry Systems", d: "Giving, follow-up, attendance and communications for churches and ministries — trust-based referrals and unusually low churn.", live: false },
+  { emoji: "🎙️", t: "The Broadcast Engine", d: "Podcast growth and monetisation. Clips, distribution, sponsorship and list-building turned into revenue the host can see.", live: false },
+  { emoji: "📈", t: "The Authority Engine", d: "Prospecting and authority engines for coaches, consultants and advisors — the highest ticket per client of the seven.", live: false },
 ];
 
 const RANKS = [
@@ -98,7 +104,7 @@ function Landing() {
             <a href="#pillars" className="hover:text-primary transition">The Citadel</a>
             <a href="#playbooks" className="hover:text-primary transition">Playbooks</a>
             <a href="#systems" className="hover:text-primary transition">Systems</a>
-            <a href="#ascent" className="hover:text-primary transition">The Ascent</a>
+            <a href="#paths" className="hover:text-primary transition">The Seven Paths</a>
             <a href="#ranks" className="hover:text-primary transition">Ranks</a>
             <a href="#founder" className="hover:text-primary transition">Founder</a>
           </nav>
@@ -123,21 +129,21 @@ function Landing() {
               <span className="text-gold-gradient">Digital Systems Engineers</span>.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-              An invitation-only scholarship by D'Famocious Group. Five playbooks, a sealing 45-day calendar,
-              an XP rank ladder, a live escalation engine, AI-powered client tooling, and a gated high-ticket
-              program — all in one command centre.
+              An invitation-only scholarship by D'Famocious Group. Seven Paths of Digital Engineering — you run one.
+              Each carries three interactive playbooks, a sealing 45-day calendar, an XP rank ladder, a live
+              escalation engine, weekly council filings and AI-powered client tooling, in one command centre.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link to="/auth" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">
                 <Shield className="h-5 w-5" /> Enter as Beneficiary
               </Link>
-              <a href="#systems" className="inline-flex items-center gap-2 rounded-md border border-gold px-6 py-3 text-base font-semibold hover:bg-accent/40 transition">
-                <BookOpen className="h-5 w-5" /> Tour the Citadel
+              <a href="#paths" className="inline-flex items-center gap-2 rounded-md border border-gold px-6 py-3 text-base font-semibold hover:bg-accent/40 transition">
+                <Compass className="h-5 w-5" /> See the Seven Paths
               </a>
             </div>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-xl">
               {[
-                { n: "5", l: "Playbooks" },
+                { n: "7", l: "Paths" },
                 { n: "45", l: "Day forge" },
                 { n: "5", l: "Ranks" },
                 { n: "24/7", l: "Tracking" },
@@ -181,10 +187,12 @@ function Landing() {
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="max-w-3xl">
             <Motto />
-            <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">Five playbooks. One curriculum.</h2>
+            <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">Three playbooks per path. One curriculum.</h2>
             <p className="mt-4 text-muted-foreground">
-              Every playbook is interactive. Tick a task, hit save, and your progress is written to the Citadel —
-              feeding your rank, your calendar, and the council's view of your week.
+              Every path ships the same shape: a main engine, a day-by-day implementation plan, and an AI-powered
+              performance calculator. Every playbook is interactive — tick a task, hit save, and your progress is
+              written to the Citadel, feeding your rank, your calendar, and the council's view of your week.
+              Shown below: the SMB Optimisation System, the first path live inside the app.
             </p>
           </div>
           <div className="mt-14 grid md:grid-cols-2 gap-6">
@@ -243,43 +251,50 @@ function Landing() {
         </div>
       </section>
 
-      {/* THE ASCENT */}
-      <section id="ascent" className="bg-royal text-primary-foreground">
+      {/* THE SEVEN PATHS */}
+      <section id="paths" className="bg-royal text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="grid lg:grid-cols-2 gap-14 items-center">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold">
-                <Lock className="h-3 w-3" /> Gated · Super-admin access only
-              </span>
-              <h2 className="mt-6 font-display text-4xl md:text-5xl font-bold">
-                The Ascent — <span className="text-gold">high-ticket sales</span>, as its own citadel.
-              </h2>
-              <p className="mt-5 text-primary-foreground/80">
-                Not a tab. A second application. The Ascent carries its own dashboard, curriculum, 45-day calendar,
-                report and council — with a dedicated rank ladder and mission set for beneficiaries who have earned
-                the right to sell at the top of the market.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-2">
-                {ASCENT_TABS.map((t) => (
-                  <span key={t} className="rounded-full border border-primary-foreground/25 px-3 py-1 text-xs text-primary-foreground/90">{t}</span>
-                ))}
-              </div>
-              <p className="mt-8 text-sm text-gold">Unlocked one beneficiary at a time, by the founder, from the Council.</p>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-5">
-              {[
-                { icon: LayoutDashboard, t: "Ascent Dashboard", d: "Rank progress, total XP, and your next five pending missions." },
-                { icon: BookOpen, t: "Full Curriculum", d: "Eight sub-tabs, preserved exactly as authored — lanes, scouting, scripts, mastery." },
-                { icon: Calendar, t: "Ascent Calendar", d: "A separate 45-day mission grid that never mixes with your Citadel work." },
-                { icon: LineChart, t: "Ascent Report", d: "Activity heatstrip, cadence band from Elite to At-Risk, and phase breakdown." },
-              ].map((c) => (
-                <div key={c.t} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-5">
-                  <c.icon className="h-6 w-6 text-gold" />
-                  <div className="mt-3 font-display font-semibold">{c.t}</div>
-                  <p className="mt-1.5 text-sm text-primary-foreground/75">{c.d}</p>
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold">
+              <Compass className="h-3 w-3" /> Choose one · 24 hours to decide
+            </span>
+            <h2 className="mt-6 font-display text-4xl md:text-5xl font-bold">
+              The <span className="text-gold">Seven Paths</span> of Digital Engineering.
+            </h2>
+            <p className="mt-5 text-primary-foreground/80">
+              Seven separate systems. Every beneficiary runs exactly one. That is deliberate: it keeps DFS students out
+              of each other's markets, removes needless internal competition, and gives each of you a lane wide enough
+              to actually win in. Each path carries the full Citadel machinery — dashboard, three playbooks, a 45-day
+              calendar, a field report, weekly filings, XP, ranks, escalation tracking and council oversight.
+            </p>
+            <p className="mt-4 text-sm text-gold">
+              You get 24 hours from entering the Citadel to read the briefings and commit. Miss the window and the
+              council assigns a path for you — and it is just as binding.
+            </p>
+          </div>
+
+          <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {SEVEN_PATHS.map((p) => (
+              <div key={p.t} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="text-3xl leading-none">{p.emoji}</div>
+                  <span className={`rounded-full border px-2.5 py-0.5 text-[10px] uppercase tracking-widest ${p.live ? "border-gold/60 text-gold" : "border-primary-foreground/25 text-primary-foreground/60"}`}>
+                    {p.live ? "Live now" : "Briefing open"}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <div className="mt-4 font-display text-lg font-semibold">{p.t}</div>
+                <p className="mt-2 text-sm text-primary-foreground/75">{p.d}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 rounded-2xl border border-gold/30 bg-primary-foreground/5 p-6 max-w-3xl">
+            <div className="text-[10px] uppercase tracking-[0.25em] text-gold">Honest briefings</div>
+            <p className="mt-2 text-sm text-primary-foreground/80">
+              Before you commit, every path opens a full briefing: the highs, the lows, how durable the demand really
+              is, who you are competing against, and a straight answer on whether it suits you. No path is sold to you.
+              You pick with your eyes open.
+            </p>
           </div>
         </div>
       </section>

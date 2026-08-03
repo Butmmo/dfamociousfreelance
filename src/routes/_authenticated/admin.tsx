@@ -5,12 +5,12 @@ import { useSession } from "@/lib/use-session";
 import {
   inviteBeneficiary, listBeneficiaries, listInvitations, listAdmins, listAssignments,
   removeBeneficiary, promoteToAdmin, demoteFromAdmin, assignAdminToBeneficiary,
-  listEscalations, openEscalation, logCheckIn,
+  listEscalations, openEscalation, logCheckIn, setBeneficiaryPath,
 } from "@/lib/admin.functions";
-import { listAscentAccess, grantAscent, revokeAscent } from "@/lib/ascent.functions";
+import { PATHS } from "@/lib/paths";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { Mountain, FileText } from "lucide-react";
+import { Compass, FileText } from "lucide-react";
 import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -34,10 +34,7 @@ function Admin() {
   const assign = useServerFn(assignAdminToBeneficiary);
   const openEsc = useServerFn(openEscalation);
   const logCi = useServerFn(logCheckIn);
-  const listAscent = useServerFn(listAscentAccess);
-  const grantAsc = useServerFn(grantAscent);
-  const revokeAsc = useServerFn(revokeAscent);
-  const [ascent, setAscent] = useState<any[]>([]);
+  const setPath = useServerFn(setBeneficiaryPath);
 
   const [bens, setBens] = useState<any[]>([]);
   const [invs, setInvs] = useState<any[]>([]);
@@ -57,12 +54,12 @@ function Admin() {
 
   const refresh = async () => {
     try {
-      const [b, i, a, s, e, ac] = await Promise.all([
+      const [b, i, a, s, e] = await Promise.all([
         listBens({ data: undefined as never }), listInvs({ data: undefined as never }),
         listAdms({ data: undefined as never }), listAssigns({ data: undefined as never }),
-        listEsc({ data: undefined as never }), listAscent({ data: undefined as never }),
+        listEsc({ data: undefined as never }),
       ]);
-      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e); setAscent(ac);
+      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e);
     } catch (e: any) { toast.error(e.message ?? "Failed to load"); }
   };
   useEffect(() => { if (role === "admin") refresh(); /* eslint-disable-next-line */ }, [role]);
@@ -104,14 +101,11 @@ function Admin() {
     try { await openEsc({ data: { beneficiary_id, level } }); toast.success("Escalation updated."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
-  const toggleAscent = async (uid: string, has: boolean) => {
-    try {
-      if (has) { await revokeAsc({ data: { user_id: uid } }); toast.success("Ascent access revoked."); }
-      else    { await grantAsc({ data: { user_id: uid } }); toast.success("Ascent access granted."); }
-      refresh();
-    } catch (e: any) { toast.error(e.message ?? "Failed"); }
+  const doSetPath = async (beneficiary_id: string, path_key: string) => {
+    if (!path_key) return;
+    try { await setPath({ data: { beneficiary_id, path_key: path_key as any } }); toast.success("Path assigned."); refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
-  const ascentSet = useMemo(() => new Set(ascent.map((a) => a.user_id)), [ascent]);
   const submitCheckIn = async () => {
     if (!checkinTarget || checkinText.trim().length < 2) return;
     try {
@@ -281,19 +275,19 @@ function Admin() {
 
                   <button onClick={() => doEscalate(b.id, "at_risk")} className="rounded-md border border-gold py-1.5 text-gold-deep hover:bg-gold/10">Flag at-risk</button>
                   <button onClick={() => doEscalate(b.id, "critical")} className="rounded-md border border-crimson py-1.5 text-crimson hover:bg-crimson/10">Critical</button>
-                  {isSuperAdmin && (
-                    <button
-                      onClick={() => toggleAscent(b.id, ascentSet.has(b.id))}
-                      className={`col-span-2 inline-flex items-center justify-center gap-1 rounded-md py-1.5 border ${
-                        ascentSet.has(b.id)
-                          ? "border-gold bg-gold/15 text-gold-deep"
-                          : "border-border hover:bg-muted"
-                      }`}
+                  <label className="col-span-2 flex items-center gap-2">
+                    <Compass className="h-3.5 w-3.5" />
+                    <span className="text-muted-foreground">Path:</span>
+                    <select
+                      value={b.path_key ?? ""}
+                      onChange={(e) => doSetPath(b.id, e.target.value)}
+                      className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-xs"
                     >
-                      <Mountain className="h-3.5 w-3.5" />
-                      {ascentSet.has(b.id) ? "Revoke Ascent access" : "Grant Ascent access"}
-                    </button>
-                  )}
+                      <option value="">— not chosen —</option>
+                      {PATHS.map((p) => (<option key={p.key} value={p.key}>{p.name}</option>))}
+                    </select>
+                  </label>
+
                   <button onClick={() => setCheckinTarget(b.id)} className="col-span-2 inline-flex items-center justify-center gap-1 rounded-md bg-primary py-1.5 text-primary-foreground hover:bg-primary/90"><MessageSquare className="h-3.5 w-3.5" /> Log check-in</button>
                 </div>
               </div>

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BriefcheckRouteImport } from './routes/briefcheck'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -17,19 +18,19 @@ import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authent
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
+import { Route as AuthenticatedChoosePathRouteImport } from './routes/_authenticated/choose-path'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedAscentRouteRouteImport } from './routes/_authenticated/ascent/route'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
-import { Route as AuthenticatedAscentIndexRouteImport } from './routes/_authenticated/ascent/index'
 import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './routes/_authenticated/playbooks/smb-calculator'
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
 import { Route as AuthenticatedPlaybooksGlobalSmbEngineRouteImport } from './routes/_authenticated/playbooks/global-smb-engine'
-import { Route as AuthenticatedAscentReportRouteImport } from './routes/_authenticated/ascent/report'
-import { Route as AuthenticatedAscentCurriculumRouteImport } from './routes/_authenticated/ascent/curriculum'
-import { Route as AuthenticatedAscentCouncilRouteImport } from './routes/_authenticated/ascent/council'
-import { Route as AuthenticatedAscentCalendarRouteImport } from './routes/_authenticated/ascent/calendar'
 
+const BriefcheckRoute = BriefcheckRouteImport.update({
+  id: '/briefcheck',
+  path: '/briefcheck',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -71,6 +72,11 @@ const AuthenticatedCouncilReportsRoute =
     path: '/council-reports',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedChoosePathRoute = AuthenticatedChoosePathRouteImport.update({
+  id: '/choose-path',
+  path: '/choose-path',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
@@ -81,23 +87,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAscentRouteRoute =
-  AuthenticatedAscentRouteRouteImport.update({
-    id: '/ascent',
-    path: '/ascent',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedPlaybooksIndexRoute =
   AuthenticatedPlaybooksIndexRouteImport.update({
     id: '/playbooks/',
     path: '/playbooks/',
     getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAscentIndexRoute =
-  AuthenticatedAscentIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedAscentRouteRoute,
   } as any)
 const AuthenticatedPlaybooksSmbCalculatorRoute =
   AuthenticatedPlaybooksSmbCalculatorRouteImport.update({
@@ -117,70 +111,39 @@ const AuthenticatedPlaybooksGlobalSmbEngineRoute =
     path: '/playbooks/global-smb-engine',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAscentReportRoute =
-  AuthenticatedAscentReportRouteImport.update({
-    id: '/report',
-    path: '/report',
-    getParentRoute: () => AuthenticatedAscentRouteRoute,
-  } as any)
-const AuthenticatedAscentCurriculumRoute =
-  AuthenticatedAscentCurriculumRouteImport.update({
-    id: '/curriculum',
-    path: '/curriculum',
-    getParentRoute: () => AuthenticatedAscentRouteRoute,
-  } as any)
-const AuthenticatedAscentCouncilRoute =
-  AuthenticatedAscentCouncilRouteImport.update({
-    id: '/council',
-    path: '/council',
-    getParentRoute: () => AuthenticatedAscentRouteRoute,
-  } as any)
-const AuthenticatedAscentCalendarRoute =
-  AuthenticatedAscentCalendarRouteImport.update({
-    id: '/calendar',
-    path: '/calendar',
-    getParentRoute: () => AuthenticatedAscentRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
-  '/ascent': typeof AuthenticatedAscentRouteRouteWithChildren
+  '/briefcheck': typeof BriefcheckRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
-  '/ascent/calendar': typeof AuthenticatedAscentCalendarRoute
-  '/ascent/council': typeof AuthenticatedAscentCouncilRoute
-  '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
-  '/ascent/report': typeof AuthenticatedAscentReportRoute
   '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
-  '/ascent/': typeof AuthenticatedAscentIndexRoute
   '/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
+  '/briefcheck': typeof BriefcheckRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
-  '/ascent/calendar': typeof AuthenticatedAscentCalendarRoute
-  '/ascent/council': typeof AuthenticatedAscentCouncilRoute
-  '/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
-  '/ascent/report': typeof AuthenticatedAscentReportRoute
   '/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
-  '/ascent': typeof AuthenticatedAscentIndexRoute
   '/playbooks': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRoutesById {
@@ -189,21 +152,17 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
-  '/_authenticated/ascent': typeof AuthenticatedAscentRouteRouteWithChildren
+  '/briefcheck': typeof BriefcheckRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
+  '/_authenticated/choose-path': typeof AuthenticatedChoosePathRoute
   '/_authenticated/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
-  '/_authenticated/ascent/calendar': typeof AuthenticatedAscentCalendarRoute
-  '/_authenticated/ascent/council': typeof AuthenticatedAscentCouncilRoute
-  '/_authenticated/ascent/curriculum': typeof AuthenticatedAscentCurriculumRoute
-  '/_authenticated/ascent/report': typeof AuthenticatedAscentReportRoute
   '/_authenticated/playbooks/global-smb-engine': typeof AuthenticatedPlaybooksGlobalSmbEngineRoute
   '/_authenticated/playbooks/plan': typeof AuthenticatedPlaybooksPlanRoute
   '/_authenticated/playbooks/smb-calculator': typeof AuthenticatedPlaybooksSmbCalculatorRoute
-  '/_authenticated/ascent/': typeof AuthenticatedAscentIndexRoute
   '/_authenticated/playbooks/': typeof AuthenticatedPlaybooksIndexRoute
 }
 export interface FileRouteTypes {
@@ -212,41 +171,34 @@ export interface FileRouteTypes {
     | '/'
     | '/accept-invite'
     | '/auth'
-    | '/ascent'
+    | '/briefcheck'
     | '/admin'
     | '/calendar'
+    | '/choose-path'
     | '/council-reports'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
-    | '/ascent/calendar'
-    | '/ascent/council'
-    | '/ascent/curriculum'
-    | '/ascent/report'
     | '/playbooks/global-smb-engine'
     | '/playbooks/plan'
     | '/playbooks/smb-calculator'
-    | '/ascent/'
     | '/playbooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/accept-invite'
     | '/auth'
+    | '/briefcheck'
     | '/admin'
     | '/calendar'
+    | '/choose-path'
     | '/council-reports'
     | '/dashboard'
     | '/report'
     | '/weekly-report'
-    | '/ascent/calendar'
-    | '/ascent/council'
-    | '/ascent/curriculum'
-    | '/ascent/report'
     | '/playbooks/global-smb-engine'
     | '/playbooks/plan'
     | '/playbooks/smb-calculator'
-    | '/ascent'
     | '/playbooks'
   id:
     | '__root__'
@@ -254,21 +206,17 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/accept-invite'
     | '/auth'
-    | '/_authenticated/ascent'
+    | '/briefcheck'
     | '/_authenticated/admin'
     | '/_authenticated/calendar'
+    | '/_authenticated/choose-path'
     | '/_authenticated/council-reports'
     | '/_authenticated/dashboard'
     | '/_authenticated/report'
     | '/_authenticated/weekly-report'
-    | '/_authenticated/ascent/calendar'
-    | '/_authenticated/ascent/council'
-    | '/_authenticated/ascent/curriculum'
-    | '/_authenticated/ascent/report'
     | '/_authenticated/playbooks/global-smb-engine'
     | '/_authenticated/playbooks/plan'
     | '/_authenticated/playbooks/smb-calculator'
-    | '/_authenticated/ascent/'
     | '/_authenticated/playbooks/'
   fileRoutesById: FileRoutesById
 }
@@ -277,10 +225,18 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AcceptInviteRoute: typeof AcceptInviteRoute
   AuthRoute: typeof AuthRoute
+  BriefcheckRoute: typeof BriefcheckRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/briefcheck': {
+      id: '/briefcheck'
+      path: '/briefcheck'
+      fullPath: '/briefcheck'
+      preLoaderRoute: typeof BriefcheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -337,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCouncilReportsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/choose-path': {
+      id: '/_authenticated/choose-path'
+      path: '/choose-path'
+      fullPath: '/choose-path'
+      preLoaderRoute: typeof AuthenticatedChoosePathRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/calendar': {
       id: '/_authenticated/calendar'
       path: '/calendar'
@@ -351,26 +314,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/ascent': {
-      id: '/_authenticated/ascent'
-      path: '/ascent'
-      fullPath: '/ascent'
-      preLoaderRoute: typeof AuthenticatedAscentRouteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/playbooks/': {
       id: '/_authenticated/playbooks/'
       path: '/playbooks'
       fullPath: '/playbooks/'
       preLoaderRoute: typeof AuthenticatedPlaybooksIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/ascent/': {
-      id: '/_authenticated/ascent/'
-      path: '/'
-      fullPath: '/ascent/'
-      preLoaderRoute: typeof AuthenticatedAscentIndexRouteImport
-      parentRoute: typeof AuthenticatedAscentRouteRoute
     }
     '/_authenticated/playbooks/smb-calculator': {
       id: '/_authenticated/playbooks/smb-calculator'
@@ -393,63 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlaybooksGlobalSmbEngineRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/ascent/report': {
-      id: '/_authenticated/ascent/report'
-      path: '/report'
-      fullPath: '/ascent/report'
-      preLoaderRoute: typeof AuthenticatedAscentReportRouteImport
-      parentRoute: typeof AuthenticatedAscentRouteRoute
-    }
-    '/_authenticated/ascent/curriculum': {
-      id: '/_authenticated/ascent/curriculum'
-      path: '/curriculum'
-      fullPath: '/ascent/curriculum'
-      preLoaderRoute: typeof AuthenticatedAscentCurriculumRouteImport
-      parentRoute: typeof AuthenticatedAscentRouteRoute
-    }
-    '/_authenticated/ascent/council': {
-      id: '/_authenticated/ascent/council'
-      path: '/council'
-      fullPath: '/ascent/council'
-      preLoaderRoute: typeof AuthenticatedAscentCouncilRouteImport
-      parentRoute: typeof AuthenticatedAscentRouteRoute
-    }
-    '/_authenticated/ascent/calendar': {
-      id: '/_authenticated/ascent/calendar'
-      path: '/calendar'
-      fullPath: '/ascent/calendar'
-      preLoaderRoute: typeof AuthenticatedAscentCalendarRouteImport
-      parentRoute: typeof AuthenticatedAscentRouteRoute
-    }
   }
 }
-
-interface AuthenticatedAscentRouteRouteChildren {
-  AuthenticatedAscentCalendarRoute: typeof AuthenticatedAscentCalendarRoute
-  AuthenticatedAscentCouncilRoute: typeof AuthenticatedAscentCouncilRoute
-  AuthenticatedAscentCurriculumRoute: typeof AuthenticatedAscentCurriculumRoute
-  AuthenticatedAscentReportRoute: typeof AuthenticatedAscentReportRoute
-  AuthenticatedAscentIndexRoute: typeof AuthenticatedAscentIndexRoute
-}
-
-const AuthenticatedAscentRouteRouteChildren: AuthenticatedAscentRouteRouteChildren =
-  {
-    AuthenticatedAscentCalendarRoute: AuthenticatedAscentCalendarRoute,
-    AuthenticatedAscentCouncilRoute: AuthenticatedAscentCouncilRoute,
-    AuthenticatedAscentCurriculumRoute: AuthenticatedAscentCurriculumRoute,
-    AuthenticatedAscentReportRoute: AuthenticatedAscentReportRoute,
-    AuthenticatedAscentIndexRoute: AuthenticatedAscentIndexRoute,
-  }
-
-const AuthenticatedAscentRouteRouteWithChildren =
-  AuthenticatedAscentRouteRoute._addFileChildren(
-    AuthenticatedAscentRouteRouteChildren,
-  )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAscentRouteRoute: typeof AuthenticatedAscentRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
+  AuthenticatedChoosePathRoute: typeof AuthenticatedChoosePathRoute
   AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
@@ -461,9 +360,9 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAscentRouteRoute: AuthenticatedAscentRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
+  AuthenticatedChoosePathRoute: AuthenticatedChoosePathRoute,
   AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
@@ -484,6 +383,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AcceptInviteRoute: AcceptInviteRoute,
   AuthRoute: AuthRoute,
+  BriefcheckRoute: BriefcheckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

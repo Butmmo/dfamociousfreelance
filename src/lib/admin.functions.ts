@@ -51,7 +51,7 @@ export const listBeneficiaries = createServerFn({ method: "GET" })
     await requireAdmin(context);
     const { data, error } = await context.supabase
       .from("profiles")
-      .select("id,email,full_name,rank,xp,country,niche,created_at")
+      .select("id,email,full_name,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned")
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
@@ -265,4 +265,27 @@ export const listAllWeeklyReports = createServerFn({ method: "GET" })
       ...r,
       profile: byId.get(r.user_id) ?? null,
     }));
+  });
+
+// ── Path assignment ─────────────────────────────────────────────────────────
+const PATH_KEYS = ["smb", "ascent", "revenue", "carebridge", "ministry", "broadcast", "authority"] as const;
+
+export const setBeneficiaryPath = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ beneficiary_id: z.string().uuid(), path_key: z.enum(PATH_KEYS) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        path_key: data.path_key,
+        path_chosen_at: new Date().toISOString(),
+        path_auto_assigned: true,
+      } as never)
+      .eq("id", data.beneficiary_id);
+    if (error) throw error;
+    return { ok: true };
   });
