@@ -3,21 +3,21 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { Motto } from "@/components/dfs/Brand";
+import { usePath } from "@/lib/use-path";
+import { PATH_PLAYBOOKS } from "@/lib/path-playbooks";
 import { Calendar, Globe, ArrowRight, Calculator } from "lucide-react";
+
+const ICONS = { globe: Globe, calendar: Calendar, calculator: Calculator } as const;
 
 export const Route = createFileRoute("/_authenticated/playbooks/")({
   head: () => ({ meta: [{ title: "The Playbooks — DFS Citadel" }] }),
   component: PlaybooksIndex,
 });
 
-const PLAYBOOKS = [
-  { slug: "global-smb-engine", key: "p_global", title: "Global SMB Engine", tagline: "Markets · Leads · Offer", body: "7 countries, 12 niches, exact Google Maps searches, hot/cold lead scoring and the Grand Slam offer builder — merged into one engine.", icon: Globe, accent: "from-rose-500/25 to-transparent" },
-  { slug: "plan",           key: "p_45day",        title: "45-Day Implementation Playbook", tagline: "From Zero to First Client",     body: "Day-by-day plan across 7 weeks — foundation, harvest, outreach, first close, deliver, scale, launch month 2.", icon: Calendar,   accent: "from-indigo-500/25 to-transparent" },
-  { slug: "smb-calculator", key: "p_smb_calc",     title: "SMB Performance Calculator",      tagline: "Powered by Claude AI",          body: "Enter a prospect's numbers → discover their revenue leak → export a branded PDF per tab.",                    icon: Calculator, accent: "from-sky-500/25 to-transparent" },
-];
 
 function PlaybooksIndex() {
   const { user } = useSession();
+  const { path, pathKey, loading: pathLoading } = usePath();
   const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -30,25 +30,34 @@ function PlaybooksIndex() {
       });
   }, [user]);
 
+  if (pathLoading) {
+    return <div className="p-10 text-center text-muted-foreground">Loading your path…</div>;
+  }
+
+  const playbooks = pathKey ? PATH_PLAYBOOKS[pathKey] ?? [] : [];
+
   return (
     <div className="space-y-8">
       <header>
         <Motto />
-        <div className="mt-2 text-[10px] uppercase tracking-widest text-gold-deep">SMB Optimisation System</div>
+        <div className="mt-2 text-[10px] uppercase tracking-widest text-gold-deep">{path?.name ?? "Your Path"}</div>
         <h1 className="mt-1 font-display text-3xl md:text-4xl font-bold">The Playbooks</h1>
         <p className="mt-2 text-muted-foreground max-w-2xl">
-          The complete SMB Optimisation System — one of the DFS tracks, one of the Seven Paths of Digital Engineering. Three playbooks, one path.
+          {path?.summary ?? "Choose a path to unlock its playbooks."} Three playbooks, one path.
           Every checkbox you tick is synced to the Citadel — your rank and XP move with your work.
         </p>
-        <p className="mt-2 text-xs text-muted-foreground max-w-2xl">
-          Tool focus: <strong className="text-foreground">Go High Level · Notion · Lovable · Make / Zapier / n8n</strong>.
-        </p>
+        {pathKey === "smb" && (
+          <p className="mt-2 text-xs text-muted-foreground max-w-2xl">
+            Tool focus: <strong className="text-foreground">Go High Level · Notion · Lovable · Make / Zapier / n8n</strong>.
+          </p>
+        )}
       </header>
 
       <div className="grid md:grid-cols-2 gap-5">
-        {PLAYBOOKS.map((p) => {
-          const done = counts[p.key] ?? 0;
-          const isCalc = p.slug === "smb-calculator";
+        {playbooks.map((p) => {
+          const done = p.key ? counts[p.key] ?? 0 : 0;
+          const isCalc = !p.key;
+          const Icon = ICONS[p.icon];
           return (
             <Link
               key={p.slug}
@@ -58,7 +67,7 @@ function PlaybooksIndex() {
               <div className={`pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-gradient-to-br ${p.accent} blur-3xl`} />
               <div className="relative flex items-start gap-4">
                 <div className="rounded-xl border border-gold/30 bg-accent/30 p-3 shrink-0">
-                  <p.icon className="h-6 w-6 text-gold-deep" />
+                  <Icon className="h-6 w-6 text-gold-deep" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[10px] uppercase tracking-widest text-gold-deep">{p.tagline}</div>
@@ -78,6 +87,13 @@ function PlaybooksIndex() {
           );
         })}
       </div>
+
+      {playbooks.length === 0 && (
+        <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
+          No path is sealed yet.{" "}
+          <Link to="/choose-path" className="text-primary font-semibold hover:underline">Open the briefings</Link> and commit to one.
+        </div>
+      )}
 
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="text-[10px] uppercase tracking-widest text-gold-deep">Cadence</div>
