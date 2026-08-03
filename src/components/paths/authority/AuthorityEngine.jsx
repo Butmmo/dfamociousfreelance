@@ -395,7 +395,7 @@ export default function TheAuthorityEngine() {
             Write consistent, high-performing LinkedIn content in a client's authentic voice.
             No automation tools to master — this system runs on writing skill and relationship.
           </p>
-          <div style={{background:"#F5F0E4",border:"1px solid #10B98130",borderRadius:10,
+          <div style={{background:"#F5F0E4",border:"1px solid #0D7A5F30",borderRadius:10,
             padding:"11px 14px",marginBottom:14}}>
             <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.6}}>
               <strong style={{color:"#0D7A5F"}}>Why this system exists:</strong> this is the one
@@ -594,13 +594,13 @@ export default function TheAuthorityEngine() {
                           <div style={{fontSize:10,fontWeight:700,color:"#0D7A5F",textTransform:"uppercase",
                             letterSpacing:".07em",marginBottom:5}}>💡 Why This Works</div>
                           <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #10B98140",paddingLeft:10}}>{n.why}</p>
+                            borderLeft:"2px solid #0D7A5F40",paddingLeft:10}}>{n.why}</p>
                         </div>
                         <div style={{marginTop:12}}>
                           <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"uppercase",
                             letterSpacing:".07em",marginBottom:5}}>📍 Where to Find Them</div>
                           <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #F59E0B40",paddingLeft:10}}>{n.find}</p>
+                            borderLeft:"2px solid #C99A3B40",paddingLeft:10}}>{n.find}</p>
                         </div>
                       </div>
                     )}
@@ -646,7 +646,7 @@ export default function TheAuthorityEngine() {
                           <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"uppercase",
                             letterSpacing:".07em",marginBottom:5}}>Why It Matters</div>
                           <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.65,
-                            borderLeft:"2px solid #F59E0B40",paddingLeft:10}}>{s.why}</p>
+                            borderLeft:"2px solid #C99A3B40",paddingLeft:10}}>{s.why}</p>
                         </div>
                       </div>
                     )}
@@ -736,7 +736,7 @@ export default function TheAuthorityEngine() {
                 </div>
               ))}
             </div>
-            <div style={{marginTop:16,background:"#F5F0E4",border:"1px solid #10B98125",
+            <div style={{marginTop:16,background:"#F5F0E4",border:"1px solid #0D7A5F25",
               borderRadius:12,padding:"16px"}}>
               <SLabel text="12-Month Value Per Client" color="#0D7A5F"/>
               {[

@@ -320,8 +320,8 @@ function LeadScoreCalculator() {
           {DISCOVERY_OPTIONS.map((d) => (
             <button key={d.id} onClick={() => setDiscovery(d.id)} style={{
               display: "flex", alignItems: "center", gap: 9, textAlign: "left",
-              background: discovery === d.id ? "#14B8A614" : "#F8F5EE",
-              border: `1px solid ${discovery === d.id ? "#14B8A660" : "#FBF8F1"}`,
+              background: discovery === d.id ? "#0D7A5F14" : "#F8F5EE",
+              border: `1px solid ${discovery === d.id ? "#0D7A5F60" : "#FBF8F1"}`,
               borderRadius: 9, padding: "9px 11px", cursor: "pointer", fontFamily: "inherit" }}>
               <span style={{ width: 15, height: 15, borderRadius: "50%", flexShrink: 0,
                 border: `2px solid ${discovery === d.id ? "#0D7A5F" : "#D9CFBB"}`,
@@ -342,8 +342,8 @@ function LeadScoreCalculator() {
           {DISQUALIFIERS.map((d) => (
             <button key={d.id} onClick={() => toggle(d.id)} style={{
               display: "flex", alignItems: "center", gap: 9, textAlign: "left",
-              background: on[d.id] ? "#64748B18" : "#F8F5EE",
-              border: `1px solid ${on[d.id] ? "#64748B60" : "#FBF8F1"}`,
+              background: on[d.id] ? "#6E645918" : "#F8F5EE",
+              border: `1px solid ${on[d.id] ? "#6E645960" : "#FBF8F1"}`,
               borderRadius: 9, padding: "9px 11px", cursor: "pointer", fontFamily: "inherit" }}>
               <span style={{ width: 17, height: 17, borderRadius: 5, flexShrink: 0,
                 border: `2px solid ${on[d.id] ? "#6E6459" : "#D9CFBB"}`,
@@ -415,7 +415,7 @@ function MixCalculator() {
           </div>
         ))}
       </div>
-      <div style={{ background: "#F5F0E4", border: "1px solid #10B98130", borderRadius: 9, padding: "11px 13px",
+      <div style={{ background: "#F5F0E4", border: "1px solid #0D7A5F30", borderRadius: 9, padding: "11px 13px",
         display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 12, color: "#6E6459" }}>Projected annual revenue</span>
         <span style={{ fontSize: 17, fontWeight: 800, color: "#0D7A5F" }}>${annual.toLocaleString()}</span>
@@ -468,7 +468,7 @@ export default function EcommerceProspectingGuide() {
             Five real channels to find ecommerce prospects, eight fully profiled niches to specialize in,
             and a real scoring system so you spend your limited weekly hours on the accounts most likely to say yes.
           </p>
-          <div style={{ background: "#F5F0E4", border: "1px solid #14B8A630", borderRadius: 10, padding: "11px 14px" }}>
+          <div style={{ background: "#F5F0E4", border: "1px solid #0D7A5F30", borderRadius: 10, padding: "11px 14px" }}>
             <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
               <strong style={{ color: "#0D7A5F" }}>How this fits your 45-Day Plan:</strong> this is the deep
               version of Week 3 (Days 15–21) — pick your niche using the profiles here, find your 30–40
@@ -727,7 +727,7 @@ export default function EcommerceProspectingGuide() {
                 {FUNNEL_STEPS.map((f, i) => (
                   <div key={f.label} style={{ display: "flex", alignItems: "center", gap: 10,
                     padding: "9px 0", borderBottom: i < FUNNEL_STEPS.length - 1 ? "1px solid #FBF8F1" : "none" }}>
-                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#F59E0B18", border: "1px solid #F59E0B40",
+                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#C99A3B18", border: "1px solid #C99A3B40",
                       display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#C99A3B", flexShrink: 0 }}>{i + 1}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 12.5, fontWeight: 600, color: "#201A16" }}>{f.label}</div>

@@ -296,7 +296,7 @@ export default function PodcastPerformanceCalculator() {
           </p>
           {showName.trim()&&(
             <div style={{marginTop:10,display:"inline-flex",alignItems:"center",gap:7,
-              background:"#6366F118",border:"1px solid #6366F135",borderRadius:20,padding:"5px 13px"}}>
+              background:"#7A5A0018",border:"1px solid #7A5A0035",borderRadius:20,padding:"5px 13px"}}>
               <span style={{fontSize:12,color:"#C99A3B",fontWeight:600}}>
                 📍 Analyzing: {showLabel} ({genre.icon} {genre.label})
                 {competitorName.trim()?` vs ${compLabel}`:""}

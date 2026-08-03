@@ -513,7 +513,7 @@ export default function DigitalMinistrySystems() {
             Event registration, digital giving, congregant communication, and online formation —
             built for parishes, churches, and ministries. Warm-network acquisition, not cold outreach.
           </p>
-          <div style={{background:"#F5F0E4",border:"1px solid #10B98130",borderRadius:10,
+          <div style={{background:"#F5F0E4",border:"1px solid #0D7A5F30",borderRadius:10,
             padding:"11px 14px",marginBottom:14}}>
             <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.6}}>
               <strong style={{color:"#0D7A5F"}}>Why this system exists:</strong> your addressable
@@ -815,7 +815,7 @@ export default function DigitalMinistrySystems() {
                 </div>
               ))}
             </div>
-            <div style={{marginTop:16,background:"#F5F0E4",border:"1px solid #10B98125",
+            <div style={{marginTop:16,background:"#F5F0E4",border:"1px solid #0D7A5F25",
               borderRadius:12,padding:"16px"}}>
               <SLabel text="12-Month Value Per Ministry" color="#0D7A5F"/>
               {[

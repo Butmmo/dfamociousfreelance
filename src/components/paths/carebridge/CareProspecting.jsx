@@ -340,8 +340,8 @@ function LeadScoreCalculator() {
           {DISQUALIFIERS.map(d => (
             <button key={d.id} onClick={() => toggleFlag(d.id)} style={{
               display: "flex", alignItems: "center", gap: 9, textAlign: "left",
-              background: flags[d.id] ? "#64748B18" : "#F8F5EE",
-              border: `1px solid ${flags[d.id] ? "#64748B60" : "#FBF8F1"}`,
+              background: flags[d.id] ? "#6E645918" : "#F8F5EE",
+              border: `1px solid ${flags[d.id] ? "#6E645960" : "#FBF8F1"}`,
               borderRadius: 9, padding: "9px 11px", cursor: "pointer", fontFamily: "inherit" }}>
               <span style={{ width: 17, height: 17, borderRadius: 5, flexShrink: 0,
                 border: `2px solid ${flags[d.id] ? "#6E6459" : "#D9CFBB"}`,
@@ -406,7 +406,7 @@ function MixCalculator() {
           </div>
         ))}
       </div>
-      <div style={{ background: "#F5F0E4", border: "1px solid #10B98130", borderRadius: 9, padding: "11px 13px",
+      <div style={{ background: "#F5F0E4", border: "1px solid #0D7A5F30", borderRadius: 9, padding: "11px 13px",
         display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: 12, color: "#6E6459" }}>Projected annual revenue</span>
         <span style={{ fontSize: 17, fontWeight: 800, color: "#0D7A5F" }}>${annual.toLocaleString()}</span>
@@ -460,7 +460,7 @@ export default function SeniorCareProspectingGuide() {
             so you spend your limited weekly hours on the agencies most likely to say yes, approached with
             the warmth this work deserves.
           </p>
-          <div style={{ background: "#F5F0E4", border: "1px solid #14B8A630", borderRadius: 10, padding: "11px 14px" }}>
+          <div style={{ background: "#F5F0E4", border: "1px solid #0D7A5F30", borderRadius: 10, padding: "11px 14px" }}>
             <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
               <strong style={{ color: "#0D7A5F" }}>How this fits your 45-Day Plan:</strong> this is the deep
               version of Week 3 (Days 15–21) — pick your care focus using the profiles here, build your list

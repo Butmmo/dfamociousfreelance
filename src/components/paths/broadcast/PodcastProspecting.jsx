@@ -223,7 +223,7 @@ export default function GlobalPodcastProspectingGuide() {
             Where the shows are, which genre to specialize in, and a repeatable way to tell a hot
             lead from one that just needs more time.
           </p>
-          <div style={{background:"#F5F0E4", border:"1px solid #10B98130", borderRadius:10,
+          <div style={{background:"#F5F0E4", border:"1px solid #0D7A5F30", borderRadius:10,
             padding:"11px 14px", marginBottom:14}}>
             <p style={{fontSize:12.5, color:"#6E6459", margin:0, lineHeight:1.6}}>
               <strong style={{color:"#0D7A5F"}}>Why this exists:</strong> the 45-Day Playbook's
@@ -304,7 +304,7 @@ export default function GlobalPodcastProspectingGuide() {
               freelance market ($50-600/episode independently, $500-3,000+/month for managed
               production) and found to sit right inside it, not above it.
             </p>
-            <div style={{background:"#F5F0E4",border:"1px solid #10B98125",borderRadius:12,padding:"16px",marginBottom:8}}>
+            <div style={{background:"#F5F0E4",border:"1px solid #0D7A5F25",borderRadius:12,padding:"16px",marginBottom:8}}>
               <SLabel text="12-Month Value Per Client (unchanged from the Playbook)" color="#0D7A5F"/>
               {[
                 {t:"Starter tier",v:"$6,000 - $8,400/year"},
@@ -375,7 +375,7 @@ export default function GlobalPodcastProspectingGuide() {
                             letterSpacing:".07em",marginBottom:6}}>Best-Fit Genres</div>
                           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
                             {sp.bestFits.map(bf=>(
-                              <span key={bf} style={{fontSize:11,color:"#7A5A00",background:"#8B5CF618",
+                              <span key={bf} style={{fontSize:11,color:"#7A5A00",background:"#7A5A0018",
                                 borderRadius:5,padding:"3px 8px",fontWeight:600}}>{bf}</span>
                             ))}
                           </div>
@@ -486,7 +486,7 @@ export default function GlobalPodcastProspectingGuide() {
                       <div key={oi} onClick={()=>selectOption(f.key,oi)}
                         style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,
                           padding:"10px 12px",borderRadius:8,cursor:"pointer",
-                          background:isSel?"#10B98115":"#F8F5EE",
+                          background:isSel?"#0D7A5F15":"#F8F5EE",
                           border:`1px solid ${isSel?"#0D7A5F":"#FBF8F1"}`}}>
                         <span style={{fontSize:12.5,color:isSel?"#201A16":"#6E6459",lineHeight:1.4}}>{o.label}</span>
                         <span style={{fontSize:12,fontWeight:800,color:isSel?"#0D7A5F":"#D9CFBB",flexShrink:0}}>+{o.points}</span>
@@ -530,7 +530,7 @@ export default function GlobalPodcastProspectingGuide() {
               ))}
             </div>
 
-            <div style={{marginTop:16,background:"#F5F0E4",border:"1px solid #F59E0B25",
+            <div style={{marginTop:16,background:"#F5F0E4",border:"1px solid #C99A3B25",
               borderRadius:12,padding:"16px",marginBottom:12}}>
               <SLabel text="About The $100,000 Figure" color="#C99A3B"/>
               <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.65}}>
@@ -543,7 +543,7 @@ export default function GlobalPodcastProspectingGuide() {
               </p>
             </div>
 
-            <div style={{background:"#F5F0E4",border:"1px solid #10B98125",
+            <div style={{background:"#F5F0E4",border:"1px solid #0D7A5F25",
               borderRadius:12,padding:"16px"}}>
               <SLabel text="At Program Scale" color="#0D7A5F"/>
               <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.65}}>

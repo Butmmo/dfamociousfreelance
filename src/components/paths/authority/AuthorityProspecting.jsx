@@ -377,7 +377,7 @@ export default function TheProspectingEngine() {
     <div style={{fontFamily:"'Inter',system-ui,-apple-system,sans-serif",
       background:"#F5F0E4",minHeight:"100vh",color:"#201A16"}}>
       <style>{`
-        .pe-field:focus{ border-color:#7A5A00 !important; box-shadow:0 0 0 3px #6366F133; outline:none; }
+        .pe-field:focus{ border-color:#7A5A00 !important; box-shadow:0 0 0 3px #7A5A0033; outline:none; }
         .pe-btn:hover{ filter:brightness(1.08); }
         @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
       `}</style>
@@ -401,7 +401,7 @@ export default function TheProspectingEngine() {
             Ten proven buyer types, five places to find them, and a weighted scorecard that
             separates a hot lead from a wasted free sample — before you ever send the DM.
           </p>
-          <div style={{background:"#F5F0E4",border:"1px solid #6366F130",borderRadius:10,
+          <div style={{background:"#F5F0E4",border:"1px solid #7A5A0030",borderRadius:10,
             padding:"11px 14px",marginBottom:14}}>
             <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.6}}>
               <strong style={{color:"#C99A3B"}}>Why scoring first:</strong> roughly three in four
@@ -579,7 +579,7 @@ export default function TheProspectingEngine() {
             </p>
 
             {savedFlash&&(
-              <div style={{background:"#10B98115",border:"1px solid #10B98140",borderRadius:9,
+              <div style={{background:"#0D7A5F15",border:"1px solid #0D7A5F40",borderRadius:9,
                 padding:"10px 13px",marginBottom:14,fontSize:12.5,color:"#0D7A5F",fontWeight:600}}>
                 ✓ {savedFlash} View it in the 🗂️ Prospect Tracker tab.
               </div>
@@ -787,7 +787,7 @@ export default function TheProspectingEngine() {
             </div>
 
             <SLabel text="Illustrative Path to Six Figures" color="#0D7A5F"/>
-            <div style={{background:"#F5F0E4",border:"1px solid #10B98125",borderRadius:12,
+            <div style={{background:"#F5F0E4",border:"1px solid #0D7A5F25",borderRadius:12,
               padding:"16px",marginBottom:16}}>
               <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 12px",lineHeight:1.6}}>
                 This is arithmetic, not a promise — nobody can guarantee you'll close 10 clients or
@@ -804,7 +804,7 @@ export default function TheProspectingEngine() {
                   <div style={{fontSize:13,fontWeight:700,color:e.color,textAlign:"right"}}>{e.annual}</div>
                 </div>
               ))}
-              <div style={{marginTop:12,background:"#10B98112",borderRadius:8,padding:"11px 13px"}}>
+              <div style={{marginTop:12,background:"#0D7A5F12",borderRadius:8,padding:"11px 13px"}}>
                 <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.6}}>
                   A mix of <strong style={{color:"#201A16"}}>4 Starter + 4 Growth + 2 Authority</strong> —
                   10 client slots total — lands around <strong style={{color:"#0D7A5F"}}>$114,000/year</strong>,
