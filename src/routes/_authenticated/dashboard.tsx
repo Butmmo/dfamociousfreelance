@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { Motto } from "@/components/dfs/Brand";
 import { WEEKS } from "./playbooks/plan";
+import { usePath } from "@/lib/use-path";
+import { PATH_PLAYBOOKS } from "@/lib/path-playbooks";
 import { computeEscalation, forecastFirstClose, type ProgressRow } from "@/lib/escalation";
 import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, BookOpen, Sparkles, Globe, ArrowRight,
@@ -53,6 +55,8 @@ const BAND_TONE: Record<string, { label: string; bg: string; text: string }> = {
 
 function Dashboard() {
   const { user, role } = useSession();
+  const { pathKey } = usePath();
+  const dashPlaybooks = pathKey ? (PATH_PLAYBOOKS[pathKey] ?? []).slice(0, 1) : [];
   const [profile, setProfile] = useState<any>(null);
   const [progressRows, setProgressRows] = useState<ProgressRow[]>([]);
   const [planProgress, setPlanProgress] = useState<{ task_id: string; completed: boolean }[]>([]);
