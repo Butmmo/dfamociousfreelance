@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as BriefcheckRouteImport } from './routes/briefcheck'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -26,11 +25,6 @@ import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './route
 import { Route as AuthenticatedPlaybooksPlanRouteImport } from './routes/_authenticated/playbooks/plan'
 import { Route as AuthenticatedPlaybooksGlobalSmbEngineRouteImport } from './routes/_authenticated/playbooks/global-smb-engine'
 
-const BriefcheckRoute = BriefcheckRouteImport.update({
-  id: '/briefcheck',
-  path: '/briefcheck',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -116,7 +110,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
-  '/briefcheck': typeof BriefcheckRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
@@ -133,7 +126,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
-  '/briefcheck': typeof BriefcheckRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
@@ -152,7 +144,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
-  '/briefcheck': typeof BriefcheckRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/choose-path': typeof AuthenticatedChoosePathRoute
@@ -171,7 +162,6 @@ export interface FileRouteTypes {
     | '/'
     | '/accept-invite'
     | '/auth'
-    | '/briefcheck'
     | '/admin'
     | '/calendar'
     | '/choose-path'
@@ -188,7 +178,6 @@ export interface FileRouteTypes {
     | '/'
     | '/accept-invite'
     | '/auth'
-    | '/briefcheck'
     | '/admin'
     | '/calendar'
     | '/choose-path'
@@ -206,7 +195,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/accept-invite'
     | '/auth'
-    | '/briefcheck'
     | '/_authenticated/admin'
     | '/_authenticated/calendar'
     | '/_authenticated/choose-path'
@@ -225,18 +213,10 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AcceptInviteRoute: typeof AcceptInviteRoute
   AuthRoute: typeof AuthRoute
-  BriefcheckRoute: typeof BriefcheckRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/briefcheck': {
-      id: '/briefcheck'
-      path: '/briefcheck'
-      fullPath: '/briefcheck'
-      preLoaderRoute: typeof BriefcheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -383,18 +363,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AcceptInviteRoute: AcceptInviteRoute,
   AuthRoute: AuthRoute,
-  BriefcheckRoute: BriefcheckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
