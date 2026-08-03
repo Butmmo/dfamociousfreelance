@@ -909,8 +909,8 @@ function DaysTab({ checked, onToggle }) {
       {[1, 2, 3].map(phase => (
         <div key={phase} className="space-y-3">
           <div className="relative rounded-lg border border-line bg-paper p-4">
-            <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: '#5b4f33' }}>{PHASE_META[phase].name} · {PHASE_META[phase].range}</p>
-            <p className="text-sm mt-1 leading-relaxed" style={{ color: '#3a3320' }}>{PHASE_META[phase].scorecard}</p>
+            <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: '#7A5A00' }}>{PHASE_META[phase].name} · {PHASE_META[phase].range}</p>
+            <p className="text-sm mt-1 leading-relaxed" style={{ color: '#7A5A00' }}>{PHASE_META[phase].scorecard}</p>
           </div>
           <div className="space-y-2.5">
             {DAYS.filter(d => d.phase === phase).map(d => (
@@ -1241,25 +1241,25 @@ export default function App() {
         .font-body { font-family: 'IBM Plex Sans', sans-serif; }
         .font-mono { font-family: 'IBM Plex Mono', monospace; }
         .bg-ink {
-          background-color: #12151A;
+          background-color: #F5F0E4;
           background-image:
             linear-gradient(rgba(69,199,176,0.045) 1px, transparent 1px),
             linear-gradient(90deg, rgba(69,199,176,0.045) 1px, transparent 1px);
           background-size: 26px 26px;
         }
-        .bg-panel { background-color: #1B1F27; }
-        .bg-panel-raised { background-color: #232833; }
-        .bg-paper { background-color: #E8E1CF; }
-        .border-line { border-color: #2A303C; }
-        .text-ink-muted { color: #8B93A3; }
+        .bg-panel { background-color: #F5F0E4; }
+        .bg-panel-raised { background-color: #E6DECB; }
+        .bg-paper { background-color: #E6DECB; }
+        .border-line { border-color: #E6DECB; }
+        .text-ink-muted { color: #6E6459; }
         .text-signal { color: #0D7A5F; }
         .bg-signal { background-color: #0D7A5F; }
         .border-signal { border-color: #0D7A5F; }
         .text-insignia { color: #C99A3B; }
         .bg-insignia { background-color: #C99A3B; }
         .border-insignia { border-color: #C99A3B; }
-        .text-alert { color: #E0574A; }
-        .border-alert { border-color: #E0574A; }
+        .text-alert { color: #8B2E1F; }
+        .border-alert { border-color: #8B2E1F; }
         .bg-alert\\/10 { background-color: rgba(224,87,74,0.1); }
         .bg-signal\\/10 { background-color: rgba(69,199,176,0.1); }
         .bg-insignia\\/10 { background-color: rgba(217,164,65,0.1); }
@@ -1270,7 +1270,7 @@ export default function App() {
         .hover\\:bg-panel-raised\\/60:hover { background-color: rgba(35,40,51,0.6); }
         .bg-ink\\/95 { background-color: rgba(18,21,26,0.95); }
         .focus-visible\\:outline-signal:focus-visible { outline-color: #0D7A5F; }
-        .decoration-line { text-decoration-color: #2A303C; }
+        .decoration-line { text-decoration-color: #E6DECB; }
         @media (prefers-reduced-motion: reduce) {
           * { transition: none !important; animation: none !important; }
         }

@@ -521,7 +521,7 @@ export default function PodcastPerformanceCalculator() {
                 value={fmtI(growth.monthlyListenersLost)} color={C.pink}/>
             </div>
 
-            <div style={{background:"linear-gradient(135deg,#0F0814,#F5F0E4)",
+            <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.red+"35",borderRadius:12,padding:"16px",marginBottom:16}}>
               <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
                 letterSpacing:".09em",marginBottom:6}}>What This Means</div>
@@ -673,7 +673,7 @@ export default function PodcastPerformanceCalculator() {
             </p>
 
             {/* Growth & Revenue at Risk Summary */}
-            <div style={{background:"linear-gradient(135deg,#0F0814,#F5F0E4)",
+            <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.red+"40",borderRadius:12,padding:"18px",marginBottom:16}}>
               <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
                 letterSpacing:".1em",marginBottom:4}}>Total Estimated Monthly Growth & Revenue at Risk</div>

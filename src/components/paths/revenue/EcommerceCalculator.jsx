@@ -644,7 +644,7 @@ export default function EcommercePerformanceCalculator() {
               numbers filled in. It closes better than any proposal.
             </p>
 
-            <div style={{background:"linear-gradient(135deg,#0F0814,#F5F0E4)",
+            <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.red+"40",borderRadius:12,padding:"18px",marginBottom:16}}>
               <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
                 letterSpacing:".1em",marginBottom:4}}>Total Estimated Monthly Revenue at Risk</div>

@@ -529,7 +529,7 @@ export default function MinistryPerformanceCalculator() {
               numbers filled in — it's a far warmer opener than a proposal.
             </p>
 
-            <div style={{background:"linear-gradient(135deg,#0F1420,#F5F0E4)",
+            <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.indigo+"40",borderRadius:12,padding:"18px",marginBottom:16}}>
               <div style={{fontSize:10,fontWeight:700,color:C.indigo,textTransform:"uppercase",
                 letterSpacing:".1em",marginBottom:4}}>Estimated Missed Connections</div>

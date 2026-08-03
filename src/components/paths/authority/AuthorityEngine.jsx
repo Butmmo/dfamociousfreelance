@@ -469,7 +469,7 @@ export default function TheAuthorityEngine() {
                     <Chevron open={wOpen}/>
                   </div>
                   {wOpen&&(
-                    <div style={{background:"#090F1C",border:`1px solid ${w.color}25`,
+                    <div style={{background:"#F5F0E4",border:`1px solid ${w.color}25`,
                       borderTop:"none",borderRadius:"0 0 11px 11px",padding:"8px 11px 13px"}}>
                       {w.days.map(d=>{
                         const dk=`${wi}-${d.day}`; const dOpen=openDay===dk;
@@ -478,7 +478,7 @@ export default function TheAuthorityEngine() {
                         return (
                           <div key={d.day} style={{marginTop:7}}>
                             <div onClick={()=>setOpenDay(dOpen?null:dk)}
-                              style={{background:dOpen?"#0C1829":"#0A1422",
+                              style={{background:dOpen?"#FBF8F1":"#F5F0E4",
                                 border:`1px solid ${dComplete?w.color+"60":"#FBF8F1"}`,
                                 borderRadius:dOpen?"9px 9px 0 0":9,cursor:"pointer",
                                 padding:"10px 12px",display:"flex",alignItems:"center",gap:9}}>
@@ -494,7 +494,7 @@ export default function TheAuthorityEngine() {
                               <Chevron open={dOpen}/>
                             </div>
                             {dOpen&&(
-                              <div style={{background:"#060C18",border:"1px solid #FBF8F1",
+                              <div style={{background:"#F5F0E4",border:"1px solid #FBF8F1",
                                 borderTop:"none",borderRadius:"0 0 9px 9px",padding:"10px 12px 12px"}}>
                                 {d.note&&(
                                   <div style={{background:w.color+"10",border:`1px solid ${w.color}22`,
@@ -504,10 +504,10 @@ export default function TheAuthorityEngine() {
                                 {d.tasks.map(t=>(
                                   <div key={t.id} onClick={()=>toggle(t.id)}
                                     style={{display:"flex",gap:9,alignItems:"flex-start",
-                                      padding:"8px 0",borderBottom:"1px solid #0F1829",cursor:"pointer"}}>
+                                      padding:"8px 0",borderBottom:"1px solid #FBF8F1",cursor:"pointer"}}>
                                     <Check checked={!!done[t.id]} color={w.color}/>
                                     <span style={{fontSize:13,lineHeight:1.55,
-                                      color:done[t.id]?"#D9CFBB":"#C4CFD8",
+                                      color:done[t.id]?"#D9CFBB":"#6E6459",
                                       textDecoration:done[t.id]?"line-through":"none",
                                       transition:"all .15s"}}>{t.text}</span>
                                   </div>
@@ -544,7 +544,7 @@ export default function TheAuthorityEngine() {
                   <div style={{flex:1}}>
                     <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",marginBottom:3}}>
                       <span style={{fontSize:13.5,fontWeight:700,color:"#201A16"}}>{c.name}</span>
-                      <span style={{fontSize:10.5,background:"#FBF8F1",border:"1px solid #1E2E46",
+                      <span style={{fontSize:10.5,background:"#FBF8F1",border:"1px solid #FBF8F1",
                         borderRadius:5,padding:"1px 7px",color:"#7A5A00",fontWeight:600}}>{c.type}</span>
                     </div>
                     <p style={{fontSize:12,color:"#6E6459",margin:0,lineHeight:1.5}}>{c.desc}</p>
@@ -685,7 +685,7 @@ export default function TheAuthorityEngine() {
                     </div>
                     {isOpen&&(
                       <div style={{padding:"0 14px 14px",borderTop:"1px solid #FBF8F1"}}>
-                        <p style={{background:"#060C18",borderRadius:8,padding:"12px 13px",
+                        <p style={{background:"#F5F0E4",borderRadius:8,padding:"12px 13px",
                           marginTop:12,fontFamily:"'Courier New',monospace",fontSize:12,
                           color:"#6E6459",lineHeight:1.85,borderLeft:`2px solid ${s.color}40`,
                           whiteSpace:"pre-wrap",wordBreak:"break-word"}}>{s.body}</p>

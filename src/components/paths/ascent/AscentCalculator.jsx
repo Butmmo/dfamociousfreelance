@@ -370,24 +370,24 @@ export default function AscentPerformanceCalculator() {
         .font-body { font-family: 'IBM Plex Sans', sans-serif; }
         .font-mono { font-family: 'IBM Plex Mono', monospace; }
         .bg-ink {
-          background-color: #12151A;
+          background-color: #F5F0E4;
           background-image:
             linear-gradient(rgba(69,199,176,0.045) 1px, transparent 1px),
             linear-gradient(90deg, rgba(69,199,176,0.045) 1px, transparent 1px);
           background-size: 26px 26px;
         }
-        .bg-panel { background-color: #1B1F27; }
-        .bg-panel-raised { background-color: #232833; }
-        .border-line { border-color: #2A303C; }
-        .text-ink-muted { color: #8B93A3; }
+        .bg-panel { background-color: #F5F0E4; }
+        .bg-panel-raised { background-color: #E6DECB; }
+        .border-line { border-color: #E6DECB; }
+        .text-ink-muted { color: #6E6459; }
         .text-signal { color: #0D7A5F; }
         .bg-signal { background-color: #0D7A5F; }
         .border-signal { border-color: #0D7A5F; }
         .text-insignia { color: #C99A3B; }
         .bg-insignia { background-color: #C99A3B; }
         .border-insignia { border-color: #C99A3B; }
-        .text-alert { color: #E0574A; }
-        .border-alert { border-color: #E0574A; }
+        .text-alert { color: #8B2E1F; }
+        .border-alert { border-color: #8B2E1F; }
         .bg-alert\\/10 { background-color: rgba(224,87,74,0.1); }
         .bg-signal\\/10 { background-color: rgba(69,199,176,0.1); }
         .bg-insignia\\/10 { background-color: rgba(217,164,65,0.1); }
@@ -398,9 +398,9 @@ export default function AscentPerformanceCalculator() {
         .hover\\:bg-panel-raised\\/60:hover { background-color: rgba(35,40,51,0.6); }
         .focus-visible\\:outline-signal:focus-visible { outline-color: #0D7A5F; }
         .ascent-slider { -webkit-appearance: none; appearance: none; background: transparent; height: 16px; margin: 0; cursor: pointer; }
-        .ascent-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 3px; background: #0D7A5F; cursor: pointer; margin-top: 0; border: 2px solid #12151A; }
+        .ascent-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 3px; background: #0D7A5F; cursor: pointer; margin-top: 0; border: 2px solid #F5F0E4; }
         .ascent-slider::-webkit-slider-runnable-track { height: 4px; background: transparent; }
-        .ascent-slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 3px; background: #0D7A5F; cursor: pointer; border: 2px solid #12151A; }
+        .ascent-slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 3px; background: #0D7A5F; cursor: pointer; border: 2px solid #F5F0E4; }
         .ascent-slider::-moz-range-track { height: 4px; background: transparent; }
         @media (prefers-reduced-motion: reduce) {
           * { transition: none !important; animation: none !important; }
