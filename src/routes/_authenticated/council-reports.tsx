@@ -137,7 +137,6 @@ function CouncilReports() {
 }
 
 function Detail({ report, onBack }: { report: any; onBack: () => void }) {
-  const p = report.payload ?? {};
   return (
     <div className="space-y-6">
       <button onClick={onBack} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
@@ -145,7 +144,7 @@ function Detail({ report, onBack }: { report: any; onBack: () => void }) {
       </button>
 
       <header>
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">{report.period ?? "weekly"} filing</div>
+        <div className="text-[10px] uppercase tracking-widest text-gold-deep">weekly filing</div>
         <h1 className="mt-1 font-display text-3xl font-bold">
           {report.profile?.full_name ?? report.profile?.email ?? "Beneficiary"} — Week {report.week_number ?? "—"}
         </h1>
@@ -159,16 +158,16 @@ function Detail({ report, onBack }: { report: any; onBack: () => void }) {
         <Stat label="Demos" value={report.demos_built ?? 0} />
         <Stat label="Calls" value={report.calls_booked ?? 0} />
         <Stat label="Closed" value={report.clients_closed ?? 0} />
-        <Stat label="Revenue ₦" value={(p.revenue_ngn ?? report.revenue_usd ?? 0).toLocaleString()} />
+        <Stat label="Revenue ₦" value={Number(report.revenue_usd ?? 0).toLocaleString()} />
       </div>
 
       <div className="space-y-4">
-        <Field label="Wins" value={p.wins} />
-        <Field label="Blockers" value={p.blockers} />
-        <Field label="Commitment for next week" value={p.next_week ?? p.next_week_focus} />
+        <Field label="Wins" value={report.wins} />
+        <Field label="Blockers" value={report.blockers} />
+        <Field label="Commitment for next week" value={report.next_week_focus} />
       </div>
 
-      {p && Object.keys(p).length > 0 && (
+      {(
         <details className="rounded-xl border border-border bg-card p-4">
           <summary className="cursor-pointer text-xs uppercase tracking-widest text-muted-foreground">Raw submission</summary>
           <pre className="mt-3 overflow-x-auto text-xs text-muted-foreground">{JSON.stringify(report, null, 2)}</pre>

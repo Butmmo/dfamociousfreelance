@@ -59,27 +59,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ascent_access: {
-        Row: {
-          granted_at: string
-          granted_by: string | null
-          note: string | null
-          user_id: string
-        }
-        Insert: {
-          granted_at?: string
-          granted_by?: string | null
-          note?: string | null
-          user_id: string
-        }
-        Update: {
-          granted_at?: string
-          granted_by?: string | null
-          note?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       check_ins: {
         Row: {
           admin_id: string
@@ -247,6 +226,33 @@ export type Database = {
           },
         ]
       }
+      paths: {
+        Row: {
+          active: boolean
+          created_at: string
+          key: string
+          name: string
+          sort_order: number
+          tagline: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          key: string
+          name: string
+          sort_order?: number
+          tagline: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          key?: string
+          name?: string
+          sort_order?: number
+          tagline?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -261,6 +267,10 @@ export type Database = {
           google_refresh_token: string | null
           id: string
           niche: string | null
+          path_auto_assigned: boolean
+          path_chosen_at: string | null
+          path_deadline: string | null
+          path_key: string | null
           positioning_statement: string | null
           rank: Database["public"]["Enums"]["rank_tier"]
           start_date: string | null
@@ -280,6 +290,10 @@ export type Database = {
           google_refresh_token?: string | null
           id: string
           niche?: string | null
+          path_auto_assigned?: boolean
+          path_chosen_at?: string | null
+          path_deadline?: string | null
+          path_key?: string | null
           positioning_statement?: string | null
           rank?: Database["public"]["Enums"]["rank_tier"]
           start_date?: string | null
@@ -299,6 +313,10 @@ export type Database = {
           google_refresh_token?: string | null
           id?: string
           niche?: string | null
+          path_auto_assigned?: boolean
+          path_chosen_at?: string | null
+          path_deadline?: string | null
+          path_key?: string | null
           positioning_statement?: string | null
           rank?: Database["public"]["Enums"]["rank_tier"]
           start_date?: string | null
@@ -312,6 +330,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "cohorts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_path_key_fkey"
+            columns: ["path_key"]
+            isOneToOne: false
+            referencedRelation: "paths"
+            referencedColumns: ["key"]
           },
         ]
       }

@@ -46,23 +46,18 @@ function WeeklyReportPage() {
     e.preventDefault();
     if (!user) return;
     setBusy(true);
-    const payload = {
-      wins: wins.trim(),
-      blockers: blockers.trim(),
-      next_week: nextWeek.trim(),
-      revenue_ngn: revenueNgn,
-      filed_at: new Date().toISOString(),
-    };
     const { error } = await supabase.from("weekly_reports").insert({
       user_id: user.id,
-      period: "weekly_checkin",
       week_number: currentIsoWeek(),
       outreach_count: outreach,
       demos_built: demos,
       calls_booked: calls,
       clients_closed: clients,
-      payload,
-    } as any);
+      revenue_usd: revenueNgn,
+      wins: wins.trim(),
+      blockers: blockers.trim(),
+      next_week_focus: nextWeek.trim(),
+    });
     setBusy(false);
     if (error) {
       toast.error(error.message);
@@ -133,7 +128,7 @@ function WeeklyReportPage() {
               <div key={h.id} className="rounded-xl border border-border bg-card p-4">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{new Date(h.created_at).toLocaleDateString()}</span>
-                  <span className="uppercase tracking-widest">{h.period}</span>
+                  <span className="uppercase tracking-widest">Week {h.week_number ?? "—"}</span>
                 </div>
                 <div className="mt-3 grid grid-cols-4 gap-2 text-xs">
                   <MiniStat label="Out" value={h.outreach_count ?? 0} />
@@ -141,11 +136,14 @@ function WeeklyReportPage() {
                   <MiniStat label="Calls" value={h.calls_booked ?? 0} />
                   <MiniStat label="Closed" value={h.clients_closed ?? 0} />
                 </div>
-                {h.payload?.wins && (
-                  <p className="mt-3 text-xs text-muted-foreground"><strong className="text-foreground">Wins:</strong> {h.payload.wins}</p>
+                {h.revenue_usd ? (
+                  <p className="mt-3 text-xs text-muted-foreground"><strong className="text-foreground">Revenue:</strong> ₦{Number(h.revenue_usd).toLocaleString()}</p>
+                ) : null}
+                {h.wins && (
+                  <p className="mt-2 text-xs text-muted-foreground"><strong className="text-foreground">Wins:</strong> {h.wins}</p>
                 )}
-                {h.payload?.blockers && (
-                  <p className="mt-1 text-xs text-muted-foreground"><strong className="text-foreground">Blockers:</strong> {h.payload.blockers}</p>
+                {h.blockers && (
+                  <p className="mt-1 text-xs text-muted-foreground"><strong className="text-foreground">Blockers:</strong> {h.blockers}</p>
                 )}
               </div>
             ))}

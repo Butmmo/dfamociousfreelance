@@ -2,12 +2,12 @@
 // Rules provided by the founder:
 //   • <5 active days in last 14 days  → score < 20%, ₦7,000 fine + 2-week suspension
 //   • <6 active days in last 7 days   → score < 40%, ₦2,500 fine
-// GRACE PERIOD: Escalation tracking begins on ESCALATION_START (2026-07-06).
+// GRACE PERIOD: Escalation tracking begins on ESCALATION_START (2026-08-10).
 // Nothing before that date counts against a beneficiary. The 14-/7-day windows
 // clamp to `max(windowStart, ESCALATION_START)` so people are not punished for
 // history that predates the rule.
 
-export const ESCALATION_START = new Date("2026-07-27T00:00:00.000Z");
+export const ESCALATION_START = new Date("2026-08-10T00:00:00.000Z");
 
 export type ProgressRow = {
   playbook: string;

@@ -1,11 +1,10 @@
-import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { useSession } from "@/lib/use-session";
-import { useServerFn } from "@tanstack/react-start";
-import { checkMyAscentAccess } from "@/lib/ascent.functions";
-import { useEffect, useState } from "react";
-import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Mountain } from "lucide-react";
+import { usePath, formatCountdown } from "@/lib/use-path";
+import { useEffect } from "react";
+import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -21,15 +20,15 @@ export const Route = createFileRoute("/_authenticated")({
 function AuthedShell() {
   const { role, user, isSuperAdmin } = useSession();
   const navigate = useNavigate();
-  const check = useServerFn(checkMyAscentAccess);
-  const [hasAscent, setHasAscent] = useState(false);
+  const { path, needsChoice, msRemaining, loading: pathLoading } = usePath();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
-    if (!user) return;
-    check({ data: undefined as never })
-      .then((r) => setHasAscent(!!r?.hasAccess))
-      .catch(() => setHasAscent(false));
-  }, [user, check]);
+    if (pathLoading || !needsChoice) return;
+    if (pathname.startsWith("/choose-path")) return;
+    navigate({ to: "/choose-path", replace: true });
+  }, [pathLoading, needsChoice, pathname, navigate]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -38,11 +37,11 @@ function AuthedShell() {
   };
 
   const tabs = [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: true },
-    { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: true },
-    { to: "/calendar", label: "Calendar", icon: CalendarDays, show: true },
-    { to: "/report", label: "Report", icon: FileBarChart, show: true },
-    { to: "/ascent", label: "Ascent", icon: Mountain, show: hasAscent || isSuperAdmin },
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
+    { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
+    { to: "/calendar", label: "Calendar", icon: CalendarDays, show: !needsChoice },
+    { to: "/report", label: "Report", icon: FileBarChart, show: !needsChoice },
+    { to: "/choose-path", label: isSuperAdmin ? "Paths" : "Your Path", icon: Compass, show: true },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
 
@@ -67,6 +66,7 @@ function AuthedShell() {
               <div className="text-xs font-medium truncate max-w-[180px]">{user?.email}</div>
               <div className="text-[10px] uppercase tracking-widest text-gold-deep">
                 {isSuperAdmin ? "Super Admin" : role === "admin" ? "Council Admin" : "Beneficiary"}
+                {path ? ` · ${path.short}` : ""}
               </div>
             </div>
             <button onClick={signOut} className="p-2 rounded-md hover:bg-muted shrink-0" aria-label="Sign out">
@@ -74,7 +74,24 @@ function AuthedShell() {
             </button>
           </div>
         </div>
+
+        {needsChoice && (
+          <div className="border-t border-crimson/30 bg-crimson/5">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 py-2 text-[11px] text-crimson flex flex-wrap items-center gap-2">
+              <strong>Choose your path.</strong>
+              <span className="text-muted-foreground">
+                {msRemaining > 0
+                  ? `${formatCountdown(msRemaining)} remaining before one is assigned at random.`
+                  : "Your window has closed — the council will assign one shortly."}
+              </span>
+              <Link to="/choose-path" className="font-semibold underline">
+                Open the briefings
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
+
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-10 pb-28 md:pb-10">
         <Outlet />

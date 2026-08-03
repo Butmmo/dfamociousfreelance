@@ -37,7 +37,7 @@ function PlaybooksIndex() {
         <div className="mt-2 text-[10px] uppercase tracking-widest text-gold-deep">SMB Optimisation System</div>
         <h1 className="mt-1 font-display text-3xl md:text-4xl font-bold">The Playbooks</h1>
         <p className="mt-2 text-muted-foreground max-w-2xl">
-          The complete SMB Optimisation System — one of the DFS tracks, distinct from the High-Ticket Closer System (The Ascent). Three playbooks, one path.
+          The complete SMB Optimisation System — one of the DFS tracks, one of the Seven Paths of Digital Engineering. Three playbooks, one path.
           Every checkbox you tick is synced to the Citadel — your rank and XP move with your work.
         </p>
         <p className="mt-2 text-xs text-muted-foreground max-w-2xl">
