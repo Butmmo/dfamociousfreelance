@@ -7,7 +7,7 @@ import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
 
 export const Route = createFileRoute("/_authenticated/playbooks/plan")({
-  head: () => ({ meta: [{ title: "45-Day Implementation Playbook — DFS" }] }),
+  head: () => ({ meta: [{ title: "SMB Optimisation Engine — DFS" }] }),
   component: PlanPage,
 });
 
