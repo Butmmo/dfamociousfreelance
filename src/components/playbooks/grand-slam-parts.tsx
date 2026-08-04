@@ -25,13 +25,13 @@ const PHASES = [
     id: "niche", num: "02", icon: "🎯", color: "#6366F1",
     title: "Lock In Your Niche", tag: "Day 1–2",
     tasks: [
-      { id: "n1", text: "Choose ONE niche only to start — dental, real estate, and beauty close fastest" },
+      { id: "n1", text: "Choose ONE Tier-1 boring niche only to start — garage doors, tree service, junk removal, septic or pressure washing" },
       { id: "n2", text: "Choose ONE city to target first (any city with 100k+ population works)" },
-      { id: "n3", text: "Find 5 real businesses in your niche with weak or missing websites on Google Maps" },
-      { id: "n4", text: "Read their Google reviews — write down every 'hard to reach' or 'no online booking' complaint" },
+      { id: "n3", text: "Find 5 real businesses in your niche on Google Maps with under 50 reviews and no owner replies" },
+      { id: "n4", text: "Compare each one to the top business in that map pack — write down both review counts and the date of their last review. That gap is your entire pitch" },
       { id: "n5", text: "Write one sentence: 'My clients get [outcome] in [timeframe]' — your positioning statement" },
     ],
-    note: "Customer complaints = your pitch. 5 reviews saying 'hard to book' means you sell 'easy online booking in 14 days'.",
+    note: "The review gap is your pitch. 'You have 38 reviews, they have 412' beats any feature list ever written.",
   },
   {
     id: "leads", num: "03", icon: "🗺️", color: "#8B5CF6",
