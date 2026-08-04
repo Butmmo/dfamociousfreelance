@@ -16,8 +16,8 @@ export interface PlaybookDef {
 
 export const PATH_PLAYBOOKS: Record<PathKey, PlaybookDef[]> = {
   smb: [
-    { slug: "global-smb-engine", key: "p_global", title: "Global SMB Engine", tagline: "Markets · Leads · Offer", body: "7 countries, 12 niches, exact Google Maps searches, hot/cold lead scoring and the Grand Slam offer builder — merged into one engine.", icon: "globe", accent: "from-rose-500/25 to-transparent" },
-    { slug: "plan", key: "p_45day", title: "45-Day Implementation Playbook", tagline: "From Zero to First Client", body: "Day-by-day plan across 7 weeks — foundation, harvest, outreach, first close, deliver, scale, launch month 2.", icon: "calendar", accent: "from-indigo-500/25 to-transparent" },
+    { slug: "global-smb-engine", key: "p_global", title: "SMB Prospecting Guide", tagline: "Markets · Boring Niches · Leads", body: "7 countries, the Tier-1 'boring' service niches nobody is fighting over, exact Google Maps searches, review-gap lead scoring and the Grand Slam offer builder.", icon: "globe", accent: "from-rose-500/25 to-transparent" },
+    { slug: "plan", key: "p_45day", title: "SMB Optimisation Engine", tagline: "From Zero to First Client", body: "Day-by-day plan across 7 weeks — foundation, harvest, review-gap outreach, first close, deliver, scale, launch month 2.", icon: "calendar", accent: "from-indigo-500/25 to-transparent" },
     { slug: "smb-calculator", title: "SMB Performance Calculator", tagline: "Powered by Claude AI", body: "Enter a prospect's numbers → discover their revenue leak → export a branded PDF per tab.", icon: "calculator", accent: "from-sky-500/25 to-transparent" },
   ],
   ascent: [
