@@ -9,10 +9,10 @@ import { GrandSlamParts } from "@/components/playbooks/grand-slam-parts";
 export const Route = createFileRoute("/_authenticated/playbooks/global-smb-engine")({
   head: () => ({
     meta: [
-      { title: "Global SMB Engine — DFS Citadel" },
-      { name: "description", content: "Countries, niches, Google Maps searches, lead scoring and the Grand Slam offer builder — one engine for the SMB Optimisation System." },
-      { property: "og:title", content: "Global SMB Engine — DFS Citadel" },
-      { property: "og:description", content: "The merged SMB engine: target countries, niches, map searches, lead scoring and the Grand Slam offer builder." },
+      { title: "SMB Prospecting Guide — DFS Citadel" },
+      { name: "description", content: "Countries, Tier-1 boring service niches, Google Maps searches, review-gap lead scoring and the Grand Slam offer builder for the SMB Optimisation System." },
+      { property: "og:title", content: "SMB Prospecting Guide — DFS Citadel" },
+      { property: "og:description", content: "Target countries, the boring niches nobody fights over, map searches, review-gap lead scoring and the Grand Slam offer builder." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
