@@ -296,14 +296,14 @@ export function ProspectingParts({ tab }) {
         {tab === "maps" && (
           <div>
             <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Exact Google Maps Search Terms</h2>
-            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Tap a niche for country-specific searches, green-light signals, and red flags.</p>
+            <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Twelve Tier-1 "boring" niches — map-reliant, high-ticket, and almost never pitched. Tap one for country-specific searches, green-light signals, and red flags.</p>
 
             <div style={{ background: "#0A1020", border: "1px solid #6366F120", borderRadius: 10, padding: "12px 14px", marginBottom: 16, display: "flex", gap: 10 }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>💡</span>
               <div>
                 <div style={{ fontSize: 11.5, fontWeight: 700, color: "#A5B4FC", marginBottom: 3 }}>How to run these searches</div>
                 <p style={{ fontSize: 12, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
-                  Open Google Maps → type the search term + city name, e.g. <em style={{ color: "#201A16" }}>"dentist Austin TX"</em> or <em style={{ color: "#201A16" }}>"estate agent Manchester"</em>.
+                  Open Google Maps → type the search term + city name, e.g. <em style={{ color: "#201A16" }}>"garage door repair Austin TX"</em> or <em style={{ color: "#201A16" }}>"tree surgeon Manchester"</em>.
                   For bulk scraping, paste the same string into <strong style={{ color: "#10B981" }}>Outscraper.com</strong> and it exports hundreds of leads as a CSV in minutes.
                 </p>
               </div>

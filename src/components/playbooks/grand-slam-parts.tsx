@@ -143,7 +143,8 @@ const HOT = [
   { pts: 2, label: "Since Last Review — no new Google review in over a week", why: "Silent flywheel: reputation isn't compounding, they need your review-request automation" },
   { pts: 2, label: "Reviews not Responded — fewer than 40% of reviews have an owner reply", why: "Owner is disengaged from reputation management — easy win to pitch a done-for-you response system" },
   { pts: 1, label: "Business is 3–10 years old", why: "Budget exists; too busy to fix it themselves" },
-  { pts: 1, label: "High-margin niche: dental, legal, med spa, real estate", why: "Fast, obvious ROI makes your fee easy to justify" },
+  { pts: 2, label: "Under 50 reviews while the map-pack leader has 5x more", why: "The review gap IS the pitch — quantifiable, verifiable, and painful" },
+  { pts: 1, label: "Tier-1 boring niche: garage doors, tree service, septic, junk removal, restoration", why: "High ticket, emergency intent, and virtually no agency competition" },
 ];
 
 const COLD = [
@@ -206,9 +207,9 @@ const TOOL_CATS = [
 ];
 
 const HOOKS = [
-  { tier: "Starter", color: "#10B981", headline: '"Your Business Found Online — In 10 Days"', target: "Tradespeople · Solo coaches · Small salons", bonus: "Free Google Business Profile audit included" },
-  { tier: "Standard", color: "#6366F1", headline: '"A Booking System That Fills Your Calendar Automatically"', target: "Clinics · Gyms · Therapists · Accountants", bonus: "First 3 months of Go High Level email setup free" },
-  { tier: "Premium", color: "#EC4899", headline: '"Stop Paying Third Parties a Cut. Own Your Entire Sales System."', target: "Restaurants · Real estate agencies · E-commerce brands", bonus: "90-day check-in call + analytics report included" },
+  { tier: "Starter", color: "#10B981", headline: '"40 New Google Reviews In 90 Days — On Autopilot"', target: "Window cleaning · Junk removal · Pressure washing", bonus: "Free review-gap audit against your top 3 map competitors" },
+  { tier: "Standard", color: "#6366F1", headline: '"Beat The Shop Outranking You — Without Spending A Cent On Ads"', target: "Garage doors · Tree services · Pest control · Septic", bonus: "Done-for-you review response templates included" },
+  { tier: "Premium", color: "#EC4899", headline: '"Be The Name AI Recommends When Someone Searches At 2am"', target: "Water damage · HVAC · Movers · Locksmiths", bonus: "Monthly review dashboard + Loom performance report" },
 ];
 
 /* ═══════════════════════════════════════════════
