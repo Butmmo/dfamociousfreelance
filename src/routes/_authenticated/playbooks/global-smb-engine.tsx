@@ -41,10 +41,10 @@ function GlobalSmbEngine() {
             SMB Optimisation System · Playbook 01
           </div>
           <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px,4.6vw,36px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(130deg,#1A140F 20%,#C99A3B 70%,#8B0000 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            The Global SMB Engine
+            SMB Prospecting Guide
           </h1>
           <p style={{ margin: "0 0 16px", fontSize: 13, color: "#6E6459", maxWidth: 620, lineHeight: 1.7 }}>
-            Countries · niches · exact Google Maps searches · lead scoring · the Grand Slam offer builder. One engine, from market choice to a pitch you can send today —
+            Countries · the boring Tier-1 service niches · exact Google Maps searches · review-gap lead scoring · the Grand Slam offer builder. One guide, from market choice to a pitch you can send today —
             built on the DFS tool stack: <strong style={{ color: "#7A5A00" }}>Go High Level, Notion, Lovable, Make / Zapier / n8n</strong>.
           </p>
 
