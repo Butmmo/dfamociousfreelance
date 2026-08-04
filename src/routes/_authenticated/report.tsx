@@ -16,10 +16,10 @@ export const Route = createFileRoute("/_authenticated/report")({
 const XP_PER_TASK = 10;
 
 const PLAYBOOK_META: Record<string, { title: string; slug: string }> = {
-  p_45day:       { title: "45-Day Plan",      slug: "plan" },
-  p_global:      { title: "Global SMB Engine", slug: "global-smb-engine" },
-  p_prospecting: { title: "Global SMB Engine", slug: "global-smb-engine" },
-  p_grandslam:   { title: "Global SMB Engine", slug: "global-smb-engine" },
+  p_45day:       { title: "SMB Optimisation Engine", slug: "plan" },
+  p_global:      { title: "SMB Prospecting Guide", slug: "global-smb-engine" },
+  p_prospecting: { title: "SMB Prospecting Guide", slug: "global-smb-engine" },
+  p_grandslam:   { title: "SMB Prospecting Guide", slug: "global-smb-engine" },
 };
 
 
