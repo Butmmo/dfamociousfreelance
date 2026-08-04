@@ -13,7 +13,7 @@ const COUNTRIES = [
       "Every city has hundreds of businesses needing CRM, websites, and automation",
       "Huge appetite for email marketing (Go High Level) and workflow automation",
     ],
-    niches: ["Coaches", "Real Estate Agents", "Fitness Studios", "E-commerce"],
+    niches: ["Garage Door Repair", "Tree Services", "Water Damage Restoration", "Junk Removal"],
     platforms: ["Google Maps", "Yelp", "LinkedIn", "Alignable"],
     color: "#3B82F6",
   },
@@ -27,7 +27,7 @@ const COUNTRIES = [
       "GDPR compliance pushes businesses to build proper digital infrastructure",
       "London, Manchester, Birmingham — dense, hungry SMB clusters",
     ],
-    niches: ["Law Firms", "Real Estate", "Restaurants", "Consultants"],
+    niches: ["Roofing & Guttering", "Drainage & Septic", "Pest Control", "Driveway & Paving"],
     platforms: ["Google Maps", "Companies House (free DB!)", "LinkedIn", "Checkatrade"],
     color: "#DC2626",
   },
@@ -41,7 +41,7 @@ const COUNTRIES = [
       "Very open to offshore talent with zero stigma attached",
       "Less competitive than USA for international freelancers right now",
     ],
-    niches: ["Wellness Businesses", "Coaches", "E-commerce", "Financial Advisors"],
+    niches: ["Snow & Ice Removal", "Tree Services", "Junk Removal", "Chimney & Fireplace"],
     platforms: ["Google Maps", "LinkedIn", "Clutch.co"],
     color: "#EA580C",
   },
@@ -55,7 +55,7 @@ const COUNTRIES = [
       "High spending per business, generous project budgets",
       "Far less competition from international freelancers than US/UK",
     ],
-    niches: ["Tradespeople", "Beauty Salons", "Real Estate", "Restaurants"],
+    niches: ["Pest Control", "Pressure Washing", "Septic & Plumbing", "Garage Doors"],
     platforms: ["Google Maps", "TrueLocal", "LinkedIn", "Yellow Pages AU"],
     color: "#D97706",
   },
@@ -69,7 +69,7 @@ const COUNTRIES = [
       "Highest average contract values across all of Europe",
       "Most SMB decision-makers speak English fluently",
     ],
-    niches: ["Manufacturing SMBs", "E-commerce", "Professional Services", "Clinics"],
+    niches: ["Locksmiths", "Heating & Sanitär", "Roofing", "Damage Restoration"],
     platforms: ["Google Maps", "XING (Germany's LinkedIn)", "LinkedIn"],
     color: "#CA8A04",
   },
@@ -83,7 +83,7 @@ const COUNTRIES = [
       "Extremely tech-forward culture, early adopters of no-code platforms",
       "Amsterdam, Rotterdam, Utrecht packed with digitally hungry SMBs",
     ],
-    niches: ["Startups", "Coaches", "E-commerce", "Wellness"],
+    niches: ["Window Cleaning", "Moving Companies", "Pest Control", "Paving"],
     platforms: ["Google Maps", "LinkedIn", "KVK Business Registry (free!)"],
     color: "#EA580C",
   },
@@ -97,7 +97,7 @@ const COUNTRIES = [
       "Highest spend-per-client of any market on this list",
       "African-Middle East connection gives you a unique positioning edge",
     ],
-    niches: ["Restaurants", "Real Estate", "Event Planners", "Luxury Retail"],
+    niches: ["AC & HVAC Servicing", "Movers & Storage", "Pest Control", "Deep Cleaning"],
     platforms: ["Google Maps", "LinkedIn", "Dubizzle", "Bayut"],
     color: "#059669",
   },
@@ -476,8 +476,8 @@ export function GlobalParts({ tab }) {
         {tab === "businesses" && (
           <div>
             <div style={{ marginBottom: 20 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 5px", color: "#1A140F" }}>12 Business Types to Target</h2>
-              <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: 0 }}>Tap a niche for the pain, product to build, pitch script, and how to find them.</p>
+              <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 5px", color: "#1A140F" }}>Tier 1 — The Boring Goldmine</h2>
+              <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: 0 }}>Skip dentists, salons, restaurants and coaches — they are pitched daily and rarely reply. These twelve map-reliant, emergency-driven trades have high tickets, weak reputations and almost no agency competition. Tap one for the pain, the single product you sell, the pitch and how to find them.</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
               {BUSINESSES.map((b, i) => (
