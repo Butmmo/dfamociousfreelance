@@ -830,7 +830,7 @@ function PlanPage() {
             display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
-            45-Day Implementation Playbook — Zero Budget Edition
+            SMB Optimisation Engine — Zero Budget Edition
           </div>
           <h1 style={{margin:"0 0 7px",
             fontSize:"clamp(21px,4.5vw,33px)",fontWeight:800,lineHeight:1.15,
