@@ -260,9 +260,9 @@ export default function SmbPathBriefing() {
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>Once You've Chosen This Path</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
-            <NextLink to="/_authenticated/playbooks/global-smb-engine" icon="🌍" title="Global SMB Engine" body="Pick your country and niche, run the map searches, score your leads and build the offer." />
+            <NextLink to="/_authenticated/playbooks/global-smb-engine" icon="🌍" title="SMB Prospecting Guide" body="Pick your country and boring niche, run the map searches, score your leads and build the offer." />
             <NextLink to="/_authenticated/playbooks/smb-calculator" icon="🧮" title="SMB Performance Calculator" body="Model the real numbers for a specific business before you pitch anyone." />
-            <NextLink to="/_authenticated/playbooks/plan" icon="📅" title="45-Day Implementation Plan" body="Day 1 starts here — the free-account setup, before a single email goes out." />
+            <NextLink to="/_authenticated/playbooks/plan" icon="📅" title="SMB Optimisation Engine" body="Day 1 starts here — the free-account setup, before a single email goes out." />
           </div>
         </div>
       </div>

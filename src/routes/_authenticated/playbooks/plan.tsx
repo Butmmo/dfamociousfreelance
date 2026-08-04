@@ -7,7 +7,7 @@ import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
 
 export const Route = createFileRoute("/_authenticated/playbooks/plan")({
-  head: () => ({ meta: [{ title: "45-Day Implementation Playbook — DFS" }] }),
+  head: () => ({ meta: [{ title: "SMB Optimisation Engine — DFS" }] }),
   component: PlanPage,
 });
 
@@ -51,7 +51,7 @@ export const WEEKS = [
       {day:4, focus:"Build Demo #1 on Lovable", icon:"🛠️",
        note:"This is the day Lovable Pro earns its cost. A working demo closes more deals than three weeks of cold emails without one.",
        tasks:[
-         {id:"4a",text:"Choose your first niche — dental, real estate, and beauty close fastest for beginners"},
+         {id:"4a",text:"Choose your first niche from the Tier-1 boring list in the SMB Prospecting Guide — garage door repair, tree service, junk removal, septic, pressure washing or restoration. Do NOT choose dentists, salons, restaurants or coaches: they are pitched daily and almost never reply"},
          {id:"4b",text:"Open Lovable.dev → New Project → describe it: landing page and online booking system for a [niche] business. Use a fictional but realistic business name."},
          {id:"4c",text:"Iterate until it looks modern and professional: hero section, services list, booking form or calendar, contact section"},
          {id:"4d",text:"Publish to a live Lovable URL — open it on your phone. If it looks wrong on mobile, fix it before moving on"},
@@ -94,7 +94,7 @@ export const WEEKS = [
          {id:"8a",text:"Open Google Maps on your phone → search '[niche] [city]' → browse the first 25-30 listings"},
          {id:"8b",text:"In your notebook, record for each: business name, phone, review count, whether a website link appears, and a quick gut-feel note (no site / outdated site / looks promising)"},
          {id:"8c",text:"Flag businesses with under 30 reviews, no website, or a clearly outdated site — these are your highest-priority targets"},
-         {id:"8d",text:"Run 3 different search terms in the same niche: e.g. 'dentist', 'dental clinic', 'private dentist' — different terms surface different businesses"},
+         {id:"8d",text:"Run 3 different search terms in the same niche: e.g. 'garage door repair', 'garage door opener installation', 'overhead door company' — different terms surface different businesses"},
          {id:"8e",text:"Target: 15-20 raw leads recorded in your notebook by end of today"},
        ]},
       {day:9, focus:"Transfer Notebook to Google Sheets", icon:"📋",
@@ -338,7 +338,7 @@ export const WEEKS = [
        tasks:[
          {id:"36a",text:"Choose: new niche you have not yet targeted, OR a new country (UK or Australia are strong for English-language outreach)"},
          {id:"36b",text:"Run a full Google Maps scouting session — 15-20 raw leads in notebook"},
-         {id:"36c",text:"If the new niche requires a different type of solution (e.g. restaurants need a different demo than coaches), update your Lovable demo accordingly"},
+         {id:"36c",text:"If the new Tier-1 niche needs a different proof asset (a tree-service review dashboard reads differently from a garage-door one), update your Lovable demo accordingly"},
        ]},
       {day:37, focus:"Enrich, Score and Enter New Batch", icon:"🔬",
        note:"By Week 6 you should be completing a full lead enrichment in under 15 minutes per lead. Quality stays high — speed just improves with repetition.",
@@ -423,7 +423,7 @@ const NOTION_COLS = [
   {name:"Google Reviews",    type:"Number",   icon:"⭐", desc:"Total review count at time of research"},
   {name:"City",              type:"Text",     icon:"📍", desc:"City where the business operates"},
   {name:"Country",           type:"Select",   icon:"🌍", desc:"USA / UK / Canada / Australia / Germany / Netherlands / UAE / Israel"},
-  {name:"Niche",             type:"Select",   icon:"🎯", desc:"Dental / Real Estate / Fitness / Coach / Beauty / Restaurant / Legal / etc."},
+  {name:"Niche",             type:"Select",   icon:"🎯", desc:"Garage Doors / Tree Service / Junk Removal / Septic / Restoration / Pest Control / Paving / Movers / etc."},
   {name:"Founder Name",      type:"Text",     icon:"👤", desc:"Owner or decision-maker — found via LinkedIn, website, or Facebook"},
   {name:"Founder Email",     type:"Email",    icon:"📧", desc:"Direct personal email — not info@ or contact@ — 3x higher reply rate"},
   {name:"Founder LinkedIn",  type:"URL",      icon:"💼", desc:"Their personal LinkedIn profile URL for DM outreach"},
@@ -473,36 +473,36 @@ const RESEARCH_STEPS = [
 ];
 
 const NICHES_3P = [
-  {niche:"Dental Clinic",icon:"🦷",
-   gap:"No online booking — patients can only call during office hours to schedule an appointment",
-   leak:"People searching for a dentist at 9 PM cannot book immediately and move on to whoever lets them — the clinic never knows they were there",
-   lift:"No email recall system means existing patients only return when they remember to call — no automated schedule, no loyalty, lower lifetime patient value",
-   chain:"No booking system → missed night-time enquiries → no recall campaign → patients drift to competitors at renewal time",
-   tip:"One Lovable booking site + Mailchimp recall sequence solves all three with a single integrated build."},
-  {niche:"Real Estate Agent",icon:"🏠",
-   gap:"Leads are managed in WhatsApp and mental notes — no CRM, no structured pipeline visibility",
-   leak:"60-70% of warm leads go cold because there is no follow-up system — they enquire once, get one response, then hear nothing for weeks",
-   lift:"Past clients are never systematically re-engaged — no referral campaign, no market update emails, the most valuable relationships left completely idle",
-   chain:"No CRM → unstructured follow-up → warm leads go cold → no referral system → income stays unpredictable",
-   tip:"Lovable landing page + Notion CRM setup + 3-email Mailchimp sequence addresses the full chain in one build."},
-  {niche:"Hair Salon or Beauty Studio",icon:"💆",
-   gap:"Booking is by phone or walk-in only — no online scheduling, no 24/7 availability for clients",
-   leak:"Clients who want to rebook after 6 PM cannot do so — they either call next day and forget, or book elsewhere out of convenience",
-   lift:"No birthday or rebooking reminder system means loyal clients drift away without the salon realising until revenue noticeably drops",
-   chain:"Phone-only booking → after-hours clients lost → no rebooking reminders → silent churn → revenue decline",
-   tip:"Lovable booking page + Mailchimp birthday and rebooking sequences covers all three with one connected system."},
-  {niche:"Business or Life Coach",icon:"🎯",
-   gap:"Discovery calls are booked via email back-and-forth — no automated scheduling link in bio, emails, or website",
-   leak:"Interested prospects lose momentum during the multi-email scheduling process and stop responding before ever getting on a call",
-   lift:"No email nurture sequence means followers who are not ready to buy today never receive the content that would convert them next month",
-   chain:"No booking link → friction in scheduling → warm leads cool off → no nurture → follower stays a follower forever",
-   tip:"Lovable coaching site with embedded Calendly + Mailchimp nurture sequence addresses all three with one build."},
-  {niche:"Restaurant or Cafe",icon:"🍽️",
-   gap:"All orders and reservations go through third-party platforms — the restaurant owns none of its own customer data",
-   leak:"Every transaction enriches the platform, not the restaurant — 15-30% commission per order, no direct customer contact, no way to reach regulars independently",
-   lift:"No loyalty or repeat-visit campaign means regulars return at random — no system to bring them back on a slow Tuesday or announce a special event",
-   chain:"Platform dependency → no customer data → no direct marketing → no loyalty system → revenue always at the platform's mercy",
-   tip:"Lovable ordering page + Mailchimp loyalty campaign + a simple menu site gives the restaurant full ownership of its own customers."},
+  {niche:"Garage Door Repair",icon:"🚪",
+   gap:"38 Google reviews, no owner replies, and the last one landed 6 weeks ago — while the shop three miles away sits on 400+",
+   leak:"Every 'garage door repair near me' search hands the emergency call to the higher-reviewed shop; at a $600 average ticket, a handful of those a week is the whole month's profit walking away",
+   lift:"No review is ever requested after a completed job, so the gap widens every single week and AI assistants (ChatGPT, Google AI Mode, Perplexity) never surface the business at all",
+   chain:"No review ask → stale listing → outranked in the 3-pack and in AI answers → emergency calls go to the competitor → revenue flat while the competitor compounds",
+   tip:"One GHL Reputation workflow — job completed → 2h wait → SMS check-in → 2h wait → review link — closes all three. This is the only product you sell at first contact."},
+  {niche:"Tree Service / Arborist",icon:"🌳",
+   gap:"Under 50 reviews on $1,500–8,000 jobs, and nothing new since the last storm season",
+   leak:"Homeowners comparing three quotes pick on trust, not price — the crew with the freshest reviews wins the job before the estimate is even read",
+   lift:"No system captures proof at the moment of maximum goodwill (the finished job, the cleared driveway), so years of great work leave no public trace",
+   chain:"No review ask → thin social proof → lost bids on high-ticket work → no compounding reputation before storm season",
+   tip:"Set the automation live before storm season and ask for a photo with every review — photo reviews lift map ranking faster than text."},
+  {niche:"Water Damage & Mold Remediation",icon:"💧",
+   gap:"Claims-funded jobs worth $5,000–20,000, but under 60 reviews and no owner replies to any of them",
+   leak:"A flooded basement at 2am is the highest-intent search that exists — the homeowner calls one of three names with stars beside them, and the business is not one of them",
+   lift:"No response to existing reviews means insurers and homeowners reading the listing see a business that appears absent and unaccountable",
+   chain:"No review system → weak map presence → missed emergency calls → thousands per incident lost → competitor becomes the default local name",
+   tip:"Reviews first. Speed-to-lead is the month-3 upsell — a missed 2am call in this niche is a five-figure job."},
+  {niche:"Pest & Wildlife Control",icon:"🐜",
+   gap:"Recurring-contract business sitting on 55 reviews while the national brand next to them shows 600+",
+   leak:"Every recurring contract lost to the national brand is not one job — it is years of monthly revenue awarded on review count alone",
+   lift:"Treatments finish weekly with a happy customer at the door, and not one of them is ever asked to leave a review",
+   chain:"No review ask → outranked by the franchise → lost recurring contracts → lifetime value transferred to the competitor every month",
+   tip:"Lead with lifetime value: one recurring contract saved pays for your $297/month service several times over."},
+  {niche:"Junk Removal / Window Cleaning / Pressure Washing",icon:"🚛",
+   gap:"Twelve or more jobs a week, under 40 reviews, and no owner replies",
+   leak:"High job frequency with almost no public proof means the business stays invisible in the map pack despite doing more work than the competitors above it",
+   lift:"No follow-up at all after a job — no review ask, no rebooking prompt, no seasonal reminder for the same customer next year",
+   chain:"High volume → zero capture → invisible on the map → forced to compete on price instead of reputation",
+   tip:"The maths sells itself: 12 jobs a week with an automated ask is 40+ new reviews a year. Show them that number on the first call."},
 ];
 
 const SCRIPTS = [
@@ -600,6 +600,16 @@ Think of it like accounting software — anyone can open QuickBooks, but you wou
 
 
 const FAQS = [
+  {q:"Why am I not closing after three weeks of outreach?",
+   a:"Nine times out of ten it is the niche, not the email. Dentists, salons, restaurants, gyms and coaches receive several agency pitches a week — they are the most over-solicited businesses on Google Maps, and your message dies in a crowded inbox. Switch to the Tier-1 boring niches in the SMB Prospecting Guide: garage door repair, tree services, junk removal, septic pumping, water damage restoration, asphalt sealing, chimney and gutter work, pest control, pressure washing, locksmiths, independent HVAC and plumbing, and movers. High tickets, emergency intent, map-dependent, and almost never pitched. Owners in these trades often reply to the first email they have ever received from an agency."},
+  {q:"How do I qualify a boring-niche lead in under 60 seconds?",
+   a:"Three checks on the Google listing. One: is the review count under 50 while the map-pack leader has several times more? Two: has the owner replied to any review at all — under 40% response rate is a green light. Three: how old is the most recent review — anything over 3 weeks means the flywheel has stopped. If all three are true, they are HOT and the pitch writes itself. Skip franchises, anything with 5+ locations, and anything private-equity backed."},
+  {q:"Why do reviews matter more than a website for these businesses?",
+   a:"Because the money is decided inside the map pack, not on the website. Google only shows three businesses in the local pack, and review count plus review recency are among the strongest levers a small operator can actually control. AI assistants — ChatGPT, Google AI Mode, Perplexity, Gemini — pull from those same profiles and directory listings, so a stale listing is invisible in both places at once. A new website changes nothing if nobody sees the business in the first place."},
+  {q:"What else should I know about how these businesses actually rank?",
+   a:"Four levers, in order of what you can influence. One: review velocity — consistent new reviews month after month, ideally mentioning the service and with a job photo attached. Two: an exact-match, keyword-relevant business name on the profile (many of the largest operators register a DBA for exactly this reason). Three: proximity — the big brands run multiple overlapping verified profiles across a metro. Four: AI-search presence — monthly press releases, 'best of' listicles, local subreddit visibility, and complete citations on Better Business Bureau, Angi, Yelp, Thumbtack and HomeAdvisor. You sell and deliver lever one. Mentioning the other three on a call makes you sound like the only person who has ever explained their market to them."},
+  {q:"They asked what results to expect. What do I say?",
+   a:"Be conservative and concrete. Harvard Business School research found a one-star rating increase can lift revenue by 5-9%. Frame it as: 'Consistent new reviews every month, a listing that stops looking abandoned, and a rating that moves in the right direction — those are what put you in the three-pack.' Never promise a ranking position and never promise a specific number of jobs. Promise the system, the consistency, and the monthly report."},
   {q:"Why do we only sell the Google Review Automation System to a new client?",
    a:"Focus is the whole strategy. One product means one pitch, one demo, one objection set, and one delivery process — so you get sharper every single week instead of starting from zero on every call. It also protects the client relationship: reviews are the fastest visible win, so trust is established before anything else is offered. Speed to Lead, the AI Voice Receptionist, and the website rebuild are not lost revenue — they are your upsell ladder, sold later to a client who has already seen you deliver."},
   {q:"A prospect asked me for a website on the first call. Do I sell it?",
@@ -830,7 +840,7 @@ function PlanPage() {
             display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
-            45-Day Implementation Playbook — Zero Budget Edition
+            SMB Optimisation Engine — Zero Budget Edition
           </div>
           <h1 style={{margin:"0 0 7px",
             fontSize:"clamp(21px,4.5vw,33px)",fontWeight:800,lineHeight:1.15,

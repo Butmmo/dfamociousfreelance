@@ -9,10 +9,10 @@ import { GrandSlamParts } from "@/components/playbooks/grand-slam-parts";
 export const Route = createFileRoute("/_authenticated/playbooks/global-smb-engine")({
   head: () => ({
     meta: [
-      { title: "Global SMB Engine — DFS Citadel" },
-      { name: "description", content: "Countries, niches, Google Maps searches, lead scoring and the Grand Slam offer builder — one engine for the SMB Optimisation System." },
-      { property: "og:title", content: "Global SMB Engine — DFS Citadel" },
-      { property: "og:description", content: "The merged SMB engine: target countries, niches, map searches, lead scoring and the Grand Slam offer builder." },
+      { title: "SMB Prospecting Guide — DFS Citadel" },
+      { name: "description", content: "Countries, Tier-1 boring service niches, Google Maps searches, review-gap lead scoring and the Grand Slam offer builder for the SMB Optimisation System." },
+      { property: "og:title", content: "SMB Prospecting Guide — DFS Citadel" },
+      { property: "og:description", content: "Target countries, the boring niches nobody fights over, map searches, review-gap lead scoring and the Grand Slam offer builder." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -41,10 +41,10 @@ function GlobalSmbEngine() {
             SMB Optimisation System · Playbook 01
           </div>
           <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px,4.6vw,36px)", fontWeight: 800, lineHeight: 1.15, background: "linear-gradient(130deg,#1A140F 20%,#C99A3B 70%,#8B0000 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            The Global SMB Engine
+            SMB Prospecting Guide
           </h1>
           <p style={{ margin: "0 0 16px", fontSize: 13, color: "#6E6459", maxWidth: 620, lineHeight: 1.7 }}>
-            Countries · niches · exact Google Maps searches · lead scoring · the Grand Slam offer builder. One engine, from market choice to a pitch you can send today —
+            Countries · the boring Tier-1 service niches · exact Google Maps searches · review-gap lead scoring · the Grand Slam offer builder. One guide, from market choice to a pitch you can send today —
             built on the DFS tool stack: <strong style={{ color: "#7A5A00" }}>Go High Level, Notion, Lovable, Make / Zapier / n8n</strong>.
           </p>
 

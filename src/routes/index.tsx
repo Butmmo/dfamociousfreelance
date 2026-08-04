@@ -35,14 +35,14 @@ const PILLARS = [
 const PLAYBOOKS = [
   {
     icon: Globe,
-    tag: "Markets · Leads · Offer",
-    title: "Global SMB Engine",
-    body: "Seven countries and twelve niches, the exact Google Maps search terms per niche, hot / cold lead scoring with review-gap signals, and the Grand Slam offer builder — merged into one engine on the DFS stack: Go High Level, Notion, Lovable, Make / Zapier / n8n.",
+    tag: "Markets · Boring Niches · Leads",
+    title: "SMB Prospecting Guide",
+    body: "Seven countries and the Tier-1 'boring' service niches nobody is fighting over — garage doors, tree services, septic, junk removal, restoration — with the exact Google Maps search terms, review-gap lead scoring, and the Grand Slam offer builder on the DFS stack: Go High Level, Notion, Lovable, Make / Zapier / n8n.",
   },
   {
     icon: Calendar,
     tag: "From Zero to First Client",
-    title: "45-Day Implementation Playbook",
+    title: "SMB Optimisation Engine",
     body: "Day-by-day execution across seven weeks: lead research via Google → LinkedIn → ContactOut, the Gap/Leak/Lift/Breakup email sequence, and the upsell ladder.",
   },
   {
@@ -375,7 +375,7 @@ function Landing() {
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The five ranks of a beneficiary</h2>
           <p className="mt-4 text-muted-foreground">
-            XP is earned only where it counts — through the 45-Day Implementation Playbook. No shortcuts, no padding.
+            XP is earned only where it counts — through the SMB Optimisation Engine. No shortcuts, no padding.
           </p>
         </div>
         <div className="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4">

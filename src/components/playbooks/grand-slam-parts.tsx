@@ -25,13 +25,13 @@ const PHASES = [
     id: "niche", num: "02", icon: "🎯", color: "#6366F1",
     title: "Lock In Your Niche", tag: "Day 1–2",
     tasks: [
-      { id: "n1", text: "Choose ONE niche only to start — dental, real estate, and beauty close fastest" },
+      { id: "n1", text: "Choose ONE Tier-1 boring niche only to start — garage doors, tree service, junk removal, septic or pressure washing" },
       { id: "n2", text: "Choose ONE city to target first (any city with 100k+ population works)" },
-      { id: "n3", text: "Find 5 real businesses in your niche with weak or missing websites on Google Maps" },
-      { id: "n4", text: "Read their Google reviews — write down every 'hard to reach' or 'no online booking' complaint" },
+      { id: "n3", text: "Find 5 real businesses in your niche on Google Maps with under 50 reviews and no owner replies" },
+      { id: "n4", text: "Compare each one to the top business in that map pack — write down both review counts and the date of their last review. That gap is your entire pitch" },
       { id: "n5", text: "Write one sentence: 'My clients get [outcome] in [timeframe]' — your positioning statement" },
     ],
-    note: "Customer complaints = your pitch. 5 reviews saying 'hard to book' means you sell 'easy online booking in 14 days'.",
+    note: "The review gap is your pitch. 'You have 38 reviews, they have 412' beats any feature list ever written.",
   },
   {
     id: "leads", num: "03", icon: "🗺️", color: "#8B5CF6",
@@ -143,7 +143,8 @@ const HOT = [
   { pts: 2, label: "Since Last Review — no new Google review in over a week", why: "Silent flywheel: reputation isn't compounding, they need your review-request automation" },
   { pts: 2, label: "Reviews not Responded — fewer than 40% of reviews have an owner reply", why: "Owner is disengaged from reputation management — easy win to pitch a done-for-you response system" },
   { pts: 1, label: "Business is 3–10 years old", why: "Budget exists; too busy to fix it themselves" },
-  { pts: 1, label: "High-margin niche: dental, legal, med spa, real estate", why: "Fast, obvious ROI makes your fee easy to justify" },
+  { pts: 2, label: "Under 50 reviews while the map-pack leader has 5x more", why: "The review gap IS the pitch — quantifiable, verifiable, and painful" },
+  { pts: 1, label: "Tier-1 boring niche: garage doors, tree service, septic, junk removal, restoration", why: "High ticket, emergency intent, and virtually no agency competition" },
 ];
 
 const COLD = [
@@ -206,9 +207,9 @@ const TOOL_CATS = [
 ];
 
 const HOOKS = [
-  { tier: "Starter", color: "#10B981", headline: '"Your Business Found Online — In 10 Days"', target: "Tradespeople · Solo coaches · Small salons", bonus: "Free Google Business Profile audit included" },
-  { tier: "Standard", color: "#6366F1", headline: '"A Booking System That Fills Your Calendar Automatically"', target: "Clinics · Gyms · Therapists · Accountants", bonus: "First 3 months of Go High Level email setup free" },
-  { tier: "Premium", color: "#EC4899", headline: '"Stop Paying Third Parties a Cut. Own Your Entire Sales System."', target: "Restaurants · Real estate agencies · E-commerce brands", bonus: "90-day check-in call + analytics report included" },
+  { tier: "Starter", color: "#10B981", headline: '"40 New Google Reviews In 90 Days — On Autopilot"', target: "Window cleaning · Junk removal · Pressure washing", bonus: "Free review-gap audit against your top 3 map competitors" },
+  { tier: "Standard", color: "#6366F1", headline: '"Beat The Shop Outranking You — Without Spending A Cent On Ads"', target: "Garage doors · Tree services · Pest control · Septic", bonus: "Done-for-you review response templates included" },
+  { tier: "Premium", color: "#EC4899", headline: '"Be The Name AI Recommends When Someone Searches At 2am"', target: "Water damage · HVAC · Movers · Locksmiths", bonus: "Monthly review dashboard + Loom performance report" },
 ];
 
 /* ═══════════════════════════════════════════════
