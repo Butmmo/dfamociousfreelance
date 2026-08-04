@@ -375,7 +375,7 @@ function Landing() {
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The five ranks of a beneficiary</h2>
           <p className="mt-4 text-muted-foreground">
-            XP is earned only where it counts — through the 45-Day Implementation Playbook. No shortcuts, no padding.
+            XP is earned only where it counts — through the SMB Optimisation Engine. No shortcuts, no padding.
           </p>
         </div>
         <div className="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4">
