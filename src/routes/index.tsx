@@ -58,12 +58,12 @@ const SYSTEMS = [
   { icon: Calendar, t: "45-Day Calendar", d: "A sealing day-grid plus a full monthly view. Days seal automatically as tasks complete — or seal them by hand." },
   { icon: LineChart, t: "The Report", d: "Escalation score dial, cadence heatstrips, velocity to first close, and mentor check-in notes surfaced to you." },
   { icon: Users, t: "The Council", d: "Admins add beneficiaries, get assigned as mentors, log check-ins, and unlock gated programs." },
-  { icon: Bell, t: "Escalation Engine", d: "Fewer than 6 active days in 7 triggers a $3 notice. Fewer than 7 in 14 triggers $6 and a suspension notice." },
+  { icon: Bell, t: "Escalation Engine", d: "Fewer than 6 active days in 7 triggers a $5 notice. Fewer than 10 in 14 triggers $10 and a suspension notice." },
   { icon: Mail, t: "Report Cadence", d: "Weekly progress emails to beneficiaries, cohort digests to admins, and the full Citadel report to the founder." },
 ];
 
 const SEVEN_PATHS = [
-  { emoji: "🏪", t: "SMB Optimisation System", d: "Local service businesses. Google Review Automation as the single entry offer, then a full upsell ladder into speed-to-lead, AI voice and rebuilds.", live: true },
+  { emoji: "🏪", t: "SMB Optimisation System", d: "Local service businesses. A single entry offer, then a full upsell ladder.", live: true },
   { emoji: "⛰️", t: "High-Ticket Closing Machine", d: "Commission-only closing for other people's high-ticket offers. No product to build, no ads to run — and its own closer rank ladder.", live: true },
   { emoji: "🛒", t: "Revenue Recovery Engine", d: "E-commerce abandoned-revenue recovery. You install the flows that bring back carts, browsers and lapsed buyers, and get paid from money you return.", live: true },
   { emoji: "🤝", t: "The Care Bridge", d: "Senior and home-care rapid-response intake. A demographic tailwind nobody can switch off, won on answering families first.", live: true },
@@ -78,13 +78,6 @@ const RANKS = [
   { name: "Closer", icon: TrendingUp, color: "text-gold-deep", desc: "First paid client." },
   { name: "Lion", icon: Flame, color: "text-crimson", desc: "Mentorship privileges. Five clients." },
   { name: "Crown", icon: Crown, color: "text-gold", desc: "Council seat. Pass the torch." },
-];
-
-const OFFER_LADDER = [
-  { icon: Star, t: "Google Review Automation", d: "The single product every beneficiary sells first. One offer, mastered — closed again and again until the pitch is muscle memory." },
-  { icon: Bot, t: "Speed-to-Lead + AI Receptionist", d: "Upsell one: catch every call and form that arrives while the owner is on a job, and book it automatically." },
-  { icon: Sparkles, t: "Website / App Rebuild", d: "Upsell two: once traffic is flowing, rebuild the destination so visitors actually convert." },
-  { icon: Repeat, t: "Retainer & Referral Engine", d: "The endgame — recurring revenue and clients who introduce you to their network." },
 ];
 
 function Landing() {
@@ -124,7 +117,7 @@ function Landing() {
         <div className="relative mx-auto max-w-7xl px-6 pt-8 pb-16 md:pt-10 md:pb-24 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <Motto />
-            <h1 className="mt-6 font-display text-5xl md:text-7xl font-bold leading-[1.05]">
+            <h1 className="mt-6 font-display text-5xl md:text-7xl font-bold leading-[1.05] capitalize">
               The citadel for the next generation of{" "}
               <span className="text-gold-gradient">Digital Systems Engineers</span>.
             </h1>
