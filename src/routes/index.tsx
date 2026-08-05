@@ -58,18 +58,18 @@ const SYSTEMS = [
   { icon: Calendar, t: "45-Day Calendar", d: "A sealing day-grid plus a full monthly view. Days seal automatically as tasks complete — or seal them by hand." },
   { icon: LineChart, t: "The Report", d: "Escalation score dial, cadence heatstrips, velocity to first close, and mentor check-in notes surfaced to you." },
   { icon: Users, t: "The Council", d: "Admins add beneficiaries, get assigned as mentors, log check-ins, and unlock gated programs." },
-  { icon: Bell, t: "Escalation Engine", d: "Fewer than 6 active days in 7 triggers a ₦2,500 notice. Fewer than 5 in 14 triggers ₦7,000 and a suspension notice." },
+  { icon: Bell, t: "Escalation Engine", d: "Fewer than 6 active days in 7 triggers a $3 notice. Fewer than 7 in 14 triggers $6 and a suspension notice." },
   { icon: Mail, t: "Report Cadence", d: "Weekly progress emails to beneficiaries, cohort digests to admins, and the full Citadel report to the founder." },
 ];
 
 const SEVEN_PATHS = [
   { emoji: "🏪", t: "SMB Optimisation System", d: "Local service businesses. Google Review Automation as the single entry offer, then a full upsell ladder into speed-to-lead, AI voice and rebuilds.", live: true },
-  { emoji: "⛰️", t: "High-Ticket Closing Machine", d: "Commission-only closing for other people's high-ticket offers. No product to build, no ads to run — and its own closer rank ladder.", live: false },
-  { emoji: "🛒", t: "Revenue Recovery Engine", d: "E-commerce abandoned-revenue recovery. You install the flows that bring back carts, browsers and lapsed buyers, and get paid from money you return.", live: false },
-  { emoji: "🤝", t: "The Care Bridge", d: "Senior and home-care rapid-response intake. A demographic tailwind nobody can switch off, won on answering families first.", live: false },
-  { emoji: "⛪", t: "Digital Ministry Systems", d: "Giving, follow-up, attendance and communications for churches and ministries — trust-based referrals and unusually low churn.", live: false },
-  { emoji: "🎙️", t: "The Broadcast Engine", d: "Podcast growth and monetisation. Clips, distribution, sponsorship and list-building turned into revenue the host can see.", live: false },
-  { emoji: "📈", t: "The Authority Engine", d: "Prospecting and authority engines for coaches, consultants and advisors — the highest ticket per client of the seven.", live: false },
+  { emoji: "⛰️", t: "High-Ticket Closing Machine", d: "Commission-only closing for other people's high-ticket offers. No product to build, no ads to run — and its own closer rank ladder.", live: true },
+  { emoji: "🛒", t: "Revenue Recovery Engine", d: "E-commerce abandoned-revenue recovery. You install the flows that bring back carts, browsers and lapsed buyers, and get paid from money you return.", live: true },
+  { emoji: "🤝", t: "The Care Bridge", d: "Senior and home-care rapid-response intake. A demographic tailwind nobody can switch off, won on answering families first.", live: true },
+  { emoji: "⛪", t: "Digital Ministry Systems", d: "Giving, follow-up, attendance and communications for churches and ministries — trust-based referrals and unusually low churn.", live: true },
+  { emoji: "🎙️", t: "The Broadcast Engine", d: "Podcast growth and monetisation. Clips, distribution, sponsorship and list-building turned into revenue the host can see.", live: true },
+  { emoji: "📈", t: "The Authority Engine", d: "Prospecting and authority engines for coaches, consultants and advisors — the highest ticket per client of the seven.", live: true },
 ];
 
 const RANKS = [
