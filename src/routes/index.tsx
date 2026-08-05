@@ -37,13 +37,13 @@ const PLAYBOOKS = [
     icon: Globe,
     tag: "Markets · Boring Niches · Leads",
     title: "SMB Prospecting Guide",
-    body: "Seven countries and the Tier-1 'boring' service niches nobody is fighting over — garage doors, tree services, septic, junk removal, restoration — with the exact Google Maps search terms, review-gap lead scoring, and the Grand Slam offer builder on the DFS stack: Go High Level, Notion, Lovable, Make / Zapier / n8n.",
+    body: "Seven countries; service niches nobody is fighting over, with the exact search terms, a lead scoring system, and a Grand Slam offer builder on the DFS stack.",
   },
   {
     icon: Calendar,
     tag: "From Zero to First Client",
     title: "SMB Optimisation Engine",
-    body: "Day-by-day execution across seven weeks: lead research via Google → LinkedIn → ContactOut, the Gap/Leak/Lift/Breakup email sequence, and the upsell ladder.",
+    body: "Day-by-day execution across seven weeks: lead research , structured email sequencing, and an upsell ladder.",
   },
   {
     icon: Calculator,
