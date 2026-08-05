@@ -240,7 +240,7 @@ function Landing() {
           {[
             { icon: Gauge, t: "Real-time velocity", d: "Days to first close, outreach volume and weekly revenue, tracked without a spreadsheet in sight." },
             { icon: FileDown, t: "Branded PDF exports", d: "Every calculator report exports with the DFS crest, D'Famocious Group and Claude AI attribution." },
-            { icon: Timer, t: "Accountability with teeth", d: "Miss the weekly report and a ₦2,500 notice is issued. The cadence is the curriculum." },
+            { icon: Timer, t: "Accountability with teeth", d: "Miss the weekly report and a $5 notice is issued. The cadence is the curriculum." },
           ].map((b) => (
             <div key={b.t} className="rounded-2xl border border-gold/40 bg-accent/20 p-6">
               <b.icon className="h-7 w-7 text-gold-deep" />
@@ -305,7 +305,7 @@ function Landing() {
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">One offer to open. A ladder to grow.</h2>
           <p className="mt-4 text-muted-foreground">
-            Beneficiaries lead with a single product — Google Review Automation — until closing it is second nature.
+            Beneficiaries lead with a single product until closing it is second nature.
             Everything else is earned revenue from a client who already trusts you.
           </p>
         </div>
@@ -329,7 +329,7 @@ function Landing() {
               <Motto />
               <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The 45-Day Path</h2>
               <p className="mt-4 text-muted-foreground">
-                A precise, day-by-day forge. Day 1 arms your arsenal — Lovable, Notion, ContactOut, Go High Level.
+                A precise, day-by-day forge. Day 1 arms your arsenal.
                 By day 45 you have a client, an invoice and a testimonial.
               </p>
               <div className="mt-8 space-y-3">
@@ -375,7 +375,7 @@ function Landing() {
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The five ranks of a beneficiary</h2>
           <p className="mt-4 text-muted-foreground">
-            XP is earned only where it counts — through the SMB Optimisation Engine. No shortcuts, no padding.
+            XP is earned only where it counts. No shortcuts, no padding.
           </p>
         </div>
         <div className="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4">
