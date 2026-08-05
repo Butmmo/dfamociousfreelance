@@ -309,16 +309,6 @@ function Landing() {
             Everything else is earned revenue from a client who already trusts you.
           </p>
         </div>
-        <div className="mt-14 grid md:grid-cols-4 gap-6">
-          {OFFER_LADDER.map((o, i) => (
-            <div key={o.t} className="relative rounded-2xl border border-border bg-card p-6 hover:border-gold transition">
-              <div className="text-xs text-muted-foreground">Step {i + 1}</div>
-              <o.icon className="mt-3 h-8 w-8 text-gold-deep" />
-              <h3 className="mt-4 font-display text-lg font-semibold">{o.t}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{o.d}</p>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* THE PATH */}
@@ -334,9 +324,9 @@ function Landing() {
               </p>
               <div className="mt-8 space-y-3">
                 {[
-                  "Prospect research: Google → LinkedIn → ContactOut",
-                  "The four-email sequence: Gap, Leak, Lift, Breakup",
-                  "Lead scoring with review-gap and response-rate signals",
+                  "Prospect research.",
+                  "The four-email sequence.",
+                  "Lead scoring with unique signal monitoring",
                   "Weekly report filed every Sunday — outreach, calls, wins, revenue",
                 ].map((l) => (
                   <div key={l} className="flex items-start gap-3 text-sm">
