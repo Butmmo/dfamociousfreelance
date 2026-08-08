@@ -273,7 +273,12 @@ export type Database = {
           path_key: string | null
           positioning_statement: string | null
           rank: Database["public"]["Enums"]["rank_tier"]
+          reinstatement_fee_usd: number
           start_date: string | null
+          suspended: boolean
+          suspended_at: string | null
+          suspended_by: string | null
+          suspension_reason: string | null
           updated_at: string
           xp: number
         }
@@ -296,7 +301,12 @@ export type Database = {
           path_key?: string | null
           positioning_statement?: string | null
           rank?: Database["public"]["Enums"]["rank_tier"]
+          reinstatement_fee_usd?: number
           start_date?: string | null
+          suspended?: boolean
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
           updated_at?: string
           xp?: number
         }
@@ -319,7 +329,12 @@ export type Database = {
           path_key?: string | null
           positioning_statement?: string | null
           rank?: Database["public"]["Enums"]["rank_tier"]
+          reinstatement_fee_usd?: number
           start_date?: string | null
+          suspended?: boolean
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
           updated_at?: string
           xp?: number
         }
