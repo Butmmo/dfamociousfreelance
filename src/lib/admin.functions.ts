@@ -92,22 +92,75 @@ export const removeBeneficiary = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => userIdSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await requireAdmin(context);
+    // Deletion is a founder-only prerogative; ordinary admins may only suspend.
+    await requireSuperAdmin(context);
     if (data.user_id === context.userId) throw new Error("Admins cannot remove themselves.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    // Check target — admins can remove beneficiaries only; super admin can remove admins too
     const { data: target } = await supabaseAdmin
       .from("profiles").select("email").eq("id", data.user_id).maybeSingle();
     if (target && (target.email ?? "").toLowerCase() === SUPER_ADMIN_EMAIL)
       throw new Error("The super admin cannot be removed.");
-    const { data: targetRoles } = await supabaseAdmin
-      .from("user_roles").select("role").eq("user_id", data.user_id);
-    const isTargetAdmin = (targetRoles ?? []).some((r: any) => r.role === "admin");
-    if (isTargetAdmin) await requireSuperAdmin(context);
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.user_id);
     if (error) throw error;
     return { ok: true };
   });
+
+/* ── Suspension ──────────────────────────────────────────── */
+
+const suspendSchema = z.object({
+  user_id: z.string().uuid(),
+  reason: z.string().trim().max(2000).optional(),
+});
+
+export const suspendBeneficiary = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => suspendSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    if (data.user_id === context.userId) throw new Error("You cannot suspend yourself.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: target } = await supabaseAdmin
+      .from("profiles").select("email").eq("id", data.user_id).maybeSingle();
+    if (target && (target.email ?? "").toLowerCase() === SUPER_ADMIN_EMAIL)
+      throw new Error("The super admin cannot be suspended.");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        suspended: true,
+        suspended_at: new Date().toISOString(),
+        suspended_by: context.userId,
+        suspension_reason: data.reason ?? null,
+      } as never)
+      .eq("id", data.user_id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const reinstateBeneficiary = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ user_id: z.string().uuid(), fee_settled: z.boolean().default(false) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { data: isSuper } = await context.supabase.rpc("is_super_admin", { _user_id: context.userId });
+    // Only the founder may waive the $10 reinstatement fee.
+    if (!isSuper && !data.fee_settled)
+      throw new Error("The $10 reinstatement fee must be settled before an admin can lift a suspension.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        suspended: false,
+        suspended_at: null,
+        suspended_by: null,
+        suspension_reason: null,
+      } as never)
+      .eq("id", data.user_id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
 
 export const promoteToAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
