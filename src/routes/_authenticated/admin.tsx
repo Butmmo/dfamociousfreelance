@@ -6,12 +6,13 @@ import {
   inviteBeneficiary, listBeneficiaries, listInvitations, listAdmins, listAssignments,
   removeBeneficiary, promoteToAdmin, demoteFromAdmin, assignAdminToBeneficiary,
   listEscalations, openEscalation, logCheckIn, setBeneficiaryPath,
+  suspendBeneficiary, reinstateBeneficiary,
 } from "@/lib/admin.functions";
 import { PATHS } from "@/lib/paths";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
 import { Compass, FileText } from "lucide-react";
-import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp } from "lucide-react";
+import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Council — DFS Admin" }] }),
@@ -35,6 +36,8 @@ function Admin() {
   const openEsc = useServerFn(openEscalation);
   const logCi = useServerFn(logCheckIn);
   const setPath = useServerFn(setBeneficiaryPath);
+  const suspend = useServerFn(suspendBeneficiary);
+  const reinstate = useServerFn(reinstateBeneficiary);
 
   const [bens, setBens] = useState<any[]>([]);
   const [invs, setInvs] = useState<any[]>([]);
@@ -101,9 +104,37 @@ function Admin() {
     try { await openEsc({ data: { beneficiary_id, level } }); toast.success("Escalation updated."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
-  const doSetPath = async (beneficiary_id: string, path_key: string) => {
-    if (!path_key) return;
-    try { await setPath({ data: { beneficiary_id, path_key: path_key as any } }); toast.success("Path assigned."); refresh(); }
+  const doSetPath = async (b: any, path_key: string) => {
+    if (!path_key || path_key === b.path_key) return;
+    const label = b.full_name ?? b.email;
+    if (b.path_key) {
+      if (!confirm(
+        `WARNING — changing ${label}'s path is irreversible.\n\n` +
+        `Every playbook checklist, weekly report, XP point and rank they have earned will be permanently deleted, ` +
+        `and they will restart the Citadel from zero on the new path.\n\nProceed?`,
+      )) return;
+      if (!confirm(`Final confirmation: wipe ${label}'s entire record and move them to a new path?`)) return;
+    }
+    try {
+      const res: any = await setPath({ data: { beneficiary_id: b.id, path_key: path_key as any } });
+      toast.success(res?.wiped ? "Path changed — their record was wiped." : "Path assigned.");
+      refresh();
+    }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
+  };
+  const doSuspend = async (b: any) => {
+    const label = b.full_name ?? b.email;
+    const reason = prompt(`Suspend ${label}? They lose all access until reinstated (reinstatement costs $10).\n\nReason (optional):`);
+    if (reason === null) return;
+    try { await suspend({ data: { user_id: b.id, reason: reason.trim() || undefined } }); toast.success("Suspended."); refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
+  };
+  const doReinstate = async (b: any) => {
+    const label = b.full_name ?? b.email;
+    if (isSuperAdmin) {
+      if (!confirm(`Reinstate ${label} as founder? The $10 fee will be waived.`)) return;
+    } else if (!confirm(`Confirm that ${label} has settled the $10 reinstatement fee.`)) return;
+    try { await reinstate({ data: { user_id: b.id, fee_settled: !isSuperAdmin } }); toast.success("Reinstated."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
   const submitCheckIn = async () => {
@@ -249,13 +280,21 @@ function Admin() {
                     <div className="mt-2 flex items-center gap-3 text-xs">
                       <span className="uppercase tracking-widest text-gold-deep">{b.rank}</span>
                       <span className="text-muted-foreground">{b.xp} XP</span>
+                      {b.suspended && <span className="rounded-full bg-crimson px-2 py-0.5 text-[10px] font-bold text-white">SUSPENDED</span>}
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     {isSuperAdmin && (
                       <button onClick={() => doPromote(b.id)} title="Promote to admin" className="rounded-md border border-border p-1.5 hover:bg-muted"><ArrowUp className="h-4 w-4" /></button>
                     )}
-                    <button onClick={() => doRemove(b.id, b.email)} title="Remove" className="rounded-md border border-crimson p-1.5 text-crimson hover:bg-crimson/10"><Trash2 className="h-4 w-4" /></button>
+                    {b.suspended ? (
+                      <button onClick={() => doReinstate(b)} title="Lift suspension" className="rounded-md border border-gold p-1.5 text-gold-deep hover:bg-gold/10"><RotateCcw className="h-4 w-4" /></button>
+                    ) : (
+                      <button onClick={() => doSuspend(b)} title="Suspend" className="rounded-md border border-gold p-1.5 text-gold-deep hover:bg-gold/10"><Ban className="h-4 w-4" /></button>
+                    )}
+                    {isSuperAdmin && (
+                      <button onClick={() => doRemove(b.id, b.email)} title="Delete account" className="rounded-md border border-crimson p-1.5 text-crimson hover:bg-crimson/10"><Trash2 className="h-4 w-4" /></button>
+                    )}
                   </div>
                 </div>
 
@@ -275,18 +314,25 @@ function Admin() {
 
                   <button onClick={() => doEscalate(b.id, "at_risk")} className="rounded-md border border-gold py-1.5 text-gold-deep hover:bg-gold/10">Flag at-risk</button>
                   <button onClick={() => doEscalate(b.id, "critical")} className="rounded-md border border-crimson py-1.5 text-crimson hover:bg-crimson/10">Critical</button>
-                  <label className="col-span-2 flex items-center gap-2">
-                    <Compass className="h-3.5 w-3.5" />
-                    <span className="text-muted-foreground">Path:</span>
-                    <select
-                      value={b.path_key ?? ""}
-                      onChange={(e) => doSetPath(b.id, e.target.value)}
-                      className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-xs"
-                    >
-                      <option value="">— not chosen —</option>
-                      {PATHS.map((p) => (<option key={p.key} value={p.key}>{p.name}</option>))}
-                    </select>
-                  </label>
+                  {isSuperAdmin ? (
+                    <label className="col-span-2 flex items-center gap-2">
+                      <Compass className="h-3.5 w-3.5" />
+                      <span className="text-muted-foreground">Path:</span>
+                      <select
+                        value={b.path_key ?? ""}
+                        onChange={(e) => doSetPath(b, e.target.value)}
+                        className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-xs"
+                      >
+                        <option value="">— not chosen —</option>
+                        {PATHS.map((p) => (<option key={p.key} value={p.key}>{p.name}</option>))}
+                      </select>
+                    </label>
+                  ) : (
+                    <div className="col-span-2 flex items-center gap-2 text-muted-foreground">
+                      <Compass className="h-3.5 w-3.5" />
+                      Path: {PATHS.find((p) => p.key === b.path_key)?.name ?? "not chosen"} — founder only
+                    </div>
+                  )}
 
                   <button onClick={() => setCheckinTarget(b.id)} className="col-span-2 inline-flex items-center justify-center gap-1 rounded-md bg-primary py-1.5 text-primary-foreground hover:bg-primary/90"><MessageSquare className="h-3.5 w-3.5" /> Log check-in</button>
                 </div>
