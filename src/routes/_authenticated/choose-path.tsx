@@ -28,6 +28,12 @@ function ChoosePathPage() {
   const [open, setOpen] = useState<PathKey | null>(null);
   const [busy, setBusy] = useState<PathKey | null>(null);
 
+  // Once a path is sealed, only the founder may keep browsing the briefings.
+  const locked = !loading && !isSuperAdmin && !!pathKey;
+  if (locked) {
+    navigate({ to: "/dashboard", replace: true });
+  }
+
   const commit = async (key: PathKey) => {
     setBusy(key);
     try {
@@ -43,9 +49,10 @@ function ChoosePathPage() {
     }
   };
 
-  if (loading) {
+  if (loading || locked) {
     return <div className="p-10 text-center text-muted-foreground">Loading the seven paths…</div>;
   }
+
 
   if (open) {
     const Briefing = BRIEFINGS[open];
