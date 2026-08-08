@@ -330,16 +330,30 @@ export const setBeneficiaryPath = createServerFn({ method: "POST" })
     z.object({ beneficiary_id: z.string().uuid(), path_key: z.enum(PATH_KEYS) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await requireAdmin(context);
+    // Reassigning a path wipes the beneficiary's record — founder only.
+    await requireSuperAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: current } = await supabaseAdmin
+      .from("profiles").select("path_key").eq("id", data.beneficiary_id).maybeSingle();
+    const changing = !!current?.path_key && current.path_key !== data.path_key;
+
+    if (changing) {
+      // A new path means a fresh start: all prior progress is destroyed.
+      await supabaseAdmin.from("task_progress").delete().eq("user_id", data.beneficiary_id);
+      await supabaseAdmin.from("weekly_reports").delete().eq("user_id", data.beneficiary_id);
+    }
+
     const { error } = await supabaseAdmin
       .from("profiles")
       .update({
         path_key: data.path_key,
         path_chosen_at: new Date().toISOString(),
         path_auto_assigned: true,
+        ...(changing ? { xp: 0, rank: "recruit" } : {}),
       } as never)
       .eq("id", data.beneficiary_id);
     if (error) throw error;
-    return { ok: true };
+    return { ok: true, wiped: changing };
   });
+
