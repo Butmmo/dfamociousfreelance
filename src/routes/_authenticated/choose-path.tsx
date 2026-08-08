@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { PATHS, BRIEFINGS, type PathKey } from "@/lib/paths";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useSession } from "@/lib/use-session";
@@ -30,9 +30,9 @@ function ChoosePathPage() {
 
   // Once a path is sealed, only the founder may keep browsing the briefings.
   const locked = !loading && !isSuperAdmin && !!pathKey;
-  if (locked) {
-    navigate({ to: "/dashboard", replace: true });
-  }
+  useEffect(() => {
+    if (locked) navigate({ to: "/dashboard", replace: true });
+  }, [locked, navigate]);
 
   const commit = async (key: PathKey) => {
     setBusy(key);
