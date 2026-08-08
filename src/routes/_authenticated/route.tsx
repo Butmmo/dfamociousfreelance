@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
+import { useAccountStatus } from "@/lib/use-account-status";
 import { useEffect } from "react";
-import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass } from "lucide-react";
+import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -21,14 +22,15 @@ function AuthedShell() {
   const { role, user, isSuperAdmin } = useSession();
   const navigate = useNavigate();
   const { path, needsChoice, msRemaining, loading: pathLoading } = usePath();
+  const status = useAccountStatus();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
-    if (pathLoading || !needsChoice) return;
+    if (pathLoading || !needsChoice || status.suspended) return;
     if (pathname.startsWith("/choose-path")) return;
     navigate({ to: "/choose-path", replace: true });
-  }, [pathLoading, needsChoice, pathname, navigate]);
+  }, [pathLoading, needsChoice, pathname, navigate, status.suspended]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -36,14 +38,47 @@ function AuthedShell() {
     navigate({ to: "/auth", replace: true });
   };
 
+  if (!status.loading && status.suspended) {
+    return (
+      <div className="min-h-screen bg-background grid place-items-center px-4 py-16">
+        <div className="w-full max-w-lg rounded-2xl border border-crimson bg-card p-8 text-center shadow-regal">
+          <ShieldAlert className="mx-auto h-12 w-12 text-crimson" />
+          <h1 className="mt-4 font-display text-2xl font-bold">Your account is suspended</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            The council has suspended your access to the Citadel
+            {status.suspendedAt ? ` on ${new Date(status.suspendedAt).toLocaleDateString()}` : ""}. No playbooks,
+            calendar or reports are available until the suspension is lifted.
+          </p>
+          {status.reason && (
+            <p className="mt-4 rounded-lg border border-border bg-muted/50 p-3 text-left text-sm">
+              <span className="font-semibold">Reason:</span> {status.reason}
+            </p>
+          )}
+          <p className="mt-4 text-sm">
+            Reinstatement costs <strong className="text-gold-deep">${status.feeUsd}</strong>, payable to the council —
+            waived only at the founder's discretion.
+          </p>
+          <button
+            onClick={signOut}
+            className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            <LogOut className="h-4 w-4" /> Sign out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const tabs = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
     { to: "/calendar", label: "Calendar", icon: CalendarDays, show: !needsChoice },
     { to: "/report", label: "Report", icon: FileBarChart, show: !needsChoice },
-    { to: "/choose-path", label: isSuperAdmin ? "Paths" : "Your Path", icon: Compass, show: true },
+    // Only the founder keeps the Paths tab; everyone else sees it solely inside their 24-hour window.
+    { to: "/choose-path", label: isSuperAdmin ? "Paths" : "Your Path", icon: Compass, show: isSuperAdmin || needsChoice },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
+
 
   return (
     <div className="min-h-screen bg-background">
