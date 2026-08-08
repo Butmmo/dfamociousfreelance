@@ -51,11 +51,12 @@ export const listBeneficiaries = createServerFn({ method: "GET" })
     await requireAdmin(context);
     const { data, error } = await context.supabase
       .from("profiles")
-      .select("id,email,full_name,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned")
+      .select("id,email,full_name,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned,suspended,suspended_at,suspension_reason,reinstatement_fee_usd")
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
   });
+
 
 export const listAdmins = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
