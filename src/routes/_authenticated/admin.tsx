@@ -15,7 +15,7 @@ import { Compass, FileText } from "lucide-react";
 import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Council — DFS Admin" }] }),
+  head: () => ({ meta: [{ title: "Council — DBI Admin" }] }),
   component: Admin,
 });
 
@@ -166,7 +166,7 @@ function Admin() {
       <section className="rounded-2xl border border-gold bg-card p-6 shadow-regal">
         <h2 className="font-display text-xl font-bold flex items-center gap-2"><UserPlus className="h-5 w-5" /> Invite a beneficiary</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Only invited emails can join DFS. {isSuperAdmin ? "As super admin, you may invite admins too." : "Only the super admin can invite admins."}
+          Only invited emails can join DBI. {isSuperAdmin ? "As super admin, you may invite admins too." : "Only the super admin can invite admins."}
         </p>
         <form onSubmit={onInvite} className="mt-6 grid md:grid-cols-3 gap-4">
           <input value={email} onChange={(e) => setEmail(e.target.value)} required type="email" placeholder="beneficiary@email.com" className="md:col-span-1 rounded-md border border-input bg-background px-3 py-2 text-sm" />

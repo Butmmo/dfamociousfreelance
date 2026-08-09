@@ -1,4 +1,4 @@
-// Weekly & monthly DFS reports.
+// Weekly & monthly DBI reports.
 // Trigger via pg_cron or manual invocation with { period: "weekly" | "monthly" }.
 // Emails are sent via Resend if RESEND_API_KEY is set; otherwise the report is
 // written to public.weekly_reports for admin review.
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
   for (const e of escalations ?? []) escLevelByBen[e.beneficiary_id] = e.level;
 
   const RESEND = Deno.env.get("RESEND_API_KEY");
-  const FROM = Deno.env.get("MAIL_FROM") ?? "DFS Citadel <onboarding@resend.dev>";
+  const FROM = Deno.env.get("MAIL_FROM") ?? "DBI Citadel <onboarding@resend.dev>";
   const sendEmail = async (to: string, subject: string, html: string) => {
     if (!RESEND) return { skipped: true };
     const r = await fetch("https://api.resend.com/emails", {
@@ -64,12 +64,12 @@ Deno.serve(async (req) => {
   const wrap = (title: string, body: string) => `
     <div style="font-family:Inter,system-ui,sans-serif;background:#F8F5EE;padding:32px;color:#201A16">
       <div style="max-width:640px;margin:auto;background:#fff;border:1px solid #D4AF37;border-radius:16px;padding:32px">
-        <div style="font-family:'Cinzel',serif;font-size:22px;color:#7A5A00;letter-spacing:2px">DFS CITADEL</div>
+        <div style="font-family:'Cinzel',serif;font-size:22px;color:#7A5A00;letter-spacing:2px">DBI CITADEL</div>
         <h1 style="font-family:'Cinzel',serif;margin:12px 0 4px">${title}</h1>
         <div style="color:#6E6459;font-size:13px;margin-bottom:24px">${period === "weekly" ? "Weekly" : "Monthly"} report • ${new Date().toDateString()}</div>
         ${body}
         <hr style="border:none;border-top:1px solid #EDE7DA;margin:24px 0"/>
-        <div style="font-size:12px;color:#8A7C6D">D'Famocious Freelance Scholarship — Ascend the Ranks.</div>
+        <div style="font-size:12px;color:#8A7C6D">D'Famocious Business Incubator — Ascend the Ranks.</div>
       </div>
     </div>`;
 
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
       <p>Keep the cadence. Small daily reps compound into rank.</p>
     `);
     if (b.email) {
-      const r = await sendEmail(b.email, `DFS ${period} report — ${b.full_name ?? "Beneficiary"}`, html);
+      const r = await sendEmail(b.email, `DBI ${period} report — ${b.full_name ?? "Beneficiary"}`, html);
       results.push({ to: b.email, ...r });
     }
     await supa.from("weekly_reports").insert({
@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
       </table>
       <p style="margin-top:16px">Reach out to anyone flagged; log a check-in inside the Council console.</p>
     `);
-    if (admin.email) results.push({ to: admin.email, ...(await sendEmail(admin.email, `DFS ${period} cohort report`, html)) });
+    if (admin.email) results.push({ to: admin.email, ...(await sendEmail(admin.email, `DBI ${period} cohort report`, html)) });
   }
 
   // 3. Super admin — full citadel roll-up
@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
     </ul>
     <p>Full breakdown available in the Council console.</p>
   `);
-  results.push({ to: SUPER_ADMIN_EMAIL, ...(await sendEmail(SUPER_ADMIN_EMAIL, `DFS ${period} Citadel roll-up`, superHtml)) });
+  results.push({ to: SUPER_ADMIN_EMAIL, ...(await sendEmail(SUPER_ADMIN_EMAIL, `DBI ${period} Citadel roll-up`, superHtml)) });
 
   // 4. Auto-escalate silent beneficiaries (weekly only)
   if (period === "weekly") {

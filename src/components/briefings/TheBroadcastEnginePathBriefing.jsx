@@ -24,9 +24,9 @@ const HIGHS = [
    why:"YouTube has passed Spotify and Apple Podcasts combined to become the single most-used podcast platform in the world. Plenty of shows with real engagement on audio platforms still have a weak or missing YouTube presence — a specific, checkable gap you can point to by name in outreach.",
    watch:"This gap won't stay open forever. Once it's common knowledge that a show \"should\" be on YouTube, pointing that out stops being news to hosts — the value shifts from spotting the gap to actually closing it well."},
   {icon:"🔒", tag:"Positioning", color:C.purple,
-   title:"Genre-lock removes your competition inside DFS",
+   title:"Genre-lock removes your competition inside DBI",
    why:"Each beneficiary on this path locks to one of 8 genres, so you're never pitching the same show as a fellow student in the program.",
-   watch:"This only manages competition inside DFS. It says nothing about the much larger outside market — see Competitiveness for that half of the picture."},
+   watch:"This only manages competition inside DBI. It says nothing about the much larger outside market — see Competitiveness for that half of the picture."},
   {icon:"🎧", tag:"Sales Motion", color:C.teal,
    title:"You can prove the work before anyone has to trust you",
    why:"A free sample clip is something a host can listen to and judge directly — a lower trust barrier for a first yes than a pitch that asks someone to imagine a system working for them.",
@@ -304,7 +304,7 @@ export default function TheBroadcastEnginePathBriefing() {
             textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:C.green,
               boxShadow:"0 0 6px "+C.green,display:"inline-block"}}/>
-            DFS Path Briefing · The Broadcast Engine
+            DBI Path Briefing · The Broadcast Engine
           </div>
           <h1 style={{margin:"0 0 7px",fontSize:"clamp(21px,4.5vw,33px)",fontWeight:800,
             lineHeight:1.15,background:"linear-gradient(135deg,#201A16 30%,#C99A3B 100%)",
@@ -364,7 +364,7 @@ export default function TheBroadcastEnginePathBriefing() {
               padding:"15px 16px",marginBottom:16}}>
               <SLabel text="Who This Path Actually Rewards" color={C.teal}/>
               <p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.65}}>
-                Every DFS system rewards a different kind of person. This one is the natural home for
+                Every DBI system rewards a different kind of person. This one is the natural home for
                 someone with a creative or technical production instinct — an ear for pacing, patience for
                 repetitive craft work, and comfort doing real hands-on production every week rather than
                 configuring a system once. If that's not you, that's useful to know now, not five weeks in.
@@ -378,7 +378,7 @@ export default function TheBroadcastEnginePathBriefing() {
                 Four components, sold as a ladder: full episode editing, show notes and timestamps, social
                 clip creation, and publishing and distribution — packaged as Starter ($500-$700/month),
                 Growth ($800-$1,200/month), and Full Production ($1,300-$1,800/month). See vs. Other
-                Systems for how that ladder compares to the rest of DFS.
+                Systems for how that ladder compares to the rest of DBI.
               </p>
             </div>
 
@@ -386,7 +386,7 @@ export default function TheBroadcastEnginePathBriefing() {
               padding:"13px 14px"}}>
               <div style={{fontSize:11,fontWeight:700,color:C.amber,marginBottom:6}}>The One-Line Honest Take</div>
               <p style={{fontSize:12.5,color:C.muted,margin:0,lineHeight:1.6}}>
-                This is the DFS path that looks most like a real freelance service business — genuine
+                This is the DBI path that looks most like a real freelance service business — genuine
                 hours of craft work, dressed up as a retainer — rather than a system you build once and
                 let run. That's neither good nor bad by itself. It just changes what kind of week you're
                 actually signing up for.
@@ -491,7 +491,7 @@ export default function TheBroadcastEnginePathBriefing() {
                 Because the core deliverable here — the edit itself — has to be redone by hand every month
                 for every client, this path's income durability looks more like traditional freelance
                 services than the more software-like durability of an automation-based system elsewhere in
-                DFS. Neither is wrong; they just age differently.
+                DBI. Neither is wrong; they just age differently.
               </p>
             </div>
           </div>
@@ -536,9 +536,9 @@ export default function TheBroadcastEnginePathBriefing() {
         {/* COMPARE */}
         {tab==="compare"&&(
           <div>
-            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:C.text}}>🆚 vs. Other DFS Systems</h2>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:C.text}}>🆚 vs. Other DBI Systems</h2>
             <p style={{fontSize:12.5,color:C.dim,margin:"0 0 16px",lineHeight:1.6}}>
-              A structural comparison against an automation-based DFS system, using that system's own real
+              A structural comparison against an automation-based DBI system, using that system's own real
               materials to work from — not a claim about all seven paths, only the honest shape of this one
               against that one.
             </p>
@@ -583,7 +583,7 @@ export default function TheBroadcastEnginePathBriefing() {
               <SLabel text="The Bottom Line" color={C.amber}/>
               <p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.7}}>
                 The Broadcast Engine is a real, growing market with genuine free tools to start and a
-                pricing ladder that mirrors what the wider market already pays. It's also the DFS path most
+                pricing ladder that mirrors what the wider market already pays. It's also the DBI path most
                 like traditional freelance work — real hours, real competition already in the market, and
                 clients who can quietly go quiet on you. None of that makes it a bad choice. It makes it a
                 specific one, best suited to someone who actually wants to spend their weeks producing, not

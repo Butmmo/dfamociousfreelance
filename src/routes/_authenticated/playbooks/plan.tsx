@@ -1,13 +1,13 @@
 // @ts-nocheck
 // 45-Day Implementation Playbook — installed verbatim from source; only colours
-// remapped to the DFS Regal palette. Progress persists via Supabase.
+// remapped to the DBI Regal palette. Progress persists via Supabase.
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
 
 export const Route = createFileRoute("/_authenticated/playbooks/plan")({
-  head: () => ({ meta: [{ title: "SMB Optimisation Engine — DFS" }] }),
+  head: () => ({ meta: [{ title: "SMB Optimisation Engine — DBI" }] }),
   component: PlanPage,
 });
 

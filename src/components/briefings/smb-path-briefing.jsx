@@ -10,13 +10,13 @@
 //
 // Route metadata (for reference only — not wired up in this preview):
 //   path:        /_authenticated/playbooks/smb-path-briefing
-//   title:       SMB Optimisation System — Path Briefing · DFS Citadel
+//   title:       SMB Optimisation System — Path Briefing · DBI Citadel
 //   description: The highs, the lows, the durability and the competition inside the
 //                SMB Optimisation System — read this before your 24 hours are up.
 
 import { useState } from "react";
 
-/* ─── PALETTE (DFS Regal, matched to the Global SMB Engine) ─── */
+/* ─── PALETTE (DBI Regal, matched to the Global SMB Engine) ─── */
 const CREAM = "#F8F5EE";
 const CREAM_DEEP = "#F5F0E4";
 const BORDER = "#D9CFBB";

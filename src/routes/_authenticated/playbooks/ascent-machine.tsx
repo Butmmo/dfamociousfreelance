@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/ascent/AscentMachine.jsx"));
 export const Route = createFileRoute("/_authenticated/playbooks/ascent-machine")({
   head: () => ({
     meta: [
-      { title: "The Ascent — High-Ticket Closing Machine — DFS Citadel" },
-      { name: "description", content: "The Ascent — High-Ticket Closing Machine: Curriculum. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "The Ascent — High-Ticket Closing Machine — DFS Citadel" },
+      { title: "The Ascent — High-Ticket Closing Machine — DBI Citadel" },
+      { name: "description", content: "The Ascent — High-Ticket Closing Machine: Curriculum. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "The Ascent — High-Ticket Closing Machine — DBI Citadel" },
       { property: "og:description", content: "The Ascent — High-Ticket Closing Machine: Curriculum." },
     ],
   }),

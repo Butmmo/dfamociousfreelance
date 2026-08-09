@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/carebridge/CareCalculator.jsx
 export const Route = createFileRoute("/_authenticated/playbooks/care-calculator")({
   head: () => ({
     meta: [
-      { title: "Home-Care Performance Calculator — DFS Citadel" },
-      { name: "description", content: "Home-Care Performance Calculator: Powered by Claude AI. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Home-Care Performance Calculator — DFS Citadel" },
+      { title: "Home-Care Performance Calculator — DBI Citadel" },
+      { name: "description", content: "Home-Care Performance Calculator: Powered by Claude AI. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Home-Care Performance Calculator — DBI Citadel" },
       { property: "og:description", content: "Home-Care Performance Calculator: Powered by Claude AI." },
     ],
   }),

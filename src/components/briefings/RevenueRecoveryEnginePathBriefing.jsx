@@ -244,7 +244,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
             textTransform: "uppercase", marginBottom: 7, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#0D7A5F",
               boxShadow: "0 0 6px #0D7A5F", display: "inline-block" }} />
-            DFS — One Of Seven Doorways
+            DBI — One Of Seven Doorways
           </div>
           <h1 style={{ margin: "0 0 7px", fontSize: "clamp(21px,4.5vw,33px)", fontWeight: 800,
             lineHeight: 1.15, background: "linear-gradient(135deg,#201A16 30%,#0D7A5F 100%)",

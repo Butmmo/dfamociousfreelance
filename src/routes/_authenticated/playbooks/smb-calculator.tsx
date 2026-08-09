@@ -1,7 +1,7 @@
 // @ts-nocheck
-// SMB Performance Calculator — DFS Regal palette.
+// SMB Performance Calculator — DBI Regal palette.
 // Content/model from SMBPerformanceCalculator v3 (population-driven market loss),
-// restyled to the DFS design system. PDF export via jsPDF (per-tab pages, DFS + Claude AI branding).
+// restyled to the DBI design system. PDF export via jsPDF (per-tab pages, DBI + Claude AI branding).
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import jsPDF from "jspdf";
@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/playbooks/smb-calculator")({
-  head: () => ({ meta: [{ title: "SMB Performance Calculator — DFS" }] }),
+  head: () => ({ meta: [{ title: "SMB Performance Calculator — DBI" }] }),
   component: SmbCalculator,
 });
 
@@ -66,7 +66,7 @@ const TABS = [
   { id: "report",  label: "Report",      icon: DollarSign },
 ];
 
-/* Accent classes mapped to the DFS palette */
+/* Accent classes mapped to the DBI palette */
 const ACCENT: Record<string, { text: string; bg: string; border: string; bar: string }> = {
   crimson: { text: "text-crimson",      bg: "bg-crimson/5",      border: "border-crimson/40",      bar: "bg-crimson" },
   gold:    { text: "text-gold-deep",    bg: "bg-accent/20",      border: "border-gold/40",         bar: "bg-gold" },
@@ -279,9 +279,9 @@ function SmbCalculator() {
     pdf.rect(0, 0, pageW, 74, "F");
     pdf.setTextColor(255, 255, 255);
     pdf.setFont("helvetica", "bold"); pdf.setFontSize(18);
-    pdf.text("DFS Citadel", 32, 30);
+    pdf.text("DBI Citadel", 32, 30);
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(9);
-    pdf.text("D'Famocious Freelance Scholarship", 32, 46);
+    pdf.text("D'Famocious Business Incubator", 32, 46);
     pdf.setFontSize(8); pdf.setTextColor(240, 220, 170);
     pdf.text("Powered by D'Famocious Group", 32, 60);
     pdf.setTextColor(255, 255, 255); pdf.setFontSize(9);
@@ -349,7 +349,7 @@ function SmbCalculator() {
     pdf.setDrawColor(217, 207, 187);
     pdf.line(32, pageH - 40, pageW - 32, pageH - 40);
     pdf.setFont("helvetica", "normal"); pdf.setFontSize(8); pdf.setTextColor(140, 130, 110);
-    pdf.text("D'Famocious Freelance Scholarship — Confidential · Powered by D'Famocious Group", 32, pageH - 24);
+    pdf.text("D'Famocious Business Incubator — Confidential · Powered by D'Famocious Group", 32, pageH - 24);
     pdf.text(`Page ${pageIdx} / ${pageTotal}`, pageW - 32, pageH - 24, { align: "right" });
   };
 
@@ -815,7 +815,7 @@ function SmbCalculator() {
   );
 }
 
-/* ─── UI PRIMITIVES (DFS styling) ─── */
+/* ─── UI PRIMITIVES (DBI styling) ─── */
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div className="block">

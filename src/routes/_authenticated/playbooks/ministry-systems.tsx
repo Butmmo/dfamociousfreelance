@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/ministry/MinistrySystems.jsx"
 export const Route = createFileRoute("/_authenticated/playbooks/ministry-systems")({
   head: () => ({
     meta: [
-      { title: "Digital Ministry Systems — DFS Citadel" },
-      { name: "description", content: "Digital Ministry Systems: The 45-Day Build. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Digital Ministry Systems — DFS Citadel" },
+      { title: "Digital Ministry Systems — DBI Citadel" },
+      { name: "description", content: "Digital Ministry Systems: The 45-Day Build. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Digital Ministry Systems — DBI Citadel" },
       { property: "og:description", content: "Digital Ministry Systems: The 45-Day Build." },
     ],
   }),

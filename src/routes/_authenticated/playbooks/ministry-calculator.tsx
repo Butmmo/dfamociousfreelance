@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/ministry/MinistryCalculator.j
 export const Route = createFileRoute("/_authenticated/playbooks/ministry-calculator")({
   head: () => ({
     meta: [
-      { title: "Ministry Performance Calculator — DFS Citadel" },
-      { name: "description", content: "Ministry Performance Calculator: Powered by Claude AI. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Ministry Performance Calculator — DFS Citadel" },
+      { title: "Ministry Performance Calculator — DBI Citadel" },
+      { name: "description", content: "Ministry Performance Calculator: Powered by Claude AI. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Ministry Performance Calculator — DBI Citadel" },
       { property: "og:description", content: "Ministry Performance Calculator: Powered by Claude AI." },
     ],
   }),

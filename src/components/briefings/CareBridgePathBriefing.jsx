@@ -205,7 +205,7 @@ export default function CareBridgePathBriefing() {
             textTransform:"uppercase", marginBottom:7, display:"flex", alignItems:"center", gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
-            DFS Path Briefing — Read Before You Choose
+            DBI Path Briefing — Read Before You Choose
           </div>
           <h1 style={{margin:"0 0 7px", fontSize:"clamp(20px,4.3vw,32px)", fontWeight:800,
             lineHeight:1.15, background:"linear-gradient(135deg,#201A16 30%,#C99A3B 100%)",

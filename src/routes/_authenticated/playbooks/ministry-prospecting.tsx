@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/ministry/MinistryProspecting.
 export const Route = createFileRoute("/_authenticated/playbooks/ministry-prospecting")({
   head: () => ({
     meta: [
-      { title: "Global Ministry Prospecting Guide — DFS Citadel" },
-      { name: "description", content: "Global Ministry Prospecting Guide: Markets · Ministries · Leads. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Global Ministry Prospecting Guide — DFS Citadel" },
+      { title: "Global Ministry Prospecting Guide — DBI Citadel" },
+      { name: "description", content: "Global Ministry Prospecting Guide: Markets · Ministries · Leads. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Global Ministry Prospecting Guide — DBI Citadel" },
       { property: "og:description", content: "Global Ministry Prospecting Guide: Markets · Ministries · Leads." },
     ],
   }),

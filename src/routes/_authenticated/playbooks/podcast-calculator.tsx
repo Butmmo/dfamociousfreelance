@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/broadcast/PodcastCalculator.j
 export const Route = createFileRoute("/_authenticated/playbooks/podcast-calculator")({
   head: () => ({
     meta: [
-      { title: "Podcast Performance Calculator — DFS Citadel" },
-      { name: "description", content: "Podcast Performance Calculator: Powered by Claude AI. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Podcast Performance Calculator — DFS Citadel" },
+      { title: "Podcast Performance Calculator — DBI Citadel" },
+      { name: "description", content: "Podcast Performance Calculator: Powered by Claude AI. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Podcast Performance Calculator — DBI Citadel" },
       { property: "og:description", content: "Podcast Performance Calculator: Powered by Claude AI." },
     ],
   }),
