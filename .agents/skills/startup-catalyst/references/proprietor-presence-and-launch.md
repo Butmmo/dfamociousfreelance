@@ -1,0 +1,27 @@
+# Proprietor: Presence & Launch
+
+Covers stages 5-7 (Presence, Launch, Content) for the Proprietor track — the last dedicated gap between the two tracks' depth.
+
+## Presence isn't audience-building here — it's systemized trust-signal generation
+
+The Compounder's presence stage is a content engine (build-in-public, sustained over months). The Proprietor's isn't a content problem at all — it's a *proof* problem, and the mechanism is the same one underneath three very different channels, one per setting. Developing-setting WhatsApp/Instagram commerce runs on sellers sharing chat screenshots and payment confirmations as proof of legitimacy (`traditional-business-types.md`). The developed-setting equivalent is Google Business Profile and review generation. The international/diaspora-setting equivalent is neither of those — see below. All three share the same underlying function: systemized, visible evidence that this operator is real and reliable.
+
+**Google Business Profile, concretely (developed settings):** roughly a third of small businesses haven't even claimed theirs — a genuine, low-effort opening, not a crowded channel. Ranking runs on three levers: relevance (does the listed category/service match what's searched), distance (the one lever outside anyone's control), and prominence (reviews and citations — the one that responds directly to effort). 93% of consumers read reviews before visiting, so review generation isn't a nice-to-have, it's the whole game — and it's systemizable the same way the QC checklist in `proprietor-structure-and-operations.md` is: build "ask for a review" into the SOP at the exact moment satisfaction peaks (job completion, checkout), don't leave it to chance. One live shift worth tracking: AI-assistant-sourced local recommendations grew sharply year over year, meaning a profile's accuracy now matters to more than just Google's own search results.
+
+**International/diaspora settings, concretely:** neither GBP nor WhatsApp-screenshot proof is the right mechanism here — the customer isn't searching locally in either country, they're embedded in a diaspora community running on its own high-trust logic. Word-of-mouth inside a close-knit diaspora runs stronger than ordinary word-of-mouth specifically because the community is close-knit — 2025 consumer-trust data puts recommendations from friends and family above every other form of advertising, and that effect is amplified further inside diaspora networks. The systemizing move is a formal referral program that rewards clients for sending business through the network, rather than hoping word travels on its own — the same discipline as building a review-ask into an SOP, just running on relationships instead of a platform. Partnering with diaspora organizations and community leaders does the same trust-transfer work a review or a chat screenshot does elsewhere. Target bicultural community members first — well-connected in both the home and host community — since they function as the actual word-of-mouth bridge between the two.
+
+**The throughline across all three settings:** presence for a Proprietor business is an extension of Optimize's SOP work, not a separate marketing function. The same discipline that makes a checklist trustworthy is what makes a review, a chat screenshot, or a diaspora referral program trustworthy.
+
+## Launch: soft opening, then grand opening — not one event
+
+This sequence is remarkably consistent across the small-business world, and for good reason: word of mouth is the single most-cited growth channel among retailers, ahead of every paid channel, and this sequence is built specifically to generate it.
+
+**Soft opening first.** A smaller, invited-only run — friends, family, neighboring businesses, vendors who helped build it — before the public ever sees the doors open. Its job is threefold: stress-test operations and staff under real (but forgiving) conditions, gather honest feedback while stakes are low, and start real word-of-mouth before the public event needs it. Often discounted or free, explicitly because the goal is feedback and buzz, not revenue, on this specific night. Confirm every license, permit, and inspection *before* this happens, not during it — this is the feasibility study's organizational/legal checkbox (`proprietor-design-and-validation.md`) actually coming due.
+
+**Grand opening second**, built on what the soft opening surfaced. Broader promotion — local press, Chamber of Commerce involvement, social media, a charity tie-in, cross-promotion with neighboring businesses who were likely soft-opening guests themselves. The soft opening's job was operational; the grand opening's job is reach.
+
+**Why this order matters, not just the individual events:** running a grand opening without a soft opening first skips the one step that catches operational failures before they're public and permanent — a bad first public impression is far more expensive to fix than a rough soft-opening night among friends.
+
+## How this connects to the rest of the Proprietor track
+
+Soft-opening discounts function as this track's version of the Compounder's pre-sell mechanism — real (if informal) commitment gathered before full public launch. The word-of-mouth this generates is the actual fuel for the niche-dominance strategy in `ecosystem-and-authority.md`: a business can't dominate a territory it hasn't first earned local trust in, and trust is exactly what soft opening plus systemized review-generation is built to produce.
