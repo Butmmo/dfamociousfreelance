@@ -1,29 +1,53 @@
-import React, { useState } from 'react';
-import {
-  TrendingUp, AlertTriangle, BarChart3, Globe, Users, CheckCircle2, ShieldCheck, Compass, Zap
-} from 'lucide-react';
+// The Ascent — The Briefing
+// Restyled to match smb-path-briefing.jsx's DBI Regal design system exactly:
+// cream/gold/crimson palette, Inter type, inline styles, emoji iconography.
+// Same primitives as TheAscentPerformanceCalculator.jsx, TheAscentGlobalTargetingManual.jsx
+// and the-ascent.jsx, for one consistent visual system across the stack.
+// All data and copy carried over unchanged from the original dark
+// "signal/insignia/alert" theme — visuals only were replaced.
+
+import { useState } from "react";
+
+/* ─── PALETTE (DBI Regal, matched to smb-path-briefing.jsx) ─── */
+const CREAM = "#F8F5EE";
+const CREAM_DEEP = "#F5F0E4";
+const BORDER = "#D9CFBB";
+const INK = "#201A16";
+const MUTED = "#6E6459";
+const GOLD = "#C99A3B";
+const GOLD_DEEP = "#7A5A00";
+const CRIMSON = "#8B0000";
+const EMERALD = "#0D7A5F";
+
+const TONE = {
+  good:    { c: EMERALD,   bg: "rgba(13,122,95,0.08)", bd: "rgba(13,122,95,0.35)" },
+  caution: { c: CRIMSON,   bg: "rgba(139,0,0,0.06)",   bd: "rgba(139,0,0,0.30)" },
+  neutral: { c: GOLD_DEEP, bg: "rgba(122,90,0,0.07)",  bd: "rgba(122,90,0,0.30)" },
+};
+const PLAIN = { c: MUTED, bg: "#FFFFFF", bd: BORDER };
+const tone = (key) => (key === "plain" ? PLAIN : TONE[key] || TONE.neutral);
 
 /* ---------------------------------------------------------------------- */
 /* DATA                                                                    */
 /* ---------------------------------------------------------------------- */
 
 const TABS = [
-  { id: 'brief', label: 'The Briefing' },
-  { id: 'highs', label: 'The Highs' },
-  { id: 'lows', label: 'The Lows' },
-  { id: 'standout', label: 'Stand Out' },
-  { id: 'durability', label: 'Durability' },
-  { id: 'competition', label: 'Competition' },
-  { id: 'fit', label: 'Your Lane?' },
+  { id: "brief", label: "🧭 The Briefing" },
+  { id: "highs", label: "⚡ The Highs" },
+  { id: "lows", label: "⚠️ The Lows" },
+  { id: "standout", label: "🥊 Stand Out" },
+  { id: "durability", label: "📈 Durability" },
+  { id: "competition", label: "👥 Competition" },
+  { id: "fit", label: "✅ Your Lane?" },
 ];
 
 const SNAPSHOT_LABELS = [
-  { key: 'entry', label: 'Entry Ease' },
-  { key: 'dealSize', label: 'Deal Size' },
-  { key: 'competition', label: 'Low Competition' },
-  { key: 'durability', label: 'Durability' },
-  { key: 'safety', label: 'Safety' },
-  { key: 'fit', label: 'Beginner Fit' },
+  { key: "entry", label: "Entry Ease" },
+  { key: "dealSize", label: "Deal Size" },
+  { key: "competition", label: "Low Competition" },
+  { key: "durability", label: "Durability" },
+  { key: "safety", label: "Safety" },
+  { key: "fit", label: "Beginner Fit" },
 ];
 
 // Averaged directly from Pick Lane's six-factor grading across all seven lanes
@@ -31,51 +55,51 @@ const SNAPSHOT_LABELS = [
 const PATH_SNAPSHOT = { entry: 3, dealSize: 4, competition: 3, durability: 4, safety: 3, fit: 3 };
 
 const HIGHS = [
-  { title: 'Zero capital to start',
+  { title: "Zero capital to start",
     body: `No inventory, no ad spend, no paid course required to get in the door. The system this briefing sits in front of is built to run on $0 — paid tools show up only as accelerants, never requirements.` },
-  { title: 'Paid on outcome, not on hours',
+  { title: "Paid on outcome, not on hours",
     body: `Commission-based pay means your ceiling isn't set by a manager's budget for your role — it's set by how much you close and how often. Nobody caps a good month.` },
-  { title: 'The skill outlives any one seat',
+  { title: "The skill outlives any one seat",
     body: `Lose a contract and you keep the thing that got you it: the ability to scout, pitch, and run a call. A dropshipping store built around one supplier or one ad account doesn't survive that same kind of loss nearly as easily.` },
-  { title: 'A real, independently-tracked pay ceiling',
+  { title: "A real, independently-tracked pay ceiling",
     body: `Glassdoor, ZipRecruiter, and Salary.com all show a genuine high-earning tier for this exact job title — not just a recruiter's income screenshot. (How much these trackers disagree with each other is in Durability — read that part closely too.)` },
-  { title: 'No degree, license, or portfolio gate — mostly',
+  { title: "No degree, license, or portfolio gate — mostly",
     body: `Outside a few specific lanes (funding, real estate, trading — each flagged in Pick Lane), nobody's checking credentials. What gets you considered is proof you can run a call, not a diploma.` },
-  { title: 'Remote by default',
+  { title: "Remote by default",
     body: `Every lane in this system assumes you're working from wherever you already are. Your address has never mattered less to an employer than it does in this specific role.` },
 ];
 
 const LOWS = [
-  { title: '100% commission, most of the time',
+  { title: "100% commission, most of the time",
     body: `No seat, no close, no pay — for most roles in this space there's no salary floor cushioning a slow month. The 45-Day System doesn't pretend otherwise: most people aren't earning, or even placed yet, on Day 1.` },
   { title: `The ramp is real, and it isn't instant`,
     body: `Even once you're placed, the first 30 days in a seat are built to be inconsistent — real stabilization lands around 60–90 days in. Anyone telling a Day-1 beginner to expect ceiling-level income in month one is selling something other than an honest career.` },
-  { title: 'This exact space has a documented scam history',
+  { title: "This exact space has a documented scam history",
     body: `Over the past few years the FTC has sued and settled with multiple "become a closer" and business-coaching operations for guaranteed, no-experience-needed income claims that didn't hold up — returning millions of dollars combined to the people who bought in. That history is exactly why every seat, not just the first one that says yes to you, needs vetting.` },
   { title: `Rejection is the job, not a sign something's wrong`,
     body: `Outbound scouting means most contacts don't respond and most calls don't close. That's the normal shape of this work, every week, indefinitely — not a signal to fix your approach after one bad day.` },
-  { title: 'A few lanes carry real regulatory or reputational exposure',
+  { title: "A few lanes carry real regulatory or reputational exposure",
     body: `Trading and signal-based offers draw increasing regulatory attention; funding and real-estate roles can shade into activity that legally requires a license you don't hold. Pick Lane's "Watch Out" notes exist specifically for this.` },
-  { title: 'No employer safety net',
+  { title: "No employer safety net",
     body: `This is independent-contractor work in almost every seat: no health coverage, no paid leave, no employer-side tax handling. Budget and file for that reality wherever you're based.` },
   { title: `You're never fully off`,
     body: `The pipeline goes cold the moment you stop feeding it — even after you land a seat. Staying in this career means scouting lightly forever, not just for 45 days.` },
 ];
 
 const MODEL_FACTORS = [
-  { key: 'capitalLight', label: 'Capital-Light' },
-  { key: 'speed', label: 'Speed to First $' },
-  { key: 'ceiling', label: 'Income Ceiling' },
-  { key: 'ownership', label: 'Ownership Built' },
-  { key: 'portability', label: 'Portability' },
+  { key: "capitalLight", label: "Capital-Light" },
+  { key: "speed", label: "Speed to First $" },
+  { key: "ceiling", label: "Income Ceiling" },
+  { key: "ownership", label: "Ownership Built" },
+  { key: "portability", label: "Portability" },
 ];
 
 const MODELS = [
-  { id: 'htc', name: 'High-Ticket Closing', capitalLight: 5, speed: 3, ceiling: 4, ownership: 1, portability: 4 },
-  { id: 'content', name: 'Content & Creator Monetization', capitalLight: 4, speed: 1, ceiling: 5, ownership: 5, portability: 3 },
-  { id: 'ecom', name: 'E-Commerce / Dropshipping', capitalLight: 1, speed: 3, ceiling: 4, ownership: 4, portability: 2 },
-  { id: 'freelance', name: 'Freelance Services', capitalLight: 5, speed: 2, ceiling: 3, ownership: 3, portability: 5 },
-  { id: 'product', name: 'Build Your Own Product', capitalLight: 3, speed: 1, ceiling: 5, ownership: 5, portability: 4 },
+  { id: "htc", name: "High-Ticket Closing", capitalLight: 5, speed: 3, ceiling: 4, ownership: 1, portability: 4 },
+  { id: "content", name: "Content & Creator Monetization", capitalLight: 4, speed: 1, ceiling: 5, ownership: 5, portability: 3 },
+  { id: "ecom", name: "E-Commerce / Dropshipping", capitalLight: 1, speed: 3, ceiling: 4, ownership: 4, portability: 2 },
+  { id: "freelance", name: "Freelance Services", capitalLight: 5, speed: 2, ceiling: 3, ownership: 3, portability: 5 },
+  { id: "product", name: "Build Your Own Product", capitalLight: 3, speed: 1, ceiling: 5, ownership: 5, portability: 4 },
 ];
 
 const DURABILITY_POINTS = [
@@ -101,13 +125,13 @@ const COMPETITION_POINTS = [
 ];
 
 const LANE_COMPETITION = [
-  { name: 'Credit & Business Funding', score: 3 },
-  { name: 'Dating & Relationship Coaching', score: 2 },
-  { name: 'Real Estate', score: 3 },
-  { name: 'Content & Personal Branding', score: 2 },
-  { name: 'Trading & Trading Bots', score: 3 },
-  { name: 'AI & B2B AI Implementation', score: 5 },
-  { name: 'B2B Agency & Marketing Services', score: 3 },
+  { name: "Credit & Business Funding", score: 3 },
+  { name: "Dating & Relationship Coaching", score: 2 },
+  { name: "Real Estate", score: 3 },
+  { name: "Content & Personal Branding", score: 2 },
+  { name: "Trading & Trading Bots", score: 3 },
+  { name: "AI & B2B AI Implementation", score: 5 },
+  { name: "B2B Agency & Marketing Services", score: 3 },
 ];
 
 const FIT_CHECKS = [
@@ -119,37 +143,67 @@ const FIT_CHECKS = [
 ];
 
 /* ---------------------------------------------------------------------- */
-/* SMALL COMPONENTS — matched to The Ascent's own visual system            */
+/* PRIMITIVES                                                              */
 /* ---------------------------------------------------------------------- */
 
-function CornerMarks() {
+const h2Style = { fontSize: 17, fontWeight: 700, margin: "0 0 6px", color: INK };
+const pStyle = { fontSize: 13, color: MUTED, lineHeight: 1.7, margin: "0 0 14px" };
+const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 };
+const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: GOLD_DEEP, marginBottom: 4 };
+
+function ScoreDots({ value, max = 5 }) {
   return (
-    <>
-      <span className="pointer-events-none absolute -top-px -left-px w-3 h-3 border-t-2 border-l-2 border-emerald-700/60" />
-      <span className="pointer-events-none absolute -top-px -right-px w-3 h-3 border-t-2 border-r-2 border-emerald-700/60" />
-      <span className="pointer-events-none absolute -bottom-px -left-px w-3 h-3 border-b-2 border-l-2 border-emerald-700/60" />
-      <span className="pointer-events-none absolute -bottom-px -right-px w-3 h-3 border-b-2 border-r-2 border-emerald-700/60" />
-    </>
+    <span style={{ display: "inline-flex", gap: 3, alignItems: "center" }}>
+      {Array.from({ length: max }).map((_, i) => (
+        <span key={i} style={{
+          width: 7, height: 7, borderRadius: "50%",
+          background: i < value ? GOLD : "transparent",
+          border: i < value ? "none" : `1px solid ${BORDER}`,
+        }} />
+      ))}
+    </span>
   );
 }
 
-function SectionHeading({ eyebrow, title, sub }) {
+function CalloutBox({ toneKey, eyebrow, children }) {
+  const t = tone(toneKey);
   return (
-    <div className="relative mb-5 pl-4 border-l-2 border-gold/40">
-      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-gold-deep">{eyebrow}</p>
-      <h2 className="font-display text-2xl sm:text-3xl text-white tracking-wide leading-tight mt-0.5">{title}</h2>
-      {sub && <p className="text-sm text-foreground-muted mt-1.5 max-w-2xl">{sub}</p>}
+    <div style={{ background: t.bg, border: `1px solid ${t.bd}`, borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+      <div style={{ ...eyebrowStyle, color: t.c, display: "flex", alignItems: "center", gap: 6 }}>{eyebrow}</div>
+      <div style={{ fontSize: 13, color: INK, lineHeight: 1.65 }}>{children}</div>
     </div>
   );
 }
 
-function ScoreDots({ value }) {
+function PointList({ items, toneKey, mark }) {
+  const t = tone(toneKey);
   return (
-    <span className="inline-flex gap-0.5 align-middle">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i} className={`w-1.5 h-1.5 rounded-full ${i < value ? 'bg-gold' : 'bg-accent/40 border border-border'}`} />
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {items.map((item, i) => (
+        <div key={i} style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 15px" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
+            <span style={{
+              flexShrink: 0, width: 22, height: 22, borderRadius: "50%", background: t.bg, border: `1px solid ${t.bd}`,
+              color: t.c, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, marginTop: 1,
+            }}>{mark}</span>
+            <div>
+              <p style={{ fontWeight: 700, fontSize: 13.5, color: INK, margin: "0 0 4px" }}>{item.title}</p>
+              <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.65, margin: 0 }}>{item.body}</p>
+            </div>
+          </div>
+        </div>
       ))}
-    </span>
+    </div>
+  );
+}
+
+function NextLink({ to, icon, title, body }) {
+  return (
+    <div title={to} style={{ background: CREAM, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", cursor: "pointer" }}>
+      <div style={{ fontSize: 20, marginBottom: 6 }}>{icon}</div>
+      <div style={{ fontWeight: 700, fontSize: 13.5, color: INK, marginBottom: 4 }}>{title}</div>
+      <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.5 }}>{body}</div>
+    </div>
   );
 }
 
@@ -159,44 +213,51 @@ function ScoreDots({ value }) {
 
 function BriefTab() {
   return (
-    <div className="space-y-6">
-      <SectionHeading eyebrow="Mission Briefing" title="What doorway is this, really?" />
-      <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
-        Inside DBI (D'Famocious Business Incubator), "Digital Systems Engineering" covers a lot of ground. This is the one door, of the seven, that's a sales role — not a content play, not a storefront, not a product build. You learn a structured way to run a sales conversation, then get hired, almost always on commission, by an online coach, consultant, or agency to close their qualified leads into paying clients. <strong className="text-white">The Ascent</strong> — the 45-day system — is how you actually land that seat. This briefing is what comes before it: an honest look at the doorway itself, so choosing it is a decision, not a reflex.
+    <div>
+      <h2 style={h2Style}>What Doorway Is This, Really?</h2>
+      <p style={pStyle}>
+        Inside DBI (D'Famocious Freelance Scholarship), "Digital Systems Engineering" covers a lot of ground. This
+        is the one door, of the seven, that's a sales role — not a content play, not a storefront, not a product
+        build. You learn a structured way to run a sales conversation, then get hired, almost always on commission,
+        by an online coach, consultant, or agency to close their qualified leads into paying clients.{" "}
+        <strong style={{ color: INK }}>The Ascent</strong> — the 45-day system — is how you actually land that seat.
+        This briefing is what comes before it: an honest look at the doorway itself, so choosing it is a decision,
+        not a reflex.
       </p>
 
-      <div className="relative rounded-lg border border-destructive bg-destructive/10 p-4">
-        <CornerMarks />
-        <div className="flex items-center gap-2 mb-2">
-          <AlertTriangle size={16} className="text-destructive" />
-          <p className="font-mono text-[11px] uppercase tracking-widest text-destructive">Read this before your 24 hours are up</p>
-        </div>
-        <p className="text-sm text-slate-200 leading-relaxed">
-          Nobody — inside DBI or outside it — can honestly promise you a number. This exact corner of the internet has a real regulatory paper trail: over the past few years the FTC has sued and settled with multiple "become a closer" and business-coaching operations for guaranteed, no-experience-needed income claims that didn't hold up, returning millions of dollars combined to the people who bought in. That's not a reason to write this path off — it's a genuine, working career for plenty of people. It's a reason to read every figure in this briefing, and every figure anyone ever gives you in this space, as a range you might reach — never a number owed to you for signing up.
-        </p>
-      </div>
+      <CalloutBox toneKey="caution" eyebrow="⚠️ Read this before your 24 hours are up">
+        Nobody — inside DBI or outside it — can honestly promise you a number. This exact corner of the internet has
+        a real regulatory paper trail: over the past few years the FTC has sued and settled with multiple "become a
+        closer" and business-coaching operations for guaranteed, no-experience-needed income claims that didn't hold
+        up, returning millions of dollars combined to the people who bought in. That's not a reason to write this
+        path off — it's a genuine, working career for plenty of people. It's a reason to read every figure in this
+        briefing, and every figure anyone ever gives you in this space, as a range you might reach — never a number
+        owed to you for signing up.
+      </CalloutBox>
 
-      <div>
-        <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-700 mb-2">Path Snapshot</p>
-        <div className="rounded-lg border border-border bg-card p-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
-            {SNAPSHOT_LABELS.map(s => (
-              <div key={s.key} className="flex items-center justify-between gap-2">
-                <span className="text-xs text-slate-300">{s.label}</span>
-                <ScoreDots value={PATH_SNAPSHOT[s.key]} />
-              </div>
-            ))}
-          </div>
+      <p style={{ ...labelStyle, fontSize: 11, marginBottom: 10 }}>Path Snapshot</p>
+      <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", marginBottom: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))", rowGap: 12, columnGap: 16 }}>
+          {SNAPSHOT_LABELS.map((s) => (
+            <div key={s.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+              <span style={{ fontSize: 12.5, color: MUTED }}>{s.label}</span>
+              <ScoreDots value={PATH_SNAPSHOT[s.key]} />
+            </div>
+          ))}
         </div>
-        <p className="text-xs text-foreground-muted mt-2 leading-relaxed">Averaged across all seven lanes graded in Pick Lane and the 7th Lane (Global Targeting Manual) — the specific lane you pick will swing several points in either direction. No lane scores a flat 5 across the board, including this one, averaged. That's the honest picture, not a pitch.</p>
       </div>
+      <p style={{ fontSize: 11.5, color: MUTED, lineHeight: 1.6, margin: "0 0 20px" }}>
+        Averaged across all seven lanes graded in Pick Lane and the 7th Lane (Global Targeting Manual) — the
+        specific lane you pick will swing several points in either direction. No lane scores a flat 5 across the
+        board, including this one, averaged. That's the honest picture, not a pitch.
+      </p>
 
-      <div className="rounded-lg border border-border bg-card p-4">
-        <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-700 mb-2">How to use this briefing</p>
-        <ol className="text-sm text-slate-300 space-y-1.5 leading-relaxed list-decimal list-inside">
+      <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px" }}>
+        <p style={{ ...eyebrowStyle, color: GOLD_DEEP }}>How to use this briefing</p>
+        <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: MUTED, lineHeight: 1.8 }}>
           <li>Read all seven tabs once, in order — twenty honest minutes.</li>
           <li>Cross-check anything that surprises you against Pick Lane, the Global Targeting Manual, or the Performance Calculator before you decide.</li>
-          <li>If you choose this door, <strong className="text-white">The Ascent</strong> is where Day 1 actually starts.</li>
+          <li>If you choose this door, <strong style={{ color: INK }}>The Ascent</strong> is where Day 1 actually starts.</li>
         </ol>
       </div>
     </div>
@@ -205,194 +266,162 @@ function BriefTab() {
 
 function HighsTab() {
   return (
-    <div className="space-y-6">
-      <SectionHeading eyebrow="What's Real About The Upside" title="The highs" sub="Genuine advantages, not recruiter talk — each one checked against the rest of this system or outside data." />
-      <div className="space-y-3">
-        {HIGHS.map((h, i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-start gap-2.5">
-              <TrendingUp size={16} className="text-emerald-700 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-white mb-1">{h.title}</p>
-                <p className="text-sm text-slate-300 leading-relaxed">{h.body}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div>
+      <h2 style={h2Style}>The Highs</h2>
+      <p style={pStyle}>Genuine advantages, not recruiter talk — each one checked against the rest of this system or outside data.</p>
+      <PointList items={HIGHS} toneKey="good" mark="⚡" />
     </div>
   );
 }
 
 function LowsTab() {
   return (
-    <div className="space-y-6">
-      <SectionHeading eyebrow="What's Real About The Downside" title="The lows" sub="Skip any of these and you're choosing this path with your eyes half-open." />
-      <div className="space-y-3">
-        {LOWS.map((l, i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-start gap-2.5">
-              <AlertTriangle size={16} className="text-destructive shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-white mb-1">{l.title}</p>
-                <p className="text-sm text-slate-300 leading-relaxed">{l.body}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div>
+      <h2 style={h2Style}>The Lows</h2>
+      <p style={pStyle}>Skip any of these and you're choosing this path with your eyes half-open.</p>
+      <PointList items={LOWS} toneKey="caution" mark="!" />
     </div>
   );
 }
 
 function StandoutTab() {
   return (
-    <div className="space-y-6">
-      <SectionHeading eyebrow="Same Zero Capital, Different Shape" title="What actually makes this stand out" sub={`"Digital income" covers very different bets. Here's this one, lined up honestly against four common alternatives.`} />
+    <div>
+      <h2 style={h2Style}>What Actually Makes This Stand Out</h2>
+      <p style={pStyle}>"Digital income" covers very different bets. Here's this one, lined up honestly against four common alternatives.</p>
 
-      <div className="overflow-x-auto rounded-lg border border-border">
-        <table className="w-full text-xs min-w-[600px]">
+      <div style={{ overflowX: "auto", border: `1px solid ${BORDER}`, borderRadius: 12, marginBottom: 18 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
           <thead>
-            <tr className="bg-accent/40 text-foreground-muted font-mono uppercase tracking-wide text-[10px]">
-              <th className="text-left px-3 py-2 font-medium">Model</th>
-              {MODEL_FACTORS.map(f => <th key={f.key} className="text-left px-2 py-2 font-medium whitespace-nowrap">{f.label}</th>)}
+            <tr style={{ background: CREAM_DEEP }}>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Model</th>
+              {MODEL_FACTORS.map((f) => (
+                <th key={f.key} style={{ textAlign: "left", padding: "9px 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, whiteSpace: "nowrap" }}>{f.label}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {MODELS.map((m, idx) => (
-              <tr key={m.id} className={`${m.id === 'htc' ? 'bg-emerald-700/10' : idx % 2 ? 'bg-card/60' : 'bg-card'} border-t border-border`}>
-                <td className="px-3 py-2.5 text-slate-200 font-medium whitespace-nowrap">{m.name}</td>
-                {MODEL_FACTORS.map(f => <td key={f.key} className="px-2 py-2.5"><ScoreDots value={m[f.key]} /></td>)}
+            {MODELS.map((m) => (
+              <tr key={m.id} style={{ borderTop: `1px solid ${BORDER}`, background: m.id === "htc" ? "rgba(201,154,59,0.08)" : "#FFFFFF" }}>
+                <td style={{ padding: "10px 12px", fontSize: 12.5, fontWeight: 600, color: INK, whiteSpace: "nowrap" }}>{m.id === "htc" ? "🎯 " : ""}{m.name}</td>
+                {MODEL_FACTORS.map((f) => (
+                  <td key={f.key} style={{ padding: "10px" }}><ScoreDots value={m[f.key]} /></td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4 space-y-3">
-        <p className="text-sm text-slate-300 leading-relaxed">
-          The honest headline: this is one of the only digital paths where you can go from zero capital to a real paycheck without first building an audience, a store, or a product. That speed is real, and it's exactly why this door attracts people who need income sooner rather than later.
+      <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+        <p style={{ fontSize: 13, color: INK, lineHeight: 1.65, margin: "0 0 10px" }}>
+          The honest headline: this is one of the only digital paths where you can go from zero capital to a real
+          paycheck without first building an audience, a store, or a product. That speed is real, and it's exactly
+          why this door attracts people who need income sooner rather than later.
         </p>
-        <p className="text-sm text-slate-300 leading-relaxed">
-          The honest trade-off sits right next to it: at the end of it, you own nothing. No audience, no equity, no product, no IP — every dollar depends on someone else's business staying open and paying you on time, for as long as you keep showing up and closing. A creator or a builder is stacking an asset while they work. A closer is renting out a skill, deal by deal. Neither is wrong. They're different bets on time.
+        <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.65, margin: 0 }}>
+          The honest trade-off sits right next to it: at the end of it, you own nothing. No audience, no equity, no
+          product, no IP — every dollar depends on someone else's business staying open and paying you on time, for
+          as long as you keep showing up and closing. A creator or a builder is stacking an asset while they work. A
+          closer is renting out a skill, deal by deal. Neither is wrong. They're different bets on time.
         </p>
       </div>
 
-      <div className="relative rounded-lg border border-gold/40 bg-gold/10 p-4">
-        <CornerMarks />
-        <p className="text-sm text-slate-200 leading-relaxed">
-          This is exactly why Pick Lane's Vetting Checklist and the Global Targeting Manual's Target Scoring exist. When you own nothing but the relationship, who you work for matters more here than in almost any other digital path on this table.
-        </p>
-      </div>
+      <CalloutBox toneKey="neutral" eyebrow="🧭 Why vetting matters more here">
+        This is exactly why Pick Lane's Vetting Checklist and the Global Targeting Manual's Target Scoring exist.
+        When you own nothing but the relationship, who you work for matters more here than in almost any other
+        digital path on this table.
+      </CalloutBox>
     </div>
   );
 }
 
 function DurabilityTab() {
   return (
-    <div className="space-y-6">
-      <SectionHeading eyebrow="Volatility Check" title="How durable is the demand, really?" />
+    <div>
+      <h2 style={h2Style}>How Durable Is The Demand, Really?</h2>
 
-      <div className="relative rounded-lg border border-emerald-700 bg-emerald-700/10 p-4">
-        <CornerMarks />
-        <div className="flex items-center gap-2 mb-2">
-          <Zap size={16} className="text-emerald-700" />
-          <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-700">The pay numbers, checked in mid-2026</p>
-        </div>
-        <p className="text-sm text-slate-200 leading-relaxed">
-          Even within a single tracker, the exact phrase you search changes the answer: ZipRecruiter data shows roughly $36K/year for the literal title "High Ticket Closer" in one 2026 pull, but roughly $113K/year for "remote sales closer" the same year. Glassdoor's own number for "High Ticket Sales Closer" sits close to that second figure, near $113K/year; Salary.com lands around $88K. That's close to a 3x spread depending on which of these near-identical titles gets searched — a sign of inconsistent titling and thin, self-reported, commission-heavy data, not a hidden "true" number waiting to be found. Read every income figure in this space, including the ones in The Ascent, as a directional range, not a quote.
-        </p>
-      </div>
+      <CalloutBox toneKey="good" eyebrow="⚡ The pay numbers, checked in mid-2026">
+        Even within a single tracker, the exact phrase you search changes the answer: ZipRecruiter data shows
+        roughly $36K/year for the literal title "High Ticket Closer" in one 2026 pull, but roughly $113K/year for
+        "remote sales closer" the same year. Glassdoor's own number for "High Ticket Sales Closer" sits close to
+        that second figure, near $113K/year; Salary.com lands around $88K. That's close to a 3x spread depending on
+        which of these near-identical titles gets searched — a sign of inconsistent titling and thin, self-reported,
+        commission-heavy data, not a hidden "true" number waiting to be found. Read every income figure in this
+        space, including the ones in The Ascent, as a directional range, not a quote.
+      </CalloutBox>
 
-      <div className="space-y-3">
-        {DURABILITY_POINTS.map((d, i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-start gap-2.5">
-              <Globe size={16} className="text-emerald-700 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-white mb-1">{d.title}</p>
-                <p className="text-sm text-slate-300 leading-relaxed">{d.body}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <PointList items={DURABILITY_POINTS} toneKey="neutral" mark="🌍" />
     </div>
   );
 }
 
 function CompetitionTab() {
   return (
-    <div className="space-y-6">
-      <SectionHeading eyebrow="Who Else Is Trying This" title="How competitive is it, really?" />
+    <div>
+      <h2 style={h2Style}>How Competitive Is It, Really?</h2>
 
-      <div className="space-y-3">
-        {COMPETITION_POINTS.map((c, i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-start gap-2.5">
-              <Users size={16} className="text-emerald-700 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-white mb-1">{c.title}</p>
-                <p className="text-sm text-slate-300 leading-relaxed">{c.body}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div style={{ marginBottom: 20 }}>
+        <PointList items={COMPETITION_POINTS} toneKey="neutral" mark="👥" />
       </div>
 
-      <div>
-        <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-700 mb-2 flex items-center gap-2"><BarChart3 size={14} /> Competition by lane</p>
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full text-xs min-w-[480px]">
-            <thead>
-              <tr className="bg-accent/40 text-foreground-muted font-mono uppercase tracking-wide text-[10px]">
-                <th className="text-left px-3 py-2 font-medium">Lane</th>
-                <th className="text-left px-2 py-2 font-medium">Low-Competition Score</th>
+      <p style={{ ...labelStyle, fontSize: 11, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>📊 Competition by lane</p>
+      <div style={{ overflowX: "auto", border: `1px solid ${BORDER}`, borderRadius: 12, marginBottom: 8 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
+          <thead>
+            <tr style={{ background: CREAM_DEEP }}>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Lane</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Low-Competition Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LANE_COMPETITION.map((l) => (
+              <tr key={l.name} style={{ borderTop: `1px solid ${BORDER}` }}>
+                <td style={{ padding: "10px 12px", fontSize: 12.5, fontWeight: 600, color: INK, whiteSpace: "nowrap" }}>{l.name}</td>
+                <td style={{ padding: "10px 12px" }}><ScoreDots value={l.score} /></td>
               </tr>
-            </thead>
-            <tbody>
-              {LANE_COMPETITION.map((l, i) => (
-                <tr key={l.name} className={`${i % 2 ? 'bg-card/60' : 'bg-card'} border-t border-border`}>
-                  <td className="px-3 py-2.5 text-slate-200 font-medium whitespace-nowrap">{l.name}</td>
-                  <td className="px-2 py-2.5"><ScoreDots value={l.score} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="text-xs text-foreground-muted mt-2 leading-relaxed">Straight from Pick Lane's own six-factor grading (Global Targeting Manual included) — higher dots mean less competition, not more of it.</p>
+            ))}
+          </tbody>
+        </table>
       </div>
+      <p style={{ fontSize: 11.5, color: MUTED, lineHeight: 1.6, margin: 0 }}>Straight from Pick Lane's own six-factor grading (Global Targeting Manual included) — higher dots mean less competition, not more of it.</p>
     </div>
   );
 }
 
 function FitTab() {
   return (
-    <div className="space-y-6">
-      <SectionHeading eyebrow="Decide With Open Eyes" title="Is this your lane?" />
+    <div>
+      <h2 style={h2Style}>Is This Your Lane?</h2>
 
-      <div className="rounded-lg border border-border bg-card p-4">
-        <p className="font-mono text-[11px] uppercase tracking-widest text-emerald-700 mb-3">Five honest questions, not a scored quiz</p>
-        <div className="space-y-2.5">
+      <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", marginBottom: 16 }}>
+        <p style={{ ...eyebrowStyle, color: GOLD_DEEP }}>Five honest questions, not a scored quiz</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {FIT_CHECKS.map((q, i) => (
-            <div key={i} className="flex gap-2.5 text-sm">
-              <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
-              <span className="text-slate-300 leading-relaxed">{q}</span>
+            <div key={i} style={{ display: "flex", gap: 10 }}>
+              <span style={{
+                flexShrink: 0, width: 18, height: 18, borderRadius: "50%", background: TONE.good.bg, border: `1px solid ${TONE.good.bd}`,
+                color: EMERALD, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, marginTop: 1,
+              }}>✓</span>
+              <span style={{ fontSize: 13, color: MUTED, lineHeight: 1.65 }}>{q}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="relative rounded-lg border border-gold/40 bg-gold/10 p-4">
-        <CornerMarks />
-        <p className="text-sm text-slate-200 leading-relaxed">
-          None of DBI's seven doors is "the right one," and this briefing isn't built to talk you into this one — Pick Lane's own line applies just as much up here: choose with open eyes, not the answer it's grading for. If the highs in this document sound like a career and the lows sound like a livable trade-off, this door is a genuinely real one. If the lows sound like more than you're set up to carry right now, that's useful information too — a fit question answered honestly, on your own terms, before the clock runs out instead of after.
-        </p>
-      </div>
+      <CalloutBox toneKey="neutral" eyebrow="🧭 There's no wrong door, only an honest one">
+        None of DBI's seven doors is "the right one," and this briefing isn't built to talk you into this one — Pick
+        Lane's own line applies just as much up here: choose with open eyes, not the answer it's grading for. If the
+        highs in this document sound like a career and the lows sound like a livable trade-off, this door is a
+        genuinely real one. If the lows sound like more than you're set up to carry right now, that's useful
+        information too — a fit question answered honestly, on your own terms, before the clock runs out instead of
+        after.
+      </CalloutBox>
 
-      <div className="rounded-lg border border-border bg-accent/20 p-4">
-        <p className="text-sm text-slate-300 leading-relaxed">
-          <strong className="text-white">If you choose this door:</strong> The Ascent (45-Day System) is where Day 1 starts. Keep the Global Targeting Manual and the Performance Calculator open alongside it — this briefing's job ends here.
+      <div style={{ background: "#FFFFFF", border: `1px solid ${GOLD}`, borderRadius: 12, padding: "14px 16px" }}>
+        <p style={{ fontSize: 13, color: INK, lineHeight: 1.65, margin: 0 }}>
+          <strong>If you choose this door:</strong> The Ascent (45-Day System) is where Day 1 starts. Keep the
+          Global Targeting Manual and the Performance Calculator open alongside it — this briefing's job ends here.
         </p>
       </div>
     </div>
@@ -404,91 +433,98 @@ function FitTab() {
 /* ---------------------------------------------------------------------- */
 
 export default function AscentPathBriefing() {
-  const [activeTab, setActiveTab] = useState('brief');
+  const [activeTab, setActiveTab] = useState("brief");
+
+  const VITALS = [
+    { label: "Sections", value: "7", toneKey: "neutral", note: "read in order, once" },
+    { label: "Snapshot Factors", value: "6", toneKey: "neutral", note: "averaged across all seven lanes" },
+    { label: "Models Compared", value: "5", toneKey: "good", note: "high-ticket closing vs. four alternatives" },
+    { label: "Capital Required", value: "$0", toneKey: "good", note: "same zero-capital basis as The Ascent" },
+  ];
 
   return (
-    <div className="min-h-screen bg-background font-body text-slate-200">
+    <div style={{ background: CREAM, minHeight: "100vh", color: INK, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-        .font-display { font-family: 'Big Shoulders Display', sans-serif; }
-        .font-body { font-family: 'IBM Plex Sans', sans-serif; }
-        .font-mono { font-family: 'IBM Plex Mono', monospace; }
-        .bg-background {
-          background-color: #12151A;
-          background-image:
-            linear-gradient(rgba(69,199,176,0.045) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(69,199,176,0.045) 1px, transparent 1px);
-          background-size: 26px 26px;
-        }
-        .text-foreground { color: #12151A; }
-        .bg-card { background-color: #1B1F27; }
-        .bg-accent/40 { background-color: #232833; }
-        .border-border { border-color: #2A303C; }
-        .text-foreground-muted { color: #8B93A3; }
-        .text-emerald-700 { color: #0D7A5F; }
-        .bg-emerald-700 { background-color: #0D7A5F; }
-        .border-emerald-700 { border-color: #0D7A5F; }
-        .text-gold-deep { color: #C99A3B; }
-        .bg-gold { background-color: #C99A3B; }
-        .border-gold/40 { border-color: #C99A3B; }
-        .text-destructive { color: #E0574A; }
-        .border-destructive { border-color: #E0574A; }
-        .bg-destructive\\/10 { background-color: rgba(224,87,74,0.1); }
-        .bg-emerald-700\\/10 { background-color: rgba(69,199,176,0.1); }
-        .bg-gold\\/10 { background-color: rgba(217,164,65,0.1); }
-        .border-gold/40\\/50 { border-color: rgba(217,164,65,0.5); }
-        .border-destructive\\/50 { border-color: rgba(224,87,74,0.5); }
-        .bg-accent/40\\/50 { background-color: rgba(35,40,51,0.5); }
-        .bg-accent/40\\/60 { background-color: rgba(35,40,51,0.6); }
-        .hover\\:bg-accent/40\\/60:hover { background-color: rgba(35,40,51,0.6); }
-        .focus-visible\\:outline-signal:focus-visible { outline-color: #0D7A5F; }
-        @media (prefers-reduced-motion: reduce) {
-          * { transition: none !important; animation: none !important; }
-        }
+        button:focus-visible { outline: 2px solid ${GOLD}; outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
       `}</style>
 
-      <header className="sticky top-0 z-20 border-b border-border" style={{ backgroundColor: 'rgba(18,21,26,0.96)' }}>
-        <div className="max-w-4xl mx-auto px-4 pt-4">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <h1 className="font-display text-3xl text-white tracking-wide leading-none">THE BRIEFING</h1>
-              <p className="font-mono text-[10px] text-foreground-muted uppercase tracking-[0.2em] mt-1">High-Ticket Closing — One Door Inside DBI</p>
-            </div>
-            <div className="text-right">
-              <p className="font-mono text-xs text-gold-deep uppercase tracking-wider flex items-center gap-1.5 justify-end"><Compass size={12} /> Companion to The Ascent</p>
-              <p className="font-mono text-[11px] text-foreground-muted mt-0.5">7 sections · 6-factor snapshot · 5 models compared</p>
-            </div>
+      {/* HEADER */}
+      <div style={{ background: `linear-gradient(160deg, #FDF9F0 0%, ${CREAM_DEEP} 100%)`, borderBottom: `1px solid ${BORDER}`, padding: "24px 18px 0" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "uppercase", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 6px ${GOLD}`, display: "inline-block" }} />
+            The Ascent · Decision Briefing
+          </div>
+          <h1 style={{ margin: "0 0 8px", fontSize: "clamp(22px,4.6vw,36px)", fontWeight: 800, lineHeight: 1.15, background: `linear-gradient(130deg, #1A140F 20%, ${GOLD} 70%, ${CRIMSON} 100%)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            The Briefing
+          </h1>
+          <p style={{ margin: "0 0 4px", fontSize: 12.5, color: GOLD_DEEP, fontWeight: 700 }}>High-Ticket Closing — One Door Inside DBI</p>
+          <p style={{ margin: "0 0 18px", fontSize: 13, color: MUTED, maxWidth: 660, lineHeight: 1.7 }}>
+            An honest look at the doorway itself, before you spend 45 days walking through it — the highs, the lows,
+            how it compares to other zero-capital paths, and whether it's actually your lane.
+          </p>
+
+          {/* VITALS */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 9, marginBottom: 18 }}>
+            {VITALS.map((v) => {
+              const t = tone(v.toneKey);
+              return (
+                <div key={v.label} style={{ background: "#FFFFFF", border: `1px solid ${t.bd}`, borderRadius: 10, padding: "10px 12px" }}>
+                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, marginBottom: 4 }}>{v.label}</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: t.c, marginBottom: 3 }}>{v.value}</div>
+                  <div style={{ fontSize: 10.5, color: MUTED, lineHeight: 1.4 }}>{v.note}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* TABS */}
+          <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" }}>
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                style={{
+                  background: "transparent", border: "none", cursor: "pointer",
+                  borderBottom: activeTab === t.id ? `2px solid ${GOLD}` : "2px solid transparent",
+                  color: activeTab === t.id ? GOLD_DEEP : "#8A7C6D",
+                  padding: "11px 13px", fontSize: 12.5, fontWeight: activeTab === t.id ? 700 : 500,
+                  whiteSpace: "nowrap", transition: "all 0.15s", fontFamily: "inherit",
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
         </div>
+      </div>
 
-        <nav className="max-w-4xl mx-auto px-4 flex gap-1 overflow-x-auto pb-2.5 pt-3">
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id)}
-              className={`shrink-0 font-mono text-[11px] uppercase tracking-wide px-3 py-1.5 rounded-md border transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-signal ${
-                activeTab === t.id ? 'bg-emerald-700 border-emerald-700 text-foreground font-semibold' : 'border-border text-foreground-muted hover:text-slate-200'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </nav>
-      </header>
+      {/* CONTENT */}
+      <div style={{ maxWidth: 880, margin: "0 auto", padding: "20px 16px 60px" }}>
+        {activeTab === "brief" && <BriefTab />}
+        {activeTab === "highs" && <HighsTab />}
+        {activeTab === "lows" && <LowsTab />}
+        {activeTab === "standout" && <StandoutTab />}
+        {activeTab === "durability" && <DurabilityTab />}
+        {activeTab === "competition" && <CompetitionTab />}
+        {activeTab === "fit" && <FitTab />}
+      </div>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 pb-16">
-        {activeTab === 'brief' && <BriefTab />}
-        {activeTab === 'highs' && <HighsTab />}
-        {activeTab === 'lows' && <LowsTab />}
-        {activeTab === 'standout' && <StandoutTab />}
-        {activeTab === 'durability' && <DurabilityTab />}
-        {activeTab === 'competition' && <CompetitionTab />}
-        {activeTab === 'fit' && <FitTab />}
-      </main>
-
-      <footer className="max-w-4xl mx-auto px-4 pb-8">
-        <p className="text-[11px] text-foreground-muted font-mono flex items-center gap-1.5"><ShieldCheck size={12} /> Decision support, not a pitch — every figure here is a range to plan around, not a promise.</p>
-      </footer>
+      {/* CTA FOOTER */}
+      <div style={{ borderTop: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>If You Choose This Door</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 16 }}>
+            <NextLink to="/the-ascent" icon="🧭" title="The Ascent" body="Day 1 of the 45-day system starts here." />
+            <NextLink to="/global-targeting-manual" icon="🌍" title="Global Targeting Manual" body="Where the target companies are, and the 7th lane." />
+            <NextLink to="/performance-calculator" icon="🧮" title="Performance Calculator" body="Model your own real numbers before you start." />
+          </div>
+          <p style={{ fontSize: 11, color: MUTED, margin: 0, display: "flex", alignItems: "center", gap: 6 }}>
+            🛡️ Decision support, not a pitch — every figure here is a range to plan around, not a promise.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
