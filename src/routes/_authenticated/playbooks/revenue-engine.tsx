@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/revenue/RevenueRecoveryEngine
 export const Route = createFileRoute("/_authenticated/playbooks/revenue-engine")({
   head: () => ({
     meta: [
-      { title: "Revenue Recovery Engine — DFS Citadel" },
-      { name: "description", content: "Revenue Recovery Engine: The 45-Day Build. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Revenue Recovery Engine — DFS Citadel" },
+      { title: "Revenue Recovery Engine — DBI Citadel" },
+      { name: "description", content: "Revenue Recovery Engine: The 45-Day Build. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Revenue Recovery Engine — DBI Citadel" },
       { property: "og:description", content: "Revenue Recovery Engine: The 45-Day Build." },
     ],
   }),

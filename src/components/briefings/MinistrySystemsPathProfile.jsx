@@ -240,7 +240,7 @@ export default function MinistrySystemsPathProfile() {
             textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:C.green,
               boxShadow:"0 0 6px "+C.green,display:"inline-block"}}/>
-            DFS Path Selection · One of 7 Doorways
+            DBI Path Selection · One of 7 Doorways
           </div>
           <h1 style={{margin:"0 0 7px",fontSize:"clamp(21px,4.5vw,33px)",fontWeight:800,
             lineHeight:1.15,background:"linear-gradient(135deg,#201A16 30%,#C99A3B 100%)",

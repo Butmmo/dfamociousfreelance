@@ -8,7 +8,7 @@ import { ESCALATION_START } from "@/lib/escalation";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
-  head: () => ({ meta: [{ title: "Calendar — DFS Citadel" }] }),
+  head: () => ({ meta: [{ title: "Calendar — DBI Citadel" }] }),
   component: CalendarPage,
 });
 

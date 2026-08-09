@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/report")({
-  head: () => ({ meta: [{ title: "Report — DFS Citadel" }] }),
+  head: () => ({ meta: [{ title: "Report — DBI Citadel" }] }),
   component: ReportPage,
 });
 

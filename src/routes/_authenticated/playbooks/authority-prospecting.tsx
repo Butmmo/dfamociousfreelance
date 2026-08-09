@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/authority/AuthorityProspectin
 export const Route = createFileRoute("/_authenticated/playbooks/authority-prospecting")({
   head: () => ({
     meta: [
-      { title: "The Prospecting Engine — DFS Citadel" },
-      { name: "description", content: "The Prospecting Engine: Experts · Niches · Leads. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "The Prospecting Engine — DFS Citadel" },
+      { title: "The Prospecting Engine — DBI Citadel" },
+      { name: "description", content: "The Prospecting Engine: Experts · Niches · Leads. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "The Prospecting Engine — DBI Citadel" },
       { property: "og:description", content: "The Prospecting Engine: Experts · Niches · Leads." },
     ],
   }),

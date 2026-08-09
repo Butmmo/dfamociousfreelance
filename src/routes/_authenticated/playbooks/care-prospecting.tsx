@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/carebridge/CareProspecting.js
 export const Route = createFileRoute("/_authenticated/playbooks/care-prospecting")({
   head: () => ({
     meta: [
-      { title: "Senior Care Prospecting Guide — DFS Citadel" },
-      { name: "description", content: "Senior Care Prospecting Guide: Markets · Agencies · Leads. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Senior Care Prospecting Guide — DFS Citadel" },
+      { title: "Senior Care Prospecting Guide — DBI Citadel" },
+      { name: "description", content: "Senior Care Prospecting Guide: Markets · Agencies · Leads. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Senior Care Prospecting Guide — DBI Citadel" },
       { property: "og:description", content: "Senior Care Prospecting Guide: Markets · Agencies · Leads." },
     ],
   }),

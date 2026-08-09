@@ -5,7 +5,7 @@ export const DFS_LOGO = dfsLogo.url;
 export const DFG_CREST = dfgCrest.url;
 
 export function DfsMark({ className = "h-10 w-10" }: { className?: string }) {
-  return <img src={DFS_LOGO} alt="DFS" className={className} />;
+  return <img src={DFS_LOGO} alt="DBI" className={className} />;
 }
 
 export function DfgMark({ className = "h-10 w-10" }: { className?: string }) {

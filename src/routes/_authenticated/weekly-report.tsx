@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { FileText, Send, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/weekly-report")({
-  head: () => ({ meta: [{ title: "Weekly Report — DFS Citadel" }] }),
+  head: () => ({ meta: [{ title: "Weekly Report — DBI Citadel" }] }),
   component: WeeklyReportPage,
 });
 

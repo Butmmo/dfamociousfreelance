@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/authority/AuthorityEngine.jsx
 export const Route = createFileRoute("/_authenticated/playbooks/authority-engine")({
   head: () => ({
     meta: [
-      { title: "The Authority Engine — DFS Citadel" },
-      { name: "description", content: "The Authority Engine: The 45-Day Build. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "The Authority Engine — DFS Citadel" },
+      { title: "The Authority Engine — DBI Citadel" },
+      { name: "description", content: "The Authority Engine: The 45-Day Build. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "The Authority Engine — DBI Citadel" },
       { property: "og:description", content: "The Authority Engine: The 45-Day Build." },
     ],
   }),

@@ -230,4 +230,4 @@ CREATE TRIGGER touch_task_progress_updated BEFORE UPDATE ON public.task_progress
   FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
 
 -- =========== Default cohort ===========
-INSERT INTO public.cohorts (name, description) VALUES ('Founding Cohort', 'The inaugural DFS beneficiary intake');
+INSERT INTO public.cohorts (name, description) VALUES ('Founding Cohort', 'The inaugural DBI beneficiary intake');

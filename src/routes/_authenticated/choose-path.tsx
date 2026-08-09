@@ -10,7 +10,7 @@ import { ArrowLeft, Check, Clock, Loader2, ShieldAlert, Sparkles } from "lucide-
 export const Route = createFileRoute("/_authenticated/choose-path")({
   head: () => ({
     meta: [
-      { title: "Choose Your Path — DFS Citadel" },
+      { title: "Choose Your Path — DBI Citadel" },
       {
         name: "description",
         content:
@@ -104,7 +104,7 @@ function ChoosePathPage() {
         <h1 className="mt-1 font-display text-3xl md:text-4xl font-bold">The Seven Paths of Digital Engineering</h1>
         <p className="mt-3 text-muted-foreground max-w-3xl">
           Seven separate systems. You run <strong className="text-foreground">one</strong>. This is deliberate — it keeps
-          DFS beneficiaries out of each other's markets and gives each of you a lane wide enough to actually win in.
+          DBI beneficiaries out of each other's markets and gives each of you a lane wide enough to actually win in.
           Read the briefings honestly: each one lists the highs, the lows, the durability and the competition before you
           commit.
         </p>
@@ -214,7 +214,7 @@ function ChoosePathPage() {
         <p className="mt-2 text-sm text-muted-foreground max-w-3xl">
           Every path carries the full Citadel machinery — dashboard, playbooks, 45-day calendar, field report, weekly
           filings, XP and ranks, escalation tracking and council oversight. Locking each beneficiary to a single path
-          means two DFS students never knock on the same door, and each of you compounds depth instead of splitting
+          means two DBI students never knock on the same door, and each of you compounds depth instead of splitting
           attention.
         </p>
       </section>

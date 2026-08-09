@@ -10,7 +10,7 @@ import { Calendar, Globe, ArrowRight, Calculator } from "lucide-react";
 const ICONS = { globe: Globe, calendar: Calendar, calculator: Calculator } as const;
 
 export const Route = createFileRoute("/_authenticated/playbooks/")({
-  head: () => ({ meta: [{ title: "The Playbooks — DFS Citadel" }] }),
+  head: () => ({ meta: [{ title: "The Playbooks — DBI Citadel" }] }),
   component: PlaybooksIndex,
 });
 

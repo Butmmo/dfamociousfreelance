@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/ascent/AscentCalculator.jsx")
 export const Route = createFileRoute("/_authenticated/playbooks/ascent-calculator")({
   head: () => ({
     meta: [
-      { title: "Ascent Performance Calculator — DFS Citadel" },
-      { name: "description", content: "Ascent Performance Calculator: Powered by Claude AI. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Ascent Performance Calculator — DFS Citadel" },
+      { title: "Ascent Performance Calculator — DBI Citadel" },
+      { name: "description", content: "Ascent Performance Calculator: Powered by Claude AI. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Ascent Performance Calculator — DBI Citadel" },
       { property: "og:description", content: "Ascent Performance Calculator: Powered by Claude AI." },
     ],
   }),

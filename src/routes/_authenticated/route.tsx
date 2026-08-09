@@ -87,7 +87,7 @@ function AuthedShell() {
           <Link to="/dashboard" className="flex items-center gap-3 min-w-0">
             <DfsMark className="h-9 w-9 shrink-0" />
             <div className="leading-tight min-w-0 hidden xs:block">
-              <div className="font-display text-sm font-bold truncate">DFS Citadel</div>
+              <div className="font-display text-sm font-bold truncate">DBI Citadel</div>
               <Motto className="text-[9px]" />
             </div>
           </Link>

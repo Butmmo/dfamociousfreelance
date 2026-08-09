@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Loader2, Mail, Lock, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Beneficiary Login — DFS" }] }),
+  head: () => ({ meta: [{ title: "Beneficiary Login — DBI" }] }),
   component: AuthPage,
 });
 
@@ -82,7 +82,7 @@ function AuthPage() {
           <div className="flex items-center gap-3 mb-10">
             <DfsMark className="h-12 w-12" />
             <div className="leading-tight">
-              <div className="font-display text-lg font-bold">DFS</div>
+              <div className="font-display text-lg font-bold">DBI</div>
               <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Beneficiary Portal</div>
             </div>
           </div>
@@ -111,7 +111,7 @@ function AuthPage() {
                 <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
               </div>
               <p className="mt-8 text-xs text-muted-foreground border-t border-border pt-6">
-                <strong>Note:</strong> DFS is invitation-only. Public sign-up is closed. If you don't have an invitation, request access from an admin.
+                <strong>Note:</strong> DBI is invitation-only. Public sign-up is closed. If you don't have an invitation, request access from an admin.
               </p>
             </>
           ) : (

@@ -162,7 +162,7 @@ function BriefTab() {
     <div className="space-y-6">
       <SectionHeading eyebrow="Mission Briefing" title="What doorway is this, really?" />
       <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
-        Inside DFS (D'Famocious Freelance Scholarship), "Digital Systems Engineering" covers a lot of ground. This is the one door, of the seven, that's a sales role — not a content play, not a storefront, not a product build. You learn a structured way to run a sales conversation, then get hired, almost always on commission, by an online coach, consultant, or agency to close their qualified leads into paying clients. <strong className="text-white">The Ascent</strong> — the 45-day system — is how you actually land that seat. This briefing is what comes before it: an honest look at the doorway itself, so choosing it is a decision, not a reflex.
+        Inside DBI (D'Famocious Business Incubator), "Digital Systems Engineering" covers a lot of ground. This is the one door, of the seven, that's a sales role — not a content play, not a storefront, not a product build. You learn a structured way to run a sales conversation, then get hired, almost always on commission, by an online coach, consultant, or agency to close their qualified leads into paying clients. <strong className="text-white">The Ascent</strong> — the 45-day system — is how you actually land that seat. This briefing is what comes before it: an honest look at the doorway itself, so choosing it is a decision, not a reflex.
       </p>
 
       <div className="relative rounded-lg border border-destructive bg-destructive/10 p-4">
@@ -172,7 +172,7 @@ function BriefTab() {
           <p className="font-mono text-[11px] uppercase tracking-widest text-destructive">Read this before your 24 hours are up</p>
         </div>
         <p className="text-sm text-slate-200 leading-relaxed">
-          Nobody — inside DFS or outside it — can honestly promise you a number. This exact corner of the internet has a real regulatory paper trail: over the past few years the FTC has sued and settled with multiple "become a closer" and business-coaching operations for guaranteed, no-experience-needed income claims that didn't hold up, returning millions of dollars combined to the people who bought in. That's not a reason to write this path off — it's a genuine, working career for plenty of people. It's a reason to read every figure in this briefing, and every figure anyone ever gives you in this space, as a range you might reach — never a number owed to you for signing up.
+          Nobody — inside DBI or outside it — can honestly promise you a number. This exact corner of the internet has a real regulatory paper trail: over the past few years the FTC has sued and settled with multiple "become a closer" and business-coaching operations for guaranteed, no-experience-needed income claims that didn't hold up, returning millions of dollars combined to the people who bought in. That's not a reason to write this path off — it's a genuine, working career for plenty of people. It's a reason to read every figure in this briefing, and every figure anyone ever gives you in this space, as a range you might reach — never a number owed to you for signing up.
         </p>
       </div>
 
@@ -386,7 +386,7 @@ function FitTab() {
       <div className="relative rounded-lg border border-gold/40 bg-gold/10 p-4">
         <CornerMarks />
         <p className="text-sm text-slate-200 leading-relaxed">
-          None of DFS's seven doors is "the right one," and this briefing isn't built to talk you into this one — Pick Lane's own line applies just as much up here: choose with open eyes, not the answer it's grading for. If the highs in this document sound like a career and the lows sound like a livable trade-off, this door is a genuinely real one. If the lows sound like more than you're set up to carry right now, that's useful information too — a fit question answered honestly, on your own terms, before the clock runs out instead of after.
+          None of DBI's seven doors is "the right one," and this briefing isn't built to talk you into this one — Pick Lane's own line applies just as much up here: choose with open eyes, not the answer it's grading for. If the highs in this document sound like a career and the lows sound like a livable trade-off, this door is a genuinely real one. If the lows sound like more than you're set up to carry right now, that's useful information too — a fit question answered honestly, on your own terms, before the clock runs out instead of after.
         </p>
       </div>
 
@@ -452,7 +452,7 @@ export default function AscentPathBriefing() {
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <h1 className="font-display text-3xl text-white tracking-wide leading-none">THE BRIEFING</h1>
-              <p className="font-mono text-[10px] text-foreground-muted uppercase tracking-[0.2em] mt-1">High-Ticket Closing — One Door Inside DFS</p>
+              <p className="font-mono text-[10px] text-foreground-muted uppercase tracking-[0.2em] mt-1">High-Ticket Closing — One Door Inside DBI</p>
             </div>
             <div className="text-right">
               <p className="font-mono text-xs text-gold-deep uppercase tracking-wider flex items-center gap-1.5 justify-end"><Compass size={12} /> Companion to The Ascent</p>

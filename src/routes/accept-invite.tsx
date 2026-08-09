@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2, Lock, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/accept-invite")({
-  head: () => ({ meta: [{ title: "Set your password — DFS" }] }),
+  head: () => ({ meta: [{ title: "Set your password — DBI" }] }),
   component: AcceptInvite,
 });
 

@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/carebridge/CareBridge.jsx"));
 export const Route = createFileRoute("/_authenticated/playbooks/care-bridge")({
   head: () => ({
     meta: [
-      { title: "The Care Bridge — DFS Citadel" },
-      { name: "description", content: "The Care Bridge: The 45-Day Build. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "The Care Bridge — DFS Citadel" },
+      { title: "The Care Bridge — DBI Citadel" },
+      { name: "description", content: "The Care Bridge: The 45-Day Build. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "The Care Bridge — DBI Citadel" },
       { property: "og:description", content: "The Care Bridge: The 45-Day Build." },
     ],
   }),

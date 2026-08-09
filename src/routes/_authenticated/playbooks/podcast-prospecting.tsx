@@ -6,9 +6,9 @@ const View = lazy(() => import("@/components/paths/broadcast/PodcastProspecting.
 export const Route = createFileRoute("/_authenticated/playbooks/podcast-prospecting")({
   head: () => ({
     meta: [
-      { title: "Global Podcast Prospecting Guide — DFS Citadel" },
-      { name: "description", content: "Global Podcast Prospecting Guide: Spaces · Shows · Leads. Part of the DFS Citadel path system." },
-      { property: "og:title", content: "Global Podcast Prospecting Guide — DFS Citadel" },
+      { title: "Global Podcast Prospecting Guide — DBI Citadel" },
+      { name: "description", content: "Global Podcast Prospecting Guide: Spaces · Shows · Leads. Part of the DBI Citadel path system." },
+      { property: "og:title", content: "Global Podcast Prospecting Guide — DBI Citadel" },
       { property: "og:description", content: "Global Podcast Prospecting Guide: Spaces · Shows · Leads." },
     ],
   }),

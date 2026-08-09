@@ -14,9 +14,9 @@ const DESC =
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DFS — The D'Famocious Freelance Scholarship" },
+      { title: "DBI — The D'Famocious Business Incubator" },
       { name: "description", content: DESC },
-      { property: "og:title", content: "DFS — The D'Famocious Freelance Scholarship" },
+      { property: "og:title", content: "DBI — The D'Famocious Business Incubator" },
       { property: "og:description", content: DESC },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -37,7 +37,7 @@ const PLAYBOOKS = [
     icon: Globe,
     tag: "Markets · Boring Niches · Leads",
     title: "SMB Prospecting Guide",
-    body: "Seven countries; service niches nobody is fighting over, with the exact search terms, a lead scoring system, and a Grand Slam offer builder on the DFS stack.",
+    body: "Seven countries; service niches nobody is fighting over, with the exact search terms, a lead scoring system, and a Grand Slam offer builder on the DBI stack.",
   },
   {
     icon: Calendar,
@@ -89,8 +89,8 @@ function Landing() {
           <div className="flex items-center gap-3">
             <DfsMark className="h-10 w-10" />
             <div className="leading-tight">
-              <div className="font-display text-sm font-bold tracking-wider">DFS</div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">D'Famocious Freelance Scholarship</div>
+              <div className="font-display text-sm font-bold tracking-wider">DBI</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">D'Famocious Business Incubator</div>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7 text-sm">
@@ -150,7 +150,7 @@ function Landing() {
           </div>
           <div className="relative">
             <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-gold/20 via-transparent to-crimson/20 blur-2xl" />
-            <img src={dfsCombined.url} alt="DFS — D'Famocious Freelance Scholarship, a D'Famocious Group institution" className="relative mx-auto w-full max-w-md drop-shadow-2xl" />
+            <img src={dfsCombined.url} alt="DBI — D'Famocious Business Incubator, a D'Famocious Group institution" className="relative mx-auto w-full max-w-md drop-shadow-2xl" />
           </div>
         </div>
       </section>
@@ -162,7 +162,7 @@ function Landing() {
         <div className="text-center max-w-3xl mx-auto">
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">Four pillars of the scholarship</h2>
-          <p className="mt-4 text-muted-foreground">The DFS Constitution mandates four interlocking systems every beneficiary must master.</p>
+          <p className="mt-4 text-muted-foreground">The DBI Constitution mandates four interlocking systems every beneficiary must master.</p>
         </div>
         <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {PILLARS.map((p) => (
@@ -214,7 +214,7 @@ function Landing() {
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The Citadel runs on systems, not motivation</h2>
           <p className="mt-4 text-muted-foreground">
-            Every screen inside DFS exists to answer one question: is this beneficiary moving today?
+            Every screen inside DBI exists to answer one question: is this beneficiary moving today?
           </p>
         </div>
         <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -232,7 +232,7 @@ function Landing() {
         <div className="mt-10 grid md:grid-cols-3 gap-6">
           {[
             { icon: Gauge, t: "Real-time velocity", d: "Days to first close, outreach volume and weekly revenue, tracked without a spreadsheet in sight." },
-            { icon: FileDown, t: "Branded PDF exports", d: "Every calculator report exports with the DFS crest, D'Famocious Group and Claude AI attribution." },
+            { icon: FileDown, t: "Branded PDF exports", d: "Every calculator report exports with the DBI crest, D'Famocious Group and Claude AI attribution." },
             { icon: Timer, t: "Accountability with teeth", d: "Miss the weekly report and a $5 notice is issued. The cadence is the curriculum." },
           ].map((b) => (
             <div key={b.t} className="rounded-2xl border border-gold/40 bg-accent/20 p-6">
@@ -255,7 +255,7 @@ function Landing() {
               The <span className="text-gold">Seven Paths</span> of Digital Engineering.
             </h2>
             <p className="mt-5 text-primary-foreground/80">
-              Seven separate systems. Every beneficiary runs exactly one. That is deliberate: it keeps DFS students out
+              Seven separate systems. Every beneficiary runs exactly one. That is deliberate: it keeps DBI students out
               of each other's markets, removes needless internal competition, and gives each of you a lane wide enough
               to actually win in. Each path carries the full Citadel machinery — dashboard, three playbooks, a 45-day
               calendar, a field report, weekly filings, XP, ranks, escalation tracking and council oversight.
@@ -426,7 +426,7 @@ function Landing() {
               <Motto />
               <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">From the founder</h2>
               <p className="mt-6 text-lg text-muted-foreground">
-                "DFS exists because talent without an arena is wasted talent. We are not selling courses.
+                "DBI exists because talent without an arena is wasted talent. We are not selling courses.
                 We are admitting beneficiaries into a citadel — and we expect them to graduate as engineers
                 capable of building, selling, and scaling digital systems for businesses anywhere on earth."
               </p>
@@ -450,7 +450,7 @@ function Landing() {
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The gate opens by invitation.</h2>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            DFS is closed to public sign-up. If your email has been registered by an admin, your invitation is already
+            DBI is closed to public sign-up. If your email has been registered by an admin, your invitation is already
             in your inbox — use it to set your password and step inside.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">

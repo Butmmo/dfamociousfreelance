@@ -10,10 +10,10 @@ import { FileText, Search, ChevronRight, ArrowLeft, Loader2 } from "lucide-react
 export const Route = createFileRoute("/_authenticated/council-reports")({
   head: () => ({
     meta: [
-      { title: "Weekly Filings — DFS Council" },
-      { name: "description", content: "Council view of every weekly report filed by DFS beneficiaries — list and full submission detail." },
-      { property: "og:title", content: "Weekly Filings — DFS Council" },
-      { property: "og:description", content: "Every weekly report filed by DFS beneficiaries, week after week." },
+      { title: "Weekly Filings — DBI Council" },
+      { name: "description", content: "Council view of every weekly report filed by DBI beneficiaries — list and full submission detail." },
+      { property: "og:title", content: "Weekly Filings — DBI Council" },
+      { property: "og:description", content: "Every weekly report filed by DBI beneficiaries, week after week." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

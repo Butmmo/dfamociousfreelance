@@ -9,9 +9,9 @@ import { GrandSlamParts } from "@/components/playbooks/grand-slam-parts";
 export const Route = createFileRoute("/_authenticated/playbooks/global-smb-engine")({
   head: () => ({
     meta: [
-      { title: "SMB Prospecting Guide — DFS Citadel" },
+      { title: "SMB Prospecting Guide — DBI Citadel" },
       { name: "description", content: "Countries, Tier-1 boring service niches, Google Maps searches, review-gap lead scoring and the Grand Slam offer builder for the SMB Optimisation System." },
-      { property: "og:title", content: "SMB Prospecting Guide — DFS Citadel" },
+      { property: "og:title", content: "SMB Prospecting Guide — DBI Citadel" },
       { property: "og:description", content: "Target countries, the boring niches nobody fights over, map searches, review-gap lead scoring and the Grand Slam offer builder." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -45,7 +45,7 @@ function GlobalSmbEngine() {
           </h1>
           <p style={{ margin: "0 0 16px", fontSize: 13, color: "#6E6459", maxWidth: 620, lineHeight: 1.7 }}>
             Countries · the boring Tier-1 service niches · exact Google Maps searches · review-gap lead scoring · the Grand Slam offer builder. One guide, from market choice to a pitch you can send today —
-            built on the DFS tool stack: <strong style={{ color: "#7A5A00" }}>Go High Level, Notion, Lovable, Make / Zapier / n8n</strong>.
+            built on the DBI tool stack: <strong style={{ color: "#7A5A00" }}>Go High Level, Notion, Lovable, Make / Zapier / n8n</strong>.
           </p>
 
           {/* TABS */}
