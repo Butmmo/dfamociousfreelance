@@ -1,22 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { DfsMark, DfgMark, Motto } from "@/components/dfs/Brand";
-import dfsCombined from "@/assets/dfs_combined_v2.png.asset.json";
+import { DbiMark, DfgMark, Motto } from "@/components/dfs/Brand";
+import dbiHero from "@/assets/dbi_hero.png.asset.json";
 import founderAsset from "@/assets/founder.jpg.asset.json";
 import {
-  Crown, Shield, Target, Flame, BookOpen, TrendingUp, Globe, Calendar, Lock, Award,
-  Calculator, LayoutDashboard, LineChart, Users, Bell, CheckCircle2, Mail, Sparkles,
-  MessageSquare, Bot, Star, Timer, ArrowRight, Gauge, FileDown, Repeat, Compass,
+  Crown, Shield, Target, Flame, TrendingUp, Calendar, Lock, Award,
+  Calculator, LayoutDashboard, LineChart, Users, Bell, CheckCircle2, Mail,
+  MessageSquare, Timer, ArrowRight, Gauge, FileDown, Compass, Layers, Store,
+  Banknote, GraduationCap,
 } from "lucide-react";
 
 const DESC =
-  "An invitation-only training citadel by D'Famocious Group. Seven Paths of Digital Engineering, a 45-day forge, XP ranks, live escalation tracking, weekly council cadence and AI-powered client tooling.";
+  "D'Famocious Business Incubator — an invitation-only, two-stage incubator by D'Famocious Group. Stage 1: Digital Systems Engineering, seven client-acquisition systems. Stage 2: The Start-up Catalyst, fourteen paths to an owned business.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DBI — The D'Famocious Business Incubator" },
+      { title: "DBI — D'Famocious Business Incubator" },
       { name: "description", content: DESC },
-      { property: "og:title", content: "DBI — The D'Famocious Business Incubator" },
+      { property: "og:title", content: "DBI — D'Famocious Business Incubator" },
       { property: "og:description", content: DESC },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,51 +26,77 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const PILLARS = [
-  { icon: Target, title: "Niche Mastery", desc: "One niche, one city. Depth closes deals." },
-  { icon: Globe, title: "Global Markets", desc: "USA, UK, Canada, Australia & the diaspora corridors." },
-  { icon: Flame, title: "The 45-Day Forge", desc: "From zero arsenal to first closed client." },
-  { icon: TrendingUp, title: "Scale & Systems", desc: "Automations, retainers, and durable income." },
+const STAGES = [
+  {
+    tag: "Stage 1",
+    name: "Digital Systems Engineering",
+    short: "DSE",
+    body:
+      "Seven service-based, client-acquisition systems. You pick exactly one and run it for one to three years or more — building real cash flow, real proof and real expertise before anything is ever 'owned'.",
+    points: [
+      "One system per beneficiary — no two students fight over the same market",
+      "Prove skill on self-made material, never free work for a live prospect",
+      "45-day forge, XP ranks, weekly filings and live escalation tracking",
+    ],
+  },
+  {
+    tag: "Stage 2",
+    name: "The Start-up Catalyst",
+    short: "SUC",
+    body:
+      "Fourteen paths — seven Compounder products and seven Proprietor businesses — taken through design, structure, build, testing, launch, authority, ecosystem, valuation and the premium/luxury fork.",
+    points: [
+      "Entry is outcome-based: $450,000 cumulative DSE earnings within 3–5 years",
+      "Neither track is the fallback — Compounder and Proprietor are equally complete",
+      "Ends in a real, valuable, differentiated business you own",
+    ],
+  },
 ];
 
-const PLAYBOOKS = [
-  {
-    icon: Globe,
-    tag: "Markets · Boring Niches · Leads",
-    title: "SMB Prospecting Guide",
-    body: "Seven countries; service niches nobody is fighting over, with the exact search terms, a lead scoring system, and a Grand Slam offer builder on the DBI stack.",
-  },
-  {
-    icon: Calendar,
-    tag: "From Zero to First Client",
-    title: "SMB Optimisation Engine",
-    body: "Day-by-day execution across seven weeks: lead research , structured email sequencing, and an upsell ladder.",
-  },
-  {
-    icon: Calculator,
-    tag: "Powered by Claude AI",
-    title: "SMB Performance Calculator",
-    body: "Enter a prospect's numbers, surface their revenue leak, and export a branded PDF — per tab or the full report — to send with your pitch.",
-  },
+const SEVEN_SYSTEMS = [
+  { emoji: "⛰️", t: "The Ascent", d: "High-ticket sales closing across six scored niche lanes. Remote, zero-capital.", tool: "No tooling required", price: "10–20% commission" },
+  { emoji: "🤝", t: "CareBridge", d: "Home-care agency automation — intake, follow-up and family response.", tool: "Zapier", price: "$75–$600/mo" },
+  { emoji: "⛪", t: "Digital Ministry Systems", d: "Church and parish management: giving, attendance, follow-up, comms.", tool: "Notion", price: "$50–$400/mo" },
+  { emoji: "🛒", t: "Revenue Recovery Engine", d: "Ecommerce email and SMS retention — you get paid from money you return.", tool: "Klaviyo", price: "$297–$1,200/mo" },
+  { emoji: "🏪", t: "SMB Optimization System", d: "Local business automation — the broadest applicability of the seven.", tool: "GoHighLevel", price: "Niche & geography" },
+  { emoji: "🎙️", t: "The Broadcast Engine", d: "Podcast production, editing, distribution and monetisation.", tool: "Descript · CapCut", price: "$500–$1,800/mo" },
+  { emoji: "📈", t: "The Authority Engine", d: "LinkedIn ghostwriting and authority building for founders and advisors.", tool: "Writing-based", price: "$500–$1,800/mo" },
+];
+
+const COMPOUNDER = [
+  "Template & Asset Vault",
+  "Niche Intelligence / Data Product",
+  "Signature Course",
+  "Membership Community",
+  "Micro-SaaS Tool",
+  "High-Ticket Mastermind / Certification",
+  "Business-in-a-Box License",
+];
+
+const PROPRIETOR = [
+  "Systemized Local Service Business",
+  "Retail & Consumer Trading",
+  "Real Estate & Property",
+  "Food, Beverage & Hospitality",
+  "Agro-Processing & Light Manufacturing",
+  "Franchise or Business Acquisition",
+  "Import/Export & Cross-Border Trade",
 ];
 
 const SYSTEMS = [
   { icon: LayoutDashboard, t: "The Dashboard", d: "Rank, XP, streaks, and your Yesterday / Today / Tomorrow missions the moment you log in." },
-  { icon: Calendar, t: "45-Day Calendar", d: "A sealing day-grid plus a full monthly view. Days seal automatically as tasks complete — or seal them by hand." },
-  { icon: LineChart, t: "The Report", d: "Escalation score dial, cadence heatstrips, velocity to first close, and mentor check-in notes surfaced to you." },
-  { icon: Users, t: "The Council", d: "Admins add beneficiaries, get assigned as mentors, log check-ins, and unlock gated programs." },
+  { icon: Calendar, t: "45-Day Calendar", d: "A sealing day-grid plus a full monthly view. Days seal as tasks complete — or seal them by hand." },
+  { icon: LineChart, t: "The Report", d: "Escalation score dial, cadence heatstrips, velocity to first close, and mentor check-in notes." },
+  { icon: Users, t: "The Council", d: "Admins add beneficiaries, get assigned as mentors, log check-ins, and unlock gated programmes." },
   { icon: Bell, t: "Escalation Engine", d: "Fewer than 6 active days in 7 triggers a $5 notice. Fewer than 10 in 14 triggers $10 and a suspension notice." },
   { icon: Mail, t: "Report Cadence", d: "Weekly progress emails to beneficiaries, cohort digests to admins, and the full Citadel report to the founder." },
 ];
 
-const SEVEN_PATHS = [
-  { emoji: "🏪", t: "SMB Optimisation System", d: "Local service businesses. A single entry offer, then a full upsell ladder.", live: true },
-  { emoji: "⛰️", t: "High-Ticket Closing Machine", d: "Commission-only closing for other people's high-ticket offers. No product to build, no ads to run — and its own closer rank ladder.", live: true },
-  { emoji: "🛒", t: "Revenue Recovery Engine", d: "E-commerce abandoned-revenue recovery. You install the flows that bring back carts, browsers and lapsed buyers, and get paid from money you return.", live: true },
-  { emoji: "🤝", t: "The Care Bridge", d: "Senior and home-care rapid-response intake. A demographic tailwind nobody can switch off, won on answering families first.", live: true },
-  { emoji: "⛪", t: "Digital Ministry Systems", d: "Giving, follow-up, attendance and communications for churches and ministries — trust-based referrals and unusually low churn.", live: true },
-  { emoji: "🎙️", t: "The Broadcast Engine", d: "Podcast growth and monetisation. Clips, distribution, sponsorship and list-building turned into revenue the host can see.", live: true },
-  { emoji: "📈", t: "The Authority Engine", d: "Prospecting and authority engines for coaches, consultants and advisors — the highest ticket per client of the seven.", live: true },
+const ECONOMICS = [
+  { icon: GraduationCap, t: "DSE entry — $900", d: "One-time. Or $90 through NBO, the Blazer Empowerment Foundation subsidy built to open the gate to students who could not otherwise reach it." },
+  { icon: Banknote, t: "The D'Famocious Year", d: "Once you earn, 20% of every earning month returns to DBI until you complete 12 qualified months — each at $2,000+ net, not necessarily consecutive." },
+  { icon: Award, t: "V. DsE. certification", d: "Completing DFY earns the Vetted Digital Systems Engineer credential — the mark that Stage 1 was finished on real income, not attendance." },
+  { icon: Layers, t: "The SUC ladder", d: "$2,000 by invitation after $450k of DSE earnings. Skipping DSE costs $6,000 at 25% equity, or $24,000 with DBI's stake reduced to 10%." },
 ];
 
 const RANKS = [
@@ -87,18 +114,18 @@ function Landing() {
       <header className="sticky top-0 z-40 border-b border-border/60 backdrop-blur-md bg-background/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <DfsMark className="h-10 w-10" />
+            <DbiMark className="h-10 w-10" />
             <div className="leading-tight">
               <div className="font-display text-sm font-bold tracking-wider">DBI</div>
               <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">D'Famocious Business Incubator</div>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7 text-sm">
-            <a href="#pillars" className="hover:text-primary transition">The Citadel</a>
-            <a href="#playbooks" className="hover:text-primary transition">Playbooks</a>
-            <a href="#systems" className="hover:text-primary transition">Systems</a>
-            <a href="#paths" className="hover:text-primary transition">The Seven Paths</a>
-            <a href="#ranks" className="hover:text-primary transition">Ranks</a>
+            <a href="#stages" className="hover:text-primary transition">The Two Stages</a>
+            <a href="#dse" className="hover:text-primary transition">Stage 1 · DSE</a>
+            <a href="#suc" className="hover:text-primary transition">Stage 2 · SUC</a>
+            <a href="#systems" className="hover:text-primary transition">Inside the Citadel</a>
+            <a href="#economics" className="hover:text-primary transition">Economics</a>
             <a href="#founder" className="hover:text-primary transition">Founder</a>
           </nav>
           <Link
@@ -117,29 +144,29 @@ function Landing() {
         <div className="relative mx-auto max-w-7xl px-6 pt-8 pb-16 md:pt-10 md:pb-24 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <Motto />
-            <h1 className="mt-6 font-display text-5xl md:text-7xl font-bold leading-[1.05] capitalize">
-              The citadel for the next generation of{" "}
-              <span className="text-gold-gradient">Digital Systems Engineers</span>.
+            <h1 className="mt-6 font-display text-5xl md:text-7xl font-bold leading-[1.05]">
+              We don't teach skills. We incubate{" "}
+              <span className="text-gold-gradient">owners</span>.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-              An invitation-only scholarship by D'Famocious Group. Seven Paths of Digital Engineering — you run one.
-              Each carries three interactive playbooks, a sealing 45-day calendar, an XP rank ladder, a live
-              escalation engine, weekly council filings and AI-powered client tooling, in one command centre.
+              D'Famocious Business Incubator runs in two stages. First you become a Digital Systems Engineer and monetise
+              one of seven client-acquisition systems until the income is undeniable. Then the Start-up Catalyst turns
+              that proof into a business you own — digital or traditional.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link to="/auth" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">
                 <Shield className="h-5 w-5" /> Enter as Beneficiary
               </Link>
-              <a href="#paths" className="inline-flex items-center gap-2 rounded-md border border-gold px-6 py-3 text-base font-semibold hover:bg-accent/40 transition">
-                <Compass className="h-5 w-5" /> See the Seven Paths
+              <a href="#stages" className="inline-flex items-center gap-2 rounded-md border border-gold px-6 py-3 text-base font-semibold hover:bg-accent/40 transition">
+                <Compass className="h-5 w-5" /> See the two stages
               </a>
             </div>
             <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-xl">
               {[
-                { n: "7", l: "Paths" },
-                { n: "45", l: "Day forge" },
-                { n: "5", l: "Ranks" },
-                { n: "24/7", l: "Tracking" },
+                { n: "2", l: "Stages" },
+                { n: "7", l: "DSE systems" },
+                { n: "14", l: "SUC paths" },
+                { n: "V. DsE.", l: "Credential" },
               ].map((s) => (
                 <div key={s.l} className="rounded-xl border border-border bg-card px-4 py-3">
                   <div className="font-display text-2xl font-bold text-gold-deep">{s.n}</div>
@@ -150,65 +177,177 @@ function Landing() {
           </div>
           <div className="relative">
             <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-gold/20 via-transparent to-crimson/20 blur-2xl" />
-            <img src={dfsCombined.url} alt="DBI — D'Famocious Business Incubator, a D'Famocious Group institution" className="relative mx-auto w-full max-w-md drop-shadow-2xl" />
+            <img
+              src={dbiHero.url}
+              alt="DBI — D'Famocious Business Incubator, with D'Famocious Group and Blazer Empowerment Foundation"
+              className="relative mx-auto w-full max-w-md drop-shadow-2xl"
+            />
           </div>
         </div>
       </section>
 
       <div className="gold-divider mx-auto max-w-7xl" />
 
-      {/* PILLARS */}
-      <section id="pillars" className="mx-auto max-w-7xl px-6 py-24">
+      {/* THE TWO STAGES */}
+      <section id="stages" className="mx-auto max-w-7xl px-6 py-24">
         <div className="text-center max-w-3xl mx-auto">
           <Motto />
-          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">Four pillars of the scholarship</h2>
-          <p className="mt-4 text-muted-foreground">The DBI Constitution mandates four interlocking systems every beneficiary must master.</p>
+          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">One ladder, two stages</h2>
+          <p className="mt-4 text-muted-foreground">
+            Cash flow first, ownership second. You cannot skip the proof — you can only pay to bypass it, and even then
+            DBI keeps a real stake in your success.
+          </p>
         </div>
-        <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {PILLARS.map((p) => (
-            <div key={p.title} className="group rounded-xl border border-border bg-card p-6 hover:border-gold hover:shadow-regal transition">
-              <p.icon className="h-8 w-8 text-gold-deep group-hover:text-primary transition" />
-              <h3 className="mt-4 font-display text-xl font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+        <div className="mt-16 grid md:grid-cols-2 gap-6">
+          {STAGES.map((s) => (
+            <div key={s.short} className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 hover:border-gold hover:shadow-regal transition">
+              <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-gradient-to-br from-gold/15 to-transparent blur-3xl" />
+              <div className="relative">
+                <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">{s.tag} · {s.short}</div>
+                <h3 className="mt-2 font-display text-2xl md:text-3xl font-bold">{s.name}</h3>
+                <p className="mt-4 text-sm text-muted-foreground">{s.body}</p>
+                <div className="mt-6 space-y-3">
+                  {s.points.map((p) => (
+                    <div key={p} className="flex items-start gap-3 text-sm">
+                      <CheckCircle2 className="h-5 w-5 text-gold-deep shrink-0" />
+                      <span className="text-muted-foreground">{p}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* PLAYBOOKS */}
-      <section id="playbooks" className="bg-card border-y border-border">
+      {/* STAGE 1 — THE SEVEN SYSTEMS */}
+      <section id="dse" className="bg-royal text-primary-foreground">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold">
+              <Compass className="h-3 w-3" /> Stage 1 · choose one · 24 hours to decide
+            </span>
+            <h2 className="mt-6 font-display text-4xl md:text-5xl font-bold">
+              The <span className="text-gold">seven systems</span> of Digital Systems Engineering.
+            </h2>
+            <p className="mt-5 text-primary-foreground/80">
+              Seven separate markets, by design. Every beneficiary runs exactly one — which keeps DBI students out of
+              each other's territory and gives each of you a lane wide enough to actually win in. Pick by mechanism,
+              not by whichever number looks biggest: the system whose daily work you would happily do hundreds of times
+              is the one you will still be running in year three.
+            </p>
+          </div>
+
+          <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {SEVEN_SYSTEMS.map((p) => (
+              <div key={p.t} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-6">
+                <div className="text-3xl leading-none">{p.emoji}</div>
+                <div className="mt-4 font-display text-lg font-semibold">{p.t}</div>
+                <p className="mt-2 text-sm text-primary-foreground/75">{p.d}</p>
+                <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-widest">
+                  <span className="rounded-full border border-primary-foreground/25 px-2.5 py-0.5 text-primary-foreground/70">{p.tool}</span>
+                  <span className="rounded-full border border-gold/60 px-2.5 py-0.5 text-gold">{p.price}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 grid md:grid-cols-2 gap-6">
+            <div className="rounded-2xl border border-gold/30 bg-primary-foreground/5 p-6">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-gold">The proof rule</div>
+              <p className="mt-2 text-sm text-primary-foreground/80">
+                Prove your skill on material you made yourself — a dummy store, practice episodes, a ghostwritten
+                persona, a self-recorded mock call. Never free work for a live prospect: it reads as common and trains
+                buyers to expect it. The only exception is a relationship that already carries real trust.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gold/30 bg-primary-foreground/5 p-6">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-gold">Honest briefings</div>
+              <p className="mt-2 text-sm text-primary-foreground/80">
+                Before you commit, each system opens a full briefing: the highs, the lows, how durable the demand really
+                is, who you compete against, and a straight answer on whether it suits you. No path is sold to you.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STAGE 2 — SUC */}
+      <section id="suc" className="mx-auto max-w-7xl px-6 py-24">
+        <div className="max-w-3xl">
+          <Motto />
+          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">Stage 2 — fourteen ways to own something</h2>
+          <p className="mt-4 text-muted-foreground">
+            The Start-up Catalyst narrows fourteen paths to one in two clean steps: first the track, then the path. The
+            Compounder builds something that grows in value without proportional labour. The Proprietor builds something
+            real and stakes a name on it being trustworthy. Neither is the fallback.
+          </p>
+        </div>
+        <div className="mt-14 grid md:grid-cols-2 gap-6">
+          <div className="rounded-2xl border border-border bg-card p-7">
+            <div className="flex items-center gap-3">
+              <Layers className="h-6 w-6 text-gold-deep" />
+              <h3 className="font-display text-2xl font-bold">The Compounder</h3>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">Digital products, valued on retention and recurring revenue.</p>
+            <ul className="mt-5 space-y-2 text-sm">
+              {COMPOUNDER.map((c) => (
+                <li key={c} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-4 w-4 text-gold-deep shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">{c}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-7">
+            <div className="flex items-center gap-3">
+              <Store className="h-6 w-6 text-gold-deep" />
+              <h3 className="font-display text-2xl font-bold">The Proprietor</h3>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">Traditional businesses, valued on owned earnings and verified trust.</p>
+            <ul className="mt-5 space-y-2 text-sm">
+              {PROPRIETOR.map((c) => (
+                <li key={c} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-4 w-4 text-gold-deep shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">{c}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="mt-8 rounded-2xl border border-gold/40 bg-accent/20 p-6">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">Ten stages, then the fork</div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Design · Structure · Optimize · Test · Presence · Launch · Content · Ecosystem · Valuation · The Fork.
+            Luxury access is decided type by type, not by track: it is reachable where a sale is relationship-brokered
+            or structurally scarce, and it is not where the market compares you on a platform.
+          </p>
+        </div>
+      </section>
+
+      {/* ECONOMICS */}
+      <section id="economics" className="bg-card border-y border-border">
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="max-w-3xl">
             <Motto />
-            <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">Three playbooks per path. One curriculum.</h2>
+            <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The economics, stated plainly</h2>
             <p className="mt-4 text-muted-foreground">
-              Every path ships the same shape: a main engine, a day-by-day implementation plan, and an AI-powered
-              performance calculator. Every playbook is interactive — tick a task, hit save, and your progress is
-              written to the Citadel, feeding your rank, your calendar, and the council's view of your week.
-              Shown below: the SMB Optimisation System, the first path live inside the app.
+              DBI is aligned with your earnings, not your enrolment. Nothing here is hidden until after you are inside.
             </p>
           </div>
           <div className="mt-14 grid md:grid-cols-2 gap-6">
-            {PLAYBOOKS.map((p, i) => (
-              <div key={p.title} className={`relative overflow-hidden rounded-2xl border border-border bg-background p-6 hover:border-gold hover:shadow-regal transition ${i === 4 ? "md:col-span-2" : ""}`}>
-                <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-gradient-to-br from-gold/15 to-transparent blur-3xl" />
-                <div className="relative flex items-start gap-4">
-                  <div className="rounded-xl border border-gold/30 bg-accent/30 p-3 shrink-0">
-                    <p.icon className="h-6 w-6 text-gold-deep" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] uppercase tracking-widest text-gold-deep">{p.tag}</div>
-                    <h3 className="mt-1 font-display text-xl font-bold">{p.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{p.body}</p>
-                  </div>
-                </div>
+            {ECONOMICS.map((e) => (
+              <div key={e.t} className="rounded-2xl border border-border bg-background p-6 hover:border-gold transition">
+                <e.icon className="h-7 w-7 text-gold-deep" />
+                <h3 className="mt-4 font-display text-lg font-semibold">{e.t}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{e.d}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SYSTEMS */}
+      {/* INSIDE THE CITADEL */}
       <section id="systems" className="mx-auto max-w-7xl px-6 py-24">
         <div className="text-center max-w-3xl mx-auto">
           <Motto />
@@ -244,148 +383,21 @@ function Landing() {
         </div>
       </section>
 
-      {/* THE SEVEN PATHS */}
-      <section id="paths" className="bg-royal text-primary-foreground">
+      {/* RANKS */}
+      <section id="ranks" className="bg-card border-y border-border">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold">
-              <Compass className="h-3 w-3" /> Choose one · 24 hours to decide
-            </span>
-            <h2 className="mt-6 font-display text-4xl md:text-5xl font-bold">
-              The <span className="text-gold">Seven Paths</span> of Digital Engineering.
-            </h2>
-            <p className="mt-5 text-primary-foreground/80">
-              Seven separate systems. Every beneficiary runs exactly one. That is deliberate: it keeps DBI students out
-              of each other's markets, removes needless internal competition, and gives each of you a lane wide enough
-              to actually win in. Each path carries the full Citadel machinery — dashboard, three playbooks, a 45-day
-              calendar, a field report, weekly filings, XP, ranks, escalation tracking and council oversight.
-            </p>
-            <p className="mt-4 text-sm text-gold">
-              You get 24 hours from entering the Citadel to read the briefings and commit. Miss the window and the
-              council assigns a path for you — and it is just as binding.
-            </p>
+          <div className="text-center max-w-3xl mx-auto">
+            <Motto />
+            <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The five ranks of a beneficiary</h2>
+            <p className="mt-4 text-muted-foreground">XP is earned only where it counts. No shortcuts, no padding.</p>
           </div>
-
-          <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {SEVEN_PATHS.map((p) => (
-              <div key={p.t} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="text-3xl leading-none">{p.emoji}</div>
-                  <span className={`rounded-full border px-2.5 py-0.5 text-[10px] uppercase tracking-widest ${p.live ? "border-gold/60 text-gold" : "border-primary-foreground/25 text-primary-foreground/60"}`}>
-                    {p.live ? "Live now" : "Briefing open"}
-                  </span>
-                </div>
-                <div className="mt-4 font-display text-lg font-semibold">{p.t}</div>
-                <p className="mt-2 text-sm text-primary-foreground/75">{p.d}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 rounded-2xl border border-gold/30 bg-primary-foreground/5 p-6 max-w-3xl">
-            <div className="text-[10px] uppercase tracking-[0.25em] text-gold">Honest briefings</div>
-            <p className="mt-2 text-sm text-primary-foreground/80">
-              Before you commit, every path opens a full briefing: the highs, the lows, how durable the demand really
-              is, who you are competing against, and a straight answer on whether it suits you. No path is sold to you.
-              You pick with your eyes open.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* OFFER LADDER */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="max-w-3xl">
-          <Motto />
-          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">One offer to open. A ladder to grow.</h2>
-          <p className="mt-4 text-muted-foreground">
-            Beneficiaries lead with a single product until closing it is second nature.
-            Everything else is earned revenue from a client who already trusts you.
-          </p>
-        </div>
-      </section>
-
-      {/* THE PATH */}
-      <section id="path" className="bg-card border-y border-border">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <Motto />
-              <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The 45-Day Path</h2>
-              <p className="mt-4 text-muted-foreground">
-                A precise, day-by-day forge. Day 1 arms your arsenal.
-                By day 45 you have a client, an invoice and a testimonial.
-              </p>
-              <div className="mt-8 space-y-3">
-                {[
-                  "Prospect research.",
-                  "The four-email sequence.",
-                  "Lead scoring with unique signal monitoring",
-                  "Weekly report filed every Sunday — outreach, calls, wins, revenue",
-                ].map((l) => (
-                  <div key={l} className="flex items-start gap-3 text-sm">
-                    <CheckCircle2 className="h-5 w-5 text-gold-deep shrink-0" />
-                    <span className="text-muted-foreground">{l}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <ol className="space-y-6">
-              {[
-                { w: "Week 1", t: "Build Your Foundation", d: "Tools, niche, two demos, portfolio live." },
-                { w: "Weeks 2–3", t: "Go to Market", d: "Outreach, demos, qualified conversations." },
-                { w: "Weeks 4–5", t: "Close & Deliver", d: "First client. First invoice. First testimonial." },
-                { w: "Week 6+", t: "Scale & Retain", d: "Retainers, referrals, systems." },
-              ].map((s, i) => (
-                <li key={s.w} className="flex gap-5 group">
-                  <div className="flex-shrink-0 h-12 w-12 rounded-full bg-royal text-gold flex items-center justify-center font-display font-bold text-lg shadow-regal">
-                    {i + 1}
-                  </div>
-                  <div>
-                    <div className="text-xs uppercase tracking-widest text-gold-deep">{s.w}</div>
-                    <div className="font-display text-xl font-semibold">{s.t}</div>
-                    <p className="text-sm text-muted-foreground mt-1">{s.d}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      {/* RANK TIERS */}
-      <section id="ranks" className="mx-auto max-w-7xl px-6 py-24">
-        <div className="text-center max-w-3xl mx-auto">
-          <Motto />
-          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The five ranks of a beneficiary</h2>
-          <p className="mt-4 text-muted-foreground">
-            XP is earned only where it counts. No shortcuts, no padding.
-          </p>
-        </div>
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4">
-          {RANKS.map((r, i) => (
-            <div key={r.name} className="rounded-xl border border-border bg-card p-5 text-center hover:border-gold transition">
-              <div className="text-xs text-muted-foreground">Rank {i + 1}</div>
-              <r.icon className={`h-10 w-10 mx-auto mt-3 ${r.color}`} />
-              <div className="mt-3 font-display text-lg font-semibold">{r.name}</div>
-              <p className="text-xs text-muted-foreground mt-2">{r.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* TRACKING SYSTEMS */}
-      <section className="bg-royal text-primary-foreground">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            {[
-              { icon: Calendar, t: "Synced to your calendar", d: "Every day's tasks land on your calendar. Reminders fire. Check-ins schedule themselves." },
-              { icon: Award, t: "Weekly cadence & XP", d: "Earn XP per task. Promote tiers by hitting weekly KPIs. Fall behind and the council is notified." },
-              { icon: Shield, t: "Real-time escalation", d: "If a beneficiary stalls, mentors are paged automatically. No one is forgotten." },
-            ].map((b) => (
-              <div key={b.t}>
-                <b.icon className="h-12 w-12 mx-auto text-gold" />
-                <h3 className="mt-5 font-display text-xl font-semibold">{b.t}</h3>
-                <p className="mt-2 text-sm text-primary-foreground/80">{b.d}</p>
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4">
+            {RANKS.map((r, i) => (
+              <div key={r.name} className="rounded-xl border border-border bg-background p-5 text-center hover:border-gold transition">
+                <div className="text-xs text-muted-foreground">Rank {i + 1}</div>
+                <r.icon className={`h-10 w-10 mx-auto mt-3 ${r.color}`} />
+                <div className="mt-3 font-display text-lg font-semibold">{r.name}</div>
+                <p className="text-xs text-muted-foreground mt-2">{r.desc}</p>
               </div>
             ))}
           </div>
@@ -401,7 +413,7 @@ function Landing() {
         <div className="mt-14 grid md:grid-cols-4 gap-6">
           {[
             { icon: LayoutDashboard, t: "Morning", d: "Open the dashboard. Yesterday, today and tomorrow's missions are already waiting." },
-            { icon: MessageSquare, t: "Midday", d: "Run outreach from the scripts. Log leads. Score the review gaps you find." },
+            { icon: MessageSquare, t: "Midday", d: "Run outreach from the scripts. Log leads. Score the gaps you find." },
             { icon: Calculator, t: "Afternoon", d: "Model a prospect's revenue leak in the calculator and send the branded PDF." },
             { icon: CheckCircle2, t: "Evening", d: "Tick the day's tasks, hit save, and watch the day seal gold on your calendar." },
           ].map((s) => (
@@ -426,9 +438,9 @@ function Landing() {
               <Motto />
               <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">From the founder</h2>
               <p className="mt-6 text-lg text-muted-foreground">
-                "DBI exists because talent without an arena is wasted talent. We are not selling courses.
-                We are admitting beneficiaries into a citadel — and we expect them to graduate as engineers
-                capable of building, selling, and scaling digital systems for businesses anywhere on earth."
+                "DBI exists because talent without an arena is wasted talent. We are not selling courses. We admit
+                beneficiaries into an incubator, teach them to earn first, and then hand them the machinery to own
+                something that outlives the work."
               </p>
               <p className="mt-4 font-display font-semibold">Boluwatife Famokunwa</p>
               <p className="text-sm text-muted-foreground">Founder, D'Famocious Group</p>
@@ -457,7 +469,7 @@ function Landing() {
             <Link to="/auth" className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">
               <Lock className="h-5 w-5" /> Beneficiary Login
             </Link>
-            <a href="#playbooks" className="inline-flex items-center gap-2 rounded-md border border-gold px-8 py-4 text-base font-semibold hover:bg-accent/40 transition">
+            <a href="#dse" className="inline-flex items-center gap-2 rounded-md border border-gold px-8 py-4 text-base font-semibold hover:bg-accent/40 transition">
               See what's inside <ArrowRight className="h-5 w-5" />
             </a>
           </div>
