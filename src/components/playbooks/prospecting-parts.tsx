@@ -281,9 +281,9 @@ export function ProspectingParts({ tab }) {
     return sum + pts;
   }, 0);
 
-  const rating = total >= 7 ? { label: "🔥 HOT LEAD", color: "#10B981" }
-    : total >= 4 ? { label: "⚡ WARM LEAD", color: "#F59E0B" }
-    : { label: "❄️ COLD — SKIP", color: "#6B7280" };
+  const rating = total >= 7 ? { label: "🔥 Hot Lead", color: "#10B981" }
+    : total >= 4 ? { label: "⚡ Warm Lead", color: "#F59E0B" }
+    : { label: "❄️ Cold — Skip", color: "#6B7280" };
 
 
   return (

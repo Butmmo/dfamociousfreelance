@@ -47,14 +47,14 @@ const PHASES = [
   },
   {
     id: "qualify", num: "04", icon: "🔥", color: "#F59E0B",
-    title: "Find the HOT Leads", tag: "Day 3–4",
+    title: "Find the Hot Leads", tag: "Day 3–4",
     tasks: [
       { id: "q1", text: "Open each lead's Google listing — scan for hot signals and cold flags (use the Score tab)" },
-      { id: "q2", text: "Score each lead and tag any score of 7+ as HOT in Notion CRM" },
+      { id: "q2", text: "Score each lead and tag any score of 7+ as Hot in Notion CRM" },
       { id: "q3", text: "Archive or delete all leads with a -3 cold signal (franchise chains, government entities)" },
-      { id: "q4", text: "Goal: 30 confirmed HOT leads ready before you send a single email" },
+      { id: "q4", text: "Goal: 30 confirmed hot leads ready before you send a single email" },
     ],
-    note: "30 HOT leads beat 300 random ones every time. This step alone separates closers from chasers.",
+    note: "30 hot leads beat 300 random ones every time. This step alone separates closers from chasers.",
   },
   {
     id: "emails", num: "05", icon: "📧", color: "#10B981",
@@ -233,9 +233,9 @@ export function GrandSlamParts({ tab }) {
   }, 0);
 
   const rating =
-    totalScore >= 7 ? { label: "🔥 HOT LEAD — Prioritise Now", border: "#22C55E", text: "#22C55E", bg: "#F4EFE4" } :
-    totalScore >= 4 ? { label: "⚡ WARM — Worth Contacting", border: "#F59E0B", text: "#F59E0B", bg: "#F4EFE4" } :
-    { label: "❄️ COLD — Skip or Archive", border: "#8A7C6D", text: "#6E6459", bg: "#FFFFFF" };
+    totalScore >= 7 ? { label: "🔥 Hot Lead — Prioritise Now", border: "#22C55E", text: "#22C55E", bg: "#F4EFE4" } :
+    totalScore >= 4 ? { label: "⚡ Warm — Worth Contacting", border: "#F59E0B", text: "#F59E0B", bg: "#F4EFE4" } :
+    { label: "❄️ Cold — Skip or Archive", border: "#8A7C6D", text: "#6E6459", bg: "#FFFFFF" };
 
   const gsoFilled = GSO.filter(p => gso[p.id].trim().length > 20);
   const gsoReady = gsoFilled.length === 4;
@@ -489,9 +489,9 @@ Boluwatife Famokunwa
             {/* TIER GUIDE */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 14 }}>
               {[
-                { lbl: "🔥 HOT", range: "7+", desc: "Personalised pitch + demo. Move fast.", color: "#22C55E" },
-                { lbl: "⚡ WARM", range: "4–6", desc: "Standard sequence, one follow-up.", color: "#F59E0B" },
-                { lbl: "❄️ COLD", range: "0–3", desc: "Bulk email or archive entirely.", color: "#6E6459" },
+                { lbl: "🔥 Hot", range: "7+", desc: "Personalised pitch + demo. Move fast.", color: "#22C55E" },
+                { lbl: "⚡ Warm", range: "4–6", desc: "Standard sequence, one follow-up.", color: "#F59E0B" },
+                { lbl: "❄️ Cold", range: "0–3", desc: "Bulk email or archive entirely.", color: "#6E6459" },
               ].map(b => (
                 <div key={b.lbl} style={{ ...card, padding: "11px", textAlign: "center" }}>
                   <div style={{ fontSize: 12.5, fontWeight: 700, color: b.color, marginBottom: 3 }}>{b.lbl}</div>
