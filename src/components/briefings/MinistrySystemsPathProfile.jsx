@@ -157,7 +157,7 @@ function Chevron({open}) {
 
 function SLabel({text,color}) {
   return (
-    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
       letterSpacing:".08em",marginBottom:7}}>{text}</div>
   );
 }
@@ -237,7 +237,7 @@ export default function MinistrySystemsPathProfile() {
         padding:"22px 16px 18px",borderBottom:"1px solid "+C.border}}>
         <div style={{maxWidth:880,margin:"0 auto"}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:C.green,
-            textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
+            textTransform:"",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:C.green,
               boxShadow:"0 0 6px "+C.green,display:"inline-block"}}/>
             DBI Path Selection · One of 7 Doorways

@@ -211,7 +211,7 @@ function Chevron({open}) {
 
 function SLabel({text,color}) {
   return (
-    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
       letterSpacing:".08em",marginBottom:7}}>{text}</div>
   );
 }
@@ -227,7 +227,7 @@ function Num({n,color}) {
 function Block({label,color,icon,text}) {
   return (
     <div style={{marginTop:12}}>
-      <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+      <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
         letterSpacing:".07em",marginBottom:5}}>{icon} {label}</div>
       <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
         borderLeft:`2px solid ${color}40`,paddingLeft:10}}>{text}</p>
@@ -238,7 +238,7 @@ function Block({label,color,icon,text}) {
 function ListBlock({label,color,icon,items}) {
   return (
     <div style={{marginTop:12}}>
-      <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+      <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
         letterSpacing:".07em",marginBottom:5}}>{icon} {label}</div>
       <div style={{borderLeft:`2px solid ${color}40`,paddingLeft:10,display:"flex",
         flexDirection:"column",gap:5}}>
@@ -254,7 +254,7 @@ function Row({label,color,value}) {
   return (
     <div style={{marginTop:12,background:color+"0D",border:`1px solid ${color}25`,
       borderRadius:8,padding:"9px 11px"}}>
-      <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+      <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
         letterSpacing:".06em",marginBottom:3}}>{label}</div>
       <div style={{fontSize:13,fontWeight:600,color:"#201A16",lineHeight:1.5}}>{value}</div>
     </div>
@@ -387,7 +387,7 @@ export default function TheProspectingEngine() {
         padding:"22px 16px 18px",borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:880,margin:"0 auto"}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:"#0D7A5F",
-            textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
+            textTransform:"",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
             The Authority Engine — Part 2: Prospecting System

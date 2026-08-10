@@ -105,7 +105,7 @@ export default function SmbPathBriefing() {
       {/* HEADER */}
       <div style={{ background: `linear-gradient(160deg, #FDF9F0 0%, ${CREAM_DEEP} 100%)`, borderBottom: `1px solid ${BORDER}`, padding: "24px 18px 0" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "uppercase", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 6px ${GOLD}`, display: "inline-block" }} />
             SMB Optimisation System · Path Briefing
           </div>
@@ -124,7 +124,7 @@ export default function SmbPathBriefing() {
               const t = TONE[v.tone];
               return (
                 <div key={v.label} style={{ background: "#FFFFFF", border: `1px solid ${t.bd}`, borderRadius: 10, padding: "10px 12px" }}>
-                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, marginBottom: 4 }}>{v.label}</div>
+                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, marginBottom: 4 }}>{v.label}</div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: t.c, marginBottom: 3 }}>{v.value}</div>
                   <div style={{ fontSize: 10.5, color: MUTED, lineHeight: 1.4 }}>{v.note}</div>
                 </div>
@@ -166,7 +166,7 @@ export default function SmbPathBriefing() {
               calls, and eventually, a website that undersells them.
             </p>
             <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: GOLD_DEEP, marginBottom: 10 }}>The Motion, In Five Steps</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: GOLD_DEEP, marginBottom: 10 }}>The Motion, In Five Steps</div>
               {[
                 ["Scout", "Google Maps, one niche, one city or country at a time."],
                 ["Score", "The Grand Slam rubric turns a gut feeling into a 1–10 number: Hot, Warm or Cold."],
@@ -243,7 +243,7 @@ export default function SmbPathBriefing() {
               <FitColumn heading="Worth pausing on if…" tone="caution" items={FIT_NO} />
             </div>
             <div style={{ background: "rgba(122,90,0,0.06)", border: "1px solid rgba(122,90,0,0.3)", borderRadius: 12, padding: "14px 16px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: GOLD_DEEP, marginBottom: 6 }}>The Honest Trade</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: GOLD_DEEP, marginBottom: 6 }}>The Honest Trade</div>
               <p style={{ fontSize: 13, color: INK, lineHeight: 1.7, margin: 0 }}>
                 This path rewards consistency over talent, and sales stamina over technical sophistication. If that trade
                 sounds right, very little here is left to guesswork — the scripts, the workflows and the numbers are
@@ -258,7 +258,7 @@ export default function SmbPathBriefing() {
       {/* CTA FOOTER */}
       <div style={{ borderTop: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>Once You've Chosen This Path</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, marginBottom: 12 }}>Once You've Chosen This Path</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
             <NextLink to="/_authenticated/playbooks/global-smb-engine" icon="🌍" title="SMB Prospecting Guide" body="Pick your country and boring niche, run the map searches, score your leads and build the offer." />
             <NextLink to="/_authenticated/playbooks/smb-calculator" icon="🧮" title="SMB Performance Calculator" body="Model the real numbers for a specific business before you pitch anyone." />

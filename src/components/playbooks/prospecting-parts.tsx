@@ -253,7 +253,7 @@ function Tag({ children, color, bg }) {
 
 function SectionLabel({ color, children }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 7 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "", letterSpacing: "0.08em", marginBottom: 7 }}>
       {children}
     </div>
   );

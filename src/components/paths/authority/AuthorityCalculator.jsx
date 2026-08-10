@@ -117,7 +117,7 @@ function ServiceCard({icon, name, price, problem, pitch, tool, setup, roiLine, c
             ["📈 Expected ROI",roiLine,color],
           ].map(([lbl,val,col])=>(
             <div key={lbl} style={{marginTop:12}}>
-              <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"",
                 letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
               <p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.65,
                 borderLeft:`2px solid ${col}40`,paddingLeft:10,fontStyle:lbl.includes("Pitch")?"italic":"normal"}}>
@@ -278,7 +278,7 @@ export default function PodcastPerformanceCalculator() {
       <div style={{background:"linear-gradient(160deg,#F8F5EE 0%,#F8F5EE 60%,#F5F0E4 100%)",
         padding:"22px 16px 18px",borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:820,margin:"0 auto"}}>
-          <div style={{fontSize:10,fontWeight:700,color:C.green,textTransform:"uppercase",
+          <div style={{fontSize:10,fontWeight:700,color:C.green,textTransform:"",
             letterSpacing:".12em",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:C.green,
               boxShadow:"0 0 6px "+C.green,display:"inline-block"}}/>
@@ -331,7 +331,7 @@ export default function PodcastPerformanceCalculator() {
             border:"1px solid #FBF8F1",borderRadius:11,padding:"12px 16px",
             marginBottom:16,display:"flex",gap:16,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
             <div>
-              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"",
                 letterSpacing:".09em",marginBottom:3}}>Est. Monthly Growth & Revenue at Risk</div>
               <div style={{fontSize:26,fontWeight:800,color:C.red}}>{fmt(totalLost)}</div>
             </div>
@@ -432,7 +432,7 @@ export default function PodcastPerformanceCalculator() {
             <div style={{background:C.bg2,border:"1px solid "+C.border,borderRadius:10,
               padding:"13px 14px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,color:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Estimated Monthly Show Revenue
               </div>
               <div style={{fontSize:28,fontWeight:800,color:C.text}}>
@@ -475,7 +475,7 @@ export default function PodcastPerformanceCalculator() {
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,
                 color:discoveryLoss>300?C.amber:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Clip Gap Diagnosis
               </div>
               {[
@@ -523,7 +523,7 @@ export default function PodcastPerformanceCalculator() {
 
             <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.red+"35",borderRadius:12,padding:"16px",marginBottom:16}}>
-              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"",
                 letterSpacing:".09em",marginBottom:6}}>What This Means</div>
               <p style={{fontSize:14,color:C.text,lineHeight:1.7,margin:0}}>
                 {showLabel} is losing an estimated <strong style={{color:C.red}}>{fmt1(growth.dailyListenersLost)} new listeners every day</strong> to
@@ -533,7 +533,7 @@ export default function PodcastPerformanceCalculator() {
               </p>
             </div>
 
-            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"uppercase",
+            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"",
               letterSpacing:".08em",marginBottom:10}}>How This Is Calculated</div>
             <div style={{background:C.bg2,border:"1px solid "+C.border,borderRadius:11,
               padding:"14px 15px",marginBottom:16}}>
@@ -590,7 +590,7 @@ export default function PodcastPerformanceCalculator() {
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,
                 color:productionLoss>300?C.indigo:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Production Gap Diagnosis
               </div>
               {[
@@ -639,7 +639,7 @@ export default function PodcastPerformanceCalculator() {
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,
                 color:consistencyLoss>200?C.pink:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Consistency Gap Diagnosis
               </div>
               {[
@@ -675,7 +675,7 @@ export default function PodcastPerformanceCalculator() {
             {/* Growth & Revenue at Risk Summary */}
             <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.red+"40",borderRadius:12,padding:"18px",marginBottom:16}}>
-              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"",
                 letterSpacing:".1em",marginBottom:4}}>Total Estimated Monthly Growth & Revenue at Risk</div>
               <div style={{fontSize:"clamp(32px,6vw,48px)",fontWeight:800,color:C.red,
                 marginBottom:8}}>{fmt(totalLost)}</div>
@@ -691,7 +691,7 @@ export default function PodcastPerformanceCalculator() {
 
             {/* New Listeners Lost */}
             <div style={{marginBottom:16}}>
-              <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"uppercase",
+              <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"",
                 letterSpacing:".08em",marginBottom:10}}>New Listeners Lost to {compLabel}</div>
               <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
                 <StatBlock icon="🌅" label="Per Day" value={fmt1(growth.dailyListenersLost)} color={C.red}/>
@@ -704,7 +704,7 @@ export default function PodcastPerformanceCalculator() {
             <div style={{background:topPriority.color+"12",border:"1px solid "+topPriority.color+"35",
               borderRadius:12,padding:"14px 16px",marginBottom:16}}>
               <div style={{fontSize:10,fontWeight:700,color:topPriority.color,
-                textTransform:"uppercase",letterSpacing:".09em",marginBottom:8}}>
+                textTransform:"",letterSpacing:".09em",marginBottom:8}}>
                 ★ Your #1 Priority — Lead With This
               </div>
               <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:4}}>
@@ -721,7 +721,7 @@ export default function PodcastPerformanceCalculator() {
             </div>
 
             {/* All 3 Services in Priority Order */}
-            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"uppercase",
+            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"",
               letterSpacing:".08em",marginBottom:10}}>All 3 Services — Ranked by Impact</div>
             {priorities.map((p,i)=>(
               <ServiceCard key={p.id} {...p} isTop={i===0}/>
@@ -731,7 +731,7 @@ export default function PodcastPerformanceCalculator() {
             <div style={{background:C.bg2,border:"1px solid "+C.border,
               borderRadius:12,padding:"14px 16px",marginTop:8}}>
               <div style={{fontSize:11,fontWeight:700,color:C.dim,
-                textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>
+                textTransform:"",letterSpacing:".08em",marginBottom:12}}>
                 12-Month Value Per Client (Starter → Growth → Full Production)
               </div>
               {[

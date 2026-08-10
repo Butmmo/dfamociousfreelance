@@ -71,7 +71,7 @@ const fmt = (n) => (n >= 1000 ? `$${(n / 1000).toFixed(1)}K` : `$${Math.round(n)
 
 const h2Style = { fontSize: 17, fontWeight: 700, margin: "0 0 6px", color: INK };
 const pStyle = { fontSize: 13, color: MUTED, lineHeight: 1.7, margin: "0 0 14px" };
-const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 };
+const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", marginBottom: 8 };
 
 function ScoreDots({ value, max = 5 }) {
   return (
@@ -235,7 +235,7 @@ function StageTab({ stageKey, calls, close, deal, commission, setCalls, setClose
       </InputField>
 
       <div style={{ background: CREAM, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "12px 16px" }}>
-        <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, margin: "0 0 4px" }}>Commission (set on Your Lane)</p>
+        <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, margin: "0 0 4px" }}>Commission (set on Your Lane)</p>
         <p style={{ fontSize: 17, fontWeight: 800, color: GOLD_DEEP, margin: 0 }}>{commission}%</p>
       </div>
     </div>
@@ -259,7 +259,7 @@ function ReportTab({ laneId, commission, r, e, c, rIncome, eIncome, cIncome }) {
     { key: "ceiling", ...STAGES.ceiling, calls: c.calls, close: c.close, deal: c.deal, income: cIncome },
   ];
 
-  const thStyle = { textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED };
+  const thStyle = { textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED };
   const tdStyle = { padding: "10px 12px", fontSize: 12, color: MUTED };
 
   return (
@@ -275,7 +275,7 @@ function ReportTab({ laneId, commission, r, e, c, rIncome, eIncome, cIncome }) {
               <div style={{ padding: "13px 16px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                 <div>
                   <p style={{ fontWeight: 700, fontSize: 15, color: INK, margin: 0 }}>{row.name}</p>
-                  <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em", margin: "3px 0 0" }}>{row.window}</p>
+                  <p style={{ fontSize: 10.5, color: MUTED, textTransform: "", letterSpacing: "0.06em", margin: "3px 0 0" }}>{row.window}</p>
                 </div>
                 <p style={{ fontSize: 18, fontWeight: 800, color: t.c, margin: 0, whiteSpace: "nowrap" }}>{fmt(row.income)}/mo</p>
               </div>
@@ -403,7 +403,7 @@ export default function AscentPerformanceCalculator() {
       {/* HEADER */}
       <div style={{ background: `linear-gradient(160deg, #FDF9F0 0%, ${CREAM_DEEP} 100%)`, borderBottom: `1px solid ${BORDER}`, padding: "24px 18px 0" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "uppercase", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 6px ${GOLD}`, display: "inline-block" }} />
             The Ascent · Income Projection Module
           </div>
@@ -422,7 +422,7 @@ export default function AscentPerformanceCalculator() {
               const t = tone(v.toneKey);
               return (
                 <div key={v.label} style={{ background: "#FFFFFF", border: `1px solid ${t.bd}`, borderRadius: 10, padding: "10px 12px" }}>
-                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, marginBottom: 4 }}>{v.label}</div>
+                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, marginBottom: 4 }}>{v.label}</div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: t.c, marginBottom: 3 }}>{v.value}</div>
                   <div style={{ fontSize: 10.5, color: MUTED, lineHeight: 1.4 }}>{v.note}</div>
                 </div>
@@ -477,7 +477,7 @@ export default function AscentPerformanceCalculator() {
       {/* CTA FOOTER */}
       <div style={{ borderTop: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>Continue The System</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, marginBottom: 12 }}>Continue The System</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 16 }}>
             <NextLink to="/the-ascent" icon="🧭" title="The Ascent" body="The full 45-day roadmap this calculator's formula is built on." />
             <NextLink to="/global-targeting-manual" icon="🌍" title="Global Targeting Manual" body="Where the target companies actually are, and how to score one before you pitch it." />

@@ -339,7 +339,7 @@ Boluwatife Famokunwa
             <div style={{ ...card, border: `1px solid ${gsoReady ? "#EC489945" : "#D9CFBB"}`, overflow: "hidden" }}>
               <div style={{ background: gsoReady ? "#1A0610" : "#090F1B", borderBottom: `1px solid ${gsoReady ? "#EC489930" : "#D9CFBB"}`, padding: "13px 15px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: gsoReady ? "#EC4899" : "#8A7C6D", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: gsoReady ? "#EC4899" : "#8A7C6D", textTransform: "", letterSpacing: "0.1em" }}>
                     {gsoReady ? "✨ Your Pitch — Ready to Copy & Send" : "Your Pitch Assembles Here"}
                   </div>
                   {!gsoReady && (
@@ -368,7 +368,7 @@ Boluwatife Famokunwa
 
             {/* HOOKS */}
             <div style={{ marginTop: 18 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#6E6459", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#6E6459", textTransform: "", letterSpacing: "0.1em", marginBottom: 10 }}>
                 Ready-Made Offer Hooks by Tier
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -385,7 +385,7 @@ Boluwatife Famokunwa
 
             {/* AI OBJECTION HANDLER */}
             <div style={{ ...card, marginTop: 14, background: "#080D18", border: "1px solid #8B5CF625", padding: "13px 14px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#8B5CF6", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 7 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#8B5CF6", textTransform: "", letterSpacing: "0.1em", marginBottom: 7 }}>
                 🗣️ When They Ask: "Can't I Just Use AI to Build This Myself?"
               </div>
               <div style={{ fontSize: 13, color: "#6E6459", fontStyle: "italic", lineHeight: 1.75, borderLeft: "2px solid #8B5CF640", paddingLeft: 12 }}>
@@ -395,7 +395,7 @@ Boluwatife Famokunwa
 
             {/* GUARANTEE */}
             <div style={{ ...card, marginTop: 10, background: "#080D18", border: "1px solid #10B98125", padding: "13px 14px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 7 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.1em", marginBottom: 7 }}>
                 🛡️ The Guarantee — Remove Their Last Fear
               </div>
               <div style={{ fontSize: 14, color: "#201A16", fontStyle: "italic", lineHeight: 1.7, marginBottom: 8 }}>
@@ -435,7 +435,7 @@ Boluwatife Famokunwa
             </div>
 
             {/* HOT */}
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#22C55E", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 9 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#22C55E", textTransform: "", letterSpacing: "0.1em", marginBottom: 9 }}>
               🔥 Hot Signals — tick what you see
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16 }}>
@@ -461,7 +461,7 @@ Boluwatife Famokunwa
             </div>
 
             {/* COLD */}
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#EF4444", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 9 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#EF4444", textTransform: "", letterSpacing: "0.1em", marginBottom: 9 }}>
               ❄️ Cold Signals — tick what you see
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16 }}>

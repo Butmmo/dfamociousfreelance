@@ -206,8 +206,8 @@ const INCOME_SCENARIOS = [
 
 const h2Style = { fontSize: 17, fontWeight: 700, margin: "0 0 6px", color: INK };
 const pStyle = { fontSize: 13, color: MUTED, lineHeight: 1.7, margin: "0 0 14px" };
-const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 };
-const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: GOLD_DEEP, marginBottom: 4 };
+const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", marginBottom: 8 };
+const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: GOLD_DEEP, marginBottom: 4 };
 
 function ScoreDots({ value, max = 5 }) {
   return (
@@ -320,7 +320,7 @@ function SectorsTab() {
           <div key={t.tier} style={{ marginBottom: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
               <span>🌍</span>
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: tn.c, margin: 0 }}>{t.name}</p>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: tn.c, margin: 0 }}>{t.name}</p>
             </div>
             <p style={{ fontSize: 12.5, color: MUTED, margin: "0 0 12px", lineHeight: 1.6, maxWidth: 640 }}>{t.blurb}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -379,9 +379,9 @@ function Lane7Tab() {
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 520 }}>
           <thead>
             <tr style={{ background: CREAM_DEEP }}>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Lane</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>Lane</th>
               {SCORE_LABELS.map((s) => (
-                <th key={s.key} style={{ textAlign: "left", padding: "9px 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, whiteSpace: "nowrap" }}>{s.label}</th>
+                <th key={s.key} style={{ textAlign: "left", padding: "9px 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, whiteSpace: "nowrap" }}>{s.label}</th>
               ))}
             </tr>
           </thead>
@@ -476,7 +476,7 @@ function ScoringTab() {
 
       <div style={{ background: t.bg, border: `1px solid ${t.bd}`, borderRadius: 12, padding: "14px 16px", marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, margin: 0 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, margin: 0 }}>
             {allAnswered ? "Target Score" : `${answeredCount} of ${SCORE_FACTORS.length} answered`}
           </p>
           <p style={{ fontSize: 22, fontWeight: 800, color: t.c, margin: 0 }}>{totalScore} / 100</p>
@@ -556,7 +556,7 @@ function IncomeTab() {
               <div style={{ padding: "13px 16px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                 <div>
                   <p style={{ fontWeight: 700, fontSize: 15, color: INK, margin: 0 }}>{s.name}</p>
-                  <p style={{ fontSize: 10.5, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em", margin: "3px 0 0" }}>{s.window}</p>
+                  <p style={{ fontSize: 10.5, color: MUTED, textTransform: "", letterSpacing: "0.06em", margin: "3px 0 0" }}>{s.window}</p>
                 </div>
                 <p style={{ fontSize: 17, fontWeight: 800, color: t.c, margin: 0, whiteSpace: "nowrap" }}>{s.result}</p>
               </div>
@@ -612,7 +612,7 @@ export default function AscentGlobalTargetingManual() {
       {/* HEADER */}
       <div style={{ background: `linear-gradient(160deg, #FDF9F0 0%, ${CREAM_DEEP} 100%)`, borderBottom: `1px solid ${BORDER}`, padding: "24px 18px 0" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "uppercase", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 6px ${GOLD}`, display: "inline-block" }} />
             The Ascent · Sector Intelligence Module
           </div>
@@ -631,7 +631,7 @@ export default function AscentGlobalTargetingManual() {
               const t = tone(v.toneKey);
               return (
                 <div key={v.label} style={{ background: "#FFFFFF", border: `1px solid ${t.bd}`, borderRadius: 10, padding: "10px 12px" }}>
-                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, marginBottom: 4 }}>{v.label}</div>
+                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, marginBottom: 4 }}>{v.label}</div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: t.c, marginBottom: 3 }}>{v.value}</div>
                   <div style={{ fontSize: 10.5, color: MUTED, lineHeight: 1.4 }}>{v.note}</div>
                 </div>
@@ -672,7 +672,7 @@ export default function AscentGlobalTargetingManual() {
       {/* CTA FOOTER */}
       <div style={{ borderTop: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>Continue The System</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, marginBottom: 12 }}>Continue The System</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 16 }}>
             <NextLink to="/the-ascent" icon="🧭" title="The Ascent" body="The full 45-day roadmap — Scout, Pick Lane and Day 4's tiering step this manual makes explicit." />
             <NextLink to="/performance-calculator" icon="🧮" title="Performance Calculator" body="Model a specific target's real numbers once you've scored it here." />

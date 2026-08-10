@@ -384,7 +384,7 @@ function SmbCalculator() {
     <div className="max-w-[900px] mx-auto px-4 py-6 pb-12">
       {/* HEADER */}
       <header className="mb-6">
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep flex items-center gap-1.5 font-bold">
+        <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5 font-bold">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> SMB Revenue Leak Finder
         </div>
         <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-foreground">SMB Performance Calculator</h1>
@@ -408,7 +408,7 @@ function SmbCalculator() {
       {totalLost > 0 && (
         <div className="rounded-xl border border-crimson/40 bg-crimson/5 p-4 mb-6 flex flex-wrap items-center gap-4">
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-crimson font-bold">Estimated monthly revenue at risk</div>
+            <div className="text-[10px] tracking-widest text-crimson font-bold">Estimated monthly revenue at risk</div>
             <div className="mt-1 font-display text-3xl font-bold text-crimson">{fmt(totalLost)}</div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-xs">
@@ -417,7 +417,7 @@ function SmbCalculator() {
             <MiniLoss label="Missed Calls" value={callLost} />
           </div>
           <div className="ml-auto rounded-lg border border-gold/40 bg-accent/20 px-4 py-2 text-center">
-            <div className="text-[10px] uppercase tracking-widest text-gold-deep font-bold">Lead with</div>
+            <div className="text-[10px] tracking-widest text-gold-deep font-bold">Lead with</div>
             <div className="text-sm font-semibold text-foreground">{topPriority.icon} {topPriority.name}</div>
           </div>
         </div>
@@ -454,7 +454,7 @@ function SmbCalculator() {
                 All tabs (single PDF)
               </button>
               <div className="mt-2 border-t border-border pt-2">
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">Pick specific tabs</div>
+                <div className="text-[10px] tracking-widest text-muted-foreground mb-1.5">Pick specific tabs</div>
                 {TABS.map((t) => (
                   <label key={t.id} className="flex items-center gap-2 py-1 cursor-pointer">
                     <input
@@ -542,7 +542,7 @@ function SmbCalculator() {
               <Ends left="5" right="500" />
             </Field>
             <div className="rounded-lg border border-gold/40 bg-accent/20 p-4">
-              <div className="text-[10px] uppercase tracking-widest text-gold-deep font-bold">Estimated Monthly Revenue</div>
+              <div className="text-[10px] tracking-widest text-gold-deep font-bold">Estimated Monthly Revenue</div>
               <div className="mt-2 font-display text-3xl font-bold">{fmt(monthlyCusts * avgValue)}</div>
               <div className="mt-1 text-xs text-muted-foreground">{monthlyCusts} customers × {fmt(avgValue)} avg value</div>
             </div>
@@ -579,7 +579,7 @@ function SmbCalculator() {
               <Ends left="1.0 ★" right="5.0 ★" />
             </Field>
             <div className={`rounded-xl border p-4 ${reviewLost > 500 ? "border-crimson/40 bg-crimson/5" : "border-border bg-background"}`}>
-              <div className={`text-[10px] uppercase tracking-widest font-bold ${reviewLost > 500 ? "text-crimson" : "text-muted-foreground"}`}>
+              <div className={`text-[10px] tracking-widest font-bold ${reviewLost > 500 ? "text-crimson" : "text-muted-foreground"}`}>
                 Review Gap Diagnosis
               </div>
               <Rows rows={[
@@ -618,7 +618,7 @@ function SmbCalculator() {
             </div>
 
             <div className="rounded-xl border border-crimson/40 bg-crimson/5 p-4">
-              <div className="text-[10px] uppercase tracking-widest text-crimson font-bold">What This Means</div>
+              <div className="text-[10px] tracking-widest text-crimson font-bold">What This Means</div>
               <p className="mt-2 text-sm text-foreground leading-relaxed">
                 {bizLabel} is losing an estimated <strong className="text-crimson">{fmt1(market.dailyCustomersLost)} customers every day</strong> to{" "}
                 {compLabel} — worth roughly <strong className="text-crimson">{fmt(market.monthlyRevenueLost)} a month</strong>, or{" "}
@@ -627,7 +627,7 @@ function SmbCalculator() {
             </div>
 
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">How This Is Calculated</div>
+              <div className="text-[10px] tracking-widest text-muted-foreground font-bold mb-2">How This Is Calculated</div>
               <div className="rounded-xl border border-border bg-background p-4">
                 <Rows rows={[
                   ["1. City population", fmtI(market.pop) + " people", "text-foreground"],
@@ -678,7 +678,7 @@ function SmbCalculator() {
               </select>
             </Field>
             <div className={`rounded-xl border p-4 ${speedLost > 400 ? "border-emerald-500/40 bg-emerald-500/5" : "border-border bg-background"}`}>
-              <div className={`text-[10px] uppercase tracking-widest font-bold ${speedLost > 400 ? "text-emerald-600" : "text-muted-foreground"}`}>
+              <div className={`text-[10px] tracking-widest font-bold ${speedLost > 400 ? "text-emerald-600" : "text-muted-foreground"}`}>
                 Speed Gap Diagnosis
               </div>
               <Rows rows={[
@@ -715,7 +715,7 @@ function SmbCalculator() {
               <Ends left="0%" right="85%" />
             </Field>
             <div className={`rounded-xl border p-4 ${callLost > 300 ? "border-gold/50 bg-accent/20" : "border-border bg-background"}`}>
-              <div className={`text-[10px] uppercase tracking-widest font-bold ${callLost > 300 ? "text-gold-deep" : "text-muted-foreground"}`}>
+              <div className={`text-[10px] tracking-widest font-bold ${callLost > 300 ? "text-gold-deep" : "text-muted-foreground"}`}>
                 Missed Call Diagnosis
               </div>
               <Rows rows={[
@@ -741,7 +741,7 @@ function SmbCalculator() {
             </div>
 
             <div className="rounded-xl border border-crimson/40 bg-crimson/5 p-5">
-              <div className="text-[10px] uppercase tracking-widest text-crimson font-bold">Total Estimated Monthly Revenue at Risk</div>
+              <div className="text-[10px] tracking-widest text-crimson font-bold">Total Estimated Monthly Revenue at Risk</div>
               <div className="mt-1 font-display text-4xl md:text-5xl font-bold text-crimson">{fmt(totalLost)}</div>
               <div className="mt-1 text-xs text-muted-foreground">{fmt(totalLost * 12)} per year — if nothing changes</div>
               <div className="mt-4 space-y-3">
@@ -752,7 +752,7 @@ function SmbCalculator() {
             </div>
 
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">Customers Lost to {compLabel}</div>
+              <div className="text-[10px] tracking-widest text-muted-foreground font-bold mb-2">Customers Lost to {compLabel}</div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <StatBlock icon={Sunrise} label="Per Day" value={fmt1(market.dailyCustomersLost)} accent="crimson" />
                 <StatBlock icon={CalendarDays} label="Per Week" value={fmtI(market.weeklyCustomersLost)} accent="gold" />
@@ -761,7 +761,7 @@ function SmbCalculator() {
             </div>
 
             <div className="rounded-xl border border-gold/40 bg-accent/20 p-4">
-              <div className="text-[10px] uppercase tracking-widest text-gold-deep font-bold">★ Your #1 Priority — Lead With This</div>
+              <div className="text-[10px] tracking-widest text-gold-deep font-bold">★ Your #1 Priority — Lead With This</div>
               <div className="mt-1 font-display text-lg font-bold">{topPriority.icon} {topPriority.name}</div>
               <div className="mt-1 text-sm text-muted-foreground">
                 Biggest single leak: <strong className="text-crimson">{fmt(topPriority.loss)}/month</strong> estimated.
@@ -773,14 +773,14 @@ function SmbCalculator() {
             </div>
 
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">All 3 Services — Ranked by Impact</div>
+              <div className="text-[10px] tracking-widest text-muted-foreground font-bold mb-2">All 3 Services — Ranked by Impact</div>
               <div className="space-y-3">
                 {priorities.map((p, i) => (<ServiceCard key={p.id} {...p} isTop={i === 0} />))}
               </div>
             </div>
 
             <div className="rounded-xl border border-border bg-background p-4">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-3">
+              <div className="text-[10px] tracking-widest text-muted-foreground font-bold mb-3">
                 12-Month Value Per Client (Full Upsell Ladder)
               </div>
               {[
@@ -791,11 +791,11 @@ function SmbCalculator() {
               ].map((r) => (
                 <div key={r.m} className="flex items-center justify-between border-b border-border py-2.5">
                   <div>
-                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{r.m}</div>
+                    <div className="text-[10px] tracking-widest text-muted-foreground">{r.m}</div>
                     <div className="text-sm font-medium text-foreground">{r.s}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Running total</div>
+                    <div className="text-[10px] tracking-widest text-muted-foreground">Running total</div>
                     <div className={`font-display text-base font-bold ${r.cls}`}>{fmt(r.running)}/mo</div>
                   </div>
                 </div>
@@ -913,7 +913,7 @@ function ServiceCard({ icon, name, price, problem, pitch, tool, ghl, roiLine, ac
             ["Expected ROI", roiLine, "text-crimson"],
           ].map(([lbl, val, cls]: any) => (
             <div key={lbl} className="mt-3">
-              <div className={`text-[10px] font-bold uppercase tracking-widest ${cls}`}>{lbl}</div>
+              <div className={`text-[10px] font-bold tracking-widest ${cls}`}>{lbl}</div>
               <p className={`mt-1 border-l-2 border-border pl-3 text-xs leading-relaxed text-muted-foreground ${lbl.includes("Pitch") ? "italic" : ""}`}>
                 {val}
               </p>
@@ -928,7 +928,7 @@ function ServiceCard({ icon, name, price, problem, pitch, tool, ghl, roiLine, ac
 function MiniLoss({ label, value }: { label: string; value: number }) {
   return (
     <div className="text-center">
-      <div className="text-[9px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className="text-[9px] tracking-widest text-muted-foreground">{label}</div>
       <div className="font-display text-sm font-bold text-crimson">{fmt(value)}</div>
     </div>
   );

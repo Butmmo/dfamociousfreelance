@@ -139,7 +139,7 @@ function Chevron({open}) {
 
 function SLabel({text,color}) {
   return (
-    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
       letterSpacing:".08em",marginBottom:7}}>{text}</div>
   );
 }
@@ -157,7 +157,7 @@ function StatBlock({value,label,color}) {
 function Detail({label,text,color}) {
   return (
     <div style={{marginTop:12}}>
-      <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+      <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
         letterSpacing:".07em",marginBottom:5}}>{label}</div>
       <p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.65,
         borderLeft:"2px solid "+color+"40",paddingLeft:10}}>{text}</p>
@@ -177,7 +177,7 @@ function ExpandCard({icon,title,tag,color,isOpen,onToggle,children}) {
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontWeight:700,fontSize:14,color:C.text,lineHeight:1.35}}>{title}</div>
           {tag&&<div style={{fontSize:10.5,color,marginTop:2,fontWeight:600,
-            textTransform:"uppercase",letterSpacing:".04em"}}>{tag}</div>}
+            textTransform:"",letterSpacing:".04em"}}>{tag}</div>}
         </div>
         <Chevron open={isOpen}/>
       </div>
@@ -301,7 +301,7 @@ export default function TheBroadcastEnginePathBriefing() {
         padding:"22px 16px 18px",borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:880,margin:"0 auto"}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:C.green,
-            textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
+            textTransform:"",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:C.green,
               boxShadow:"0 0 6px "+C.green,display:"inline-block"}}/>
             DBI Path Briefing · The Broadcast Engine
@@ -463,7 +463,7 @@ export default function TheBroadcastEnginePathBriefing() {
               </p>
             </div>
 
-            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"uppercase",
+            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"",
               letterSpacing:".08em",marginBottom:10}}>Two Real Volatility Risks</div>
 
             <div style={{display:"flex",flexDirection:"column",gap:9,marginBottom:16}}>
@@ -547,8 +547,8 @@ export default function TheBroadcastEnginePathBriefing() {
               <div style={{display:"grid",gridTemplateColumns:"1.1fr 1fr 1fr",background:"#0A1120",
                 borderBottom:"1px solid "+C.border,padding:"10px 12px",gap:8}}>
                 <span></span>
-                <span style={{fontSize:10.5,fontWeight:700,color:C.indigo,textTransform:"uppercase",letterSpacing:".05em"}}>Broadcast Engine</span>
-                <span style={{fontSize:10.5,fontWeight:700,color:C.teal,textTransform:"uppercase",letterSpacing:".05em"}}>Automation-Based System</span>
+                <span style={{fontSize:10.5,fontWeight:700,color:C.indigo,textTransform:"",letterSpacing:".05em"}}>Broadcast Engine</span>
+                <span style={{fontSize:10.5,fontWeight:700,color:C.teal,textTransform:"",letterSpacing:".05em"}}>Automation-Based System</span>
               </div>
               {COMPARE_ROWS.map((r,i)=>(
                 <div key={i} style={{display:"grid",gridTemplateColumns:"1.1fr 1fr 1fr",padding:"11px 12px",gap:8,

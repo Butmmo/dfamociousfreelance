@@ -206,7 +206,7 @@ function Chevron({ open }) {
 
 function SLabel({ text, color }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "uppercase",
+    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "",
       letterSpacing: ".08em", marginBottom: 7 }}>{text}</div>
   );
 }
@@ -215,7 +215,7 @@ function MetricPill({ label, value, color }) {
   return (
     <div style={{ background: color + "12", border: `1px solid ${color}30`, borderRadius: 7,
       padding: "6px 9px", flex: 1, minWidth: 110 }}>
-      <div style={{ fontSize: 9, fontWeight: 700, color, textTransform: "uppercase",
+      <div style={{ fontSize: 9, fontWeight: 700, color, textTransform: "",
         letterSpacing: ".05em", marginBottom: 2 }}>{label}</div>
       <div style={{ fontSize: 11.5, fontWeight: 600, color: "#201A16", lineHeight: 1.3 }}>{value}</div>
     </div>
@@ -454,7 +454,7 @@ export default function EcommerceProspectingGuide() {
         padding: "22px 16px 18px", borderBottom: "1px solid #FBF8F1" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".12em", color: "#0D7A5F",
-            textTransform: "uppercase", marginBottom: 7, display: "flex", alignItems: "center", gap: 6 }}>
+            textTransform: "", marginBottom: 7, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#0D7A5F",
               boxShadow: "0 0 6px #0D7A5F", display: "inline-block" }} />
             Revenue Recovery Engine — Companion Guide
@@ -591,7 +591,7 @@ export default function EcommerceProspectingGuide() {
                           ["💡 Pro Tip", p.tip, "#C99A3B"],
                         ].map(([lbl, val, col]) => (
                           <div key={lbl} style={{ marginTop: 11 }}>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: col, textTransform: "uppercase",
+                            <div style={{ fontSize: 10, fontWeight: 700, color: col, textTransform: "",
                               letterSpacing: ".07em", marginBottom: 5 }}>{lbl}</div>
                             <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65,
                               borderLeft: `2px solid ${col}40`, paddingLeft: 10 }}>{val}</p>
@@ -645,7 +645,7 @@ export default function EcommerceProspectingGuide() {
                           ["⚖️ Competition Note", n.note, "#7A5A00"],
                         ].map(([lbl, val, col]) => (
                           <div key={lbl} style={{ marginTop: 11 }}>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: col, textTransform: "uppercase",
+                            <div style={{ fontSize: 10, fontWeight: 700, color: col, textTransform: "",
                               letterSpacing: ".07em", marginBottom: 5 }}>{lbl}</div>
                             <p style={{ fontSize: 13, color: "#6E6459", margin: 0, lineHeight: 1.65,
                               borderLeft: `2px solid ${col}40`, paddingLeft: 10 }}>{val}</p>
@@ -684,7 +684,7 @@ export default function EcommerceProspectingGuide() {
               {WEEKLY_RHYTHM.map((r) => (
                 <div key={r.day} style={{ background: "#F8F5EE", border: "1px solid #FBF8F1", borderRadius: 10,
                   padding: "11px 14px", display: "flex", gap: 12, alignItems: "flex-start" }}>
-                  <div style={{ width: 38, fontSize: 10.5, fontWeight: 800, color: r.color, textTransform: "uppercase",
+                  <div style={{ width: 38, fontSize: 10.5, fontWeight: 800, color: r.color, textTransform: "",
                     flexShrink: 0, paddingTop: 1 }}>{r.day}</div>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#201A16", marginBottom: 2 }}>{r.title}</div>

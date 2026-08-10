@@ -151,7 +151,7 @@ function Dashboard() {
 
         {next && (
           <div className="mt-6">
-            <div className="flex items-center justify-between text-xs uppercase tracking-widest text-muted-foreground mb-2">
+            <div className="flex items-center justify-between text-xs tracking-widest text-muted-foreground mb-2">
               <span>Progress → <span className="text-gold-deep">{next.label}</span></span>
               <span>{xp} / {next.min} XP</span>
             </div>
@@ -166,7 +166,7 @@ function Dashboard() {
       <div className="grid lg:grid-cols-3 gap-4">
         <section className={`rounded-2xl border p-5 ${BAND_TONE[snapshot.band].bg} ring-1 ring-border`}>
           <div className="flex items-center justify-between">
-            <div className="text-[10px] uppercase tracking-widest text-gold-deep flex items-center gap-1.5">
+            <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
               <Gauge className="h-3.5 w-3.5" /> Escalation
             </div>
             <Link to="/report" className="text-[11px] text-primary hover:underline">Full report →</Link>
@@ -197,7 +197,7 @@ function Dashboard() {
         <section className="lg:col-span-2 rounded-2xl border border-border bg-card p-5">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-gold-deep">Calendar shortcut</div>
+              <div className="text-[10px] tracking-widest text-gold-deep">Calendar shortcut</div>
               <h3 className="mt-1 font-display text-lg font-bold">Yesterday · Today · Tomorrow</h3>
             </div>
             <Link to="/calendar" className="text-xs text-primary hover:underline">Open calendar →</Link>
@@ -215,7 +215,7 @@ function Dashboard() {
                 if (!day) {
                   return (
                     <div key={label} className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
-                      <div className="uppercase tracking-widest text-[9px] mb-1">{label}</div>
+                      <div className="tracking-widest text-[9px] mb-1">{label}</div>
                       Outside 45-day plan.
                     </div>
                   );
@@ -230,7 +230,7 @@ function Dashboard() {
                     className={`rounded-lg border p-3 hover:border-gold transition ${isToday ? "border-gold bg-gold/5" : "border-border"}`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="uppercase tracking-widest text-[9px] text-muted-foreground">{label}</div>
+                      <div className="tracking-widest text-[9px] text-muted-foreground">{label}</div>
                       <div className="text-[10px] font-semibold text-gold-deep">Day {day.day}</div>
                     </div>
                     <div className="mt-1 text-sm font-semibold flex items-center gap-1"><span>{day.icon}</span> {day.focus}</div>
@@ -284,7 +284,7 @@ function Dashboard() {
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-gold-deep">Weekly cadence</div>
+            <div className="text-[10px] tracking-widest text-gold-deep">Weekly cadence</div>
             <h2 className="mt-1 font-display text-2xl font-bold">Your latest report</h2>
           </div>
           <Link to="/weekly-report" className="text-sm font-semibold text-primary hover:underline">
@@ -310,7 +310,7 @@ function StatCard({ label, value, icon: Icon, accent }: { label: string; value: 
   return (
     <div className={`rounded-xl border p-4 ${accent ? "border-gold bg-accent/20" : "border-border bg-background"}`}>
       <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-widest text-muted-foreground">{label}</span>
+        <span className="text-xs tracking-widest text-muted-foreground">{label}</span>
         <Icon className={`h-4 w-4 ${accent ? "text-primary" : "text-gold-deep"}`} />
       </div>
       <div className="mt-3 font-display text-2xl font-bold">{value}</div>
@@ -320,7 +320,7 @@ function StatCard({ label, value, icon: Icon, accent }: { label: string; value: 
 function MiniStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg border border-border bg-background p-3">
-      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className="text-[10px] tracking-widest text-muted-foreground">{label}</div>
       <div className="mt-1 font-display text-xl font-bold">{value}</div>
     </div>
   );

@@ -36,7 +36,7 @@ function GlobalSmbEngine() {
       {/* HEADER */}
       <div style={{ background: "linear-gradient(160deg,#FDF9F0 0%,#F5F0E4 100%)", borderBottom: "1px solid #D9CFBB", padding: "24px 18px 0" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#8B0000", textTransform: "uppercase", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#8B0000", textTransform: "", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#C99A3B", boxShadow: "0 0 6px #C99A3B", display: "inline-block" }} />
             SMB Optimisation System · Playbook 01
           </div>

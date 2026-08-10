@@ -40,7 +40,7 @@ function PlaybooksIndex() {
     <div className="space-y-8">
       <header>
         <Motto />
-        <div className="mt-2 text-[10px] uppercase tracking-widest text-gold-deep">{path?.name ?? "Your Path"}</div>
+        <div className="mt-2 text-[10px] tracking-widest text-gold-deep">{path?.name ?? "Your Path"}</div>
         <h1 className="mt-1 font-display text-3xl md:text-4xl font-bold">The Playbooks</h1>
         <p className="mt-2 text-muted-foreground max-w-2xl">
           {path?.summary ?? "Choose a path to unlock its playbooks."} Three playbooks, one path.
@@ -70,7 +70,7 @@ function PlaybooksIndex() {
                   <Icon className="h-6 w-6 text-gold-deep" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] uppercase tracking-widest text-gold-deep">{p.tagline}</div>
+                  <div className="text-[10px] tracking-widest text-gold-deep">{p.tagline}</div>
                   <div className="mt-1 font-display text-lg md:text-xl font-bold">{p.title}</div>
                   <p className="mt-2 text-sm text-muted-foreground">{p.body}</p>
                   <div className="mt-4 flex items-center justify-between">
@@ -96,7 +96,7 @@ function PlaybooksIndex() {
       )}
 
       <section className="rounded-2xl border border-border bg-card p-6">
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">Cadence</div>
+        <div className="text-[10px] tracking-widest text-gold-deep">Cadence</div>
         <h2 className="mt-1 font-display text-2xl font-bold">Weekly report ritual</h2>
         <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
           Every Sunday, <Link to="/weekly-report" className="text-primary font-semibold hover:underline">file a weekly report</Link> — outreach count, calls booked, wins, blockers. Reports feed the council escalation queue: any beneficiary who misses two consecutive weeks or logs zero outreach for seven days is auto-flagged for a mentor call.

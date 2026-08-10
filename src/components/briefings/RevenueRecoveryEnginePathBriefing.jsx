@@ -99,7 +99,7 @@ function Chevron({ open }) {
 
 function SLabel({ text, color }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "uppercase",
+    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "",
       letterSpacing: ".08em", marginBottom: 7 }}>{text}</div>
   );
 }
@@ -117,7 +117,7 @@ function HighLowCard({ dimension, high, low }) {
       {open && (
         <div style={{ padding: "0 15px 16px", borderTop: "1px solid #FBF8F1" }}>
           <div style={{ marginTop: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#0D7A5F", textTransform: "uppercase",
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#0D7A5F", textTransform: "",
               letterSpacing: ".07em", marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
               <span>▲</span> High
             </div>
@@ -125,7 +125,7 @@ function HighLowCard({ dimension, high, low }) {
               borderLeft: "2px solid #0D7A5F40", paddingLeft: 10 }}>{high}</p>
           </div>
           <div style={{ marginTop: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#8B0000", textTransform: "uppercase",
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#8B0000", textTransform: "",
               letterSpacing: ".07em", marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
               <span>▼</span> Low
             </div>
@@ -241,7 +241,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
         padding: "22px 16px 18px", borderBottom: "1px solid #FBF8F1" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".12em", color: "#0D7A5F",
-            textTransform: "uppercase", marginBottom: 7, display: "flex", alignItems: "center", gap: 6 }}>
+            textTransform: "", marginBottom: 7, display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#0D7A5F",
               boxShadow: "0 0 6px #0D7A5F", display: "inline-block" }} />
             DBI — One Of Seven Doorways

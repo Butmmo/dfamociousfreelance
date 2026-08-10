@@ -117,7 +117,7 @@ function Landing() {
             <DbiMark className="h-10 w-10" />
             <div className="leading-tight">
               <div className="font-display text-sm font-bold tracking-wider">DBI</div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">D'Famocious Business Incubator</div>
+              <div className="text-[10px] tracking-[0.2em] text-muted-foreground">D'Famocious Business Incubator</div>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-7 text-sm">
@@ -170,7 +170,7 @@ function Landing() {
               ].map((s) => (
                 <div key={s.l} className="rounded-xl border border-border bg-card px-4 py-3">
                   <div className="font-display text-2xl font-bold text-gold-deep">{s.n}</div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.l}</div>
+                  <div className="text-[10px] tracking-widest text-muted-foreground">{s.l}</div>
                 </div>
               ))}
             </div>
@@ -203,7 +203,7 @@ function Landing() {
             <div key={s.short} className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 hover:border-gold hover:shadow-regal transition">
               <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-gradient-to-br from-gold/15 to-transparent blur-3xl" />
               <div className="relative">
-                <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">{s.tag} · {s.short}</div>
+                <div className="text-[10px] tracking-[0.25em] text-gold-deep">{s.tag} · {s.short}</div>
                 <h3 className="mt-2 font-display text-2xl md:text-3xl font-bold">{s.name}</h3>
                 <p className="mt-4 text-sm text-muted-foreground">{s.body}</p>
                 <div className="mt-6 space-y-3">
@@ -224,7 +224,7 @@ function Landing() {
       <section id="dse" className="bg-royal text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold">
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 px-3 py-1 text-[10px] tracking-[0.25em] text-gold">
               <Compass className="h-3 w-3" /> Stage 1 · choose one · 24 hours to decide
             </span>
             <h2 className="mt-6 font-display text-4xl md:text-5xl font-bold">
@@ -244,7 +244,7 @@ function Landing() {
                 <div className="text-3xl leading-none">{p.emoji}</div>
                 <div className="mt-4 font-display text-lg font-semibold">{p.t}</div>
                 <p className="mt-2 text-sm text-primary-foreground/75">{p.d}</p>
-                <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-widest">
+                <div className="mt-4 flex flex-wrap gap-2 text-[10px] tracking-widest">
                   <span className="rounded-full border border-primary-foreground/25 px-2.5 py-0.5 text-primary-foreground/70">{p.tool}</span>
                   <span className="rounded-full border border-gold/60 px-2.5 py-0.5 text-gold">{p.price}</span>
                 </div>
@@ -254,7 +254,7 @@ function Landing() {
 
           <div className="mt-12 grid md:grid-cols-2 gap-6">
             <div className="rounded-2xl border border-gold/30 bg-primary-foreground/5 p-6">
-              <div className="text-[10px] uppercase tracking-[0.25em] text-gold">The proof rule</div>
+              <div className="text-[10px] tracking-[0.25em] text-gold">The proof rule</div>
               <p className="mt-2 text-sm text-primary-foreground/80">
                 Prove your skill on material you made yourself — a dummy store, practice episodes, a ghostwritten
                 persona, a self-recorded mock call. Never free work for a live prospect: it reads as common and trains
@@ -262,7 +262,7 @@ function Landing() {
               </p>
             </div>
             <div className="rounded-2xl border border-gold/30 bg-primary-foreground/5 p-6">
-              <div className="text-[10px] uppercase tracking-[0.25em] text-gold">Honest briefings</div>
+              <div className="text-[10px] tracking-[0.25em] text-gold">Honest briefings</div>
               <p className="mt-2 text-sm text-primary-foreground/80">
                 Before you commit, each system opens a full briefing: the highs, the lows, how durable the demand really
                 is, who you compete against, and a straight answer on whether it suits you. No path is sold to you.
@@ -316,7 +316,7 @@ function Landing() {
           </div>
         </div>
         <div className="mt-8 rounded-2xl border border-gold/40 bg-accent/20 p-6">
-          <div className="text-[10px] uppercase tracking-[0.25em] text-gold-deep">Ten stages, then the fork</div>
+          <div className="text-[10px] tracking-[0.25em] text-gold-deep">Ten stages, then the fork</div>
           <p className="mt-2 text-sm text-muted-foreground">
             Design · Structure · Optimize · Test · Presence · Launch · Content · Ecosystem · Valuation · The Fork.
             Luxury access is decided type by type, not by track: it is reachable where a sale is relationship-brokered
@@ -419,7 +419,7 @@ function Landing() {
           ].map((s) => (
             <div key={s.t} className="rounded-2xl border border-border bg-card p-6">
               <s.icon className="h-7 w-7 text-gold-deep" />
-              <div className="mt-4 text-[10px] uppercase tracking-widest text-gold-deep">{s.t}</div>
+              <div className="mt-4 text-[10px] tracking-widest text-gold-deep">{s.t}</div>
               <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
             </div>
           ))}
@@ -446,7 +446,7 @@ function Landing() {
               <p className="text-sm text-muted-foreground">Founder, D'Famocious Group</p>
               <div className="mt-8 flex items-center gap-4">
                 <DfgMark className="h-14 w-14" />
-                <div className="text-xs uppercase tracking-widest text-muted-foreground leading-relaxed">
+                <div className="text-xs tracking-widest text-muted-foreground leading-relaxed">
                   A subsidiary of<br />
                   <span className="text-foreground font-semibold">D'Famocious Group</span>
                 </div>
