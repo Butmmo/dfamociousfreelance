@@ -336,7 +336,7 @@ function ProgressBar({value,color,height=6}) {
 
 function SLabel({text,color}) {
   return (
-    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
       letterSpacing:".08em",marginBottom:7}}>{text}</div>
   );
 }
@@ -381,7 +381,7 @@ export default function TheAuthorityEngine() {
         padding:"22px 16px 18px",borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:880,margin:"0 auto"}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:"#0D7A5F",
-            textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
+            textTransform:"",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
             The Authority Engine — 45-Day Playbook
@@ -591,13 +591,13 @@ export default function TheAuthorityEngine() {
                     {isOpen&&(
                       <div style={{padding:"0 14px 16px",borderTop:"1px solid #FBF8F1"}}>
                         <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#0D7A5F",textTransform:"uppercase",
+                          <div style={{fontSize:10,fontWeight:700,color:"#0D7A5F",textTransform:"",
                             letterSpacing:".07em",marginBottom:5}}>💡 Why This Works</div>
                           <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
                             borderLeft:"2px solid #0D7A5F40",paddingLeft:10}}>{n.why}</p>
                         </div>
                         <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"uppercase",
+                          <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"",
                             letterSpacing:".07em",marginBottom:5}}>📍 Where to Find Them</div>
                           <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
                             borderLeft:"2px solid #C99A3B40",paddingLeft:10}}>{n.find}</p>
@@ -637,13 +637,13 @@ export default function TheAuthorityEngine() {
                     {isOpen&&(
                       <div style={{padding:"0 15px 16px",borderTop:"1px solid #FBF8F1"}}>
                         <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:s.color,textTransform:"uppercase",
+                          <div style={{fontSize:10,fontWeight:700,color:s.color,textTransform:"",
                             letterSpacing:".07em",marginBottom:5}}>What It Is</div>
                           <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.65,
                             borderLeft:`2px solid ${s.color}40`,paddingLeft:10}}>{s.desc}</p>
                         </div>
                         <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"uppercase",
+                          <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"",
                             letterSpacing:".07em",marginBottom:5}}>Why It Matters</div>
                           <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.65,
                             borderLeft:"2px solid #C99A3B40",paddingLeft:10}}>{s.why}</p>

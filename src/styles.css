@@ -2,9 +2,9 @@
 @source "../src";
 @import "tw-animate-css";
 
-@import "@fontsource/cinzel/400.css";
-@import "@fontsource/cinzel/600.css";
-@import "@fontsource/cinzel/700.css";
+@import "@fontsource/playfair-display/400.css";
+@import "@fontsource/playfair-display/600.css";
+@import "@fontsource/playfair-display/700.css";
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
@@ -17,7 +17,7 @@
    Latin motto: Fortuna Audentes Iuvat — Fortune favours the bold. */
 
 @theme inline {
-  --font-display: "Cinzel", Georgia, serif;
+  --font-display: "Playfair Display", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);

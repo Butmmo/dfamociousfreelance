@@ -105,7 +105,7 @@ function CouncilReports() {
                   <div className="font-display text-lg font-bold">{list[0]?.profile?.full_name ?? list[0]?.profile?.email ?? uid.slice(0, 8)}</div>
                   <div className="text-xs text-muted-foreground">{list[0]?.profile?.email} · {list.length} filing{list.length === 1 ? "" : "s"}</div>
                 </div>
-                <span className="text-[10px] uppercase tracking-widest text-gold-deep">{list[0]?.profile?.rank ?? "recruit"}</span>
+                <span className="text-[10px] tracking-widest text-gold-deep">{list[0]?.profile?.rank ?? "recruit"}</span>
               </div>
 
               <div className="mt-4 divide-y divide-border">
@@ -144,7 +144,7 @@ function Detail({ report, onBack }: { report: any; onBack: () => void }) {
       </button>
 
       <header>
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">weekly filing</div>
+        <div className="text-[10px] tracking-widest text-gold-deep">weekly filing</div>
         <h1 className="mt-1 font-display text-3xl font-bold">
           {report.profile?.full_name ?? report.profile?.email ?? "Beneficiary"} — Week {report.week_number ?? "—"}
         </h1>
@@ -169,7 +169,7 @@ function Detail({ report, onBack }: { report: any; onBack: () => void }) {
 
       {(
         <details className="rounded-xl border border-border bg-card p-4">
-          <summary className="cursor-pointer text-xs uppercase tracking-widest text-muted-foreground">Raw submission</summary>
+          <summary className="cursor-pointer text-xs tracking-widest text-muted-foreground">Raw submission</summary>
           <pre className="mt-3 overflow-x-auto text-xs text-muted-foreground">{JSON.stringify(report, null, 2)}</pre>
         </details>
       )}
@@ -180,7 +180,7 @@ function Detail({ report, onBack }: { report: any; onBack: () => void }) {
 function Stat({ label, value }: { label: string; value: any }) {
   return (
     <div className="rounded-xl border border-border bg-card p-3 text-center">
-      <div className="text-[9px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className="text-[9px] tracking-widest text-muted-foreground">{label}</div>
       <div className="mt-1 font-display text-xl font-bold">{value}</div>
     </div>
   );
@@ -189,7 +189,7 @@ function Stat({ label, value }: { label: string; value: any }) {
 function Field({ label, value }: { label: string; value?: string }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <div className="text-[10px] uppercase tracking-widest text-gold-deep">{label}</div>
+      <div className="text-[10px] tracking-widest text-gold-deep">{label}</div>
       <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap">{value?.trim() ? value : "— nothing recorded —"}</p>
     </div>
   );

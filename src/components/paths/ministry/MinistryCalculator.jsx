@@ -123,7 +123,7 @@ function ServiceCard({icon, name, price, problem, pitch, tool, setup, roiLine, c
             ["📈 Is It Worth It",roiLine,color],
           ].map(([lbl,val,col])=>(
             <div key={lbl} style={{marginTop:12}}>
-              <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"",
                 letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
               <p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.65,
                 borderLeft:`2px solid ${col}40`,paddingLeft:10,fontStyle:lbl.includes("Bring")?"italic":"normal"}}>
@@ -272,7 +272,7 @@ export default function MinistryPerformanceCalculator() {
       <div style={{background:"linear-gradient(160deg,#F8F5EE 0%,#F8F5EE 60%,#F5F0E4 100%)",
         padding:"22px 16px 18px",borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:820,margin:"0 auto"}}>
-          <div style={{fontSize:10,fontWeight:700,color:C.green,textTransform:"uppercase",
+          <div style={{fontSize:10,fontWeight:700,color:C.green,textTransform:"",
             letterSpacing:".12em",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:C.green,
               boxShadow:"0 0 6px "+C.green,display:"inline-block"}}/>
@@ -407,7 +407,7 @@ export default function MinistryPerformanceCalculator() {
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,
                 color:visibilityGap>15?C.indigo:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Presence Diagnosis
               </div>
               {[
@@ -454,7 +454,7 @@ export default function MinistryPerformanceCalculator() {
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,
                 color:speedGap>4?C.green:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Response Diagnosis
               </div>
               {[
@@ -500,7 +500,7 @@ export default function MinistryPerformanceCalculator() {
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,
                 color:callGap>8?C.amber:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Missed Call Diagnosis
               </div>
               {[
@@ -531,7 +531,7 @@ export default function MinistryPerformanceCalculator() {
 
             <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.indigo+"40",borderRadius:12,padding:"18px",marginBottom:16}}>
-              <div style={{fontSize:10,fontWeight:700,color:C.indigo,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:C.indigo,textTransform:"",
                 letterSpacing:".1em",marginBottom:4}}>Estimated Missed Connections</div>
               <div style={{fontSize:"clamp(32px,6vw,48px)",fontWeight:800,color:C.indigo,
                 marginBottom:8}}>{fmt1(totalGap)} <span style={{fontSize:"0.4em",color:C.dim,fontWeight:600}}>people/month</span></div>
@@ -547,7 +547,7 @@ export default function MinistryPerformanceCalculator() {
             </div>
 
             <div style={{marginBottom:16}}>
-              <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"uppercase",
+              <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"",
                 letterSpacing:".08em",marginBottom:10}}>Roughly, Per Day / Week / Month</div>
               <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
                 <StatBlock icon="🌅" label="Per Day" value={fmt1(dailyGap)} color={C.indigo}/>
@@ -559,7 +559,7 @@ export default function MinistryPerformanceCalculator() {
             <div style={{background:topPriority.color+"12",border:"1px solid "+topPriority.color+"35",
               borderRadius:12,padding:"14px 16px",marginBottom:16}}>
               <div style={{fontSize:10,fontWeight:700,color:topPriority.color,
-                textTransform:"uppercase",letterSpacing:".09em",marginBottom:8}}>
+                textTransform:"",letterSpacing:".09em",marginBottom:8}}>
                 ★ Biggest Single Gap — Lead With This
               </div>
               <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:4}}>
@@ -575,7 +575,7 @@ export default function MinistryPerformanceCalculator() {
               </div>
             </div>
 
-            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"uppercase",
+            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"",
               letterSpacing:".08em",marginBottom:10}}>All 3 Gaps — Ranked by Size</div>
             {priorities.map((p,i)=>(
               <ServiceCard key={p.id} {...p} isTop={i===0}/>
@@ -584,7 +584,7 @@ export default function MinistryPerformanceCalculator() {
             <div style={{background:C.bg2,border:"1px solid "+C.border,
               borderRadius:12,padding:"14px 16px",marginTop:8}}>
               <div style={{fontSize:11,fontWeight:700,color:C.dim,
-                textTransform:"uppercase",letterSpacing:".08em",marginBottom:12}}>
+                textTransform:"",letterSpacing:".08em",marginBottom:12}}>
                 12-Month Value Per Ministry — same tiers as the 60-Day Playbook
               </div>
               {[

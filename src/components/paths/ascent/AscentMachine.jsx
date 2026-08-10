@@ -625,8 +625,8 @@ const AFTER_ROWS = [
 
 const h2Style = { fontSize: 17, fontWeight: 700, margin: "0 0 6px", color: INK };
 const pStyle = { fontSize: 13, color: MUTED, lineHeight: 1.7, margin: "0 0 14px" };
-const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 };
-const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: GOLD_DEEP, marginBottom: 4 };
+const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", marginBottom: 8 };
+const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: GOLD_DEEP, marginBottom: 4 };
 
 function ScoreDots({ value, max = 5 }) {
   return (
@@ -824,9 +824,9 @@ function NicheTab() {
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 620 }}>
           <thead>
             <tr style={{ background: CREAM_DEEP }}>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Lane</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>Lane</th>
               {SCORE_LABELS.map((s) => (
-                <th key={s.key} style={{ textAlign: "left", padding: "9px 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, whiteSpace: "nowrap" }}>{s.label}</th>
+                <th key={s.key} style={{ textAlign: "left", padding: "9px 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, whiteSpace: "nowrap" }}>{s.label}</th>
               ))}
             </tr>
           </thead>
@@ -987,7 +987,7 @@ function DaysTab({ checked, onToggle }) {
           <div key={p} style={{ marginBottom: 22 }}>
             <div style={{ background: "rgba(201,154,59,0.08)", border: `1px solid ${GOLD}`, borderRadius: 12, padding: "12px 15px", marginBottom: 10 }}>
               <p style={{ fontWeight: 800, fontSize: 13.5, color: GOLD_DEEP, margin: "0 0 2px" }}>{meta.name}</p>
-              <p style={{ fontSize: 11, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>{meta.range}</p>
+              <p style={{ fontSize: 11, color: MUTED, textTransform: "", letterSpacing: "0.06em", margin: "0 0 8px" }}>{meta.range}</p>
               <p style={{ fontSize: 12, color: INK, lineHeight: 1.6, margin: 0 }}>{meta.scorecard}</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1170,10 +1170,10 @@ function ToolkitTab() {
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 640 }}>
           <thead>
             <tr style={{ background: CREAM_DEEP }}>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Need</th>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Paid Option</th>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: EMERALD }}>Free Option</th>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>$0 Manual Path</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>Need</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>Paid Option</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: EMERALD }}>Free Option</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>$0 Manual Path</th>
             </tr>
           </thead>
           <tbody>
@@ -1311,7 +1311,7 @@ export default function TheAscent() {
       {/* HEADER */}
       <div style={{ background: `linear-gradient(160deg, #FDF9F0 0%, ${CREAM_DEEP} 100%)`, borderBottom: `1px solid ${BORDER}`, padding: "24px 18px 0" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "uppercase", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 6px ${GOLD}`, display: "inline-block" }} />
             45-Day Zero-Capital System
           </div>
@@ -1326,12 +1326,12 @@ export default function TheAscent() {
           {/* RANK / XP */}
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
             <div>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, margin: "0 0 3px" }}>Current Rank</p>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, margin: "0 0 3px" }}>Current Rank</p>
               <p style={{ fontSize: 18, fontWeight: 800, color: GOLD_DEEP, margin: 0 }}>{currentRank.name}</p>
               <p style={{ fontSize: 11.5, color: MUTED, margin: "2px 0 0", maxWidth: 380, lineHeight: 1.5 }}>{currentRank.blurb}</p>
             </div>
             <div style={{ textAlign: "right" }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, margin: "0 0 3px" }}>Progress</p>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, margin: "0 0 3px" }}>Progress</p>
               <p style={{ fontSize: 18, fontWeight: 800, color: INK, margin: 0 }}>{Math.round(pct)}%</p>
               {nextRank && <p style={{ fontSize: 11, color: MUTED, margin: "2px 0 0" }}>{Math.max(0, nextRank.threshold - Math.round(pct))}% to {nextRank.name}</p>}
             </div>
@@ -1399,7 +1399,7 @@ export default function TheAscent() {
       {/* CTA FOOTER */}
       <div style={{ borderTop: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>Go Deeper</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, marginBottom: 12 }}>Go Deeper</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 16 }}>
             <NextLink to="/global-targeting-manual" icon="🌍" title="Global Targeting Manual" body="Where the target companies actually are worldwide, a 7th lane, and a formal scoring system for any target." />
             <NextLink to="/performance-calculator" icon="🧮" title="Performance Calculator" body="Model your real monthly income at Ramping, Established, and Beyond-90 stages." />

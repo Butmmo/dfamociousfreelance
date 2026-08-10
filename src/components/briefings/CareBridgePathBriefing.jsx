@@ -134,7 +134,7 @@ function ProgressBar({value,color,height=6}) {
 
 function SLabel({text,color}) {
   return (
-    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
       letterSpacing:".08em",marginBottom:7}}>{text}</div>
   );
 }
@@ -202,7 +202,7 @@ export default function CareBridgePathBriefing() {
         padding:"22px 16px 18px", borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:860, margin:"0 auto"}}>
           <div style={{fontSize:10, fontWeight:700, letterSpacing:".12em", color:"#0D7A5F",
-            textTransform:"uppercase", marginBottom:7, display:"flex", alignItems:"center", gap:6}}>
+            textTransform:"", marginBottom:7, display:"flex", alignItems:"center", gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
             DBI Path Briefing — Read Before You Choose
@@ -403,7 +403,7 @@ export default function CareBridgePathBriefing() {
             {COMPETITORS.map(c=>(
               <div key={c.tier} style={{background:"#F8F5EE",border:`1px solid ${c.color}35`,
                 borderRadius:12,padding:"14px 16px",marginBottom:10}}>
-                <div style={{fontSize:11,fontWeight:700,color:c.color,textTransform:"uppercase",
+                <div style={{fontSize:11,fontWeight:700,color:c.color,textTransform:"",
                   letterSpacing:".07em",marginBottom:6}}>{c.tier}</div>
                 <div style={{fontSize:13.5,fontWeight:600,color:"#201A16",marginBottom:6}}>{c.names}</div>
                 <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.6}}>{c.note}</p>

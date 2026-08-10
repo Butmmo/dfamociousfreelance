@@ -148,8 +148,8 @@ const FIT_CHECKS = [
 
 const h2Style = { fontSize: 17, fontWeight: 700, margin: "0 0 6px", color: INK };
 const pStyle = { fontSize: 13, color: MUTED, lineHeight: 1.7, margin: "0 0 14px" };
-const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 };
-const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: GOLD_DEEP, marginBottom: 4 };
+const eyebrowStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", marginBottom: 8 };
+const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: GOLD_DEEP, marginBottom: 4 };
 
 function ScoreDots({ value, max = 5 }) {
   return (
@@ -294,9 +294,9 @@ function StandoutTab() {
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
           <thead>
             <tr style={{ background: CREAM_DEEP }}>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Model</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>Model</th>
               {MODEL_FACTORS.map((f) => (
-                <th key={f.key} style={{ textAlign: "left", padding: "9px 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, whiteSpace: "nowrap" }}>{f.label}</th>
+                <th key={f.key} style={{ textAlign: "left", padding: "9px 10px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, whiteSpace: "nowrap" }}>{f.label}</th>
               ))}
             </tr>
           </thead>
@@ -370,8 +370,8 @@ function CompetitionTab() {
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
           <thead>
             <tr style={{ background: CREAM_DEEP }}>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Lane</th>
-              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED }}>Low-Competition Score</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>Lane</th>
+              <th style={{ textAlign: "left", padding: "9px 12px", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED }}>Low-Competition Score</th>
             </tr>
           </thead>
           <tbody>
@@ -452,7 +452,7 @@ export default function AscentPathBriefing() {
       {/* HEADER */}
       <div style={{ background: `linear-gradient(160deg, #FDF9F0 0%, ${CREAM_DEEP} 100%)`, borderBottom: `1px solid ${BORDER}`, padding: "24px 18px 0" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "uppercase", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: CRIMSON, textTransform: "", marginBottom: 9, display: "flex", alignItems: "center", gap: 7 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 6px ${GOLD}`, display: "inline-block" }} />
             The Ascent · Decision Briefing
           </div>
@@ -471,7 +471,7 @@ export default function AscentPathBriefing() {
               const t = tone(v.toneKey);
               return (
                 <div key={v.label} style={{ background: "#FFFFFF", border: `1px solid ${t.bd}`, borderRadius: 10, padding: "10px 12px" }}>
-                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, marginBottom: 4 }}>{v.label}</div>
+                  <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "", color: MUTED, marginBottom: 4 }}>{v.label}</div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: t.c, marginBottom: 3 }}>{v.value}</div>
                   <div style={{ fontSize: 10.5, color: MUTED, lineHeight: 1.4 }}>{v.note}</div>
                 </div>
@@ -514,7 +514,7 @@ export default function AscentPathBriefing() {
       {/* CTA FOOTER */}
       <div style={{ borderTop: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", padding: "22px 16px 40px" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED, marginBottom: 12 }}>If You Choose This Door</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "", color: MUTED, marginBottom: 12 }}>If You Choose This Door</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 16 }}>
             <NextLink to="/the-ascent" icon="🧭" title="The Ascent" body="Day 1 of the 45-day system starts here." />
             <NextLink to="/global-targeting-manual" icon="🌍" title="Global Targeting Manual" body="Where the target companies are, and the 7th lane." />

@@ -78,7 +78,7 @@ function WeeklyReportPage() {
   return (
     <div className="space-y-8">
       <header>
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep flex items-center gap-2">
+        <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-2">
           <FileText className="h-3.5 w-3.5" /> Weekly cadence
         </div>
         <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">File this week's report</h1>
@@ -118,7 +118,7 @@ function WeeklyReportPage() {
       </form>
 
       <section>
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">Recent filings</div>
+        <div className="text-[10px] tracking-widest text-gold-deep">Recent filings</div>
         <h2 className="mt-1 font-display text-2xl font-bold">Your last 6 reports</h2>
         {history.length === 0 ? (
           <p className="mt-3 text-sm text-muted-foreground">No reports filed yet.</p>
@@ -128,7 +128,7 @@ function WeeklyReportPage() {
               <div key={h.id} className="rounded-xl border border-border bg-card p-4">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{new Date(h.created_at).toLocaleDateString()}</span>
-                  <span className="uppercase tracking-widest">Week {h.week_number ?? "—"}</span>
+                  <span className="tracking-widest">Week {h.week_number ?? "—"}</span>
                 </div>
                 <div className="mt-3 grid grid-cols-4 gap-2 text-xs">
                   <MiniStat label="Out" value={h.outreach_count ?? 0} />
@@ -157,7 +157,7 @@ function WeeklyReportPage() {
 function NumField({ label, value, onChange, big }: { label: string; value: number; onChange: (n: number) => void; big?: boolean }) {
   return (
     <label className="block">
-      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="text-[10px] tracking-widest text-muted-foreground">{label}</span>
       <input
         type="number"
         min={0}
@@ -171,7 +171,7 @@ function NumField({ label, value, onChange, big }: { label: string; value: numbe
 function TextArea({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (s: string) => void; placeholder?: string }) {
   return (
     <label className="block">
-      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="text-[10px] tracking-widest text-muted-foreground">{label}</span>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -185,7 +185,7 @@ function TextArea({ label, value, onChange, placeholder }: { label: string; valu
 function MiniStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-md bg-background border border-border p-2 text-center">
-      <div className="text-[9px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className="text-[9px] tracking-widest text-muted-foreground">{label}</div>
       <div className="font-display text-sm font-bold">{value}</div>
     </div>
   );

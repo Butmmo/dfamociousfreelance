@@ -388,7 +388,7 @@ function InfoRow({ color, children }) {
 function Block({ label, color, children }) {
   return (
     <div style={{ marginTop: 14 }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 5 }}>{label}</div>
+      <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "", letterSpacing: "0.08em", marginBottom: 5 }}>{label}</div>
       <div style={{ fontSize: 13, color: "#6E6459", lineHeight: 1.6 }}>{children}</div>
     </div>
   );
@@ -433,10 +433,10 @@ export function GlobalParts({ tab }) {
 
                   {openCountry === i && (
                     <div style={{ padding: "4px 16px 18px", borderTop: "1px solid #D9CFBB" }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: c.color, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 14, marginBottom: 5 }}>⚡ Why This Market</div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: c.color, textTransform: "", letterSpacing: "0.08em", marginTop: 14, marginBottom: 5 }}>⚡ Why This Market</div>
                       <p style={{ fontSize: 13, color: "#6E6459", margin: "0 0 14px", lineHeight: 1.6 }}>{c.highlight}</p>
 
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Specific Reasons</div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.08em", marginBottom: 8 }}>Specific Reasons</div>
                       <div style={{ marginBottom: 16 }}>
                         {c.reasons.map((r, j) => (
                           <div key={j} style={{ display: "flex", gap: 8, marginBottom: 7, alignItems: "flex-start" }}>
@@ -448,7 +448,7 @@ export function GlobalParts({ tab }) {
 
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                         <div style={{ background: "#F8F5EE", borderRadius: 8, padding: "12px 13px", border: "1px solid #D9CFBB" }}>
-                          <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>Best Niches</div>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.07em", marginBottom: 8 }}>Best Niches</div>
                           {c.niches.map((n, j) => (
                             <div key={j} style={{ fontSize: 12, color: "#6E6459", marginBottom: 5, display: "flex", gap: 6 }}>
                               <span style={{ color: "#10B981" }}>•</span> {n}
@@ -456,7 +456,7 @@ export function GlobalParts({ tab }) {
                           ))}
                         </div>
                         <div style={{ background: "#F8F5EE", borderRadius: 8, padding: "12px 13px", border: "1px solid #D9CFBB" }}>
-                          <div style={{ fontSize: 10, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>Find Leads On</div>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: "#F59E0B", textTransform: "", letterSpacing: "0.07em", marginBottom: 8 }}>Find Leads On</div>
                           {c.platforms.map((p, j) => (
                             <div key={j} style={{ fontSize: 12, color: "#6E6459", marginBottom: 5, display: "flex", gap: 6 }}>
                               <span style={{ color: "#F59E0B" }}>→</span> {p}
@@ -503,7 +503,7 @@ export function GlobalParts({ tab }) {
                       </Block>
                       <Block label="📍 How to Find Them" color="#F59E0B">{b.find}</Block>
                       <div style={{ marginTop: 14 }}>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 7 }}>Your Stack for This</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.08em", marginBottom: 7 }}>Your Stack for This</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {b.tools.map(t => (
                             <span key={t} style={{ fontSize: 11.5, background: "#EDE7DA", border: "1px solid #1E2E46", borderRadius: 6, padding: "3px 9px", color: "#6E6459" }}>{t}</span>
@@ -528,7 +528,7 @@ export function GlobalParts({ tab }) {
 
             {/* Stack flow */}
             <div style={{ background: "#0A1020", border: "1px solid #D9CFBB", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 12 }}>🔄 Your Full Automation Stack (Make.com Flow)</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>🔄 Your Full Automation Stack (Make.com Flow)</div>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5 }}>
                 {["Outscraper", "→", "Apollo.io", "→", "Instantly.ai", "→", "Make.com", "→", "Notion CRM", "→", "Go High Level"].map((item, i) => (
                   item === "→"
@@ -543,7 +543,7 @@ export function GlobalParts({ tab }) {
 
             {/* Cold email template */}
             <div style={{ background: "#0A1020", border: "1px solid #F59E0B25", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 12 }}>📧 Cold Email Formula (PAS — Problem, Agitate, Solve)</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#F59E0B", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>📧 Cold Email Formula (PAS — Problem, Agitate, Solve)</div>
               <div style={{ fontFamily: "'Courier New', monospace", fontSize: 12, color: "#6E6459", lineHeight: 1.85, borderLeft: "2px solid #F59E0B40", paddingLeft: 14 }}>
                 <div style={{ color: "#201A16", fontWeight: 600 }}>Subject: [First Name] — your competitors are getting leads you're missing</div>
                 <br />
@@ -565,7 +565,7 @@ export function GlobalParts({ tab }) {
                     <span style={{ fontSize: 22 }}>{p.icon}</span>
                     <div>
                       <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, color: p.color, textTransform: "uppercase", letterSpacing: "0.07em" }}>{p.phase}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: p.color, textTransform: "", letterSpacing: "0.07em" }}>{p.phase}</span>
                         <span style={{ fontSize: 10.5, color: "#8A7C6D", background: "#EDE7DA", borderRadius: 5, padding: "2px 7px", fontWeight: 500 }}>{p.duration}</span>
                       </div>
                       <div style={{ fontWeight: 700, fontSize: 14.5, color: "#1A140F", marginTop: 2 }}>{p.title}</div>
@@ -585,7 +585,7 @@ export function GlobalParts({ tab }) {
 
             {/* Portfolio tip */}
             <div style={{ marginTop: 14, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 10 }}>💡 Build Your Portfolio Before You Have Clients</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.09em", marginBottom: 10 }}>💡 Build Your Portfolio Before You Have Clients</div>
               <p style={{ fontSize: 13, color: "#6E6459", margin: "0 0 10px", lineHeight: 1.6 }}>You don't need paying clients to start. Build 3 demo projects for your top niches:</p>
               {["A real estate listing site → Lovable (your proof of complex app building)", "A salon booking app → Lovable (your proof of mobile-first design)", "A coaching platform → Lovable (your proof of course + marketing automation)"].map((item, i) => (
                 <InfoRow key={i} color="#10B981">{item}</InfoRow>
@@ -627,7 +627,7 @@ export function GlobalParts({ tab }) {
 
             {/* Pro tips */}
             <div style={{ marginTop: 16, background: "#0A1020", border: "1px solid #6366F125", borderRadius: 12, padding: "16px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 12 }}>💡 Pricing Pro Tips</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>💡 Pricing Pro Tips</div>
               {[
                 "Always show 3 packages — most clients pick the middle. Use this strategically.",
                 "Charge 50% upfront, 50% on delivery. Non-negotiable. This protects you completely.",
@@ -644,7 +644,7 @@ export function GlobalParts({ tab }) {
 
             {/* Income projection */}
             <div style={{ marginTop: 14, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 14 }}>📈 Conservative Year 1 Income Projection</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.09em", marginBottom: 14 }}>📈 Conservative Year 1 Income Projection</div>
               {INCOME_ROWS.map((row, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #D9CFBB" }}>
                   <div style={{ display: "flex", gap: 9, alignItems: "center" }}>
@@ -676,7 +676,7 @@ export function GlobalParts({ tab }) {
             </div>
 
             <div style={{ background: "#0A1020", border: "1px solid #D9CFBB", borderRadius: 12, padding: "14px 16px", marginBottom: 18 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 10 }}>⏱️ Suggested Daily Rhythm (~2 hrs/day)</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.09em", marginBottom: 10 }}>⏱️ Suggested Daily Rhythm (~2 hrs/day)</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {[{ t: "30 min", l: "CRM & replies" }, { t: "60 min", l: "Day's core task" }, { t: "30 min", l: "Outreach / follow-up" }].map((b, i) => (
                   <div key={i} style={{ background: "#EDE7DA", border: "1px solid #1E2E46", borderRadius: 8, padding: "8px 12px", flex: "1 1 100px" }}>
@@ -722,7 +722,7 @@ export function GlobalParts({ tab }) {
             </div>
 
             <div style={{ marginTop: 18, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.09em", marginBottom: 12 }}>✅ Month 1 Success Benchmarks</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>✅ Month 1 Success Benchmarks</div>
               {MONTH1_TARGETS.map((t, i) => (
                 <InfoRow key={i} color="#10B981">{t}</InfoRow>
               ))}

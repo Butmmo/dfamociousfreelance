@@ -100,7 +100,7 @@ function ChoosePathPage() {
     <div className="space-y-8">
       <header>
         <Motto />
-        <div className="mt-2 text-[10px] uppercase tracking-widest text-gold-deep">The Citadel · Enrolment</div>
+        <div className="mt-2 text-[10px] tracking-widest text-gold-deep">The Citadel · Enrolment</div>
         <h1 className="mt-1 font-display text-3xl md:text-4xl font-bold">The Seven Paths of Digital Engineering</h1>
         <p className="mt-3 text-muted-foreground max-w-3xl">
           Seven separate systems. You run <strong className="text-foreground">one</strong>. This is deliberate — it keeps
@@ -164,17 +164,17 @@ function ChoosePathPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="text-3xl leading-none">{p.emoji}</div>
                   {p.status === "live" ? (
-                    <span className="rounded-full border border-emerald-700/40 bg-emerald-700/10 px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-widest text-emerald-700">
+                    <span className="rounded-full border border-emerald-700/40 bg-emerald-700/10 px-2.5 py-0.5 text-[10px] font-mono tracking-widest text-emerald-700">
                       Playbooks live
                     </span>
                   ) : (
-                    <span className="rounded-full border border-gold/40 bg-gold/10 px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-widest text-gold-deep">
+                    <span className="rounded-full border border-gold/40 bg-gold/10 px-2.5 py-0.5 text-[10px] font-mono tracking-widest text-gold-deep">
                       Briefing open
                     </span>
                   )}
                 </div>
 
-                <div className="mt-3 text-[10px] uppercase tracking-widest text-gold-deep">{p.tagline}</div>
+                <div className="mt-3 text-[10px] tracking-widest text-gold-deep">{p.tagline}</div>
                 <h2 className="mt-1 font-display text-xl font-bold">{p.name}</h2>
                 <p className="mt-2 text-sm text-muted-foreground">{p.summary}</p>
                 <p className="mt-3 text-xs text-muted-foreground">
@@ -209,7 +209,7 @@ function ChoosePathPage() {
       </div>
 
       <section className="rounded-2xl border border-border bg-card p-6">
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">Why only one</div>
+        <div className="text-[10px] tracking-widest text-gold-deep">Why only one</div>
         <h2 className="mt-1 font-display text-2xl font-bold">One path, no cannibalism</h2>
         <p className="mt-2 text-sm text-muted-foreground max-w-3xl">
           Every path carries the full Citadel machinery — dashboard, playbooks, 45-day calendar, field report, weekly

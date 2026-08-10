@@ -99,7 +99,7 @@ function AuthedShell() {
           <div className="flex items-center gap-3 min-w-0">
             <div className="text-right hidden sm:block min-w-0">
               <div className="text-xs font-medium truncate max-w-[180px]">{user?.email}</div>
-              <div className="text-[10px] uppercase tracking-widest text-gold-deep">
+              <div className="text-[10px] tracking-widest text-gold-deep">
                 {isSuperAdmin ? "Super Admin" : role === "admin" ? "Council Admin" : "Beneficiary"}
                 {path ? ` · ${path.short}` : ""}
               </div>

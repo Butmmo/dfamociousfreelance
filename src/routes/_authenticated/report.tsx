@@ -97,7 +97,7 @@ function ReportPage() {
       {/* HERO */}
       <section className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-regal relative overflow-hidden">
         <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gradient-gold opacity-20 blur-3xl" />
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">Beneficiary Report</div>
+        <div className="text-[10px] tracking-widest text-gold-deep">Beneficiary Report</div>
         <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">
           {profile?.full_name ?? "Beneficiary"} — Field Report
         </h1>
@@ -117,7 +117,7 @@ function ReportPage() {
       <section className={`rounded-2xl border p-6 md:p-8 ${band.bg} ${band.ring} ring-1`}>
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <div className={`text-[10px] uppercase tracking-widest font-bold ${band.text}`}>Escalation Band</div>
+            <div className={`text-[10px] tracking-widest font-bold ${band.text}`}>Escalation Band</div>
             <h2 className={`mt-1 font-display text-3xl font-bold ${band.text}`}>{band.label}</h2>
             <p className="mt-1 text-sm text-muted-foreground max-w-xl">{band.note}</p>
           </div>
@@ -150,7 +150,7 @@ function ReportPage() {
 
         {snapshot.reasons.length > 0 && snapshot.band !== "elite" && (
           <div className="mt-5">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Factors dragging your score</div>
+            <div className="text-[10px] tracking-widest text-muted-foreground mb-2">Factors dragging your score</div>
             <ul className="text-xs space-y-1">
               {snapshot.reasons.map((r, i) => (
                 <li key={i} className="flex items-start gap-2">
@@ -166,7 +166,7 @@ function ReportPage() {
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-gold-deep">Last 14 days</div>
+            <div className="text-[10px] tracking-widest text-gold-deep">Last 14 days</div>
             <h2 className="mt-1 font-display text-2xl font-bold">Cadence heatstrip</h2>
           </div>
           <div className="text-xs text-muted-foreground">
@@ -190,7 +190,7 @@ function ReportPage() {
 
       {/* VELOCITY / FORECAST */}
       <section className="rounded-2xl border border-border bg-card p-6">
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">Velocity & Forecast</div>
+        <div className="text-[10px] tracking-widest text-gold-deep">Velocity & Forecast</div>
         <h2 className="mt-1 font-display text-2xl font-bold">The road to your first close</h2>
         <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
           Based on your task-completion pace. First-close territory in the 45-day plan sits at roughly Day 26 — that is our benchmark for this forecast.
@@ -220,7 +220,7 @@ function ReportPage() {
 
       {/* PLAYBOOK BREAKDOWN */}
       <section className="rounded-2xl border border-border bg-card p-6">
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep">Playbook coverage</div>
+        <div className="text-[10px] tracking-widest text-gold-deep">Playbook coverage</div>
         <h2 className="mt-1 font-display text-2xl font-bold">Where your work is landing</h2>
         <div className="mt-5 grid md:grid-cols-2 lg:grid-cols-4 gap-3">
           {Object.entries(PLAYBOOK_META).map(([key, m]) => (
@@ -228,7 +228,7 @@ function ReportPage() {
               className="rounded-xl border border-border bg-background p-4 hover:border-gold transition">
               <div className="text-xs text-muted-foreground">{m.title}</div>
               <div className="mt-2 font-display text-2xl font-bold">{perPlaybook[key] ?? 0}</div>
-              <div className="mt-1 text-[10px] uppercase tracking-widest text-gold-deep">tasks · {(perPlaybook[key] ?? 0) * XP_PER_TASK} XP</div>
+              <div className="mt-1 text-[10px] tracking-widest text-gold-deep">tasks · {(perPlaybook[key] ?? 0) * XP_PER_TASK} XP</div>
               <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">
                 Open <ArrowRight className="h-3 w-3" />
               </div>
@@ -239,7 +239,7 @@ function ReportPage() {
 
       {/* ADVICE */}
       <section className="rounded-2xl border border-gold/40 bg-accent/20 p-6">
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gold-deep">
+        <div className="flex items-center gap-2 text-[10px] tracking-widest text-gold-deep">
           <Sparkles className="h-3.5 w-3.5" /> Personalised counsel
         </div>
         <h2 className="mt-1 font-display text-2xl font-bold">What to do next</h2>
@@ -257,7 +257,7 @@ function ReportPage() {
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-gold-deep">Council notes</div>
+            <div className="text-[10px] tracking-widest text-gold-deep">Council notes</div>
             <h2 className="mt-1 font-display text-2xl font-bold">Recent check-ins</h2>
           </div>
           <ShieldCheck className="h-5 w-5 text-gold-deep" />
@@ -270,7 +270,7 @@ function ReportPage() {
               <div key={c.id} className="rounded-lg border border-border bg-background p-4">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{new Date(c.created_at).toLocaleString()}</span>
-                  {c.mood && <span className="uppercase tracking-widest text-gold-deep">{c.mood}</span>}
+                  {c.mood && <span className="tracking-widest text-gold-deep">{c.mood}</span>}
                 </div>
                 <p className="mt-2 text-sm">{c.summary}</p>
                 {c.next_action && (
@@ -301,7 +301,7 @@ function Stat({
   return (
     <div className="rounded-xl border border-border bg-background p-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+        <span className="text-[10px] tracking-widest text-muted-foreground">{label}</span>
         <Icon className={`h-4 w-4 ${short ? "text-crimson" : "text-gold-deep"}`} />
       </div>
       <div className={`mt-2 font-display text-2xl font-bold ${short ? "text-crimson" : ""}`}>{value}</div>
@@ -335,7 +335,7 @@ function ScoreDial({ score, band }: { score: number; band: string }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="font-display text-3xl font-bold" style={{ color }}>{score}</div>
-        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">score / 100</div>
+        <div className="text-[10px] tracking-widest text-muted-foreground">score / 100</div>
       </div>
     </div>
   );

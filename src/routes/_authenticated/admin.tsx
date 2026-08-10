@@ -191,7 +191,7 @@ function Admin() {
         <p className="text-sm text-muted-foreground mt-1">Open flags on beneficiaries who need intervention. Manual check-ins live in the roll below.</p>
         <div className="mt-4 rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-muted text-xs uppercase tracking-widest">
+            <thead className="bg-muted text-xs tracking-widest">
               <tr><th className="text-left p-3">Beneficiary</th><th className="text-left p-3">Level</th><th className="text-left p-3">Reason</th><th className="text-left p-3">Opened</th><th className="p-3"></th></tr>
             </thead>
             <tbody>
@@ -246,7 +246,7 @@ function Admin() {
         <h2 className="font-display text-xl font-bold flex items-center gap-2"><Mail className="h-5 w-5" /> Pending invitations</h2>
         <div className="mt-4 rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-muted text-xs uppercase tracking-widest">
+            <thead className="bg-muted text-xs tracking-widest">
               <tr><th className="text-left p-3">Email</th><th className="text-left p-3">Role</th><th className="text-left p-3">Status</th><th className="text-left p-3">Invited</th></tr>
             </thead>
             <tbody>
@@ -278,7 +278,7 @@ function Admin() {
                     <div className="font-display font-semibold">{b.full_name ?? "Unnamed"}</div>
                     <div className="text-xs text-muted-foreground">{b.email}</div>
                     <div className="mt-2 flex items-center gap-3 text-xs">
-                      <span className="uppercase tracking-widest text-gold-deep">{b.rank}</span>
+                      <span className="tracking-widest text-gold-deep">{b.rank}</span>
                       <span className="text-muted-foreground">{b.xp} XP</span>
                       {b.suspended && <span className="rounded-full bg-crimson px-2 py-0.5 text-[10px] font-bold text-white">SUSPENDED</span>}
                     </div>

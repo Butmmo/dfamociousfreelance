@@ -137,7 +137,7 @@ function ServiceCard({icon, name, price, problem, pitch, tool, setup, roiLine, c
             ["📈 Expected ROI",roiLine,color],
           ].map(([lbl,val,col])=>(
             <div key={lbl} style={{marginTop:12}}>
-              <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"",
                 letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
               <p style={{fontSize:13,color:C.muted,margin:0,lineHeight:1.65,
                 borderLeft:`2px solid ${col}40`,paddingLeft:10,fontStyle:lbl.includes("Pitch")?"italic":"normal"}}>
@@ -326,7 +326,7 @@ export default function EcommercePerformanceCalculator() {
         padding:"22px 16px 18px",borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:820,margin:"0 auto"}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:C.teal,
-            textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
+            textTransform:"",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:C.teal,
               boxShadow:"0 0 6px "+C.teal,display:"inline-block"}}/>
             Revenue Recovery Engine — Discovery Call Tool
@@ -376,7 +376,7 @@ export default function EcommercePerformanceCalculator() {
             border:"1px solid #FBF8F1",borderRadius:11,padding:"12px 16px",
             marginBottom:16,display:"flex",gap:16,flexWrap:"wrap",alignItems:"center",justifyContent:"space-between"}}>
             <div>
-              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"",
                 letterSpacing:".09em",marginBottom:3}}>Estimated Monthly Revenue at Risk</div>
               <div style={{fontSize:26,fontWeight:800,color:C.red}}>{fmt(totalOpportunity)}</div>
             </div>
@@ -444,7 +444,7 @@ export default function EcommercePerformanceCalculator() {
             <div style={{background:C.bg2,border:"1px solid "+C.border,borderRadius:10,
               padding:"13px 14px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,color:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>
                 Estimated Monthly Revenue
               </div>
               <div style={{fontSize:28,fontWeight:800,color:C.text}}>{fmt(monthlyOrders*aov)}</div>
@@ -479,7 +479,7 @@ export default function EcommercePerformanceCalculator() {
               border:"1px solid "+(cart.opportunity>300?C.indigo:C.border),
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,color:cart.opportunity>300?C.indigo:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>Cart Recovery Diagnosis</div>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>Cart Recovery Diagnosis</div>
               {[
                 ["Monthly checkout starts",fmtI(cart.checkoutStarts),C.muted],
                 ["Monthly abandoned checkouts",fmtI(cart.abandoners),C.red],
@@ -523,7 +523,7 @@ export default function EcommercePerformanceCalculator() {
               border:"1px solid "+(welcome.opportunity>300?C.green:C.border),
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,color:welcome.opportunity>300?C.green:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>Welcome Series Diagnosis</div>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>Welcome Series Diagnosis</div>
               {[
                 ["Monthly new subscribers",monthlySubs+"/mo",C.muted],
                 ["Current first-purchase conversion",fmtI(welcome.currentConverted)+"/mo",C.muted],
@@ -566,7 +566,7 @@ export default function EcommercePerformanceCalculator() {
               border:"1px solid "+(post.opportunity>300?C.amber:C.border),
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,color:post.opportunity>300?C.amber:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>Post-Purchase Diagnosis</div>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>Post-Purchase Diagnosis</div>
               {[
                 ["Current repeat purchase rate",repeatRate+"%",C.muted],
                 ["Achievable lift with a full flow",post.gapPts+" points",C.amber],
@@ -614,7 +614,7 @@ export default function EcommercePerformanceCalculator() {
               border:"1px solid "+(winback.opportunity>300?C.pink:C.border),
               borderRadius:11,padding:"14px 15px",marginTop:4}}>
               <div style={{fontSize:11,fontWeight:700,color:winback.opportunity>300?C.pink:C.dim,
-                textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>Win-Back Diagnosis</div>
+                textTransform:"",letterSpacing:".07em",marginBottom:10}}>Win-Back Diagnosis</div>
               {[
                 ["Lapsed customers (60+ days)",fmtI(winback.lapsed),C.muted],
                 ["Currently re-engaged / month",fmtI(winback.currentRecovered),C.muted],
@@ -646,7 +646,7 @@ export default function EcommercePerformanceCalculator() {
 
             <div style={{background:"linear-gradient(135deg,#F5F0E4,#F5F0E4)",
               border:"1px solid "+C.red+"40",borderRadius:12,padding:"18px",marginBottom:16}}>
-              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"uppercase",
+              <div style={{fontSize:10,fontWeight:700,color:C.red,textTransform:"",
                 letterSpacing:".1em",marginBottom:4}}>Total Estimated Monthly Revenue at Risk</div>
               <div style={{fontSize:"clamp(32px,6vw,48px)",fontWeight:800,color:C.red,marginBottom:8}}>
                 {fmt(totalOpportunity)}
@@ -676,7 +676,7 @@ export default function EcommercePerformanceCalculator() {
             <div style={{background:C.bg2,border:"1px solid "+C.border,borderRadius:11,
               padding:"14px 15px",marginBottom:16}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}>
-                <div style={{fontSize:11,fontWeight:700,color:C.dim,textTransform:"uppercase",letterSpacing:".08em"}}>
+                <div style={{fontSize:11,fontWeight:700,color:C.dim,textTransform:"",letterSpacing:".08em"}}>
                   Cross-Check: % of Revenue From Email
                 </div>
                 <span style={{fontSize:11,fontWeight:700,color:attributionBand.color}}>{attributionBand.label}</span>
@@ -694,7 +694,7 @@ export default function EcommercePerformanceCalculator() {
             <div style={{background:topPriority.color+"12",border:"1px solid "+topPriority.color+"35",
               borderRadius:12,padding:"14px 16px",marginBottom:16}}>
               <div style={{fontSize:10,fontWeight:700,color:topPriority.color,
-                textTransform:"uppercase",letterSpacing:".09em",marginBottom:8}}>
+                textTransform:"",letterSpacing:".09em",marginBottom:8}}>
                 ★ Your #1 Priority — Lead The Conversation With This
               </div>
               <div style={{fontSize:16,fontWeight:700,color:C.text,marginBottom:4}}>
@@ -711,7 +711,7 @@ export default function EcommercePerformanceCalculator() {
               </div>
             </div>
 
-            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"uppercase",
+            <div style={{fontSize:12,fontWeight:700,color:C.dim,textTransform:"",
               letterSpacing:".08em",marginBottom:10}}>All 4 Flows — Ranked by Impact</div>
             {priorities.map((p,i)=>(
               <ServiceCard key={p.id} {...p} isTop={i===0}/>
@@ -719,7 +719,7 @@ export default function EcommercePerformanceCalculator() {
 
             <div style={{background:C.bg2,border:"1px solid "+C.border,borderRadius:12,
               padding:"14px 16px",marginTop:8}}>
-              <div style={{fontSize:11,fontWeight:700,color:C.dim,textTransform:"uppercase",
+              <div style={{fontSize:11,fontWeight:700,color:C.dim,textTransform:"",
                 letterSpacing:".08em",marginBottom:12}}>
                 Which Package Fits — Based on This Store's Gaps
               </div>

@@ -17,7 +17,7 @@ export function DfgMark({ className = "h-10 w-10" }: { className?: string }) {
 
 export function Motto({ className = "" }: { className?: string }) {
   return (
-    <span className={`font-display tracking-[0.3em] uppercase text-xs text-gold-deep ${className}`}>
+    <span className={`font-display tracking-[0.3em] text-xs text-gold-deep ${className}`}>
       Fortuna Audentes Iuvat
     </span>
   );

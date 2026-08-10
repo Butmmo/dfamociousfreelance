@@ -129,7 +129,7 @@ function CalendarPage() {
     <div className="space-y-8">
       <section className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-regal relative overflow-hidden">
         <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gradient-gold opacity-20 blur-3xl" />
-        <div className="text-[10px] uppercase tracking-widest text-gold-deep flex items-center gap-2">
+        <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-2">
           <CalendarDays className="h-3.5 w-3.5" /> Campaign Calendar
         </div>
         <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">Your Path to First Close</h1>
@@ -150,7 +150,7 @@ function CalendarPage() {
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-gold-deep">Gregorian view</div>
+            <div className="text-[10px] tracking-widest text-gold-deep">Gregorian view</div>
             <h2 className="mt-1 font-display text-xl md:text-2xl font-bold">
               {monthCursor.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
             </h2>
@@ -168,7 +168,7 @@ function CalendarPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 text-[10px] uppercase tracking-widest text-muted-foreground text-center mb-2">
+        <div className="grid grid-cols-7 gap-1 text-[10px] tracking-widest text-muted-foreground text-center mb-2">
           {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d) => <div key={d} className="py-1">{d}</div>)}
         </div>
         <div className="grid grid-cols-7 gap-1">
@@ -228,7 +228,7 @@ function CalendarPage() {
           <section key={w.week} className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <div className="text-xs uppercase tracking-widest text-gold-deep">Week {w.week} · {w.range}</div>
+                <div className="text-xs tracking-widest text-gold-deep">Week {w.week} · {w.range}</div>
                 <h2 className="mt-1 font-display text-xl font-bold">{w.icon} {w.title}</h2>
                 <p className="text-xs text-muted-foreground max-w-xl mt-1">{w.goal}</p>
               </div>
@@ -291,7 +291,7 @@ function DayCard({ day, date, tone, status, isToday, isBehind, isUpcoming, onTog
     <div className={`rounded-xl border p-3 transition ${tone} flex flex-col gap-2`}>
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Day {day.day}</div>
+          <div className="text-[10px] font-semibold tracking-widest text-muted-foreground">Day {day.day}</div>
           <div className="text-[10px] text-muted-foreground mt-0.5">
             {date ? date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) : "—"}
           </div>
@@ -340,7 +340,7 @@ function DayCard({ day, date, tone, status, isToday, isBehind, isUpcoming, onTog
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border bg-background p-3">
-      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className="text-[10px] tracking-widest text-muted-foreground">{label}</div>
       <div className="mt-1 font-display text-xl font-bold">{value}</div>
     </div>
   );

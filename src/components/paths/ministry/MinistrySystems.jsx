@@ -456,7 +456,7 @@ function ProgressBar({value,color,height=6}) {
 
 function SLabel({text,color}) {
   return (
-    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
       letterSpacing:".08em",marginBottom:7}}>{text}</div>
   );
 }
@@ -499,7 +499,7 @@ export default function DigitalMinistrySystems() {
         padding:"22px 16px 18px",borderBottom:"1px solid #FBF8F1"}}>
         <div style={{maxWidth:880,margin:"0 auto"}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:"#0D7A5F",
-            textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
+            textTransform:"",marginBottom:7,display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
             Digital Ministry Systems — 60-Day Playbook
@@ -720,7 +720,7 @@ export default function DigitalMinistrySystems() {
                           ["📈 Upsell Trigger",s.upsell,"#8B2E1F"],
                         ].map(([lbl,val,col])=>(
                           <div key={lbl} style={{marginTop:12}}>
-                            <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"uppercase",
+                            <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"",
                               letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
                             <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.65,
                               borderLeft:`2px solid ${col}40`,paddingLeft:10,

@@ -83,7 +83,7 @@ function AuthPage() {
             <DfsMark className="h-12 w-12" />
             <div className="leading-tight">
               <div className="font-display text-lg font-bold">DBI</div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Beneficiary Portal</div>
+              <div className="text-[10px] tracking-[0.2em] text-muted-foreground">Beneficiary Portal</div>
             </div>
           </div>
 
@@ -141,7 +141,7 @@ function Field({ icon: Icon, label, type, value, onChange, required }: {
 }) {
   return (
     <label className="block">
-      <span className="text-xs uppercase tracking-widest text-muted-foreground font-medium">{label}</span>
+      <span className="text-xs tracking-widest text-muted-foreground font-medium">{label}</span>
       <div className="mt-2 relative">
         <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <input

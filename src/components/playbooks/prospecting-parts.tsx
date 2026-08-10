@@ -253,7 +253,7 @@ function Tag({ children, color, bg }) {
 
 function SectionLabel({ color, children }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 7 }}>
+    <div style={{ fontSize: 10, fontWeight: 700, color, textTransform: "", letterSpacing: "0.08em", marginBottom: 7 }}>
       {children}
     </div>
   );
@@ -281,9 +281,9 @@ export function ProspectingParts({ tab }) {
     return sum + pts;
   }, 0);
 
-  const rating = total >= 7 ? { label: "🔥 HOT LEAD", color: "#10B981" }
-    : total >= 4 ? { label: "⚡ WARM LEAD", color: "#F59E0B" }
-    : { label: "❄️ COLD — SKIP", color: "#6B7280" };
+  const rating = total >= 7 ? { label: "🔥 Hot Lead", color: "#10B981" }
+    : total >= 4 ? { label: "⚡ Warm Lead", color: "#F59E0B" }
+    : { label: "❄️ Cold — Skip", color: "#6B7280" };
 
 
   return (

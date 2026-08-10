@@ -785,7 +785,7 @@ function ProgressBar({value,color,height=6}) {
 
 function SLabel({text,color}) {
   return (
-    <div style={{fontSize:10,fontWeight:700,color,textTransform:"uppercase",
+    <div style={{fontSize:10,fontWeight:700,color,textTransform:"",
       letterSpacing:".08em",marginBottom:7}}>{text}</div>
   );
 }
@@ -836,7 +836,7 @@ function PlanPage() {
         padding:"22px 16px 18px",borderBottom:"1px solid #E8DCC0"}}>
         <div style={{maxWidth:880,margin:"0 auto"}}>
           <div style={{fontSize:10,fontWeight:700,letterSpacing:".12em",color:"#0D7A5F",
-            textTransform:"uppercase",marginBottom:7,
+            textTransform:"",marginBottom:7,
             display:"flex",alignItems:"center",gap:6}}>
             <span style={{width:6,height:6,borderRadius:"50%",background:"#0D7A5F",
               boxShadow:"0 0 6px #0D7A5F",display:"inline-block"}}/>
@@ -1259,7 +1259,7 @@ function PlanPage() {
                         ].map(([lbl,col,val],j)=>(
                           <div key={j} style={{marginTop:12}}>
                             <div style={{fontSize:10,fontWeight:700,color:col,
-                              textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>
+                              textTransform:"",letterSpacing:".07em",marginBottom:5}}>
                               {lbl}
                             </div>
                             <p style={{fontSize:13,color:"#6B5D3F",margin:0,
@@ -1400,7 +1400,7 @@ Then be silent. Let that moment land.`}
                           ["📈 Upsell Trigger",s.upsell,"#B8860B"],
                         ].map(([lbl,val,col])=>(
                           <div key={lbl} style={{marginTop:12}}>
-                            <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"uppercase",
+                            <div style={{fontSize:10,fontWeight:700,color:col,textTransform:"",
                               letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
                             <p style={{fontSize:13,color:"#6B5D3F",margin:0,lineHeight:1.65,
                               borderLeft:`2px solid ${col}40`,paddingLeft:10,
@@ -1465,7 +1465,7 @@ Then be silent. Let that moment land.`}
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
                         <div>
                           <div style={{fontSize:10,fontWeight:700,color:u.color,
-                            textTransform:"uppercase",letterSpacing:".07em",marginBottom:3}}>{u.phase}</div>
+                            textTransform:"",letterSpacing:".07em",marginBottom:3}}>{u.phase}</div>
                           <div style={{fontWeight:700,fontSize:13.5,color:"#1A1410"}}>{u.service}</div>
                         </div>
                         <div style={{textAlign:"right",flexShrink:0}}>
@@ -1483,7 +1483,7 @@ Then be silent. Let that moment land.`}
                           ].map(([lbl,val,col])=>(
                             <div key={lbl} style={{marginBottom:12}}>
                               <div style={{fontSize:10,fontWeight:700,color:col,
-                                textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
+                                textTransform:"",letterSpacing:".07em",marginBottom:5}}>{lbl}</div>
                               <p style={{fontSize:13,color:"#6B5D3F",margin:0,lineHeight:1.65,
                                 borderLeft:`2px solid ${col}40`,paddingLeft:10,
                                 fontStyle:lbl.includes("Introduce")?"italic":"normal"}}>{val}</p>

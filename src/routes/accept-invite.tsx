@@ -63,7 +63,7 @@ function AcceptInvite() {
         ) : (
           <form onSubmit={onSubmit} className="mt-10 space-y-4 rounded-xl border border-border bg-card p-6 shadow-regal">
             <label className="block">
-              <span className="text-xs uppercase tracking-widest text-muted-foreground font-medium">New password</span>
+              <span className="text-xs tracking-widest text-muted-foreground font-medium">New password</span>
               <div className="mt-2 relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
@@ -71,7 +71,7 @@ function AcceptInvite() {
               </div>
             </label>
             <label className="block">
-              <span className="text-xs uppercase tracking-widest text-muted-foreground font-medium">Confirm password</span>
+              <span className="text-xs tracking-widest text-muted-foreground font-medium">Confirm password</span>
               <div className="mt-2 relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8}

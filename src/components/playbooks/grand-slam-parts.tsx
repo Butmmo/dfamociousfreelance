@@ -47,14 +47,14 @@ const PHASES = [
   },
   {
     id: "qualify", num: "04", icon: "🔥", color: "#F59E0B",
-    title: "Find the HOT Leads", tag: "Day 3–4",
+    title: "Find the Hot Leads", tag: "Day 3–4",
     tasks: [
       { id: "q1", text: "Open each lead's Google listing — scan for hot signals and cold flags (use the Score tab)" },
-      { id: "q2", text: "Score each lead and tag any score of 7+ as HOT in Notion CRM" },
+      { id: "q2", text: "Score each lead and tag any score of 7+ as Hot in Notion CRM" },
       { id: "q3", text: "Archive or delete all leads with a -3 cold signal (franchise chains, government entities)" },
-      { id: "q4", text: "Goal: 30 confirmed HOT leads ready before you send a single email" },
+      { id: "q4", text: "Goal: 30 confirmed hot leads ready before you send a single email" },
     ],
-    note: "30 HOT leads beat 300 random ones every time. This step alone separates closers from chasers.",
+    note: "30 hot leads beat 300 random ones every time. This step alone separates closers from chasers.",
   },
   {
     id: "emails", num: "05", icon: "📧", color: "#10B981",
@@ -233,9 +233,9 @@ export function GrandSlamParts({ tab }) {
   }, 0);
 
   const rating =
-    totalScore >= 7 ? { label: "🔥 HOT LEAD — Prioritise Now", border: "#22C55E", text: "#22C55E", bg: "#F4EFE4" } :
-    totalScore >= 4 ? { label: "⚡ WARM — Worth Contacting", border: "#F59E0B", text: "#F59E0B", bg: "#F4EFE4" } :
-    { label: "❄️ COLD — Skip or Archive", border: "#8A7C6D", text: "#6E6459", bg: "#FFFFFF" };
+    totalScore >= 7 ? { label: "🔥 Hot Lead — Prioritise Now", border: "#22C55E", text: "#22C55E", bg: "#F4EFE4" } :
+    totalScore >= 4 ? { label: "⚡ Warm — Worth Contacting", border: "#F59E0B", text: "#F59E0B", bg: "#F4EFE4" } :
+    { label: "❄️ Cold — Skip or Archive", border: "#8A7C6D", text: "#6E6459", bg: "#FFFFFF" };
 
   const gsoFilled = GSO.filter(p => gso[p.id].trim().length > 20);
   const gsoReady = gsoFilled.length === 4;
@@ -339,7 +339,7 @@ Boluwatife Famokunwa
             <div style={{ ...card, border: `1px solid ${gsoReady ? "#EC489945" : "#D9CFBB"}`, overflow: "hidden" }}>
               <div style={{ background: gsoReady ? "#1A0610" : "#090F1B", borderBottom: `1px solid ${gsoReady ? "#EC489930" : "#D9CFBB"}`, padding: "13px 15px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: gsoReady ? "#EC4899" : "#8A7C6D", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: gsoReady ? "#EC4899" : "#8A7C6D", textTransform: "", letterSpacing: "0.1em" }}>
                     {gsoReady ? "✨ Your Pitch — Ready to Copy & Send" : "Your Pitch Assembles Here"}
                   </div>
                   {!gsoReady && (
@@ -368,7 +368,7 @@ Boluwatife Famokunwa
 
             {/* HOOKS */}
             <div style={{ marginTop: 18 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#6E6459", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#6E6459", textTransform: "", letterSpacing: "0.1em", marginBottom: 10 }}>
                 Ready-Made Offer Hooks by Tier
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -385,7 +385,7 @@ Boluwatife Famokunwa
 
             {/* AI OBJECTION HANDLER */}
             <div style={{ ...card, marginTop: 14, background: "#080D18", border: "1px solid #8B5CF625", padding: "13px 14px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#8B5CF6", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 7 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#8B5CF6", textTransform: "", letterSpacing: "0.1em", marginBottom: 7 }}>
                 🗣️ When They Ask: "Can't I Just Use AI to Build This Myself?"
               </div>
               <div style={{ fontSize: 13, color: "#6E6459", fontStyle: "italic", lineHeight: 1.75, borderLeft: "2px solid #8B5CF640", paddingLeft: 12 }}>
@@ -395,7 +395,7 @@ Boluwatife Famokunwa
 
             {/* GUARANTEE */}
             <div style={{ ...card, marginTop: 10, background: "#080D18", border: "1px solid #10B98125", padding: "13px 14px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 7 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.1em", marginBottom: 7 }}>
                 🛡️ The Guarantee — Remove Their Last Fear
               </div>
               <div style={{ fontSize: 14, color: "#201A16", fontStyle: "italic", lineHeight: 1.7, marginBottom: 8 }}>
@@ -435,7 +435,7 @@ Boluwatife Famokunwa
             </div>
 
             {/* HOT */}
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#22C55E", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 9 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#22C55E", textTransform: "", letterSpacing: "0.1em", marginBottom: 9 }}>
               🔥 Hot Signals — tick what you see
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16 }}>
@@ -461,7 +461,7 @@ Boluwatife Famokunwa
             </div>
 
             {/* COLD */}
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#EF4444", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 9 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#EF4444", textTransform: "", letterSpacing: "0.1em", marginBottom: 9 }}>
               ❄️ Cold Signals — tick what you see
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16 }}>
@@ -489,9 +489,9 @@ Boluwatife Famokunwa
             {/* TIER GUIDE */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 14 }}>
               {[
-                { lbl: "🔥 HOT", range: "7+", desc: "Personalised pitch + demo. Move fast.", color: "#22C55E" },
-                { lbl: "⚡ WARM", range: "4–6", desc: "Standard sequence, one follow-up.", color: "#F59E0B" },
-                { lbl: "❄️ COLD", range: "0–3", desc: "Bulk email or archive entirely.", color: "#6E6459" },
+                { lbl: "🔥 Hot", range: "7+", desc: "Personalised pitch + demo. Move fast.", color: "#22C55E" },
+                { lbl: "⚡ Warm", range: "4–6", desc: "Standard sequence, one follow-up.", color: "#F59E0B" },
+                { lbl: "❄️ Cold", range: "0–3", desc: "Bulk email or archive entirely.", color: "#6E6459" },
               ].map(b => (
                 <div key={b.lbl} style={{ ...card, padding: "11px", textAlign: "center" }}>
                   <div style={{ fontSize: 12.5, fontWeight: 700, color: b.color, marginBottom: 3 }}>{b.lbl}</div>
