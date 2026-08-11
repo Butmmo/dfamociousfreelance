@@ -697,8 +697,8 @@ export default function SeniorCareProspectingGuide() {
             <div style={{ background: "#F8F5EE", border: "1px solid #FBF8F1", borderRadius: 11, padding: "14px 15px", marginBottom: 14 }}>
               <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 10px", lineHeight: 1.6 }}>
                 Worth saying plainly: at this system's own Packages pricing, 10 agencies — even all 10 on
-                Full Care System at the top of its range — tops out around <strong style={{ color: "#201A16" }}>$72,000/year</strong>.
-                That's a genuinely strong outcome, and not quite the same number as $100,000.
+                Full Care System at the top of its range — tops out around <strong style={{ color: "#201A16" }}>$102,000/year</strong>.
+                That clears six figures — but only if every one of the ten sits at the top tier, which is not the norm.
               </p>
               <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
                 $100,000/year is a realistic 12–18 month trajectory, not a first-10-clients number — it

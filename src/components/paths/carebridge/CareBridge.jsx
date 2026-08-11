@@ -220,22 +220,22 @@ const CARE_TYPES = [
 ];
 
 const SERVICES_4 = [
-  {icon:"🚨", color:"#8B2E1F", name:"Rapid-Response Intake System", price:"$75-$150/month (or free pilot first)",
+  {icon:"🚨", color:"#8B2E1F", name:"Rapid-Response Intake System", price:"$150-$250/month",
    signal:"Agency takes an hour or more to respond to new inquiries, no automated acknowledgment exists, families report frustration reaching them.",
    pitch:"\"When a family calls you in the middle of a care crisis, how fast do you actually get back to them? I tested this myself — [X hours]. Families are calling 3-4 agencies within the same hour, and the first one to respond clearly and quickly usually wins the client. I can build a system that acknowledges every inquiry within minutes and alerts your team instantly, so you never lose a family to slower response time again.\"",
    setup:"Google Form or website form → Zapier or Make automation → instant SMS/email acknowledgment to the family + instant alert to staff phone → Sheet log for follow-up tracking",
    upsell:"\"Now that new inquiries are being caught instantly, the next thing families ask for once they're a client is regular updates — want me to set that up too?\""},
-  {icon:"💌", color:"#7A5A00", name:"Family Update Portal", price:"$100-$200/month",
+  {icon:"💌", color:"#7A5A00", name:"Family Update Portal", price:"$150-$300/month",
    signal:"No systematic way for families to receive updates, families calling in constantly for status checks, staff time consumed by repetitive update calls.",
    pitch:"\"Right now, how do families find out how their loved one is doing day to day? If it's only through them calling in, that's time your staff could spend on actual care. I can set up automated weekly update messages — a simple, warm summary sent directly to family members — so they feel reassured without needing to call, and your staff gets that time back.\"",
    setup:"Klaviyo or similar email/SMS tool → automated periodic update template → staff fills in brief notes → system sends personalized update to the family contact list",
    upsell:"\"With families feeling well-informed, the next gap I noticed is how your staff schedule gets communicated internally — want me to look at that too?\""},
-  {icon:"📅", color:"#C99A3B", name:"Staff Scheduling & Shift Communication", price:"$100-$200/month",
+  {icon:"📅", color:"#C99A3B", name:"Staff Scheduling & Shift Communication", price:"$150-$300/month",
    signal:"Scheduling done manually by phone, missed shifts due to poor communication, no automated reminder system.",
    pitch:"\"How much time does scheduling and confirming shifts take every week right now? I can set up a simple system that sends automatic shift reminders to your caregivers, reduces missed shifts, and gives you a clear view of coverage at a glance.\"",
    setup:"Google Sheets schedule → Zapier or Make automation → automated SMS reminder 24 hours and 2 hours before each shift → confirmation tracking",
    upsell:"\"Now that scheduling runs smoothly, the last piece is making sure happy families actually tell others about you — want me to set up a referral system?\""},
-  {icon:"🌟", color:"#0D7A5F", name:"Referral & Testimonial System", price:"$75-$150/month",
+  {icon:"🌟", color:"#0D7A5F", name:"Referral & Testimonial System", price:"$297-$450/month",
    signal:"No systematic way to collect family testimonials or generate referrals, relying purely on unstructured word of mouth.",
    pitch:"\"Families who've had a genuinely good experience with your care are your most powerful marketing asset, but right now nothing is capturing that. I can set up an automated system that reaches out to families after a positive milestone, asks for a quick testimonial or review, and makes it easy for them to refer other families going through the same situation.\"",
    setup:"Trigger after a care milestone → automated testimonial or review request → referral ask built into the same message",
@@ -274,13 +274,13 @@ const SCRIPTS = [
 ];
 
 const PACKAGES = [
-  {name:"Foundation", icon:"🌱", color:"#0D7A5F", price:"$75-$150/month",
+  {name:"Foundation", icon:"🌱", color:"#0D7A5F", price:"$100-$200/month",
    includes:["Rapid-Response Intake System only","Monthly response-time report"],
    bestFor:"Small agencies wanting to fix their single biggest gap first"},
-  {name:"Growth", icon:"⚡", color:"#7A5A00", price:"$175-$350/month",
+  {name:"Growth", icon:"⚡", color:"#7A5A00", price:"$250-$450/month",
    includes:["Rapid-Response Intake System","Family Update Portal","Monthly performance report"],
    bestFor:"Growing agencies wanting to reduce staff workload and reassure families"},
-  {name:"Full Care System", icon:"🏆", color:"#8B2E1F", price:"$350-$600/month",
+  {name:"Full Care System", icon:"🏆", color:"#8B2E1F", price:"$500-$850/month",
    includes:["Everything in Growth","Staff Scheduling & Shift Communication","Referral & Testimonial System","Quarterly strategy check-in"],
    bestFor:"Established agencies wanting a complete operational and growth partner"},
 ];
@@ -739,9 +739,9 @@ export default function TheCareBridge() {
               borderRadius:12,padding:"16px"}}>
               <SLabel text="12-Month Value Per Agency" color="#0D7A5F"/>
               {[
-                {t:"Foundation only",v:"$900-$1,800/year"},
-                {t:"Growth tier",v:"$2,100-$4,200/year"},
-                {t:"Full Care System",v:"$4,200-$7,200/year"},
+                {t:"Foundation only",v:"$1,200-$2,400/year"},
+                {t:"Growth tier",v:"$3,000-$5,400/year"},
+                {t:"Full Care System",v:"$6,000-$10,200/year"},
               ].map((r,i)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",
                   padding:"8px 0",borderBottom:"1px solid #FBF8F1"}}>
@@ -750,7 +750,7 @@ export default function TheCareBridge() {
                 </div>
               ))}
               <p style={{fontSize:12,color:"#D9CFBB",margin:"10px 0 0",lineHeight:1.6}}>
-                Five agencies on the Growth tier alone = $10,500-$21,000 a year in recurring revenue,
+                Five agencies on the Growth tier alone = $15,000-$27,000 a year in recurring revenue,
                 in a market virtually no other digital agency is competing for.
               </p>
             </div>
