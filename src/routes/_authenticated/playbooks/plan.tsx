@@ -30,6 +30,9 @@ export const WEEKS = [
          {id:"1g",text:"Create your Lovable.dev account using this invite link → https://lovable.dev/invite/60XF22Z — you get 10 bonus credits the moment you sign up through it. Upgrade to Pro (~$25/month) only when you begin Day 4"},
          {id:"1h",text:"Sign up at https://ContactOut.com — this is how you find the owner's personal email during lead research"},
          {id:"1i",text:"Install the ContactOut extension on your Chrome browser on your laptop. If you do not have a laptop, mark this as done"},
+         {id:"1j",text:"REQUIRED — Create a free Snov.io account at https://snov.io using your new outreach Gmail"},
+         {id:"1k",text:"REQUIRED — Install the Snov.io Email Tracker extension into that same Google account (Chrome Web Store → 'Snov.io Email Tracker' → Add to Chrome), then enable tracking inside Gmail so every outreach email records opens"},
+         {id:"1l",text:"Send one test email to yourself, open it, and confirm Snov.io logs the open and the open count — outreach does not start until this is verified working"},
        ]},
       {day:2, focus:"Build Your Notion CRM Database", icon:"🗂️",
        note:"This database is your entire business operating system. Build it right once — you will use it every single day.",
@@ -533,11 +536,9 @@ P.S. — Still happy to send that 2-minute video from my last note if you'd rath
 
 Hey [FIRST NAME] — last note from me on this, promise.
 
-Wanted to show you the other side of it. We recently worked with [CLIENT NAME], a business in a pretty similar spot — solid reputation, just quiet on Google next to the competition. A few months after putting a simple review system in place, they'd passed the competitor they used to lose to and started hearing "I saw your reviews and figured I'd try you" from new customers.
+Here's what stuck with me: most people only look at three or fewer businesses before deciding who to call, then pick based on whoever has the most or best reviews among them (BrightLocal, 2026). It's not about hitting some number on your own — it's about where you land next to whoever else made the shortlist. A simple review system is what keeps you ahead there.
 
-That's really the whole shift: once happy customers have an easy way to say so publicly, they don't just lift your rating — they become the reason new people trust you before they've even walked in, and often the reason their friends hear about you too.
-
-Want me to show you what that'd look like for [BUSINESS NAME]? Happy to send the video over, or grab 10 minutes on a call — whichever's easier.
+Want me to show you what that'd look like for [BUSINESS NAME]? Happy to send the video over, or grab 10 minutes — whichever's easier.
 
 [SENDER NAME]`},
   {id:"e4",tag:"Email 4 · The Breakup · Day 12",color:"#8B2E1F",
@@ -1287,6 +1288,25 @@ function PlanPage() {
               Every script is a starting point. Personalise the bracketed sections with what you
               found during enrichment — that is what makes it land.
             </p>
+            <div style={{background:"#FBF6E9",border:"1px solid #8B000035",borderLeft:"3px solid #8B0000",
+              borderRadius:11,padding:"13px 15px",marginBottom:14}}>
+              <div style={{fontSize:10.5,fontWeight:800,letterSpacing:"0.08em",color:"#8B0000",marginBottom:6}}>
+                Required Before You Send A Single Email — Snov.io Email Tracker
+              </div>
+              <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 8px",lineHeight:1.6}}>
+                Every beneficiary must install the free <strong style={{color:"#1A1410"}}>Snov.io Email Tracker</strong> extension
+                into the Google account used for outreach. It sits inside Gmail and tells you which emails were
+                opened, how many times, and when — the single piece of information that turns blind sending into
+                a decision you can actually make.
+              </p>
+              <div style={{fontSize:12.5,color:"#6B5D3F",lineHeight:1.7}}>
+                <div>→ Sign up free at <strong style={{color:"#1A1410"}}>snov.io</strong>, then add the Email Tracker extension from the Chrome Web Store to your outreach Gmail.</div>
+                <div>→ Send yourself a test email and confirm the open is logged before Day 15 outreach begins.</div>
+                <div>→ Opened three or more times and no reply? That is your warmest lead — call them, or send the Loom immediately.</div>
+                <div>→ Never opened after 72 hours? The subject line is the problem, not the offer. Change it before Email 2.</div>
+                <div>→ Log the open count in the Notion Lead Pipeline each week; it is a required field in your weekly report.</div>
+              </div>
+            </div>
             <div style={{display:"flex",flexDirection:"column",gap:9}}>
               {SCRIPTS.map((s,i)=>{
                 const isOpen=openScript===i;

@@ -311,7 +311,7 @@ export default function TheBroadcastEnginePathBriefing() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Is The Broadcast Engine Your Path?
           </h1>
-          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#D9CFBB",maxWidth:600,lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6E6459",maxWidth:600,lineHeight:1.65}}>
             An honest briefing on the podcast production system — the highs, the lows, how durable the
             demand really is, and how it stacks up against the market and the other systems in front of
             you. Built to inform this choice, not sell it to you.
@@ -544,7 +544,7 @@ export default function TheBroadcastEnginePathBriefing() {
             </p>
 
             <div style={{background:C.bg2,border:"1px solid "+C.border,borderRadius:12,overflow:"hidden"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1.1fr 1fr 1fr",background:"#0A1120",
+              <div style={{display:"grid",gridTemplateColumns:"1.1fr 1fr 1fr",background:"#FBF6E9",
                 borderBottom:"1px solid "+C.border,padding:"10px 12px",gap:8}}>
                 <span></span>
                 <span style={{fontSize:10.5,fontWeight:700,color:C.indigo,textTransform:"",letterSpacing:".05em"}}>Broadcast Engine</span>

@@ -186,7 +186,7 @@ const TIERS = [
    action:"Spend 1–2 weeks on genuine engagement first — a handful of real comments — then send the free sample rewrite. Real potential, but trust needs to be built before the ask."},
   {min:34, name:"Cool Lead", emoji:"🔵", color:"#7A5A00",
    action:"Add them to a long nurture list. Comment occasionally over the next 60–90 days and revisit if a new trigger event shows up. Not a priority today."},
-  {min:0, name:"Cold — Deprioritize", emoji:"⚪", color:"#D9CFBB",
+  {min:0, name:"Cold — Deprioritize", emoji:"⚪", color:"#6E6459",
    action:"Not a fit right now. Only revisit if a real trigger happens — a raise, a promotion, a visible change in their posting. Spending outreach energy here usually isn't worth it yet."},
 ];
 function getTier(score){
@@ -205,7 +205,7 @@ const fieldStyle = {
 };
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
@@ -274,7 +274,7 @@ function ScoreGauge({score,tier}) {
     <div>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:10,flexWrap:"wrap"}}>
         <span style={{fontSize:40,fontWeight:800,color:tier.color,lineHeight:1}}>{score}</span>
-        <span style={{fontSize:13,color:"#D9CFBB"}}>/ 100</span>
+        <span style={{fontSize:13,color:"#6E6459"}}>/ 100</span>
         <span style={{marginLeft:"auto",fontSize:13,fontWeight:700,color:tier.color,
           background:tier.color+"18",border:`1px solid ${tier.color}40`,borderRadius:999,
           padding:"5px 12px",whiteSpace:"nowrap"}}>{tier.emoji} {tier.name}</span>
@@ -286,7 +286,7 @@ function ScoreGauge({score,tier}) {
           borderRadius:3,background:"#201A16",boxShadow:"0 0 0 2px #F5F0E4, 0 1px 4px rgba(32,26,22,0.3)",
           transition:"left .3s"}}/>
       </div>
-      <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#D9CFBB"}}>
+      <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#6E6459"}}>
         <span>Cold</span><span>Cool</span><span>Warm</span><span>Hot</span>
       </div>
     </div>
@@ -397,7 +397,7 @@ export default function TheProspectingEngine() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             The Prospecting & Lead Scoring System
           </h1>
-          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#D9CFBB",maxWidth:580,lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6E6459",maxWidth:580,lineHeight:1.65}}>
             Ten proven buyer types, five places to find them, and a weighted scorecard that
             separates a hot lead from a wasted free sample — before you ever send the DM.
           </p>
@@ -412,7 +412,7 @@ export default function TheProspectingEngine() {
           </div>
           <div style={{background:"#F8F5EE",borderRadius:10,padding:"11px 14px",border:"1px solid #FBF8F1"}}>
             {prospects.length===0 ? (
-              <p style={{fontSize:12.5,color:"#D9CFBB",margin:0,lineHeight:1.5}}>
+              <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.5}}>
                 No prospects tracked yet — score your first one in the 🔥 Lead Scorer tab.
               </p>
             ) : (
@@ -429,7 +429,7 @@ export default function TheProspectingEngine() {
                 </div>
                 <div style={{display:"flex",gap:11,flexWrap:"wrap"}}>
                   {TIERS.map(t=>(
-                    <span key={t.name} style={{fontSize:11,color:"#D9CFBB"}}>
+                    <span key={t.name} style={{fontSize:11,color:"#6E6459"}}>
                       {t.emoji} {tierCounts[t.name]||0} {t.name.split(" ")[0].toLowerCase()}
                     </span>
                   ))}
@@ -463,7 +463,7 @@ export default function TheProspectingEngine() {
         {tab==="overview"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How This System Works</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Three moves, in order: know WHO to target, know WHERE to find them, and score every
               real prospect before you spend a DM on them. This assumes you've already picked one
               persona from Part 1's playbook — everything here goes deeper on that same decision.
@@ -494,7 +494,7 @@ export default function TheProspectingEngine() {
         {tab==="targets"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Top 10 Targets</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               The ten professional types most likely to say yes — chosen for real buying signals,
               not for how big their audience already is. Tap one open for the full profile.
             </p>
@@ -510,7 +510,7 @@ export default function TheProspectingEngine() {
                       <span style={{fontSize:22,flexShrink:0}}>{t.icon}</span>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontWeight:700,fontSize:14,color:"#201A16"}}>{t.name}</div>
-                        <div style={{fontSize:11,color:"#D9CFBB",marginTop:1}}>{t.tag}</div>
+                        <div style={{fontSize:11,color:"#6E6459",marginTop:1}}>{t.tag}</div>
                       </div>
                       <Chevron open={isOpen}/>
                     </div>
@@ -535,7 +535,7 @@ export default function TheProspectingEngine() {
         {tab==="locations"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Top 5 Locations</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Where to actually find the ten targets above — with no scraping, no automation, and
               no tool that puts the account you're building at risk.
             </p>
@@ -573,7 +573,7 @@ export default function TheProspectingEngine() {
         {tab==="scorer"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Lead Scorer</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Answer what you know about one real prospect. The score updates live — answer all
               eight to save them to your tracker.
             </p>
@@ -602,7 +602,7 @@ export default function TheProspectingEngine() {
                     <span style={{fontSize:16}}>{q.icon}</span>
                     <span style={{fontSize:13.5,fontWeight:700,color:"#201A16"}}>{q.label}</span>
                   </div>
-                  <p style={{fontSize:11.5,color:"#D9CFBB",margin:"0 0 10px",lineHeight:1.4}}>{q.sub}</p>
+                  <p style={{fontSize:11.5,color:"#6E6459",margin:"0 0 10px",lineHeight:1.4}}>{q.sub}</p>
                   <div style={{display:"flex",flexDirection:"column",gap:6}}>
                     {q.options.map((opt,oi)=>{
                       const selected = answers[q.id]===oi;
@@ -614,7 +614,7 @@ export default function TheProspectingEngine() {
                             border:`1px solid ${selected?q.color:"#FBF8F1"}`,
                             borderRadius:8,padding:"9px 12px"}}>
                           <span style={{fontSize:12.5,color:selected?"#201A16":"#6E6459",lineHeight:1.4}}>{opt.label}</span>
-                          <span style={{fontSize:11,fontWeight:800,color:selected?q.color:"#D9CFBB",
+                          <span style={{fontSize:11,fontWeight:800,color:selected?q.color:"#6E6459",
                             flexShrink:0}}>+{opt.points}</span>
                         </button>
                       );
@@ -657,7 +657,7 @@ export default function TheProspectingEngine() {
                     Save to Tracker
                   </button>
                   <button className="pe-btn" onClick={resetScorer}
-                    style={{background:"transparent",color:"#D9CFBB",border:"1px solid #FBF8F1",
+                    style={{background:"transparent",color:"#6E6459",border:"1px solid #FBF8F1",
                       borderRadius:9,padding:"11px 14px",fontSize:13,fontWeight:600,cursor:"pointer",
                       fontFamily:"inherit"}}>
                     Clear
@@ -665,7 +665,7 @@ export default function TheProspectingEngine() {
                 </div>
               </div>
             ) : (
-              <p style={{fontSize:12,color:"#D9CFBB",textAlign:"center"}}>
+              <p style={{fontSize:12,color:"#6E6459",textAlign:"center"}}>
                 Answer all 8 factors above to save this prospect.
               </p>
             )}
@@ -676,19 +676,19 @@ export default function TheProspectingEngine() {
         {tab==="tracker"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Prospect Tracker</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Every prospect you've scored, saved automatically and sorted hottest-first. This list
               is private to you and stays here between visits.
             </p>
 
             {prospectsLoading ? (
-              <p style={{fontSize:12.5,color:"#D9CFBB"}}>Loading your saved prospects…</p>
+              <p style={{fontSize:12.5,color:"#6E6459"}}>Loading your saved prospects…</p>
             ) : prospects.length===0 ? (
               <div style={{background:"#F8F5EE",border:"1px dashed #FBF8F1",borderRadius:12,
                 padding:"28px 18px",textAlign:"center"}}>
                 <div style={{fontSize:28,marginBottom:8}}>🗂️</div>
                 <p style={{fontSize:13,color:"#6E6459",margin:"0 0 4px",fontWeight:600}}>No prospects yet</p>
-                <p style={{fontSize:12,color:"#D9CFBB",margin:0,lineHeight:1.5}}>
+                <p style={{fontSize:12,color:"#6E6459",margin:0,lineHeight:1.5}}>
                   Head to the 🔥 Lead Scorer tab and score your first real prospect to start building this list.
                 </p>
               </div>
@@ -715,7 +715,7 @@ export default function TheProspectingEngine() {
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
                           <div style={{flex:1,minWidth:0}}>
                             <div style={{fontSize:14,fontWeight:700,color:"#201A16"}}>{p.name}</div>
-                            <div style={{fontSize:11.5,color:"#D9CFBB",marginTop:2}}>
+                            <div style={{fontSize:11.5,color:"#6E6459",marginTop:2}}>
                               {[p.persona,p.platform].filter(Boolean).join(" · ") || "No persona or platform noted"}
                             </div>
                           </div>
@@ -723,7 +723,7 @@ export default function TheProspectingEngine() {
                             <span style={{fontSize:16,fontWeight:800,color:t.color}}>{p.score}</span>
                             <button className="pe-btn" onClick={()=>deleteProspect(p.id)}
                               aria-label={`Remove ${p.name}`}
-                              style={{background:"transparent",border:"none",color:"#D9CFBB",
+                              style={{background:"transparent",border:"none",color:"#6E6459",
                                 fontSize:16,cursor:"pointer",padding:2,lineHeight:1}}>×</button>
                           </div>
                         </div>
@@ -744,7 +744,7 @@ export default function TheProspectingEngine() {
         {tab==="method"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>The Math & Method</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               What the 8 factors actually measure, what the tiers mean, and the honest arithmetic
               behind "up to 10 clients a year."
             </p>
@@ -778,7 +778,7 @@ export default function TheProspectingEngine() {
                     borderRadius:10,padding:"12px 14px"}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5,flexWrap:"wrap"}}>
                       <span style={{fontSize:13.5,fontWeight:800,color:t.color}}>{t.emoji} {t.name}</span>
-                      <span style={{fontSize:11,color:"#D9CFBB"}}>{t.min}–{upper} pts</span>
+                      <span style={{fontSize:11,color:"#6E6459"}}>{t.min}–{upper} pts</span>
                     </div>
                     <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.55}}>{t.action}</p>
                   </div>
@@ -799,7 +799,7 @@ export default function TheProspectingEngine() {
                   padding:"9px 0",borderBottom:"1px solid #FBF8F1"}}>
                   <div>
                     <div style={{fontSize:13,fontWeight:700,color:"#201A16"}}>{e.tier}</div>
-                    <div style={{fontSize:11,color:"#D9CFBB"}}>{e.monthly}</div>
+                    <div style={{fontSize:11,color:"#6E6459"}}>{e.monthly}</div>
                   </div>
                   <div style={{fontSize:13,fontWeight:700,color:e.color,textAlign:"right"}}>{e.annual}</div>
                 </div>

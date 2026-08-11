@@ -92,7 +92,7 @@ const FIT_SIGNALS = [
 
 function Chevron({ open }) {
   return (
-    <span style={{ color: "#D9CFBB", fontSize: 19, display: "inline-block",
+    <span style={{ color: "#6E6459", fontSize: 19, display: "inline-block",
       transform: open ? "rotate(90deg)" : "none", transition: "transform .2s", flexShrink: 0 }}>›</span>
   );
 }
@@ -203,11 +203,11 @@ function FitChecklist() {
       <div style={{ background: "#F5F0E4", border: `1px solid ${band.color}40`, borderRadius: 12, padding: "15px 16px" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 8 }}>
           <span style={{ fontSize: 26, fontWeight: 800, color: band.color }}>{count}</span>
-          <span style={{ fontSize: 12, color: "#D9CFBB" }}>of 8 resonated</span>
+          <span style={{ fontSize: 12, color: "#6E6459" }}>of 8 resonated</span>
         </div>
         <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>{band.text}</p>
       </div>
-      <p style={{ fontSize: 11, color: "#D9CFBB", margin: "10px 0 0", lineHeight: 1.6 }}>
+      <p style={{ fontSize: 11, color: "#6E6459", margin: "10px 0 0", lineHeight: 1.6 }}>
         This is a reflection aid, not a test and not a verdict. No checklist can make a decision like this
         for you — it can only help you think more clearly in the time you have.
       </p>
@@ -251,7 +251,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Revenue Recovery Engine — The Honest Doorway Briefing
           </h1>
-          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#D9CFBB", maxWidth: 620, lineHeight: 1.65 }}>
+          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#6E6459", maxWidth: 620, lineHeight: 1.65 }}>
             You have 24 hours and one choice. This is a genuine, balanced look at what's actually on the
             other side of this particular door — the highs and the lows, not just the highlight reel.
           </p>
@@ -289,7 +289,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
         {tab === "doorway" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>What's Actually Behind This Door</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               In plain terms, before anything else.
             </p>
 
@@ -332,7 +332,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
         {tab === "highslows" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Highs & Lows, Paired Honestly</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Seven dimensions. Each strength here has a real, matching tradeoff — not a token weakness in
               disguise. Tap any row to open both sides.
             </p>
@@ -348,7 +348,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
         {tab === "durability" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>How Durable Is This, Really?</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Five factors, rated honestly — including the one that cuts against the pitch.
             </p>
             {DURABILITY_FACTORS.map(f => <FactorCard key={f.name} {...f} />)}
@@ -370,7 +370,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
         {tab === "competition" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Who Else Is In This Room</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Four real layers of competition, not zero.
             </p>
             {COMPETITIVE_LAYERS.map(l => <LayerRow key={l.name} {...l} />)}
@@ -393,7 +393,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
         {tab === "fit" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Is This Your Doorway?</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Check anything that genuinely resonates. Answer for who you actually are, not who you'd like
               to be by next month.
             </p>
@@ -405,7 +405,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
         {tab === "bottomline" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>The Honest Bottom Line</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               No spin, in either direction.
             </p>
 
@@ -431,7 +431,7 @@ export default function RevenueRecoveryEnginePathBriefing() {
             </div>
 
             <div style={{ background: "#F8F5EE", border: "1px solid #FBF8F1", borderRadius: 11, padding: "13px 15px" }}>
-              <p style={{ fontSize: 12, color: "#D9CFBB", margin: 0, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 12, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
                 This briefing covered one of seven doorways in real depth, deliberately. It cannot tell you
                 which of the seven is best for you — only whichever set of seven briefings you're able to
                 gather in the time you have can do that. Choose with the clearest picture you can build, not

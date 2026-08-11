@@ -90,9 +90,9 @@ const C = {
 /* Reused directly from the Prospecting Guide's own Client Mix Calculator,
    so the 12-month math ties out across the whole system. */
 const PACKAGE_TIERS = [
-  {id:"foundation", name:"Foundation",       icon:"🌱", price:"$75 – $150/mo",  mid:113, color:C.teal},
-  {id:"growth",     name:"Growth",           icon:"⚡", price:"$175 – $350/mo", mid:263, color:C.indigo},
-  {id:"full",       name:"Full Care System", icon:"🏆", price:"$350 – $600/mo", mid:475, color:C.pink},
+  {id:"foundation", name:"Foundation",       icon:"🌱", price:"$100 – $200/mo", mid:150, color:C.teal},
+  {id:"growth",     name:"Growth",           icon:"⚡", price:"$250 – $450/mo", mid:350, color:C.indigo},
+  {id:"full",       name:"Full Care System", icon:"🏆", price:"$500 – $850/mo", mid:675, color:C.pink},
 ];
 
 /* ─── HELPERS ────────────────────────────────────────────── */
@@ -389,7 +389,7 @@ export default function SeniorHomeCarePerformanceCalculator() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Senior & Home Care Performance Calculator
           </h1>
-          <p style={{fontSize:12.5,color:"#D9CFBB",maxWidth:600,lineHeight:1.65}}>
+          <p style={{fontSize:12.5,color:"#6E6459",maxWidth:600,lineHeight:1.65}}>
             Enter a target agency's real numbers to see how many families — and how much recurring
             revenue — they're losing to slow response, thin reviews, and communication gaps. Use it
             live on a discovery call, or record it as a Loom, exactly like your SMB Revenue Leak Finder.

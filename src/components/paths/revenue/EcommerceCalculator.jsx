@@ -336,7 +336,7 @@ export default function EcommercePerformanceCalculator() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Ecommerce Performance Calculator
           </h1>
-          <p style={{fontSize:12.5,color:"#D9CFBB",maxWidth:560,lineHeight:1.65}}>
+          <p style={{fontSize:12.5,color:"#6E6459",maxWidth:560,lineHeight:1.65}}>
             Enter a prospect's real numbers to see exactly how much revenue is leaking out of their own
             checkout, welcome, post-purchase, and win-back funnel. Use it live on a discovery call or
             record it as a Loom.

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { GlobalParts } from "@/components/playbooks/global-parts";
 import { ProspectingParts } from "@/components/playbooks/prospecting-parts";
 import { GrandSlamParts } from "@/components/playbooks/grand-slam-parts";
+import { PrioritizeParts } from "@/components/playbooks/prioritize-parts";
 
 export const Route = createFileRoute("/_authenticated/playbooks/global-smb-engine")({
   head: () => ({
@@ -26,6 +27,7 @@ const TABS = [
   { id: "maps", label: "🗺️ Map Searches" },
   { id: "score", label: "🎯 Score Leads" },
   { id: "gslam", label: "💎 Grand Slam" },
+  { id: "prioritize", label: "📊 Prioritize & Scale" },
 ];
 
 function GlobalSmbEngine() {
@@ -73,6 +75,7 @@ function GlobalSmbEngine() {
       {(tab === "countries" || tab === "businesses") && <GlobalParts tab={tab} />}
       {tab === "maps" && <ProspectingParts tab="maps" />}
       {(tab === "score" || tab === "gslam") && <GrandSlamParts tab={tab} />}
+      {tab === "prioritize" && <PrioritizeParts />}
     </div>
   );
 }

@@ -220,22 +220,22 @@ const CARE_TYPES = [
 ];
 
 const SERVICES_4 = [
-  {icon:"🚨", color:"#8B2E1F", name:"Rapid-Response Intake System", price:"$75-$150/month (or free pilot first)",
+  {icon:"🚨", color:"#8B2E1F", name:"Rapid-Response Intake System", price:"$150-$250/month",
    signal:"Agency takes an hour or more to respond to new inquiries, no automated acknowledgment exists, families report frustration reaching them.",
    pitch:"\"When a family calls you in the middle of a care crisis, how fast do you actually get back to them? I tested this myself — [X hours]. Families are calling 3-4 agencies within the same hour, and the first one to respond clearly and quickly usually wins the client. I can build a system that acknowledges every inquiry within minutes and alerts your team instantly, so you never lose a family to slower response time again.\"",
    setup:"Google Form or website form → Zapier or Make automation → instant SMS/email acknowledgment to the family + instant alert to staff phone → Sheet log for follow-up tracking",
    upsell:"\"Now that new inquiries are being caught instantly, the next thing families ask for once they're a client is regular updates — want me to set that up too?\""},
-  {icon:"💌", color:"#7A5A00", name:"Family Update Portal", price:"$100-$200/month",
+  {icon:"💌", color:"#7A5A00", name:"Family Update Portal", price:"$150-$300/month",
    signal:"No systematic way for families to receive updates, families calling in constantly for status checks, staff time consumed by repetitive update calls.",
    pitch:"\"Right now, how do families find out how their loved one is doing day to day? If it's only through them calling in, that's time your staff could spend on actual care. I can set up automated weekly update messages — a simple, warm summary sent directly to family members — so they feel reassured without needing to call, and your staff gets that time back.\"",
    setup:"Klaviyo or similar email/SMS tool → automated periodic update template → staff fills in brief notes → system sends personalized update to the family contact list",
    upsell:"\"With families feeling well-informed, the next gap I noticed is how your staff schedule gets communicated internally — want me to look at that too?\""},
-  {icon:"📅", color:"#C99A3B", name:"Staff Scheduling & Shift Communication", price:"$100-$200/month",
+  {icon:"📅", color:"#C99A3B", name:"Staff Scheduling & Shift Communication", price:"$150-$300/month",
    signal:"Scheduling done manually by phone, missed shifts due to poor communication, no automated reminder system.",
    pitch:"\"How much time does scheduling and confirming shifts take every week right now? I can set up a simple system that sends automatic shift reminders to your caregivers, reduces missed shifts, and gives you a clear view of coverage at a glance.\"",
    setup:"Google Sheets schedule → Zapier or Make automation → automated SMS reminder 24 hours and 2 hours before each shift → confirmation tracking",
    upsell:"\"Now that scheduling runs smoothly, the last piece is making sure happy families actually tell others about you — want me to set up a referral system?\""},
-  {icon:"🌟", color:"#0D7A5F", name:"Referral & Testimonial System", price:"$75-$150/month",
+  {icon:"🌟", color:"#0D7A5F", name:"Referral & Testimonial System", price:"$297-$450/month",
    signal:"No systematic way to collect family testimonials or generate referrals, relying purely on unstructured word of mouth.",
    pitch:"\"Families who've had a genuinely good experience with your care are your most powerful marketing asset, but right now nothing is capturing that. I can set up an automated system that reaches out to families after a positive milestone, asks for a quick testimonial or review, and makes it easy for them to refer other families going through the same situation.\"",
    setup:"Trigger after a care milestone → automated testimonial or review request → referral ask built into the same message",
@@ -274,13 +274,13 @@ const SCRIPTS = [
 ];
 
 const PACKAGES = [
-  {name:"Foundation", icon:"🌱", color:"#0D7A5F", price:"$75-$150/month",
+  {name:"Foundation", icon:"🌱", color:"#0D7A5F", price:"$100-$200/month",
    includes:["Rapid-Response Intake System only","Monthly response-time report"],
    bestFor:"Small agencies wanting to fix their single biggest gap first"},
-  {name:"Growth", icon:"⚡", color:"#7A5A00", price:"$175-$350/month",
+  {name:"Growth", icon:"⚡", color:"#7A5A00", price:"$250-$450/month",
    includes:["Rapid-Response Intake System","Family Update Portal","Monthly performance report"],
    bestFor:"Growing agencies wanting to reduce staff workload and reassure families"},
-  {name:"Full Care System", icon:"🏆", color:"#8B2E1F", price:"$350-$600/month",
+  {name:"Full Care System", icon:"🏆", color:"#8B2E1F", price:"$500-$850/month",
    includes:["Everything in Growth","Staff Scheduling & Shift Communication","Referral & Testimonial System","Quarterly strategy check-in"],
    bestFor:"Established agencies wanting a complete operational and growth partner"},
 ];
@@ -305,13 +305,13 @@ const FAQS = [
 ];
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
 function Check({checked,color}) {
   return (
-    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#D9CFBB"}`,
+    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#6E6459"}`,
       background:checked?color:"transparent",display:"flex",alignItems:"center",
       justifyContent:"center",flexShrink:0,marginTop:2,fontSize:11,
       color:"#F5F0E4",fontWeight:800,transition:"all .15s"}}>
@@ -386,7 +386,7 @@ export default function TheCareBridge() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Senior & Home Care Communication Systems
           </h1>
-          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#D9CFBB",maxWidth:580,lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6E6459",maxWidth:580,lineHeight:1.65}}>
             Rapid-response intake, family updates, staff scheduling, and referrals — built for home
             care agencies and assisted living facilities. A market almost no digital agency serves.
           </p>
@@ -435,7 +435,7 @@ export default function TheCareBridge() {
         {tab==="plan"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>45-Day Action Plan</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               Tap a week → tap a day → tick tasks as you complete them.
             </p>
             {WEEKS.map((w,wi)=>{
@@ -453,11 +453,11 @@ export default function TheCareBridge() {
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap",marginBottom:4}}>
                         <span style={{fontWeight:700,fontSize:14,color:"#201A16"}}>Week {w.week}: {w.title}</span>
-                        <span style={{fontSize:10,color:"#D9CFBB",background:"#FBF8F1",
+                        <span style={{fontSize:10,color:"#6E6459",background:"#FBF8F1",
                           borderRadius:4,padding:"1px 6px"}}>{w.range}</span>
                         {wp>0&&<span style={{fontSize:10.5,fontWeight:700,color:w.color}}>{wp}%</span>}
                       </div>
-                      <p style={{fontSize:11.5,color:"#D9CFBB",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
+                      <p style={{fontSize:11.5,color:"#6E6459",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
                       <ProgressBar value={wp} color={w.color} height={3}/>
                     </div>
                     <Chevron open={wOpen}/>
@@ -483,7 +483,7 @@ export default function TheCareBridge() {
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
                                   <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
                                 </div>
-                                <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
+                                <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
                               <Chevron open={dOpen}/>
                             </div>
@@ -523,7 +523,7 @@ export default function TheCareBridge() {
         {tab==="notion"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Agency CRM</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Notion (free plan) tracks every agency you audit, approach, and pilot — from mystery-shop
               call to closed retainer.
             </p>
@@ -565,7 +565,7 @@ export default function TheCareBridge() {
         {tab==="care"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick Your Care Focus</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Choose one care-type specialization so your outreach and case studies get sharper the
               more agencies you sign in the same category.
             </p>
@@ -609,7 +609,7 @@ export default function TheCareBridge() {
         {tab==="services"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>The 4 Bridge Components</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Always start with Rapid-Response Intake — it's the fastest, most measurable win, and it
               earns the trust that makes every upsell after it easier.
             </p>
@@ -660,7 +660,7 @@ export default function TheCareBridge() {
         {tab==="scripts"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Scripts and Templates</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Warm and empathetic in tone, always. This is not urgency-driven sales — it's helping
               people who help families in genuine need.
             </p>
@@ -705,9 +705,10 @@ export default function TheCareBridge() {
         {tab==="pricing"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pricing Packages</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
-              Always begin with a free pilot on 5 real inquiries before proposing any tier — this is
-              what earns the right to a pricing conversation at all.
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Nothing in this system is priced below $100/month. Start with a short, guarantee-backed
+              paid trial on 5 real inquiries — small enough to say yes to, real enough that they never
+              learn to expect free work.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               {PACKAGES.map((pkg)=>(
@@ -719,7 +720,7 @@ export default function TheCareBridge() {
                       <span style={{fontSize:24}}>{pkg.icon}</span>
                       <div>
                         <div style={{fontWeight:700,fontSize:15,color:"#201A16"}}>{pkg.name}</div>
-                        <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>Best for: {pkg.bestFor}</div>
+                        <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>Best for: {pkg.bestFor}</div>
                       </div>
                     </div>
                     <div style={{fontSize:16,fontWeight:800,color:pkg.color,whiteSpace:"nowrap"}}>{pkg.price}</div>
@@ -739,9 +740,9 @@ export default function TheCareBridge() {
               borderRadius:12,padding:"16px"}}>
               <SLabel text="12-Month Value Per Agency" color="#0D7A5F"/>
               {[
-                {t:"Foundation only",v:"$900-$1,800/year"},
-                {t:"Growth tier",v:"$2,100-$4,200/year"},
-                {t:"Full Care System",v:"$4,200-$7,200/year"},
+                {t:"Foundation only",v:"$1,200-$2,400/year"},
+                {t:"Growth tier",v:"$3,000-$5,400/year"},
+                {t:"Full Care System",v:"$6,000-$10,200/year"},
               ].map((r,i)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",
                   padding:"8px 0",borderBottom:"1px solid #FBF8F1"}}>
@@ -749,8 +750,8 @@ export default function TheCareBridge() {
                   <span style={{fontSize:13,fontWeight:700,color:"#0D7A5F"}}>{r.v}</span>
                 </div>
               ))}
-              <p style={{fontSize:12,color:"#D9CFBB",margin:"10px 0 0",lineHeight:1.6}}>
-                Five agencies on the Growth tier alone = $10,500-$21,000 a year in recurring revenue,
+              <p style={{fontSize:12,color:"#6E6459",margin:"10px 0 0",lineHeight:1.6}}>
+                Five agencies on the Growth tier alone = $15,000-$27,000 a year in recurring revenue,
                 in a market virtually no other digital agency is competing for.
               </p>
             </div>
@@ -761,7 +762,7 @@ export default function TheCareBridge() {
         {tab==="faq"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>FAQ</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               The questions every student asks before approaching their first care agency.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>

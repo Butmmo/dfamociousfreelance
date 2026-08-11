@@ -119,7 +119,7 @@ const FIT_BANDS = [
 ];
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
@@ -212,7 +212,7 @@ export default function CareBridgePathBriefing() {
             WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent"}}>
             The Care Bridge — An Honest Path Briefing
           </h1>
-          <p style={{margin:"0 0 14px", fontSize:12.5, color:"#D9CFBB", maxWidth:580, lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px", fontSize:12.5, color:"#6E6459", maxWidth:580, lineHeight:1.65}}>
             Real highs, real lows, real competition, and an honest read on how durable this doorway
             actually is — built to help you make one good decision, not to talk you into one.
           </p>
@@ -235,7 +235,7 @@ export default function CareBridgePathBriefing() {
             ].map(([n,l],i)=>(
               <div key={i} style={{display:"flex", flexDirection:"column"}}>
                 <span style={{fontSize:17, fontWeight:800, color:"#C99A3B"}}>{n}</span>
-                <span style={{fontSize:10.5, color:"#D9CFBB"}}>{l}</span>
+                <span style={{fontSize:10.5, color:"#6E6459"}}>{l}</span>
               </div>
             ))}
           </div>
@@ -287,7 +287,7 @@ export default function CareBridgePathBriefing() {
                 </div>
               ))}
             </div>
-            <p style={{fontSize:12.5,color:"#D9CFBB",lineHeight:1.65}}>
+            <p style={{fontSize:12.5,color:"#6E6459",lineHeight:1.65}}>
               Everything on the next six tabs is an honest expansion on one question: given all of
               that, is this a doorway worth committing your one shot to? Read The Lows as carefully
               as The Highs — that's the point of this document.
@@ -299,7 +299,7 @@ export default function CareBridgePathBriefing() {
         {tab==="highs"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>The Highs</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Genuine strengths, each checked against real, current industry data rather than
               asserted as fact.
             </p>
@@ -322,7 +322,7 @@ export default function CareBridgePathBriefing() {
         {tab==="lows"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>The Lows</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Real trade-offs and risks — the same rigor applied to the case against this path as
               the case for it.
             </p>
@@ -345,7 +345,7 @@ export default function CareBridgePathBriefing() {
         {tab==="standout"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>What Makes It Stand Out</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Not "better than every other path" — but genuinely distinctive in a few specific ways.
             </p>
             {STANDOUT.map(s=>(
@@ -429,7 +429,7 @@ export default function CareBridgePathBriefing() {
         {tab==="fit"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Is This Your Path?</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Answer honestly about yourself, not about who you'd like to be. This exists to help
               you use your one choice well, in whichever direction it points.
             </p>
@@ -453,7 +453,7 @@ export default function CareBridgePathBriefing() {
                 </div>
               )}
               {answeredCount>0&&(
-                <div onClick={resetFit} style={{marginTop:12,fontSize:11.5,color:"#D9CFBB",
+                <div onClick={resetFit} style={{marginTop:12,fontSize:11.5,color:"#6E6459",
                   cursor:"pointer",textDecoration:"underline",display:"inline-block"}}>
                   Reset and answer again
                 </div>
@@ -464,9 +464,9 @@ export default function CareBridgePathBriefing() {
               <div key={f.key} style={{marginBottom:20}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:4}}>
                   <span style={{fontSize:13.5,fontWeight:700,color:"#201A16"}}>{f.label}</span>
-                  <span style={{fontSize:10.5,color:"#D9CFBB"}}>max {f.max} pts</span>
+                  <span style={{fontSize:10.5,color:"#6E6459"}}>max {f.max} pts</span>
                 </div>
-                <p style={{fontSize:12,color:"#D9CFBB",margin:"0 0 8px",lineHeight:1.5}}>{f.help}</p>
+                <p style={{fontSize:12,color:"#6E6459",margin:"0 0 8px",lineHeight:1.5}}>{f.help}</p>
                 <div style={{display:"flex",flexDirection:"column",gap:6}}>
                   {f.options.map((o,oi)=>{
                     const isSel = sel[f.key]===oi;

@@ -283,7 +283,7 @@ export default function MinistryPerformanceCalculator() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Ministry Performance Calculator
           </h1>
-          <p style={{fontSize:12.5,color:"#D9CFBB",maxWidth:560,lineHeight:1.65}}>
+          <p style={{fontSize:12.5,color:"#6E6459",maxWidth:560,lineHeight:1.65}}>
             Enter a ministry's real numbers to see how many real people — first-time visitors,
             inquiries, and calls — are quietly slipping through the cracks each month. Use this
             live in a conversation, or record it as a Loom with their numbers filled in.
@@ -588,9 +588,9 @@ export default function MinistryPerformanceCalculator() {
                 12-Month Value Per Ministry — same tiers as the 60-Day Playbook
               </div>
               {[
-                {t:"Foundation tier",v:"$600 – $1,200/year",col:C.indigo},
-                {t:"Growth tier",v:"$1,800 – $3,000/year",col:C.green},
-                {t:"Full Ministry tier",v:"$3,000 – $4,800/year",col:C.amber},
+                {t:"Foundation tier",v:"$1,200 – $2,400/year",col:C.indigo},
+                {t:"Growth tier",v:"$3,000 – $5,400/year",col:C.green},
+                {t:"Full Ministry tier",v:"$6,000 – $10,800/year",col:C.amber},
               ].map((r,i)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",
                   padding:"9px 0",borderBottom:"1px solid #FBF8F1"}}>
