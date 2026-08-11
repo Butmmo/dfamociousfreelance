@@ -168,17 +168,17 @@ const REVENUE_SCENARIOS = [
   {name:"Conservative", icon:"🌱", color:"#7A5A00",
    clients:"3-5 ministries",
    mix:"Mostly Foundation tier, one or two Growth",
-   range:"$2,000 – $6,000/year",
+   range:"$12,000 – $25,000/year",
    note:"A realistic first-12-months outcome for a student working their own parish plus one or two warm referrals."},
   {name:"Solid", icon:"⚡", color:"#C99A3B",
    clients:"6-8 ministries",
    mix:"Mixed Foundation and Growth, at least one Full Ministry",
-   range:"$8,000 – $20,000/year",
+   range:"$30,000 – $60,000/year",
    note:"A well-run practice after 12-24 months, with referrals starting to compound inside one diocese or denominational network."},
   {name:"Strong", icon:"🏆", color:"#0D7A5F",
    clients:"9-10 ministries",
    mix:"Majority Growth / Full Ministry, plus one diocesan or network-level relationship",
-   range:"$20,000 – $45,000/year",
+   range:"$70,000 – $120,000/year",
    note:"A mature practice, usually anchored by one institutional client — a diocese or denomination — worth more than several individual parishes combined."},
 ];
 
@@ -206,7 +206,7 @@ const REGIONAL_NOTES = [
 ];
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
@@ -276,7 +276,7 @@ export default function GlobalMinistryProspectingGuide() {
             WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent"}}>
             Global Ministry Prospecting Guide
           </h1>
-          <p style={{margin:"0 0 14px", fontSize:12.5, color:"#D9CFBB", maxWidth:600, lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px", fontSize:12.5, color:"#6E6459", maxWidth:600, lineHeight:1.65}}>
             Where the opportunity is strongest, which ministries to prioritize, and a repeatable
             way to tell a hot lead from one that just needs more time.
           </p>
@@ -300,7 +300,7 @@ export default function GlobalMinistryProspectingGuide() {
             ].map(([n,l],i)=>(
               <div key={i} style={{display:"flex", flexDirection:"column"}}>
                 <span style={{fontSize:17, fontWeight:800, color:"#C99A3B"}}>{n}</span>
-                <span style={{fontSize:10.5, color:"#D9CFBB"}}>{l}</span>
+                <span style={{fontSize:10.5, color:"#6E6459"}}>{l}</span>
               </div>
             ))}
           </div>
@@ -330,7 +330,7 @@ export default function GlobalMinistryProspectingGuide() {
         {tab==="start"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How to Use This Guide</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Three steps, in order. Skipping the first one is the most common mistake.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:9,marginBottom:24}}>
@@ -356,7 +356,7 @@ export default function GlobalMinistryProspectingGuide() {
             </div>
 
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How Students Actually Earn From This</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Every figure below matches the pricing already set in the Packages tab of the 60-Day
               Playbook, on purpose. Modest, honest pricing is what keeps a small parish's trust and
               its referrals — a client oversold on inflated promises churns, and warns the next
@@ -365,9 +365,9 @@ export default function GlobalMinistryProspectingGuide() {
             <div style={{background:"#F5F0E4",border:"1px solid #0D7A5F25",borderRadius:12,padding:"16px"}}>
               <SLabel text="12-Month Value Per Ministry — unchanged from the Playbook" color="#0D7A5F"/>
               {[
-                {t:"Foundation tier",v:"$600 – $1,200/year"},
-                {t:"Growth tier",v:"$1,800 – $3,000/year"},
-                {t:"Full Ministry tier",v:"$3,000 – $4,800/year"},
+                {t:"Foundation tier",v:"$1,200 – $2,400/year"},
+                {t:"Growth tier",v:"$3,000 – $5,400/year"},
+                {t:"Full Ministry tier",v:"$6,000 – $10,800/year"},
               ].map((r,i)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",
                   borderBottom:"1px solid #FBF8F1"}}>
@@ -375,7 +375,7 @@ export default function GlobalMinistryProspectingGuide() {
                   <span style={{fontSize:13,fontWeight:700,color:"#0D7A5F"}}>{r.v}</span>
                 </div>
               ))}
-              <p style={{fontSize:12,color:"#D9CFBB",margin:"10px 0 0",lineHeight:1.6}}>
+              <p style={{fontSize:12,color:"#6E6459",margin:"10px 0 0",lineHeight:1.6}}>
                 See the Revenue Model tab for what this adds up to across a realistic student
                 portfolio, and across the whole program.
               </p>
@@ -387,7 +387,7 @@ export default function GlobalMinistryProspectingGuide() {
         {tab==="countries"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Top 10 Countries</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Ranked by religious demographics, digital-payment readiness, and how little of the
               market established church-tech vendors already occupy. Tap a country for the full picture.
             </p>
@@ -452,7 +452,7 @@ export default function GlobalMinistryProspectingGuide() {
         {tab==="types"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Top 7 Ministry & NGO Types</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Same rule as the core Playbook: match the pitch to the type of organization in front
               of you, never the reverse. Tap a type for the full picture.
             </p>
@@ -470,7 +470,7 @@ export default function GlobalMinistryProspectingGuide() {
                         justifyContent:"center",fontSize:19,flexShrink:0}}>{m.icon}</div>
                       <div style={{flex:1}}>
                         <div style={{fontWeight:700,fontSize:14,color:"#201A16"}}>{m.name}</div>
-                        <div style={{fontSize:11.5,color:"#D9CFBB",marginTop:2}}>{m.size}</div>
+                        <div style={{fontSize:11.5,color:"#6E6459",marginTop:2}}>{m.size}</div>
                       </div>
                       <Chevron open={isOpen}/>
                     </div>
@@ -501,7 +501,7 @@ export default function GlobalMinistryProspectingGuide() {
         {tab==="scoring"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Lead Scoring System</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Answer all five, honestly, about one real contact at a time. This prioritizes, it
               doesn't judge — a low score just means "relationship first, pitch later."
             </p>
@@ -525,7 +525,7 @@ export default function GlobalMinistryProspectingGuide() {
                 </div>
               )}
               {answeredCount>0&&(
-                <div onClick={resetScore} style={{marginTop:12,fontSize:11.5,color:"#D9CFBB",
+                <div onClick={resetScore} style={{marginTop:12,fontSize:11.5,color:"#6E6459",
                   cursor:"pointer",textDecoration:"underline",display:"inline-block"}}>
                   Reset and score a different contact
                 </div>
@@ -536,9 +536,9 @@ export default function GlobalMinistryProspectingGuide() {
               <div key={f.key} style={{marginBottom:20}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:4}}>
                   <span style={{fontSize:13.5,fontWeight:700,color:"#201A16"}}>{f.label}</span>
-                  <span style={{fontSize:10.5,color:"#D9CFBB"}}>max {f.max} pts</span>
+                  <span style={{fontSize:10.5,color:"#6E6459"}}>max {f.max} pts</span>
                 </div>
-                <p style={{fontSize:12,color:"#D9CFBB",margin:"0 0 8px",lineHeight:1.5}}>{f.help}</p>
+                <p style={{fontSize:12,color:"#6E6459",margin:"0 0 8px",lineHeight:1.5}}>{f.help}</p>
                 <div style={{display:"flex",flexDirection:"column",gap:6}}>
                   {f.options.map((o,oi)=>{
                     const isSel = sel[f.key]===oi;
@@ -563,7 +563,7 @@ export default function GlobalMinistryProspectingGuide() {
         {tab==="revenue"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Realistic Capacity & Revenue Model</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Modeled directly from the Packages pricing in the 60-Day Playbook, not a separate,
               bigger number. This is what a real student portfolio looks like at three stages.
             </p>
@@ -577,7 +577,7 @@ export default function GlobalMinistryProspectingGuide() {
                       <span style={{fontSize:24}}>{r.icon}</span>
                       <div>
                         <div style={{fontWeight:700,fontSize:15,color:"#201A16"}}>{r.name}</div>
-                        <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>{r.clients} · {r.mix}</div>
+                        <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{r.clients} · {r.mix}</div>
                       </div>
                     </div>
                     <div style={{fontSize:16,fontWeight:800,color:r.color,whiteSpace:"nowrap",textAlign:"right"}}>{r.range}</div>
@@ -608,7 +608,7 @@ export default function GlobalMinistryProspectingGuide() {
         {tab==="regional"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Regional Playbook Notes</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Four regional adaptations of the same core system. The tools, the channel, and the
               highest-opportunity pilot event change; the warm-network principle does not.
             </p>
@@ -626,7 +626,7 @@ export default function GlobalMinistryProspectingGuide() {
                         justifyContent:"center",fontSize:19,flexShrink:0}}>{r.icon}</div>
                       <div style={{flex:1}}>
                         <div style={{fontWeight:700,fontSize:14,color:"#201A16"}}>{r.name}</div>
-                        <div style={{fontSize:11.5,color:"#D9CFBB",marginTop:2}}>{r.countries}</div>
+                        <div style={{fontSize:11.5,color:"#6E6459",marginTop:2}}>{r.countries}</div>
                       </div>
                       <Chevron open={isOpen}/>
                     </div>

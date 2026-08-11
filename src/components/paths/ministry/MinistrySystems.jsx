@@ -345,25 +345,25 @@ const NOTION_VIEWS = [
 ];
 
 const SERVICES_4 = [
-  {icon:"📋", color:"#7A5A00", name:"Event Registration & Check-In System", price:"$50-150/month (or free pilot first)",
+  {icon:"📋", color:"#7A5A00", name:"Event Registration & Check-In System", price:"$100-250/month (free pilot only at your own parish)",
    signal:"Parish or ministry runs 3+ events per year with paper sign-up sheets, no headcount visibility, or manual tracking.",
    pitch:"\"I noticed [event]'s registration is still tracked on paper. I could build a simple online form that captures the same information but gives the planning committee an exact headcount automatically, and sends everyone a confirmation. Want me to try it for the next event — no cost, just to see if it helps?\"",
    tools:"Google Forms + Google Sheets + Zapier or Make (all free)",
    setup:"Build the form with every needed field → connect to a Sheet → automation: form submitted → confirmation email or SMS → optional QR check-in on event day",
    upsell:"Once this is running smoothly: \"Now that registration is handled, the next thing I noticed is how giving currently works — want me to show you what an online option could look like?\""},
-  {icon:"💝", color:"#0D7A5F", name:"Digital Giving & Stewardship System", price:"$75-200/month",
+  {icon:"💝", color:"#0D7A5F", name:"Digital Giving & Stewardship System", price:"$150-350/month",
    signal:"Envelope or cash-only giving, no recurring tithe option, or an existing giving solution that feels clunky.",
    pitch:"\"Right now giving only happens through envelopes on Sunday, which means members who travel or would give electronically have no easy way to support the parish consistently. I can set up an online giving option with automatic receipts and optional recurring giving, so stewardship doesn't depend on who's physically present each week.\"",
    tools:"Tithe.ly or Pushpay (US / international), Paystack or Flutterwave (Nigeria / Africa)",
    setup:"Set up the giving platform account → connect bank details → embed the giving link on the parish website or WhatsApp → configure automated receipt emails",
    upsell:"Once giving is flowing smoothly: \"Now let's make sure every giver actually hears from the parish regularly — want me to set up a proper communication system too?\""},
-  {icon:"📢", color:"#C99A3B", name:"Congregant Communication Hub", price:"$50-150/month",
+  {icon:"📢", color:"#C99A3B", name:"Congregant Communication Hub", price:"$100-250/month",
    signal:"Relying solely on WhatsApp broadcast or pulpit announcements, low event attendance due to poor reminders, no proper email list.",
    pitch:"\"A lot of announcements are only reaching whoever happened to be in the building that Sunday, or hasn't muted the WhatsApp group. I can set up a proper email and SMS system that reminds people automatically about services and events, and even sends a personal note on birthdays and anniversaries — the kind of pastoral touch that's hard to keep up manually.\"",
    tools:"Klaviyo or Mailchimp (free tier), WhatsApp Business (free)",
    setup:"Build the congregant email and phone list → set up automated service/event reminder sequences → configure birthday and anniversary automated messages",
    upsell:"Once communication is solid: \"The last piece is making sure your teaching reaches people beyond just Sunday — want to see what a simple online Bible study platform could look like?\""},
-  {icon:"📖", color:"#8B2E1F", name:"Digital Formation & Course Platform", price:"$100-300/month",
+  {icon:"📖", color:"#8B2E1F", name:"Digital Formation & Course Platform", price:"$150-450/month",
    signal:"Wants to scale Bible studies, confirmation classes, RCIA, or leadership training beyond in-person only, or reach members who travel.",
    pitch:"\"Right now, anyone who misses a Bible study session or confirmation class simply misses it — there's no way to catch up. I can build a simple course platform where sessions are recorded, materials are organized, and you can actually track who's completing the formation program. The same content can then serve multiple small groups instead of being taught fresh every time.\"",
    tools:"Kajabi or Passion.io",
@@ -402,7 +402,7 @@ const FAQS = [
   {q:"How do I bring this up without it seeming like I'm trying to profit from my own church?",
    a:"Frame the first project as a genuine free pilot. You are not selling to your own parish first — you are proving the concept. The paid relationship comes later, or with other parishes and ministries once you have real proof it works."},
   {q:"What if the church genuinely has no budget at all?",
-   a:"Start with a completely free pilot for one event. Many small congregations can find $50-100 a month once they see clear time savings and better event outcomes — but never assume budget exists until you've shown value first."},
+   a:"A free pilot is reserved for your own parish — everywhere else, propose a short paid trial instead. Many congregations can find $100-200 a month once they see clear time savings and better event outcomes — but never assume budget exists until you've shown value first."},
   {q:"What if there's a whole committee or parish council that needs to approve spending?",
    a:"This is normal and not a bad sign. Prepare a simple one-page summary they can review without you present. Committees move slower than individuals — budget extra time in your pipeline for this."},
   {q:"Should I do this completely free forever at my own parish?",
@@ -418,25 +418,25 @@ const FAQS = [
 ];
 
 const PACKAGES = [
-  {name:"Foundation", icon:"🌱", color:"#0D7A5F", price:"$50-100/month",
+  {name:"Foundation", icon:"🌱", color:"#0D7A5F", price:"$100-200/month",
    includes:["Event registration & automated confirmation system","Basic communication hub (email/SMS reminders)","Monthly headcount and attendance summary"],
    bestFor:"Small parishes and ministries just starting to go digital"},
-  {name:"Growth", icon:"⚡", color:"#7A5A00", price:"$150-250/month",
+  {name:"Growth", icon:"⚡", color:"#7A5A00", price:"$250-450/month",
    includes:["Everything in Foundation","Digital giving & stewardship system","Automated giving receipts","Monthly giving report"],
    bestFor:"Growing congregations wanting a recurring giving option"},
-  {name:"Full Ministry", icon:"🏆", color:"#8B2E1F", price:"$250-400/month",
+  {name:"Full Ministry", icon:"🏆", color:"#8B2E1F", price:"$500-900/month",
    includes:["Everything in Growth","Digital formation / course platform","Priority support","Quarterly strategy check-in"],
    bestFor:"Larger parishes or dioceses wanting a complete digital presence"},
 ];
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
 function Check({checked,color}) {
   return (
-    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#D9CFBB"}`,
+    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#6E6459"}`,
       background:checked?color:"transparent",display:"flex",alignItems:"center",
       justifyContent:"center",flexShrink:0,marginTop:2,fontSize:11,
       color:"#F5F0E4",fontWeight:800,transition:"all .15s"}}>
@@ -509,7 +509,7 @@ export default function DigitalMinistrySystems() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Digital Systems for Faith Communities
           </h1>
-          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#D9CFBB",maxWidth:580,lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6E6459",maxWidth:580,lineHeight:1.65}}>
             Event registration, digital giving, congregant communication, and online formation —
             built for parishes, churches, and ministries. Warm-network acquisition, not cold outreach.
           </p>
@@ -557,7 +557,7 @@ export default function DigitalMinistrySystems() {
         {tab==="plan"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>60-Day Action Plan</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               Tap a week → tap a day → tick tasks as you complete them. This moves slower and warmer
               than SMB outreach — that is intentional.
             </p>
@@ -576,11 +576,11 @@ export default function DigitalMinistrySystems() {
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap",marginBottom:4}}>
                         <span style={{fontWeight:700,fontSize:14,color:"#201A16"}}>Week {w.week}: {w.title}</span>
-                        <span style={{fontSize:10,color:"#D9CFBB",background:"#FBF8F1",
+                        <span style={{fontSize:10,color:"#6E6459",background:"#FBF8F1",
                           borderRadius:4,padding:"1px 6px"}}>{w.range}</span>
                         {wp>0&&<span style={{fontSize:10.5,fontWeight:700,color:w.color}}>{wp}%</span>}
                       </div>
-                      <p style={{fontSize:11.5,color:"#D9CFBB",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
+                      <p style={{fontSize:11.5,color:"#6E6459",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
                       <ProgressBar value={wp} color={w.color} height={3}/>
                     </div>
                     <Chevron open={wOpen}/>
@@ -606,7 +606,7 @@ export default function DigitalMinistrySystems() {
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
                                   <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
                                 </div>
-                                <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
+                                <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
                               <Chevron open={dOpen}/>
                             </div>
@@ -646,7 +646,7 @@ export default function DigitalMinistrySystems() {
         {tab==="notion"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Ministry CRM — Full Setup</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Notion (free plan) tracks every parish, church, and ministry relationship — from first
               contact to active paying client to referral source.
             </p>
@@ -688,7 +688,7 @@ export default function DigitalMinistrySystems() {
         {tab==="services"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>The 4 Core Services</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Same rule as your SMB work: match the service to the pain point they already feel.
               Never pitch all four at once — lead with the one signal that fits.
             </p>
@@ -740,7 +740,7 @@ export default function DigitalMinistrySystems() {
         {tab==="scripts"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Conversation Scripts</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               These are warm, relational conversations — not cold emails. The tone should feel like a
               trusted member of the community, never a salesperson.
             </p>
@@ -785,9 +785,9 @@ export default function DigitalMinistrySystems() {
         {tab==="pricing"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pricing Packages</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
-              Always start with a free pilot before proposing any tier. The pilot is what earns the
-              right to have a pricing conversation at all.
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Nothing in this system is priced below $100/month. The free pilot is reserved for your own
+              parish — everywhere else, use a short, guarantee-backed paid trial to earn the pricing conversation.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               {PACKAGES.map((pkg)=>(
@@ -799,7 +799,7 @@ export default function DigitalMinistrySystems() {
                       <span style={{fontSize:24}}>{pkg.icon}</span>
                       <div>
                         <div style={{fontWeight:700,fontSize:15,color:"#201A16"}}>{pkg.name}</div>
-                        <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>Best for: {pkg.bestFor}</div>
+                        <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>Best for: {pkg.bestFor}</div>
                       </div>
                     </div>
                     <div style={{fontSize:17,fontWeight:800,color:pkg.color,whiteSpace:"nowrap"}}>{pkg.price}</div>
@@ -819,9 +819,9 @@ export default function DigitalMinistrySystems() {
               borderRadius:12,padding:"16px"}}>
               <SLabel text="12-Month Value Per Ministry" color="#0D7A5F"/>
               {[
-                {t:"Foundation only",v:"$600-$1,200/year"},
-                {t:"Foundation + Growth",v:"$2,400-$4,200/year"},
-                {t:"Full Ministry Package",v:"$3,000-$4,800/year"},
+                {t:"Foundation only",v:"$1,200-$2,400/year"},
+                {t:"Foundation + Growth",v:"$3,000-$5,400/year"},
+                {t:"Full Ministry Package",v:"$6,000-$10,800/year"},
               ].map((r,i)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",
                   padding:"8px 0",borderBottom:"1px solid #FBF8F1"}}>
@@ -829,8 +829,8 @@ export default function DigitalMinistrySystems() {
                   <span style={{fontSize:13,fontWeight:700,color:"#0D7A5F"}}>{r.v}</span>
                 </div>
               ))}
-              <p style={{fontSize:12,color:"#D9CFBB",margin:"10px 0 0",lineHeight:1.6}}>
-                Five parishes on the Growth tier alone = roughly $9,000-$15,000 a year in recurring
+              <p style={{fontSize:12,color:"#6E6459",margin:"10px 0 0",lineHeight:1.6}}>
+                Five parishes on the Growth tier alone = roughly $15,000-$27,000 a year in recurring
                 revenue, built entirely on relationships you already have or can warmly reach.
               </p>
             </div>
@@ -841,7 +841,7 @@ export default function DigitalMinistrySystems() {
         {tab==="faq"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>FAQ</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               The questions every student asks before approaching their first parish or ministry.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>

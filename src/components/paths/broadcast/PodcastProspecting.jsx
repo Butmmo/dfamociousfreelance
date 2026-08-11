@@ -149,7 +149,7 @@ const SPACE_NOTES = [
 ];
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
@@ -219,7 +219,7 @@ export default function GlobalPodcastProspectingGuide() {
             WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent"}}>
             Global Podcast Production & Growth Prospecting Guide
           </h1>
-          <p style={{margin:"0 0 14px", fontSize:12.5, color:"#D9CFBB", maxWidth:600, lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px", fontSize:12.5, color:"#6E6459", maxWidth:600, lineHeight:1.65}}>
             Where the shows are, which genre to specialize in, and a repeatable way to tell a hot
             lead from one that just needs more time.
           </p>
@@ -243,7 +243,7 @@ export default function GlobalPodcastProspectingGuide() {
             ].map(([n,l],i)=>(
               <div key={i} style={{display:"flex", flexDirection:"column"}}>
                 <span style={{fontSize:17, fontWeight:800, color:"#C99A3B"}}>{n}</span>
-                <span style={{fontSize:10.5, color:"#D9CFBB"}}>{l}</span>
+                <span style={{fontSize:10.5, color:"#6E6459"}}>{l}</span>
               </div>
             ))}
           </div>
@@ -273,7 +273,7 @@ export default function GlobalPodcastProspectingGuide() {
         {tab==="start"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How to Use This Guide</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Three steps, in order. Skipping the first one is the most common mistake.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:9,marginBottom:24}}>
@@ -299,7 +299,7 @@ export default function GlobalPodcastProspectingGuide() {
             </div>
 
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How Students Actually Earn From This</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               These are the exact tiers from the Packages tab — checked against the real 2026
               freelance market ($50-600/episode independently, $500-3,000+/month for managed
               production) and found to sit right inside it, not above it.
@@ -317,7 +317,7 @@ export default function GlobalPodcastProspectingGuide() {
                   <span style={{fontSize:13,fontWeight:700,color:"#0D7A5F"}}>{r.v}</span>
                 </div>
               ))}
-              <p style={{fontSize:12,color:"#D9CFBB",margin:"10px 0 0",lineHeight:1.6}}>
+              <p style={{fontSize:12,color:"#6E6459",margin:"10px 0 0",lineHeight:1.6}}>
                 See the Revenue Model tab for what a realistic full portfolio adds up to — including
                 where the "$100,000" figure genuinely lives in this system.
               </p>
@@ -329,7 +329,7 @@ export default function GlobalPodcastProspectingGuide() {
         {tab==="spaces"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Top 5 Spaces Online</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Ranked by where genuine production gaps are easiest to find and prove — not by raw
               traffic alone. Tap a space for the full picture.
             </p>
@@ -393,7 +393,7 @@ export default function GlobalPodcastProspectingGuide() {
         {tab==="genres"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Top 8 Genres</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               The exact 8 from the Pick Your Genre tab — this guide doesn't replace that choice,
               it gives each one a global reach strategy across all 5 spaces. Tap a genre for the
               full picture.
@@ -441,7 +441,7 @@ export default function GlobalPodcastProspectingGuide() {
         {tab==="scoring"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Lead Scoring System</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Answer all five about one real show at a time — this is what turns Day 20's "tag
               each show Hot, Warm, or Cold" into an actual number for your Show CRM.
             </p>
@@ -465,7 +465,7 @@ export default function GlobalPodcastProspectingGuide() {
                 </div>
               )}
               {answeredCount>0&&(
-                <div onClick={resetScore} style={{marginTop:12,fontSize:11.5,color:"#D9CFBB",
+                <div onClick={resetScore} style={{marginTop:12,fontSize:11.5,color:"#6E6459",
                   cursor:"pointer",textDecoration:"underline",display:"inline-block"}}>
                   Reset and score a different show
                 </div>
@@ -476,9 +476,9 @@ export default function GlobalPodcastProspectingGuide() {
               <div key={f.key} style={{marginBottom:20}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:4}}>
                   <span style={{fontSize:13.5,fontWeight:700,color:"#201A16"}}>{f.label}</span>
-                  <span style={{fontSize:10.5,color:"#D9CFBB"}}>max {f.max} pts</span>
+                  <span style={{fontSize:10.5,color:"#6E6459"}}>max {f.max} pts</span>
                 </div>
-                <p style={{fontSize:12,color:"#D9CFBB",margin:"0 0 8px",lineHeight:1.5}}>{f.help}</p>
+                <p style={{fontSize:12,color:"#6E6459",margin:"0 0 8px",lineHeight:1.5}}>{f.help}</p>
                 <div style={{display:"flex",flexDirection:"column",gap:6}}>
                   {f.options.map((o,oi)=>{
                     const isSel = sel[f.key]===oi;
@@ -503,7 +503,7 @@ export default function GlobalPodcastProspectingGuide() {
         {tab==="revenue"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Realistic Capacity & Revenue Model</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Modeled directly from the Packages pricing — this niche's per-client value is
               genuinely higher than most service niches, which changes where "$100,000" actually
               shows up.
@@ -518,7 +518,7 @@ export default function GlobalPodcastProspectingGuide() {
                       <span style={{fontSize:24}}>{r.icon}</span>
                       <div>
                         <div style={{fontWeight:700,fontSize:15,color:"#201A16"}}>{r.name}</div>
-                        <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>{r.clients} · {r.mix}</div>
+                        <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{r.clients} · {r.mix}</div>
                       </div>
                     </div>
                     <div style={{fontSize:16,fontWeight:800,color:r.color,whiteSpace:"nowrap",textAlign:"right"}}>{r.range}</div>
@@ -562,7 +562,7 @@ export default function GlobalPodcastProspectingGuide() {
         {tab==="notes"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Space Playbook Notes</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               One tactical adaptation per space — the core system doesn't change, just how you
               scout and open the conversation.
             </p>
@@ -580,7 +580,7 @@ export default function GlobalPodcastProspectingGuide() {
                         justifyContent:"center",fontSize:19,flexShrink:0}}>{n.icon}</div>
                       <div style={{flex:1}}>
                         <div style={{fontWeight:700,fontSize:14,color:"#201A16"}}>{n.name}</div>
-                        <div style={{fontSize:11.5,color:"#D9CFBB",marginTop:2}}>{n.applies}</div>
+                        <div style={{fontSize:11.5,color:"#6E6459",marginTop:2}}>{n.applies}</div>
                       </div>
                       <Chevron open={isOpen}/>
                     </div>

@@ -247,7 +247,7 @@ export default function MinistrySystemsPathProfile() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Digital Ministry Systems: The Path Profile
           </h1>
-          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#D9CFBB",maxWidth:600,lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6E6459",maxWidth:600,lineHeight:1.65}}>
             Everything worth knowing before your one-time path choice — the highs, the lows, and an
             honest read on how durable and how competitive this doorway really is.
           </p>

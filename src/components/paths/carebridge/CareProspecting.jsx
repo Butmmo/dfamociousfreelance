@@ -195,7 +195,7 @@ const PACKAGE_TIERS = [
 
 function Chevron({ open }) {
   return (
-    <span style={{ color: "#D9CFBB", fontSize: 19, display: "inline-block",
+    <span style={{ color: "#6E6459", fontSize: 19, display: "inline-block",
       transform: open ? "rotate(90deg)" : "none", transition: "transform .2s", flexShrink: 0 }}>›</span>
   );
 }
@@ -235,7 +235,7 @@ function OptionGroup({ title, color, max, options, value, onChange }) {
             border: `1px solid ${value === o.id ? color + "60" : "#FBF8F1"}`,
             borderRadius: 9, padding: "9px 11px", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ width: 15, height: 15, borderRadius: "50%", flexShrink: 0,
-              border: `2px solid ${value === o.id ? color : "#D9CFBB"}`,
+              border: `2px solid ${value === o.id ? color : "#6E6459"}`,
               display: "flex", alignItems: "center", justifyContent: "center" }}>
               {value === o.id && <span style={{ width: 7, height: 7, borderRadius: "50%", background: color }} />}
             </span>
@@ -297,7 +297,7 @@ function LeadScoreCalculator() {
               marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                 <span style={{ fontSize: 32, fontWeight: 800, color: tm.color, lineHeight: 1 }}>{result.score}</span>
-                <span style={{ fontSize: 12, color: "#D9CFBB" }}>/ 100</span>
+                <span style={{ fontSize: 12, color: "#6E6459" }}>/ 100</span>
               </div>
               <div style={{ background: tm.color + "18", border: `1px solid ${tm.color}45`, borderRadius: 999,
                 padding: "5px 13px", fontSize: 13, fontWeight: 700, color: tm.color, whiteSpace: "nowrap" }}>
@@ -315,7 +315,7 @@ function LeadScoreCalculator() {
             </p>
           </>
         ) : (
-          <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 12.5, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
             Answer the three sections below — Response, Communication, and Fit — for one real agency you've audited. {answered} of 3 answered so far.
           </p>
         )}
@@ -335,7 +335,7 @@ function LeadScoreCalculator() {
 
       <div>
         <SLabel text="Disqualifiers" color="#6E6459" />
-        <p style={{ fontSize: 11, color: "#D9CFBB", margin: "0 0 8px" }}>Check any that apply — these subtract, and both override the score entirely.</p>
+        <p style={{ fontSize: 11, color: "#6E6459", margin: "0 0 8px" }}>Check any that apply — these subtract, and both override the score entirely.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {DISQUALIFIERS.map(d => (
             <button key={d.id} onClick={() => toggleFlag(d.id)} style={{
@@ -355,7 +355,7 @@ function LeadScoreCalculator() {
       </div>
 
       <div style={{ marginTop: 16, background: "#F8F5EE", border: "1px solid #FBF8F1", borderRadius: 10, padding: "12px 14px" }}>
-        <p style={{ fontSize: 11.5, color: "#D9CFBB", margin: 0, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 11.5, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
           💡 The Response, Communication, and Discovery sections map directly onto your Agency CRM's own
           Audited Response Time, Current Communication, and Contact Method fields — filling in the CRM and
           scoring the lead are the same piece of work, not two separate ones.
@@ -387,14 +387,14 @@ function MixCalculator() {
     <div style={{ background: "#F8F5EE", border: "1px solid #FBF8F1", borderRadius: 12, padding: "14px 16px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
         <SLabel text="Build Your Agency Mix" color="#0D7A5F" />
-        <span style={{ fontSize: 11, color: "#D9CFBB", fontWeight: 600 }}>{total} agencies</span>
+        <span style={{ fontSize: 11, color: "#6E6459", fontWeight: 600 }}>{total} agencies</span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
         {PACKAGE_TIERS.map(t => (
           <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: "#201A16" }}>{t.name}</div>
-              <div style={{ fontSize: 10.5, color: "#D9CFBB" }}>{t.price}</div>
+              <div style={{ fontSize: 10.5, color: "#6E6459" }}>{t.price}</div>
             </div>
             <button onClick={() => change(t.id, -1)} style={{ width: 26, height: 26, borderRadius: 7,
               border: "1px solid #FBF8F1", background: "#F5F0E4", color: "#6E6459", fontSize: 15,
@@ -411,7 +411,7 @@ function MixCalculator() {
         <span style={{ fontSize: 12, color: "#6E6459" }}>Projected annual revenue</span>
         <span style={{ fontSize: 17, fontWeight: 800, color: "#0D7A5F" }}>${annual.toLocaleString()}</span>
       </div>
-      <p style={{ fontSize: 11, color: "#D9CFBB", margin: "9px 0 0", lineHeight: 1.5 }}>
+      <p style={{ fontSize: 11, color: "#6E6459", margin: "9px 0 0", lineHeight: 1.5 }}>
         Uses the midpoint of each package's price range from your Packages tab. Add agencies above 10 to see
         what it honestly takes to reach a bigger target — this is a planning tool, not a promise.
       </p>
@@ -455,7 +455,7 @@ export default function SeniorCareProspectingGuide() {
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Senior & Home Care Communication Prospecting Guide
           </h1>
-          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#D9CFBB", maxWidth: 620, lineHeight: 1.65 }}>
+          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#6E6459", maxWidth: 620, lineHeight: 1.65 }}>
             Seven real places to find agencies, six care types fully profiled, and a real scoring system —
             so you spend your limited weekly hours on the agencies most likely to say yes, approached with
             the warmth this work deserves.
@@ -493,7 +493,7 @@ export default function SeniorCareProspectingGuide() {
         {tab === "overview" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>How This System Works</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Three steps, in order — and every step stays warm and empathetic, exactly as your Scripts tab
               already insists on. This is not urgency-driven sales.
             </p>
@@ -545,7 +545,7 @@ export default function SeniorCareProspectingGuide() {
         {tab === "platforms" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Top 7 Prospecting Platforms</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Ranked for building your list efficiently. Use #1–#5 to find names at scale, then #6 to actually
               approach them — in-person is still your strongest channel once you know who to visit.
             </p>
@@ -600,7 +600,7 @@ export default function SeniorCareProspectingGuide() {
         {tab === "care" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Top 6 Care Specializations, Fully Profiled</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Same six care types as your Pick Your Care Focus tab, gone deep — market size, buyer profile,
               and exactly where to find them for each.
             </p>
@@ -647,7 +647,7 @@ export default function SeniorCareProspectingGuide() {
         {tab === "scoring" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Score Every Agency Before You Approach</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Answer honestly for one real agency you've audited. The score updates live, and none of it
               changes how kindly you approach them — it just tells you who to approach first.
             </p>
@@ -659,7 +659,7 @@ export default function SeniorCareProspectingGuide() {
         {tab === "prioritize" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Prioritize Your List, Then Scale</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               A weekly rhythm to turn a scored list into real, respectful outreach, plus the honest math
               behind your income target.
             </p>

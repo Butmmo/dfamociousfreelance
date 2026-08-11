@@ -289,7 +289,7 @@ export default function PodcastPerformanceCalculator() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Podcast Production & Growth Performance Calculator
           </h1>
-          <p style={{fontSize:12.5,color:"#D9CFBB",maxWidth:560,lineHeight:1.65}}>
+          <p style={{fontSize:12.5,color:"#6E6459",maxWidth:560,lineHeight:1.65}}>
             Enter a podcast host's numbers to discover exactly how many listeners — and how much
             sponsorship-ready growth — they are losing to weak production. Use this live on a
             discovery call or record it as a Loom.

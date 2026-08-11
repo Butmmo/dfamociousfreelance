@@ -199,7 +199,7 @@ const FUNNEL_STEPS = [
 
 function Chevron({ open }) {
   return (
-    <span style={{ color: "#D9CFBB", fontSize: 19, display: "inline-block",
+    <span style={{ color: "#6E6459", fontSize: 19, display: "inline-block",
       transform: open ? "rotate(90deg)" : "none", transition: "transform .2s", flexShrink: 0 }}>›</span>
   );
 }
@@ -266,7 +266,7 @@ function LeadScoreCalculator() {
           marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
             <span style={{ fontSize: 32, fontWeight: 800, color: tm.color, lineHeight: 1 }}>{result.score}</span>
-            <span style={{ fontSize: 12, color: "#D9CFBB" }}>/ 100</span>
+            <span style={{ fontSize: 12, color: "#6E6459" }}>/ 100</span>
           </div>
           <div style={{ background: tm.color + "18", border: `1px solid ${tm.color}45`, borderRadius: 999,
             padding: "5px 13px", fontSize: 13, fontWeight: 700, color: tm.color, whiteSpace: "nowrap" }}>
@@ -290,7 +290,7 @@ function LeadScoreCalculator() {
             <SLabel text={g.label} color={g.color} />
             <span style={{ fontSize: 10.5, color: g.color, fontWeight: 700 }}>{byGroupSafe(result.byGroup, gid)} / {g.max}</span>
           </div>
-          <p style={{ fontSize: 11, color: "#D9CFBB", margin: "0 0 8px" }}>{g.sub}</p>
+          <p style={{ fontSize: 11, color: "#6E6459", margin: "0 0 8px" }}>{g.sub}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {SCORE_CRITERIA.filter((c) => c.group === gid).map((c) => (
               <button key={c.id} onClick={() => toggle(c.id)} style={{
@@ -299,7 +299,7 @@ function LeadScoreCalculator() {
                 border: `1px solid ${on[c.id] ? g.color + "60" : "#FBF8F1"}`,
                 borderRadius: 9, padding: "9px 11px", cursor: "pointer", fontFamily: "inherit" }}>
                 <span style={{ width: 17, height: 17, borderRadius: 5, flexShrink: 0,
-                  border: `2px solid ${on[c.id] ? g.color : "#D9CFBB"}`,
+                  border: `2px solid ${on[c.id] ? g.color : "#6E6459"}`,
                   background: on[c.id] ? g.color : "transparent", display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 10, color: "#F5F0E4", fontWeight: 800 }}>{on[c.id] ? "✓" : ""}</span>
                 <span style={{ flex: 1, fontSize: 12.5, color: on[c.id] ? "#201A16" : "#6E6459", lineHeight: 1.4 }}>{c.label}</span>
@@ -315,7 +315,7 @@ function LeadScoreCalculator() {
           <SLabel text="Discovery Warmth" color="#0D7A5F" />
           <span style={{ fontSize: 10.5, color: "#0D7A5F", fontWeight: 700 }}>{result.discoveryPts} / 15</span>
         </div>
-        <p style={{ fontSize: 11, color: "#D9CFBB", margin: "0 0 8px" }}>How did you find this lead? Pick one.</p>
+        <p style={{ fontSize: 11, color: "#6E6459", margin: "0 0 8px" }}>How did you find this lead? Pick one.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {DISCOVERY_OPTIONS.map((d) => (
             <button key={d.id} onClick={() => setDiscovery(d.id)} style={{
@@ -337,7 +337,7 @@ function LeadScoreCalculator() {
 
       <div>
         <SLabel text="Disqualifiers" color="#6E6459" />
-        <p style={{ fontSize: 11, color: "#D9CFBB", margin: "0 0 8px" }}>Check any that apply — these subtract, and two of them override the score entirely.</p>
+        <p style={{ fontSize: 11, color: "#6E6459", margin: "0 0 8px" }}>Check any that apply — these subtract, and two of them override the score entirely.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {DISQUALIFIERS.map((d) => (
             <button key={d.id} onClick={() => toggle(d.id)} style={{
@@ -357,7 +357,7 @@ function LeadScoreCalculator() {
       </div>
 
       <div style={{ marginTop: 16, background: "#F8F5EE", border: "1px solid #FBF8F1", borderRadius: 10, padding: "12px 14px" }}>
-        <p style={{ fontSize: 11.5, color: "#D9CFBB", margin: 0, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 11.5, color: "#6E6459", margin: 0, lineHeight: 1.6 }}>
           💡 To match this against your Store CRM's 1–10 Lead Score field, divide this number by 10 and round.
           A score of 74 here is roughly a 7 there — and the Hot / Warm / Cold tiers map directly onto your
           existing Lead Priority field (fold Cool into Cold if you'd rather keep exactly three buckets).
@@ -403,7 +403,7 @@ function MixCalculator() {
           <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: "#201A16" }}>{t.name}</div>
-              <div style={{ fontSize: 10.5, color: "#D9CFBB" }}>{t.range}</div>
+              <div style={{ fontSize: 10.5, color: "#6E6459" }}>{t.range}</div>
             </div>
             <button onClick={() => change(t.id, -1)} style={{ width: 26, height: 26, borderRadius: 7,
               border: "1px solid #FBF8F1", background: "#F5F0E4", color: "#6E6459", fontSize: 15,
@@ -420,7 +420,7 @@ function MixCalculator() {
         <span style={{ fontSize: 12, color: "#6E6459" }}>Projected annual revenue</span>
         <span style={{ fontSize: 17, fontWeight: 800, color: "#0D7A5F" }}>${annual.toLocaleString()}</span>
       </div>
-      <p style={{ fontSize: 11, color: "#D9CFBB", margin: "9px 0 0", lineHeight: 1.5 }}>
+      <p style={{ fontSize: 11, color: "#6E6459", margin: "9px 0 0", lineHeight: 1.5 }}>
         Uses the midpoint of each package's price range from your Packages tab. Real results depend on
         retention, upsells, and how many clients you actually close — this is a planning target, not a promise.
       </p>
@@ -464,7 +464,7 @@ export default function EcommerceProspectingGuide() {
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             The Prospecting & Lead Scoring Playbook
           </h1>
-          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#D9CFBB", maxWidth: 600, lineHeight: 1.65 }}>
+          <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "#6E6459", maxWidth: 600, lineHeight: 1.65 }}>
             Five real channels to find ecommerce prospects, eight fully profiled niches to specialize in,
             and a real scoring system so you spend your limited weekly hours on the accounts most likely to say yes.
           </p>
@@ -501,7 +501,7 @@ export default function EcommerceProspectingGuide() {
         {tab === "overview" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>How This System Works</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Three steps, in order. Skipping the middle one is the single most common reason outreach feels random.
             </p>
 
@@ -555,7 +555,7 @@ export default function EcommerceProspectingGuide() {
         {tab === "platforms" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Top 5 Prospecting Platforms</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Ranked by how directly each one confirms both a real gap and a real budget. Use #1 and #2 to build
               volume, #3 to verify and reach out, #4 and #5 for your highest-intent minority.
             </p>
@@ -610,7 +610,7 @@ export default function EcommerceProspectingGuide() {
         {tab === "niches" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Top 8 Niches, Fully Profiled</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Same eight categories as your Pick Your Niche tab, gone deep — market data, buyer psychology,
               and exactly where to find them for each.
             </p>
@@ -664,7 +664,7 @@ export default function EcommerceProspectingGuide() {
         {tab === "scoring" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Score Every Lead Before You Message Them</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               Toggle what's true about a real prospect you're evaluating. The score updates live.
             </p>
             <LeadScoreCalculator />
@@ -675,7 +675,7 @@ export default function EcommerceProspectingGuide() {
         {tab === "prioritize" && (
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 4px", color: "#201A16" }}>Prioritize Your Queue, Then Scale</h2>
-            <p style={{ fontSize: 12.5, color: "#D9CFBB", margin: "0 0 16px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12.5, color: "#6E6459", margin: "0 0 16px", lineHeight: 1.6 }}>
               A weekly rhythm to turn a scored list into real outreach, plus the actual math behind a $100K year.
             </p>
 
@@ -719,7 +719,7 @@ export default function EcommerceProspectingGuide() {
 
             <SLabel text="A Worked Example — Replace With Your Real Numbers" color="#C99A3B" />
             <div style={{ background: "#F8F5EE", border: "1px solid #FBF8F1", borderRadius: 11, padding: "14px 15px", marginBottom: 20 }}>
-              <p style={{ fontSize: 11.5, color: "#D9CFBB", margin: "0 0 12px", lineHeight: 1.6 }}>
+              <p style={{ fontSize: 11.5, color: "#6E6459", margin: "0 0 12px", lineHeight: 1.6 }}>
                 These are placeholder rates for illustration only, not researched averages — track your actual
                 numbers in the CRM Pipeline Board after 2–3 weeks and use those instead.
               </p>
@@ -731,13 +731,13 @@ export default function EcommerceProspectingGuide() {
                       display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#C99A3B", flexShrink: 0 }}>{i + 1}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 12.5, fontWeight: 600, color: "#201A16" }}>{f.label}</div>
-                      <div style={{ fontSize: 10.5, color: "#D9CFBB" }}>{f.note}</div>
+                      <div style={{ fontSize: 10.5, color: "#6E6459" }}>{f.note}</div>
                     </div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#C99A3B", flexShrink: 0 }}>{f.val}</div>
                   </div>
                 ))}
               </div>
-              <p style={{ fontSize: 11.5, color: "#D9CFBB", margin: "12px 0 0", lineHeight: 1.6 }}>
+              <p style={{ fontSize: 11.5, color: "#6E6459", margin: "12px 0 0", lineHeight: 1.6 }}>
                 At the low end of these placeholder ranges, that's roughly one new client every 5–6 weeks. At
                 the high end, faster. Either way — ten clients a year is realistic on a steady weekly rhythm,
                 not a single lucky week.
@@ -745,7 +745,7 @@ export default function EcommerceProspectingGuide() {
             </div>
 
             <SLabel text="The Math Behind Your $100K Target" color="#0D7A5F" />
-            <p style={{ fontSize: 12, color: "#D9CFBB", margin: "0 0 10px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12, color: "#6E6459", margin: "0 0 10px", lineHeight: 1.6 }}>
               Play with the mix below — it uses your own Packages tab pricing, not a made-up number.
             </p>
             <MixCalculator />

@@ -305,13 +305,13 @@ const FAQS = [
 ];
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
 function Check({checked,color}) {
   return (
-    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#D9CFBB"}`,
+    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#6E6459"}`,
       background:checked?color:"transparent",display:"flex",alignItems:"center",
       justifyContent:"center",flexShrink:0,marginTop:2,fontSize:11,
       color:"#F5F0E4",fontWeight:800,transition:"all .15s"}}>
@@ -386,7 +386,7 @@ export default function TheCareBridge() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Senior & Home Care Communication Systems
           </h1>
-          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#D9CFBB",maxWidth:580,lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6E6459",maxWidth:580,lineHeight:1.65}}>
             Rapid-response intake, family updates, staff scheduling, and referrals — built for home
             care agencies and assisted living facilities. A market almost no digital agency serves.
           </p>
@@ -435,7 +435,7 @@ export default function TheCareBridge() {
         {tab==="plan"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>45-Day Action Plan</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               Tap a week → tap a day → tick tasks as you complete them.
             </p>
             {WEEKS.map((w,wi)=>{
@@ -453,11 +453,11 @@ export default function TheCareBridge() {
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap",marginBottom:4}}>
                         <span style={{fontWeight:700,fontSize:14,color:"#201A16"}}>Week {w.week}: {w.title}</span>
-                        <span style={{fontSize:10,color:"#D9CFBB",background:"#FBF8F1",
+                        <span style={{fontSize:10,color:"#6E6459",background:"#FBF8F1",
                           borderRadius:4,padding:"1px 6px"}}>{w.range}</span>
                         {wp>0&&<span style={{fontSize:10.5,fontWeight:700,color:w.color}}>{wp}%</span>}
                       </div>
-                      <p style={{fontSize:11.5,color:"#D9CFBB",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
+                      <p style={{fontSize:11.5,color:"#6E6459",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
                       <ProgressBar value={wp} color={w.color} height={3}/>
                     </div>
                     <Chevron open={wOpen}/>
@@ -483,7 +483,7 @@ export default function TheCareBridge() {
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
                                   <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
                                 </div>
-                                <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
+                                <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
                               <Chevron open={dOpen}/>
                             </div>
@@ -523,7 +523,7 @@ export default function TheCareBridge() {
         {tab==="notion"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Agency CRM</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Notion (free plan) tracks every agency you audit, approach, and pilot — from mystery-shop
               call to closed retainer.
             </p>
@@ -565,7 +565,7 @@ export default function TheCareBridge() {
         {tab==="care"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick Your Care Focus</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Choose one care-type specialization so your outreach and case studies get sharper the
               more agencies you sign in the same category.
             </p>
@@ -609,7 +609,7 @@ export default function TheCareBridge() {
         {tab==="services"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>The 4 Bridge Components</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Always start with Rapid-Response Intake — it's the fastest, most measurable win, and it
               earns the trust that makes every upsell after it easier.
             </p>
@@ -660,7 +660,7 @@ export default function TheCareBridge() {
         {tab==="scripts"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Scripts and Templates</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Warm and empathetic in tone, always. This is not urgency-driven sales — it's helping
               people who help families in genuine need.
             </p>
@@ -705,7 +705,7 @@ export default function TheCareBridge() {
         {tab==="pricing"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pricing Packages</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Always begin with a free pilot on 5 real inquiries before proposing any tier — this is
               what earns the right to a pricing conversation at all.
             </p>
@@ -719,7 +719,7 @@ export default function TheCareBridge() {
                       <span style={{fontSize:24}}>{pkg.icon}</span>
                       <div>
                         <div style={{fontWeight:700,fontSize:15,color:"#201A16"}}>{pkg.name}</div>
-                        <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>Best for: {pkg.bestFor}</div>
+                        <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>Best for: {pkg.bestFor}</div>
                       </div>
                     </div>
                     <div style={{fontSize:16,fontWeight:800,color:pkg.color,whiteSpace:"nowrap"}}>{pkg.price}</div>
@@ -749,7 +749,7 @@ export default function TheCareBridge() {
                   <span style={{fontSize:13,fontWeight:700,color:"#0D7A5F"}}>{r.v}</span>
                 </div>
               ))}
-              <p style={{fontSize:12,color:"#D9CFBB",margin:"10px 0 0",lineHeight:1.6}}>
+              <p style={{fontSize:12,color:"#6E6459",margin:"10px 0 0",lineHeight:1.6}}>
                 Five agencies on the Growth tier alone = $15,000-$27,000 a year in recurring revenue,
                 in a market virtually no other digital agency is competing for.
               </p>
@@ -761,7 +761,7 @@ export default function TheCareBridge() {
         {tab==="faq"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>FAQ</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               The questions every student asks before approaching their first care agency.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>

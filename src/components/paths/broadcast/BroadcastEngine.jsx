@@ -306,13 +306,13 @@ const FAQS = [
 ];
 
 function Chevron({open}) {
-  return <span style={{color:"#D9CFBB",fontSize:19,display:"inline-block",
+  return <span style={{color:"#6E6459",fontSize:19,display:"inline-block",
     transform:open?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</span>;
 }
 
 function Check({checked,color}) {
   return (
-    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#D9CFBB"}`,
+    <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${checked?color:"#6E6459"}`,
       background:checked?color:"transparent",display:"flex",alignItems:"center",
       justifyContent:"center",flexShrink:0,marginTop:2,fontSize:11,
       color:"#F5F0E4",fontWeight:800,transition:"all .15s"}}>
@@ -387,7 +387,7 @@ export default function TheBroadcastEngine() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Podcast Production & Growth System
           </h1>
-          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#D9CFBB",maxWidth:580,lineHeight:1.65}}>
+          <p style={{margin:"0 0 14px",fontSize:12.5,color:"#6E6459",maxWidth:580,lineHeight:1.65}}>
             Edit episodes, write show notes, cut social clips, and publish consistently for podcast
             hosts who don't have time to do it themselves. Built on production skill, not automation.
           </p>
@@ -437,7 +437,7 @@ export default function TheBroadcastEngine() {
         {tab==="plan"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>45-Day Action Plan</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               Tap a week → tap a day → tick tasks as you complete them.
             </p>
             {WEEKS.map((w,wi)=>{
@@ -455,11 +455,11 @@ export default function TheBroadcastEngine() {
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:"flex",gap:7,alignItems:"center",flexWrap:"wrap",marginBottom:4}}>
                         <span style={{fontWeight:700,fontSize:14,color:"#201A16"}}>Week {w.week}: {w.title}</span>
-                        <span style={{fontSize:10,color:"#D9CFBB",background:"#FBF8F1",
+                        <span style={{fontSize:10,color:"#6E6459",background:"#FBF8F1",
                           borderRadius:4,padding:"1px 6px"}}>{w.range}</span>
                         {wp>0&&<span style={{fontSize:10.5,fontWeight:700,color:w.color}}>{wp}%</span>}
                       </div>
-                      <p style={{fontSize:11.5,color:"#D9CFBB",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
+                      <p style={{fontSize:11.5,color:"#6E6459",margin:"0 0 6px",lineHeight:1.4}}>{w.goal}</p>
                       <ProgressBar value={wp} color={w.color} height={3}/>
                     </div>
                     <Chevron open={wOpen}/>
@@ -485,7 +485,7 @@ export default function TheBroadcastEngine() {
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
                                   <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
                                 </div>
-                                <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
+                                <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
                               <Chevron open={dOpen}/>
                             </div>
@@ -525,7 +525,7 @@ export default function TheBroadcastEngine() {
         {tab==="notion"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Show CRM</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Notion (free plan) tracks every show you audit, approach, and pitch — from raw
               prospect to closed retainer.
             </p>
@@ -567,7 +567,7 @@ export default function TheBroadcastEngine() {
         {tab==="genre"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick Your Genre</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               This is the decision that keeps you from competing with every other student running
               this system. Choose one genre and specialize — do not target "any podcast."
             </p>
@@ -611,7 +611,7 @@ export default function TheBroadcastEngine() {
         {tab==="services"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>The 4 Production Components</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               One retainer service built from 4 layered components — each package on the Packages
               tab bundles these differently depending on episode volume and clip needs.
             </p>
@@ -657,7 +657,7 @@ export default function TheBroadcastEngine() {
         {tab==="scripts"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Scripts and Templates</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
               Lead with proof, not a pitch. The free sample clip is your demo — let it do the talking
               wherever possible.
             </p>
@@ -702,7 +702,7 @@ export default function TheBroadcastEngine() {
         {tab==="pricing"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pricing Packages</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 16px",lineHeight:1.6}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
               Always lead with a free sample clip before proposing any tier — it earns the right to
               a pricing conversation at all.
             </p>
@@ -716,7 +716,7 @@ export default function TheBroadcastEngine() {
                       <span style={{fontSize:24}}>{pkg.icon}</span>
                       <div>
                         <div style={{fontWeight:700,fontSize:15,color:"#201A16"}}>{pkg.name}</div>
-                        <div style={{fontSize:11,color:"#D9CFBB",marginTop:2}}>Best for: {pkg.bestFor}</div>
+                        <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>Best for: {pkg.bestFor}</div>
                       </div>
                     </div>
                     <div style={{fontSize:16,fontWeight:800,color:pkg.color,whiteSpace:"nowrap"}}>{pkg.price}</div>
@@ -746,7 +746,7 @@ export default function TheBroadcastEngine() {
                   <span style={{fontSize:13,fontWeight:700,color:"#0D7A5F"}}>{r.v}</span>
                 </div>
               ))}
-              <p style={{fontSize:12,color:"#D9CFBB",margin:"10px 0 0",lineHeight:1.6}}>
+              <p style={{fontSize:12,color:"#6E6459",margin:"10px 0 0",lineHeight:1.6}}>
                 Five clients on the Growth tier alone = $48,000-$72,000 a year in recurring revenue,
                 built on production skill anyone can learn from free tools and free tutorials.
               </p>
@@ -758,7 +758,7 @@ export default function TheBroadcastEngine() {
         {tab==="faq"&&(
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>FAQ</h2>
-            <p style={{fontSize:12.5,color:"#D9CFBB",margin:"0 0 14px"}}>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               The questions every student asks before pitching their first podcast host.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>

@@ -389,7 +389,7 @@ export default function SeniorHomeCarePerformanceCalculator() {
             WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             Senior & Home Care Performance Calculator
           </h1>
-          <p style={{fontSize:12.5,color:"#D9CFBB",maxWidth:600,lineHeight:1.65}}>
+          <p style={{fontSize:12.5,color:"#6E6459",maxWidth:600,lineHeight:1.65}}>
             Enter a target agency's real numbers to see how many families — and how much recurring
             revenue — they're losing to slow response, thin reviews, and communication gaps. Use it
             live on a discovery call, or record it as a Loom, exactly like your SMB Revenue Leak Finder.
