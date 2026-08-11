@@ -706,8 +706,9 @@ export default function TheCareBridge() {
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pricing Packages</h2>
             <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
-              Always begin with a free pilot on 5 real inquiries before proposing any tier — this is
-              what earns the right to a pricing conversation at all.
+              Nothing in this system is priced below $100/month. Start with a short, guarantee-backed
+              paid trial on 5 real inquiries — small enough to say yes to, real enough that they never
+              learn to expect free work.
             </p>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
               {PACKAGES.map((pkg)=>(

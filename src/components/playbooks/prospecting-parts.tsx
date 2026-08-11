@@ -298,7 +298,7 @@ export function ProspectingParts({ tab }) {
             <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: "#1A140F" }}>Exact Google Maps Search Terms</h2>
             <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: "0 0 14px" }}>Twelve Tier-1 "boring" niches — map-reliant, high-ticket, and almost never pitched. Tap one for country-specific searches, green-light signals, and red flags.</p>
 
-            <div style={{ background: "#0A1020", border: "1px solid #6366F120", borderRadius: 10, padding: "12px 14px", marginBottom: 16, display: "flex", gap: 10 }}>
+            <div style={{ background: "#FBF6E9", border: "1px solid #6366F120", borderRadius: 10, padding: "12px 14px", marginBottom: 16, display: "flex", gap: 10 }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>💡</span>
               <div>
                 <div style={{ fontSize: 11.5, fontWeight: 700, color: "#A5B4FC", marginBottom: 3 }}>How to run these searches</div>

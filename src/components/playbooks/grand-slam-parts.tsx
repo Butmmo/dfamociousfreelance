@@ -323,7 +323,7 @@ Boluwatife Famokunwa
                       onChange={e => updateGso(part.id, e.target.value)}
                       placeholder={part.ph}
                       rows={3}
-                      style={{ width: "100%", background: "#060D18", border: `1px solid ${filled ? part.color + "55" : "#D9CFBB"}`, borderRadius: 8, color: "#CBD5E1", fontSize: 13, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.65, outline: "none", transition: "border-color 0.2s", boxSizing: "border-box" }}
+                      style={{ width: "100%", background: "#FBF6E9", border: `1px solid ${filled ? part.color + "55" : "#D9CFBB"}`, borderRadius: 8, color: "#201A16", fontSize: 13, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.65, outline: "none", transition: "border-color 0.2s", boxSizing: "border-box" }}
                     />
                     {!filled && (
                       <div style={{ fontSize: 11.5, color: "#2D3F55", marginTop: 6, fontStyle: "italic", lineHeight: 1.5 }}>
@@ -355,7 +355,7 @@ Boluwatife Famokunwa
                 )}
               </div>
               {gsoReady ? (
-                <pre style={{ margin: 0, padding: "16px", fontSize: 12.5, color: "#CBD5E1", lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "'Inter', system-ui, sans-serif", wordBreak: "break-word" }}>
+                <pre style={{ margin: 0, padding: "16px", fontSize: 12.5, color: "#201A16", lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "'Inter', system-ui, sans-serif", wordBreak: "break-word" }}>
                   {pitch}
                 </pre>
               ) : (
@@ -384,7 +384,7 @@ Boluwatife Famokunwa
             </div>
 
             {/* AI OBJECTION HANDLER */}
-            <div style={{ ...card, marginTop: 14, background: "#080D18", border: "1px solid #8B5CF625", padding: "13px 14px" }}>
+            <div style={{ ...card, marginTop: 14, background: "#FBF6E9", border: "1px solid #8B5CF625", padding: "13px 14px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#8B5CF6", textTransform: "", letterSpacing: "0.1em", marginBottom: 7 }}>
                 🗣️ When They Ask: "Can't I Just Use AI to Build This Myself?"
               </div>
@@ -394,7 +394,7 @@ Boluwatife Famokunwa
             </div>
 
             {/* GUARANTEE */}
-            <div style={{ ...card, marginTop: 10, background: "#080D18", border: "1px solid #10B98125", padding: "13px 14px" }}>
+            <div style={{ ...card, marginTop: 10, background: "#FBF6E9", border: "1px solid #10B98125", padding: "13px 14px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.1em", marginBottom: 7 }}>
                 🛡️ The Guarantee — Remove Their Last Fear
               </div>

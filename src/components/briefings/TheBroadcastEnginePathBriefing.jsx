@@ -544,7 +544,7 @@ export default function TheBroadcastEnginePathBriefing() {
             </p>
 
             <div style={{background:C.bg2,border:"1px solid "+C.border,borderRadius:12,overflow:"hidden"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1.1fr 1fr 1fr",background:"#0A1120",
+              <div style={{display:"grid",gridTemplateColumns:"1.1fr 1fr 1fr",background:"#FBF6E9",
                 borderBottom:"1px solid "+C.border,padding:"10px 12px",gap:8}}>
                 <span></span>
                 <span style={{fontSize:10.5,fontWeight:700,color:C.indigo,textTransform:"",letterSpacing:".05em"}}>Broadcast Engine</span>

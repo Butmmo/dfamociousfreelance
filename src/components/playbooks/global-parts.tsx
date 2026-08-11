@@ -587,7 +587,7 @@ export function GlobalParts({ tab }) {
             </div>
 
             {/* Stack flow */}
-            <div style={{ background: "#0A1020", border: "1px solid #D9CFBB", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
+            <div style={{ background: "#FBF6E9", border: "1px solid #D9CFBB", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>🔄 Your Full Automation Stack (Make.com Flow)</div>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5 }}>
                 {["Outscraper", "→", "Apollo.io", "→", "Instantly.ai", "→", "Make.com", "→", "Notion CRM", "→", "Go High Level"].map((item, i) => (
@@ -602,7 +602,7 @@ export function GlobalParts({ tab }) {
             </div>
 
             {/* Cold email template */}
-            <div style={{ background: "#0A1020", border: "1px solid #F59E0B25", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
+            <div style={{ background: "#FBF6E9", border: "1px solid #F59E0B25", borderRadius: 12, padding: "16px", marginBottom: 16 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#F59E0B", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>📧 Cold Email Formula (PAS — Problem, Agitate, Solve)</div>
               <div style={{ fontFamily: "'Courier New', monospace", fontSize: 12, color: "#6E6459", lineHeight: 1.85, borderLeft: "2px solid #F59E0B40", paddingLeft: 14 }}>
                 <div style={{ color: "#201A16", fontWeight: 600 }}>Subject: [First Name] — your competitors are getting leads you're missing</div>
@@ -644,7 +644,7 @@ export function GlobalParts({ tab }) {
             </div>
 
             {/* Portfolio tip */}
-            <div style={{ marginTop: 14, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
+            <div style={{ marginTop: 14, background: "#FBF6E9", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.09em", marginBottom: 10 }}>💡 Build Your Portfolio Before You Have Clients</div>
               <p style={{ fontSize: 13, color: "#6E6459", margin: "0 0 10px", lineHeight: 1.6 }}>You don't need paying clients to start. Build 3 demo projects for your top niches:</p>
               {["A real estate listing site → Lovable (your proof of complex app building)", "A salon booking app → Lovable (your proof of mobile-first design)", "A coaching platform → Lovable (your proof of course + marketing automation)"].map((item, i) => (
@@ -686,7 +686,7 @@ export function GlobalParts({ tab }) {
             </div>
 
             {/* Pro tips */}
-            <div style={{ marginTop: 16, background: "#0A1020", border: "1px solid #6366F125", borderRadius: 12, padding: "16px" }}>
+            <div style={{ marginTop: 16, background: "#FBF6E9", border: "1px solid #6366F125", borderRadius: 12, padding: "16px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>💡 Pricing Pro Tips</div>
               {[
                 "Always show 3 packages — most clients pick the middle. Use this strategically.",
@@ -703,7 +703,7 @@ export function GlobalParts({ tab }) {
             </div>
 
             {/* Income projection */}
-            <div style={{ marginTop: 14, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
+            <div style={{ marginTop: 14, background: "#FBF6E9", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.09em", marginBottom: 14 }}>📈 Conservative Year 1 Income Projection</div>
               {INCOME_ROWS.map((row, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #D9CFBB" }}>
@@ -735,7 +735,7 @@ export function GlobalParts({ tab }) {
               <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: 0, lineHeight: 1.6 }}>Tap a week to expand. Built around Google Maps scraping plus the platforms from the Countries tab.</p>
             </div>
 
-            <div style={{ background: "#0A1020", border: "1px solid #D9CFBB", borderRadius: 12, padding: "14px 16px", marginBottom: 18 }}>
+            <div style={{ background: "#FBF6E9", border: "1px solid #D9CFBB", borderRadius: 12, padding: "14px 16px", marginBottom: 18 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.09em", marginBottom: 10 }}>⏱️ Suggested Daily Rhythm (~2 hrs/day)</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {[{ t: "30 min", l: "CRM & replies" }, { t: "60 min", l: "Day's core task" }, { t: "30 min", l: "Outreach / follow-up" }].map((b, i) => (
@@ -781,7 +781,7 @@ export function GlobalParts({ tab }) {
               ))}
             </div>
 
-            <div style={{ marginTop: 18, background: "#0A1020", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
+            <div style={{ marginTop: 18, background: "#FBF6E9", border: "1px solid #10B98125", borderRadius: 12, padding: "16px" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#10B981", textTransform: "", letterSpacing: "0.09em", marginBottom: 12 }}>✅ Month 1 Success Benchmarks</div>
               {MONTH1_TARGETS.map((t, i) => (
                 <InfoRow key={i} color="#10B981">{t}</InfoRow>
