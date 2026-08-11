@@ -533,11 +533,9 @@ P.S. — Still happy to send that 2-minute video from my last note if you'd rath
 
 Hey [FIRST NAME] — last note from me on this, promise.
 
-Wanted to show you the other side of it. We recently worked with [CLIENT NAME], a business in a pretty similar spot — solid reputation, just quiet on Google next to the competition. A few months after putting a simple review system in place, they'd passed the competitor they used to lose to and started hearing "I saw your reviews and figured I'd try you" from new customers.
+Here's what stuck with me: most people only look at three or fewer businesses before deciding who to call, then pick based on whoever has the most or best reviews among them (BrightLocal, 2026). It's not about hitting some number on your own — it's about where you land next to whoever else made the shortlist. A simple review system is what keeps you ahead there.
 
-That's really the whole shift: once happy customers have an easy way to say so publicly, they don't just lift your rating — they become the reason new people trust you before they've even walked in, and often the reason their friends hear about you too.
-
-Want me to show you what that'd look like for [BUSINESS NAME]? Happy to send the video over, or grab 10 minutes on a call — whichever's easier.
+Want me to show you what that'd look like for [BUSINESS NAME]? Happy to send the video over, or grab 10 minutes — whichever's easier.
 
 [SENDER NAME]`},
   {id:"e4",tag:"Email 4 · The Breakup · Day 12",color:"#8B2E1F",
