@@ -47,9 +47,11 @@ const STAGES = [
       "Fourteen paths — seven Compounder products and seven Proprietor businesses — taken through design, structure, build, testing, launch, authority, ecosystem, valuation and the premium/luxury fork.",
     points: [
       "Entry is outcome-based: $450,000 cumulative DSE earnings within 3–5 years",
+      "Plus Leadership by Influence — five mentees carried through their own full DFY",
       "Neither track is the fallback — Compounder and Proprietor are equally complete",
       "Ends in a real, valuable, differentiated business you own",
     ],
+
   },
 ];
 
@@ -96,8 +98,54 @@ const ECONOMICS = [
   { icon: GraduationCap, t: "DSE entry — $900", d: "One-time. Or $90 through NBO, the Blazer Empowerment Foundation subsidy built to open the gate to students who could not otherwise reach it." },
   { icon: Banknote, t: "The D'Famocious Year", d: "Once you earn, 20% of every earning month returns to DBI until you complete 12 qualified months — each at $2,000+ net, not necessarily consecutive." },
   { icon: Award, t: "V. DsE. certification", d: "Completing DFY earns the Vetted Digital Systems Engineer credential — the mark that Stage 1 was finished on real income, not attendance." },
-  { icon: Layers, t: "The SUC ladder", d: "$2,000 by invitation after $450k of DSE earnings. Skipping DSE costs $6,000 at 25% equity, or $24,000 with DBI's stake reduced to 10%." },
+  { icon: Layers, t: "The SUC ladder", d: "$2,000 by invitation, once DSE has produced $450k and five mentees carried through their own DFY. Skipping DSE costs $6,000 at 25% equity, or $24,000 with DBI's stake reduced to 10% — a ladder, not a cliff. DBI always keeps a real stake." },
 ];
+
+const GROUP = [
+  {
+    icon: Crown,
+    tag: "Parent",
+    t: "D'Famocious Group",
+    d: "The holding company — not a training vendor but a talent pipeline. Governed by four distinct authorities: the Founder, the Chancellor as custodian of doctrine, the Elder Council with doctrinal veto, and the Board of Stewards with the CEO over operations. No individual holds unilateral financial control.",
+  },
+  {
+    icon: Building2,
+    tag: "For-profit subsidiary",
+    t: "D'Famocious Business Incubator",
+    d: "This house. DSE proves earning capacity; SUC turns it into ownership. Revenue-share at Stage 1 because there is no asset yet, real equity at Stage 2 because by then there is.",
+  },
+  {
+    icon: HeartHandshake,
+    tag: "NGO subsidiary",
+    t: "Blazer Empowerment Foundation",
+    d: "The sister foundation. It intervenes before income freedom, where potential is most fragile, and works through named initiatives rather than running programmes itself. DSE proves earning capacity; BEF proves leadership and readiness. Neither substitutes for the other.",
+  },
+];
+
+const INITIATIVES = [
+  { t: "NBO — Next Blazers Organisation", s: "Operating", d: "BEF's first and most developed initiative. Next Blazers College runs 58 days across five stages, Next Blazers Scholarship reduces DSE entry from $900 to $90, and Blazer People Network turns networking capacity into a personal-use income stream." },
+  { t: "BSA — Blazing Skill Acquisition", s: "In development", d: "Ten self-employable trades and ten SUC-employability professional offers, each pairing a soft skill with a hard or physical one — training people toward employability, referral into SUC businesses, and startup capital where possible." },
+  { t: "BLI — Blazer Life Initiative", s: "Not yet structured", d: "A pro-life initiative for Africa. Deliberately undefined here rather than dressed up: the Foundation will define it before it is described." },
+];
+
+const BLAZER = [
+  { l: "B", t: "Belief in Self & Vision", d: "All growth is predicated on belief in personal potential and purpose." },
+  { l: "L", t: "Leadership by Influence", d: "Authority from character, competence and service — never from title." },
+  { l: "A", t: "Action-Oriented Growth", d: "Knowledge becomes powerful only upon application." },
+  { l: "Z", t: "Zeal for Excellence", d: "Constant upgrading of skill, mindset and capacity." },
+  { l: "E", t: "Empowerment through Education & Enterprise", d: "Mentorship and viable income models toward independence." },
+  { l: "R", t: "Relationships & Results", d: "Accountable, mission-aligned relationships as the platform for collective results." },
+];
+
+const TPE_MOVEMENTS = [
+  "Order & Intelligence",
+  "Leadership & Vision",
+  "Communication",
+  "Time, Effort & Strategy",
+  "Execution & Systems-Building",
+  "Resilience, Finance, Culture & Ethics",
+];
+
 
 const RANKS = [
   { name: "Recruit", icon: Shield, color: "text-muted-foreground", desc: "Day 1. Arsenal armed." },
