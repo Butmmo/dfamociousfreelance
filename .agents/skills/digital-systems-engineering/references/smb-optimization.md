@@ -12,7 +12,7 @@ The lead-harvest method is explicitly manual, not tool-heavy, on purpose: scout 
 
 ## Pricing
 
-Priced per-system rather than one flat tier ladder — individual GHL builds (Review Automation, Speed-to-Lead, AI Receptionist, and others) run roughly $197-$497/month each, expanding as the relationship grows past the first sold system.
+Priced per-system rather than one flat tier ladder — four named GHL builds, each with a firm floor that can be priced higher but never lower: **Review Automation $297+/month, Speed-to-Lead Automation $297+/month, AI Voice Receptionist $297+/month, Website/App Build or Rebuild $300+/month.** These floors are absolute regardless of where or how the system is sold — expanding into additional systems as the relationship grows past the first sale is encouraged, discounting below the stated floor is not.
 
 ## The 45-Day Implementation Playbook
 
