@@ -8,7 +8,7 @@ Home care agencies and assisted living facilities, scored Hot/Warm/Cold by respo
 
 ## Pricing
 
-Foundation $75-150/month, Growth $175-350/month, Full Care System $350-600/month.
+Foundation $100-200/month, Growth $250-450/month, Full Care System $500-850/month.
 
 ## The 7-week arc
 

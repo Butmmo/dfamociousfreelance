@@ -4,7 +4,7 @@ Church/parish management systems (ChMS) for congregations mainstream ChMS platfo
 
 ## Pricing
 
-Foundation $50-100/month, Growth $150-250/month, Full Ministry $250-400/month — the lowest ceiling of the seven systems, reflecting smaller congregation budgets, not lower value delivered.
+Foundation $100-200/month, Growth $250-450/month, Full Ministry $500-900/month.
 
 ## The 9-part arc
 
