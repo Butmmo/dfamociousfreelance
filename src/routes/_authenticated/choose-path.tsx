@@ -163,15 +163,9 @@ function ChoosePathPage() {
               <div className="relative">
                 <div className="flex items-start justify-between gap-3">
                   <div className="text-3xl leading-none">{p.emoji}</div>
-                  {p.status === "live" ? (
-                    <span className="rounded-full border border-emerald-700/40 bg-emerald-700/10 px-2.5 py-0.5 text-[10px] font-mono tracking-widest text-emerald-700">
-                      Playbooks live
-                    </span>
-                  ) : (
-                    <span className="rounded-full border border-gold/40 bg-gold/10 px-2.5 py-0.5 text-[10px] font-mono tracking-widest text-gold-deep">
-                      Briefing open
-                    </span>
-                  )}
+                  <span className="rounded-full border border-emerald-700/40 bg-emerald-700/10 px-2.5 py-0.5 text-[10px] font-mono tracking-widest text-emerald-700">
+                    Playbooks live
+                  </span>
                 </div>
 
                 <div className="mt-3 text-[10px] tracking-widest text-gold-deep">{p.tagline}</div>

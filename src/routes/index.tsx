@@ -6,7 +6,7 @@ import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, Lock, Award,
   Calculator, LayoutDashboard, LineChart, Users, Bell, CheckCircle2, Mail,
   MessageSquare, Timer, ArrowRight, Gauge, FileDown, Compass, Layers, Store,
-  Banknote, GraduationCap,
+  Banknote, GraduationCap, Building2, HeartHandshake,
 } from "lucide-react";
 
 const DESC =
@@ -174,6 +174,7 @@ function Landing() {
             <a href="#suc" className="hover:text-primary transition">Stage 2 · SUC</a>
             <a href="#systems" className="hover:text-primary transition">Inside the Citadel</a>
             <a href="#economics" className="hover:text-primary transition">Economics</a>
+            <a href="#group" className="hover:text-primary transition">Group &amp; BEF</a>
             <a href="#founder" className="hover:text-primary transition">Founder</a>
           </nav>
           <Link
@@ -429,6 +430,29 @@ function Landing() {
             </div>
           ))}
         </div>
+
+        <div className="mt-10 rounded-2xl border border-gold/40 bg-accent/20 p-6">
+          <div className="text-[10px] tracking-[0.25em] text-gold-deep">
+            The Practice of Enterprise · every DSE &amp; SUC participant
+          </div>
+          <h3 className="mt-2 font-display text-xl font-semibold">
+            Twelve topics, six movements, run on a twelve-week cycle
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
+            One video a week, always due Monday. Week 13 returns to the top and the cycle repeats — durable
+            principles worth revisiting, not a course you finish once and move past.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {TPE_MOVEMENTS.map((m, i) => (
+              <span
+                key={m}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground"
+              >
+                <span className="font-semibold text-gold-deep">{i + 1}.</span> {m}
+              </span>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* RANKS */}
@@ -471,6 +495,76 @@ function Landing() {
               <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* GROUP — DFG, DBI, BEF */}
+      <section id="group" className="mx-auto max-w-7xl px-6 py-24">
+        <div className="text-center max-w-3xl mx-auto">
+          <Motto />
+          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">One group, three houses</h2>
+          <p className="mt-4 text-muted-foreground">
+            DBI does not stand alone. It answers to a parent and works alongside a sister foundation — three
+            distinct bodies, each with its own mandate.
+          </p>
+        </div>
+        <div className="mt-16 grid md:grid-cols-3 gap-6">
+          {GROUP.map((g) => (
+            <div key={g.t} className="rounded-2xl border border-border bg-card p-7 hover:border-gold transition">
+              <g.icon className="h-8 w-8 text-gold-deep" />
+              <div className="mt-4 text-[10px] tracking-[0.25em] text-gold-deep">{g.tag}</div>
+              <h3 className="mt-2 font-display text-xl font-bold">{g.t}</h3>
+              <p className="mt-3 text-sm text-muted-foreground">{g.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* BEF's INITIATIVES + BLAZER VALUES */}
+      <section id="bef" className="bg-royal text-primary-foreground">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 px-3 py-1 text-[10px] tracking-[0.25em] text-gold">
+              <HeartHandshake className="h-3 w-3" /> Blazer Empowerment Foundation
+            </span>
+            <h2 className="mt-6 font-display text-4xl md:text-5xl font-bold">
+              BEF works through <span className="text-gold">named initiatives</span>.
+            </h2>
+            <p className="mt-5 text-primary-foreground/80">
+              The Foundation does not run programmes itself. It holds the mandate, identity and values, and
+              operates through initiatives built to carry them out — intervening before income freedom, where
+              potential is most fragile.
+            </p>
+          </div>
+
+          <div className="mt-14 grid md:grid-cols-3 gap-6">
+            {INITIATIVES.map((i) => (
+              <div key={i.t} className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/5 p-6">
+                <span className="inline-flex items-center rounded-full border border-gold/50 px-2.5 py-0.5 text-[10px] tracking-widest text-gold">
+                  {i.s}
+                </span>
+                <h3 className="mt-4 font-display text-lg font-semibold">{i.t}</h3>
+                <p className="mt-2 text-sm text-primary-foreground/75">{i.d}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 max-w-3xl">
+            <div className="text-[10px] tracking-[0.25em] text-gold">Accende Potentiam</div>
+            <h3 className="mt-2 font-display text-2xl md:text-3xl font-bold">The B.L.A.Z.E.R. values</h3>
+            <p className="mt-3 text-sm text-primary-foreground/75">
+              Six values BEF measures every initiative, and every beneficiary, against.
+            </p>
+          </div>
+          <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {BLAZER.map((b) => (
+              <div key={b.l} className="rounded-2xl border border-gold/30 bg-primary-foreground/5 p-5">
+                <div className="font-display text-3xl font-bold text-gold">{b.l}</div>
+                <div className="mt-2 font-semibold">{b.t}</div>
+                <p className="mt-1 text-sm text-primary-foreground/75">{b.d}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

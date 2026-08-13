@@ -19,8 +19,8 @@ export interface PathDef {
   summary: string;
   /** Who this path suits. */
   fit: string;
-  /** Live = playbooks installed. Briefing = briefing readable, playbooks landing shortly. */
-  status: "live" | "briefing";
+  /** All seven paths are live — playbooks installed for every path. */
+  status: "live";
   /** Rank ladder used by this path. */
   ranks: "citadel" | "closer";
   accent: string;
@@ -49,7 +49,7 @@ export const PATHS: PathDef[] = [
     summary:
       "No product to build, no ads to run. You learn to scout, qualify and close other people's high-ticket offers for commission — the fastest route from zero capital to a real paycheck.",
     fit: "You want to be paid for persuasion, not production, and can handle rejection daily.",
-    status: "briefing",
+    status: "live",
     ranks: "closer",
     accent: "from-yellow-600/25 to-transparent",
     emoji: "⛰️",
@@ -62,7 +62,7 @@ export const PATHS: PathDef[] = [
     summary:
       "Store owners are already losing money they've paid for. You install the flows that recover abandoned carts, browse sessions and lapsed buyers — and get paid from money you bring back.",
     fit: "You like measurable, provable wins and are comfortable inside e-commerce and email tooling.",
-    status: "briefing",
+    status: "live",
     ranks: "citadel",
     accent: "from-emerald-600/25 to-transparent",
     emoji: "🛒",
@@ -75,7 +75,7 @@ export const PATHS: PathDef[] = [
     summary:
       "Home-care agencies lose families to whoever answers first. You build the intake and rapid-response bridge that captures those enquiries — riding a demographic tailwind nobody can switch off.",
     fit: "You want meaningful work, have a warm local network, and can handle a slower, more human sale.",
-    status: "briefing",
+    status: "live",
     ranks: "citadel",
     accent: "from-teal-600/25 to-transparent",
     emoji: "🤝",
@@ -88,7 +88,7 @@ export const PATHS: PathDef[] = [
     summary:
       "Ministries run on volunteers and spreadsheets. You bring giving, follow-up, attendance and communications into one system — a market with trust-based referrals and unusually low churn.",
     fit: "You are inside or near a faith community and value long, relational client tenure.",
-    status: "briefing",
+    status: "live",
     ranks: "citadel",
     accent: "from-indigo-600/25 to-transparent",
     emoji: "⛪",
@@ -101,7 +101,7 @@ export const PATHS: PathDef[] = [
     summary:
       "Shows have audiences but no machine behind them. You build the clip, distribution, sponsorship and list engine that turns listeners into revenue the host can actually see.",
     fit: "You are media-literate, fast with content workflows, and enjoy creator-side clients.",
-    status: "briefing",
+    status: "live",
     ranks: "citadel",
     accent: "from-rose-600/25 to-transparent",
     emoji: "🎙️",
@@ -114,7 +114,7 @@ export const PATHS: PathDef[] = [
     summary:
       "Coaches, consultants and advisors sell credibility. You build the prospecting and authority engine that fills their calendar — the highest-ticket per-client path of the seven.",
     fit: "You write well, think in positioning, and want fewer, larger clients.",
-    status: "briefing",
+    status: "live",
     ranks: "citadel",
     accent: "from-violet-600/25 to-transparent",
     emoji: "📈",
