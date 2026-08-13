@@ -47,9 +47,11 @@ const STAGES = [
       "Fourteen paths — seven Compounder products and seven Proprietor businesses — taken through design, structure, build, testing, launch, authority, ecosystem, valuation and the premium/luxury fork.",
     points: [
       "Entry is outcome-based: $450,000 cumulative DSE earnings within 3–5 years",
+      "Plus Leadership by Influence — five mentees carried through their own full DFY",
       "Neither track is the fallback — Compounder and Proprietor are equally complete",
       "Ends in a real, valuable, differentiated business you own",
     ],
+
   },
 ];
 
