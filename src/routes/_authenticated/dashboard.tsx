@@ -186,9 +186,9 @@ function Dashboard() {
               Grace period active — tracking started 6 Jul 2026.
             </div>
           )}
-          {snapshot.fineNGN > 0 && (
+          {snapshot.fineUSD > 0 && (
             <div className="mt-3 text-[10px] rounded border border-crimson bg-crimson/10 px-2 py-1 text-crimson">
-              ⚠ ₦{snapshot.fineNGN.toLocaleString()} fine active
+              ⚠ ${snapshot.fineUSD.toLocaleString()} fine active
               {snapshot.suspensionWeeks > 0 ? ` · ${snapshot.suspensionWeeks}w suspension notice` : ""}
             </div>
           )}

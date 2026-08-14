@@ -131,14 +131,14 @@ function ReportPage() {
           <Stat icon={Target} label="Tasks (last 14d)" value={`${snapshot.tasksLast14}`} />
         </div>
 
-        {(snapshot.fineNGN > 0 || snapshot.suspensionWeeks > 0) && (
+        {(snapshot.fineUSD > 0 || snapshot.suspensionWeeks > 0) && (
           <div className="mt-6 rounded-xl border border-crimson bg-crimson/10 p-4 flex items-start gap-3">
             <ShieldAlert className="h-5 w-5 text-crimson flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <div className="font-display font-bold text-crimson">
                 {snapshot.suspensionWeeks > 0
-                  ? `Escalation: ${snapshot.suspensionWeeks}-week suspension + ₦${snapshot.fineNGN.toLocaleString()} fine`
-                  : `Warning: ₦${snapshot.fineNGN.toLocaleString()} fine active`}
+                  ? `Escalation: ${snapshot.suspensionWeeks}-week suspension + $${snapshot.fineUSD.toLocaleString()} fine`
+                  : `Warning: $${snapshot.fineUSD.toLocaleString()} fine active`}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Your council admin and the super admin have been notified. Reverse this by hitting your cadence targets this week.
@@ -215,6 +215,23 @@ function ReportPage() {
           <div className="h-3 rounded-full bg-muted overflow-hidden">
             <div className="h-full bg-gradient-gold" style={{ width: `${forecast.closeProgress}%` }} />
           </div>
+        </div>
+      </section>
+
+      {/* DFY */}
+      <section className="rounded-2xl border border-gold/40 bg-accent/20 p-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="text-[10px] tracking-widest text-gold-deep">Once you're earning</div>
+            <h2 className="mt-1 font-display text-2xl font-bold">The D'Famocious Year</h2>
+            <p className="mt-1 text-sm text-muted-foreground max-w-xl">
+              Log net income the month you start earning — qualified months, remittance owed, and your pace
+              toward SUC readiness are all tracked there.
+            </p>
+          </div>
+          <Link to="/dfy" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 whitespace-nowrap">
+            <DollarSign className="h-4 w-4" /> Open DFY Tracker
+          </Link>
         </div>
       </section>
 

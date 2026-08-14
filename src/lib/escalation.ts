@@ -1,7 +1,8 @@
 // Shared escalation & velocity logic used by Report page, dashboard, and admin surfaces.
-// Rules provided by the founder:
-//   • <5 active days in last 14 days  → score < 20%, ₦7,000 fine + 2-week suspension
-//   • <6 active days in last 7 days   → score < 40%, ₦2,500 fine
+// Rules match the DBI homepage's stated escalation policy (routes/index.tsx):
+//   • <10 active days in last 14 days → score < 20%, $10 fine + 2-week suspension
+//   • <6 active days in last 7 days   → score < 40%, $5 fine
+// Fine amounts and thresholds are USD/day-counts, matching the homepage exactly.
 // GRACE PERIOD: Escalation tracking begins on ESCALATION_START (2026-08-10).
 // Nothing before that date counts against a beneficiary. The 14-/7-day windows
 // clamp to `max(windowStart, ESCALATION_START)` so people are not punished for
@@ -25,7 +26,7 @@ export interface EscalationSnapshot {
   longestStreak: number;
   tasksLast7: number;
   tasksLast14: number;
-  fineNGN: number;
+  fineUSD: number;
   suspensionWeeks: number;
   daysSinceLastActivity: number | null;
   reasons: string[];
@@ -153,19 +154,19 @@ export function computeEscalation(
   let score = cadence14 + cadence7 + volume + streakBonus;
 
   // ── Hard-rule enforcement — ONLY when the full 14-day window is past the cutoff.
-  let fineNGN = 0;
+  let fineUSD = 0;
   let suspensionWeeks = 0;
 
   if (!gracePeriodActive) {
-    if (activeDaysLast14 < 5) {
+    if (activeDaysLast14 < 10) {
       score = Math.min(score, 19);
-      fineNGN = 7000;
+      fineUSD = 10;
       suspensionWeeks = 2;
-      reasons.unshift("Below 5 days work in last 14 → suspension + ₦7,000 fine");
+      reasons.unshift("Below 10 days work in last 14 → suspension + $10 fine");
     } else if (activeDaysLast7 < 6) {
       score = Math.min(score, 40);
-      if (fineNGN < 2500) fineNGN = 2500;
-      reasons.unshift("Below 6 days work in last 7 → ₦2,500 fine");
+      if (fineUSD < 5) fineUSD = 5;
+      reasons.unshift("Below 6 days work in last 7 → $5 fine");
     }
   }
 
@@ -182,7 +183,7 @@ export function computeEscalation(
     activeDaysLast7, activeDaysLast14,
     currentStreak, longestStreak,
     tasksLast7, tasksLast14,
-    fineNGN, suspensionWeeks,
+    fineUSD, suspensionWeeks,
     daysSinceLastActivity, reasons,
     gracePeriodActive, daysInGrace,
   };

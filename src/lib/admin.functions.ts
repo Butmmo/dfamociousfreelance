@@ -51,7 +51,7 @@ export const listBeneficiaries = createServerFn({ method: "GET" })
     await requireAdmin(context);
     const { data, error } = await context.supabase
       .from("profiles")
-      .select("id,email,full_name,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned,suspended,suspended_at,suspension_reason,reinstatement_fee_usd")
+      .select("id,email,full_name,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned,suspended,suspended_at,suspension_reason,reinstatement_fee_usd,start_date,vetted_dse_certified_at")
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
@@ -319,6 +319,69 @@ export const listAllWeeklyReports = createServerFn({ method: "GET" })
       ...r,
       profile: byId.get(r.user_id) ?? null,
     }));
+  });
+
+/* ── DFY (D'Famocious Year) verification ─────────────────── */
+// The clerical/tracking layer counts qualified months and computes
+// remittance automatically (dfy_months' own DB trigger). What still needs
+// a human is verification — turning a beneficiary's self-reported month
+// into a confirmed one — and the eventual V. DsE. certification. Any admin
+// can do both for now; a distinct Auditor role (kept apart from the DSE
+// Rep who mentors the same beneficiary) is future staffing, not built yet.
+
+export const listAllDfyMonths = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { data: months, error } = await context.supabase
+      .from("dfy_months")
+      .select("*")
+      .order("period_month", { ascending: false });
+    if (error) throw error;
+    const { data: profiles } = await context.supabase
+      .from("profiles")
+      .select("id,email,full_name,start_date,vetted_dse_certified_at");
+    const byId = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    return (months ?? []).map((m: any) => ({ ...m, profile: byId.get(m.user_id) ?? null }));
+  });
+
+const verifyDfySchema = z.object({
+  dfy_month_id: z.string().uuid(),
+  status: z.enum(["submitted", "remittance_paid", "verified", "disputed"]),
+});
+export const verifyDfyMonth = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => verifyDfySchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("dfy_months")
+      .update({
+        status: data.status,
+        verified_by: data.status === "verified" ? context.userId : null,
+        verified_at: data.status === "verified" ? new Date().toISOString() : null,
+      } as never)
+      .eq("id", data.dfy_month_id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const certifyVettedDse = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => userIdSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        vetted_dse_certified_at: new Date().toISOString(),
+        vetted_dse_certified_by: context.userId,
+      } as never)
+      .eq("id", data.user_id);
+    if (error) throw error;
+    return { ok: true };
   });
 
 // ── Path assignment ─────────────────────────────────────────────────────────
