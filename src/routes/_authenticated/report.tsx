@@ -218,6 +218,23 @@ function ReportPage() {
         </div>
       </section>
 
+      {/* DFY */}
+      <section className="rounded-2xl border border-gold/40 bg-accent/20 p-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="text-[10px] tracking-widest text-gold-deep">Once you're earning</div>
+            <h2 className="mt-1 font-display text-2xl font-bold">The D'Famocious Year</h2>
+            <p className="mt-1 text-sm text-muted-foreground max-w-xl">
+              Log net income the month you start earning — qualified months, remittance owed, and your pace
+              toward SUC readiness are all tracked there.
+            </p>
+          </div>
+          <Link to="/dfy" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 whitespace-nowrap">
+            <DollarSign className="h-4 w-4" /> Open DFY Tracker
+          </Link>
+        </div>
+      </section>
+
       {/* PLAYBOOK BREAKDOWN */}
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="text-[10px] tracking-widest text-gold-deep">Playbook coverage</div>

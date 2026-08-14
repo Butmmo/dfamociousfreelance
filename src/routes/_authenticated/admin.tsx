@@ -7,12 +7,14 @@ import {
   removeBeneficiary, promoteToAdmin, demoteFromAdmin, assignAdminToBeneficiary,
   listEscalations, openEscalation, logCheckIn, setBeneficiaryPath,
   suspendBeneficiary, reinstateBeneficiary,
+  listAllDfyMonths, verifyDfyMonth, certifyVettedDse,
 } from "@/lib/admin.functions";
 import { PATHS } from "@/lib/paths";
+import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
 import { Compass, FileText } from "lucide-react";
-import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw } from "lucide-react";
+import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Council — DBI Admin" }] }),
@@ -38,12 +40,16 @@ function Admin() {
   const setPath = useServerFn(setBeneficiaryPath);
   const suspend = useServerFn(suspendBeneficiary);
   const reinstate = useServerFn(reinstateBeneficiary);
+  const listDfy = useServerFn(listAllDfyMonths);
+  const verifyDfy = useServerFn(verifyDfyMonth);
+  const certifyVdse = useServerFn(certifyVettedDse);
 
   const [bens, setBens] = useState<any[]>([]);
   const [invs, setInvs] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
   const [assigns, setAssigns] = useState<any[]>([]);
   const [escs, setEscs] = useState<any[]>([]);
+  const [dfyMonths, setDfyMonths] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
@@ -57,12 +63,12 @@ function Admin() {
 
   const refresh = async () => {
     try {
-      const [b, i, a, s, e] = await Promise.all([
+      const [b, i, a, s, e, d] = await Promise.all([
         listBens({ data: undefined as never }), listInvs({ data: undefined as never }),
         listAdms({ data: undefined as never }), listAssigns({ data: undefined as never }),
-        listEsc({ data: undefined as never }),
+        listEsc({ data: undefined as never }), listDfy({ data: undefined as never }),
       ]);
-      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e);
+      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e); setDfyMonths(d);
     } catch (e: any) { toast.error(e.message ?? "Failed to load"); }
   };
   useEffect(() => { if (role === "admin") refresh(); /* eslint-disable-next-line */ }, [role]);
@@ -82,6 +88,16 @@ function Admin() {
     for (const a of assigns) m.set(a.beneficiary_id, a.admin_id);
     return m;
   }, [assigns]);
+
+  const dfyByBen = useMemo(() => {
+    const m = new Map<string, DfyMonthRow[]>();
+    for (const row of dfyMonths) {
+      const arr = m.get(row.user_id) ?? [];
+      arr.push(row);
+      m.set(row.user_id, arr);
+    }
+    return m;
+  }, [dfyMonths]);
 
   const doRemove = async (uid: string, label: string) => {
     if (!confirm(`Remove ${label}? This deletes their account.`)) return;
@@ -135,6 +151,17 @@ function Admin() {
       if (!confirm(`Reinstate ${label} as founder? The $10 fee will be waived.`)) return;
     } else if (!confirm(`Confirm that ${label} has settled the $10 reinstatement fee.`)) return;
     try { await reinstate({ data: { user_id: b.id, fee_settled: !isSuperAdmin } }); toast.success("Reinstated."); refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
+  };
+  const doVerifyMonth = async (dfy_month_id: string, label: string) => {
+    if (!confirm(`Mark ${label} as verified? This confirms the reported figure is accurate.`)) return;
+    try { await verifyDfy({ data: { dfy_month_id, status: "verified" } }); toast.success("Month verified."); refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
+  };
+  const doCertify = async (b: any) => {
+    const label = b.full_name ?? b.email;
+    if (!confirm(`Certify ${label} as Vetted Digital Systems Engineer (V. DsE.)? This is a real credential grant.`)) return;
+    try { await certifyVdse({ data: { user_id: b.id } }); toast.success("Certified."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
   const submitCheckIn = async () => {
@@ -336,6 +363,13 @@ function Admin() {
 
                   <button onClick={() => setCheckinTarget(b.id)} className="col-span-2 inline-flex items-center justify-center gap-1 rounded-md bg-primary py-1.5 text-primary-foreground hover:bg-primary/90"><MessageSquare className="h-3.5 w-3.5" /> Log check-in</button>
                 </div>
+
+                <DfyPanel
+                  months={dfyByBen.get(b.id) ?? []}
+                  certifiedAt={b.vetted_dse_certified_at}
+                  onVerify={(id) => doVerifyMonth(id, `${b.full_name ?? b.email}'s month`)}
+                  onCertify={() => doCertify(b)}
+                />
               </div>
             );
           })}
@@ -363,6 +397,44 @@ function Admin() {
             </div>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+function DfyPanel({
+  months, certifiedAt, onVerify, onCertify,
+}: { months: DfyMonthRow[]; certifiedAt: string | null; onVerify: (dfyMonthId: string) => void; onCertify: () => void }) {
+  if (months.length === 0 && !certifiedAt) return null;
+
+  const progress = dfyProgress(months);
+  const unverified = (months as any[])
+    .filter((m) => m.status !== "verified")
+    .sort((a, b) => (a.period_month < b.period_month ? 1 : -1))[0];
+
+  return (
+    <div className="mt-3 pt-3 border-t border-border">
+      <div className="flex items-center gap-1.5 text-[10px] tracking-widest text-gold-deep">
+        <DollarSign className="h-3 w-3" /> DFY
+      </div>
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        <span>{progress.qualifiedMonths}/12 qualified months</span>
+        <span>${progress.cumulativeRemittedUsd.toLocaleString()}/$18,000 remitted</span>
+        {certifiedAt && (
+          <span className="inline-flex items-center gap-1 text-emerald-500 font-semibold">
+            <Award className="h-3 w-3" /> V. DsE. certified
+          </span>
+        )}
+      </div>
+      {!certifiedAt && progress.complete && (
+        <button onClick={onCertify} className="mt-2 inline-flex items-center gap-1 rounded-md border border-gold py-1 px-2 text-xs text-gold-deep hover:bg-gold/10">
+          <Award className="h-3.5 w-3.5" /> Certify V. DsE.
+        </button>
+      )}
+      {unverified && (
+        <button onClick={() => onVerify(unverified.id)} className="mt-2 ml-2 inline-flex items-center gap-1 rounded-md border border-emerald-500 py-1 px-2 text-xs text-emerald-600 hover:bg-emerald-500/10">
+          <CheckCircle2 className="h-3.5 w-3.5" /> Verify {new Date(unverified.period_month).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
+        </button>
       )}
     </div>
   );
