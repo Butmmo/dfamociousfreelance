@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authenticated/weekly-report'
 import { Route as AuthenticatedDfyRouteImport } from './routes/_authenticated/dfy'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
@@ -77,6 +78,11 @@ const AuthenticatedReportRoute = AuthenticatedReportRouteImport.update({
 const AuthenticatedDfyRoute = AuthenticatedDfyRouteImport.update({
   id: '/dfy',
   path: '/dfy',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -248,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dfy': typeof AuthenticatedDfyRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
   '/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
@@ -283,6 +290,7 @@ export interface FileRoutesByTo {
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dfy': typeof AuthenticatedDfyRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
   '/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
@@ -320,6 +328,7 @@ export interface FileRoutesById {
   '/_authenticated/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dfy': typeof AuthenticatedDfyRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
   '/_authenticated/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
     | '/council-reports'
     | '/dashboard'
     | '/dfy'
+    | '/profile'
     | '/report'
     | '/weekly-report'
     | '/playbooks/ascent-calculator'
@@ -392,6 +402,7 @@ export interface FileRouteTypes {
     | '/council-reports'
     | '/dashboard'
     | '/dfy'
+    | '/profile'
     | '/report'
     | '/weekly-report'
     | '/playbooks/ascent-calculator'
@@ -428,6 +439,7 @@ export interface FileRouteTypes {
     | '/_authenticated/council-reports'
     | '/_authenticated/dashboard'
     | '/_authenticated/dfy'
+    | '/_authenticated/profile'
     | '/_authenticated/report'
     | '/_authenticated/weekly-report'
     | '/_authenticated/playbooks/ascent-calculator'
@@ -517,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/dfy'
       fullPath: '/dfy'
       preLoaderRoute: typeof AuthenticatedDfyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/council-reports': {
@@ -711,6 +730,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDfyRoute: typeof AuthenticatedDfyRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
   AuthenticatedPlaybooksAscentCalculatorRoute: typeof AuthenticatedPlaybooksAscentCalculatorRoute
@@ -744,6 +764,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDfyRoute: AuthenticatedDfyRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
   AuthenticatedPlaybooksAscentCalculatorRoute:
