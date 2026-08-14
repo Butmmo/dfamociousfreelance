@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
+import { GENRES } from "./PodcastProspecting";
 
 const STORAGE_KEY = "broadcast-progress-v1";
 
@@ -787,31 +788,40 @@ const NOTION_VIEWS = [
   {name:"💰 Active Clients",     desc:"Filter: Stage = Retainer. Your recurring revenue base and referral source list."},
 ];
 
-const GENRES = [
-  {icon:"💼", name:"Business & Entrepreneurship",
-   why:"A large, well-monetized audience — hosts often already understand marketing ROI and have real budget for production.",
-   find:"Apple Podcasts Business category charts, Spotify business podcast charts, LinkedIn posts where hosts promote their own show"},
-  {icon:"💪", name:"Health & Wellness",
-   why:"A growing category with a highly engaged, loyal listener base — hosts often already invest in their personal brand elsewhere.",
-   find:"Apple Podcasts Health & Fitness category, wellness influencer crossover shows"},
-  {icon:"🕵️", name:"True Crime",
-   why:"Massive audience engagement and extremely high clip-shareability — true crime clips perform exceptionally well on social platforms.",
-   find:"Apple Podcasts True Crime category, true crime podcast Facebook communities and subreddits"},
-  {icon:"🎭", name:"Comedy & Entertainment",
-   why:"High clip virality potential — hosts are often creators already comfortable with social media growth tactics.",
-   find:"Apple Podcasts Comedy category, comedian social media crossover shows"},
-  {icon:"🎤", name:"Interview & Conversational",
-   why:"A broad, evergreen category with consistent, repeatable production needs across every single episode.",
-   find:"Apple Podcasts Society & Culture category, LinkedIn or Twitter posts announcing new episode guests"},
-  {icon:"🧠", name:"Self-Improvement & Personal Development",
-   why:"An engaged, loyal audience that returns episode after episode — hosts often building a broader coaching business alongside the show.",
-   find:"Apple Podcasts Self-Improvement subcategory, personal development influencer crossover shows"},
-  {icon:"🎮", name:"Gaming & Pop Culture",
-   why:"A young, highly social-media-active audience — clips from this genre spread especially fast on TikTok and YouTube Shorts.",
-   find:"Apple Podcasts TV & Film or Video Games categories, Discord gaming communities where hosts promote episodes"},
-  {icon:"⚽", name:"Sports Commentary",
-   why:"A passionate, consistent audience with strong appetite for clip-based highlights and hot takes.",
-   find:"Apple Podcasts Sports category, sports team fan community forums and subreddits"},
+/* Phase overview — the 7 weeks grouped into 3 arcs, same shape as every
+   other rebuilt path's Start Here tab. Scorecards are the weeks' own real
+   "goal" fields, combined, not new claims. */
+const PHASE_META = [
+  { name: "Phase 01 — Skill & Portfolio", range: "Weeks 1–2 · Days 1–14",
+    scorecard: "By end of Day 14: free tools set up, core editing techniques learned, and two fully-produced practice episodes with show notes, social clips, and a Loom demo ready." },
+  { name: "Phase 02 — Genre, Prospect & Outreach", range: "Weeks 3–4 · Days 15–28",
+    scorecard: "By end of Day 28: a genre specialization chosen with 15–20 real shows identified, audited and scored, and a first wave of outreach sent with replies tracked and calls beginning to book." },
+  { name: "Phase 03 — Close, Deliver & Prove", range: "Weeks 5–7 · Days 29–45",
+    scorecard: "By end of Day 45: first paying production client closed and fully onboarded, the first real episode produced, approved and published, first results presented, an upsell conversation opened, and a referral requested." },
+];
+
+/* "Pick a Focus" — sourced from the SAME GENRES catalog the Prospecting
+   Guide playbook itself renders, so nothing here is invented or drifts out
+   of sync with that playbook. The beneficiary types up to 3 candidate
+   genres; FocusPicker fetches the real stats for each. */
+const FOCUS_FIELDS = [
+  { key: "why", label: "Why This Genre" },
+  { key: "find", label: "Where To Find Shows" },
+];
+
+/* Scout Methods — genuinely different ways of finding shows inside a
+   genre, not sequential steps of one method. Drawn from the real "find"
+   data already documented across GENRES, separated out as parallel,
+   nameable options. */
+const SCOUT_METHODS = [
+  { name: "Platform Chart Sweep", icon: "📈",
+    detail: "Apple Podcasts and Spotify both publish category charts — browse your chosen genre's chart directly for shows already proven to have an audience, not just a feed that exists." },
+  { name: "Cross-Promotion Trail", icon: "🔗",
+    detail: "Hosts announcing new episodes or guests on LinkedIn and Twitter/X are self-selecting as active and growth-minded — a warmer starting point than a cold chart scroll." },
+  { name: "Community & Subreddit Scan", icon: "💬",
+    detail: "Genre-specific Facebook communities and subreddits (true crime, gaming, sports) surface shows their own fans are already discussing — useful for genres where the community is more active than the charts suggest." },
+  { name: "Influencer Crossover Search", icon: "🌟",
+    detail: "Wellness, comedy, and personal-development influencers who've launched a show alongside their existing following are often under-resourced on production specifically, even with a large audience already in place." },
 ];
 
 const SERVICE_COMPONENTS = [
@@ -927,7 +937,6 @@ export default function TheBroadcastEngine() {
   const [tab,setTab]             = useState("plan");
   const [openWeek,setOpenWeek]   = useState(0);
   const [openDay,setOpenDay]     = useState(null);
-  const [openGenre,setOpenGenre] = useState(null);
   const [openSvc,setOpenSvc]     = useState(null);
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
@@ -975,9 +984,11 @@ export default function TheBroadcastEngine() {
   if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
+    {id:"start",   label:"🧭 Start Here"},
+    {id:"focus",   label:"🎯 Pick a Focus"},
+    {id:"scout",   label:"🔍 Scout Methods"},
     {id:"plan",    label:"📅 45-Day Plan"},
     {id:"notion",  label:"🗂️ Show CRM"},
-    {id:"genre",   label:"🎙️ Pick Your Genre"},
     {id:"services",label:"🎬 Production Components"},
     {id:"scripts", label:"💬 Scripts"},
     {id:"pricing", label:"💰 Packages"},
@@ -1077,6 +1088,60 @@ export default function TheBroadcastEngine() {
 
       {/* CONTENT */}
       <div style={{maxWidth:880,margin:"0 auto",padding:"18px 13px 60px"}}>
+
+        {/* START HERE */}
+        {tab==="start"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How This System Works</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
+              The Broadcast Engine is a 45-day system for building a paid podcast production retainer for one
+              show genre — starting from free practice episodes, through targeted show prospecting, a real
+              pitch, and a converted per-episode retainer.
+            </p>
+            <PhaseOverview phases={PHASE_META}/>
+            <div style={{background:"#F8F5EE",border:"1px solid #FBF8F1",borderRadius:12,padding:"14px 16px",marginBottom:18}}>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>How to run this system</p>
+              <ol style={{margin:0,paddingLeft:18,fontSize:13,color:"#6E6459",lineHeight:1.8}}>
+                <li>Read <strong style={{color:"#201A16"}}>Pick a Focus</strong> and commit to one genre before Day 15 — you can't prospect or pitch a target you haven't chosen.</li>
+                <li>Learn <strong style={{color:"#201A16"}}>Scout Methods</strong> in Week 3 — they're the engine every later prospecting day runs on.</li>
+                <li>Work the <strong style={{color:"#201A16"}}>45-Day Plan</strong> in order, checking off tasks as you go — your rank climbs automatically.</li>
+                <li>Read <strong style={{color:"#201A16"}}>Production Components</strong> whenever you're unsure what a retainer actually delivers.</li>
+              </ol>
+            </div>
+            <div>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>BPS Checkpoints Inside the 45 Days</p>
+              <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 10px",lineHeight:1.6}}>
+                Three days in the plan are marked ★ — Belief (Day 16), Affirmation (Day 30), and Evaluation (Day 45).
+              </p>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
+          </div>
+        )}
+
+        {/* PICK A FOCUS */}
+        {tab==="focus"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick a Focus</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Type up to 3 show genres you're drawn to from the Podcast Prospecting Guide's full catalog.
+              Fetch each one's real audience and discovery data, compare, then specialize deeply in one before
+              Day 15.
+            </p>
+            <FocusPicker options={GENRES} getName={(o)=>o.name} fields={FOCUS_FIELDS} placeholder="e.g. Business & Entrepreneurship"/>
+          </div>
+        )}
+
+        {/* SCOUT METHODS */}
+        {tab==="scout"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Scout Methods</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Four genuinely different ways to find real shows inside your chosen genre — the engine behind
+              every prospecting day in the 45-Day Plan.
+            </p>
+            <ScoutMethodsList methods={SCOUT_METHODS}/>
+          </div>
+        )}
 
         {/* PLAN */}
         {tab==="plan"&&(
@@ -1224,50 +1289,6 @@ export default function TheBroadcastEngine() {
                   <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.5}}>{v.desc}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* GENRE */}
-        {tab==="genre"&&(
-          <div>
-            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick Your Genre</h2>
-            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
-              This is the decision that keeps you from competing with every other student running
-              this system. Choose one genre and specialize — do not target "any podcast."
-            </p>
-            <div style={{display:"flex",flexDirection:"column",gap:9}}>
-              {GENRES.map((n,i)=>{
-                const isOpen=openGenre===i;
-                return (
-                  <div key={i} onClick={()=>setOpenGenre(isOpen?null:i)}
-                    style={{background:isOpen?"#FBF8F1":"#F8F5EE",
-                      border:`1px solid ${isOpen?"#0D7A5F":"#FBF8F1"}`,
-                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
-                    <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:10}}>
-                      <span style={{fontSize:22,flexShrink:0}}>{n.icon}</span>
-                      <span style={{flex:1,fontWeight:600,fontSize:14,color:"#201A16"}}>{n.name}</span>
-                      <Chevron open={isOpen}/>
-                    </div>
-                    {isOpen&&(
-                      <div style={{padding:"0 14px 16px",borderTop:"1px solid #FBF8F1"}}>
-                        <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#0D7A5F",textTransform:"",
-                            letterSpacing:".07em",marginBottom:5}}>💡 Why This Works</div>
-                          <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #0D7A5F40",paddingLeft:10}}>{n.why}</p>
-                        </div>
-                        <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"",
-                            letterSpacing:".07em",marginBottom:5}}>📍 Where to Find Them</div>
-                          <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #C99A3B40",paddingLeft:10}}>{n.find}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}

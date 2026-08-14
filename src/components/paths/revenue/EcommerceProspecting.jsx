@@ -57,7 +57,7 @@ const PLATFORMS = [
   },
 ];
 
-const NICHES = [
+export const NICHES = [
   {
     icon: "🧴", color: "#C99A3B", name: "Skincare & Beauty",
     aov: "$55–$140", abandon: "High", repeat: "High", competition: "High",

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
+import { NICHES } from "./EcommerceProspecting";
 
 const STORAGE_KEY = "revenue-progress-v1";
 
@@ -939,31 +940,50 @@ const NOTION_VIEWS = [
   {name:"💰 Active Clients",     desc:"Filter: Stage = Retainer. Your recurring revenue base and referral source list."},
 ];
 
-const NICHES = [
-  {icon:"🧴", name:"Skincare & Beauty",
-   why:"Huge DTC market with high average order value. Frequent repeat purchase cycles make win-back flows unusually valuable.",
-   find:"Instagram beauty hashtags, TikTok Shop, DTC alternatives to Sephora/Ulta brands"},
-  {icon:"💊", name:"Supplements & Wellness",
-   why:"Naturally subscription-friendly category with high repeat purchase rates — strong candidate for post-purchase upsell flows.",
-   find:"Instagram wellness influencer partner brands, TikTok wellness hashtags"},
-  {icon:"🐾", name:"Pet Products",
-   why:"Emotionally attached buyer base drives unusually high email open rates. Frequent repurchase on food, treats, and toys.",
-   find:"Instagram pet hashtags, DTC alternatives to Chewy/PetSmart brands"},
-  {icon:"💍", name:"Jewelry & Accessories",
-   why:"Gift-driven purchases with heavy price hesitation make this the strongest category for abandoned cart recovery specifically.",
-   find:"Instagram shop tags, TikTok Shop jewelry creators"},
-  {icon:"👶", name:"Baby & Kids Products",
-   why:"Parents respond unusually well to safety and care-focused email content — strong welcome series performance.",
-   find:"Instagram parenting hashtags, baby registry DTC brands"},
-  {icon:"☕", name:"Coffee & Specialty Food",
-   why:"Naturally subscription-friendly — ideal category for building recurring 'resupply' win-back flows.",
-   find:"Instagram coffee and specialty food hashtags, farmers market vendors expanding online"},
-  {icon:"🏋️", name:"Athletic & Fitness Apparel",
-   why:"Community-driven brand loyalty creates strong potential for loyalty and VIP-segmented flows.",
-   find:"Instagram fitness influencer partner brands, gym-adjacent DTC startups"},
-  {icon:"📱", name:"Tech Accessories & Gadgets",
-   why:"Impulse-buy heavy category creates the single highest abandoned cart opportunity of any niche on this list.",
-   find:"TikTok Shop viral gadget brands, Instagram tech accessory ads"},
+/* Phase overview — the 7 weeks grouped into 3 arcs, same shape as every
+   other rebuilt path's Start Here tab. Scorecards are the weeks' own real
+   "goal" fields, combined, not new claims. */
+const PHASE_META = [
+  { name: "Phase 01 — Skill & Portfolio", range: "Weeks 1–2 · Days 1–14",
+    scorecard: "By end of Day 14: Klaviyo fundamentals learned with a dummy store live, all 4 flows built and working, a case study asset ready, and your Store CRM fully set up." },
+  { name: "Phase 02 — Niche, Prospect & Outreach", range: "Weeks 3–4 · Days 15–28",
+    scorecard: "By end of Day 28: a specific product category chosen with 30–40 real prospects identified, audited and scored, and a first wave of outreach sent with replies tracked and discovery calls beginning to book." },
+  { name: "Phase 03 — Close, Deliver & Prove", range: "Weeks 5–7 · Days 29–45",
+    scorecard: "By end of Day 45: first paying client closed with all flows live and real revenue numbers to show, a first revenue report delivered, SMS upsold, and a referral or new prospect wave launched." },
+];
+
+/* "Pick a Focus" — sourced from the SAME NICHES catalog the E-commerce
+   Prospecting Guide itself renders (8 product categories with real AOV,
+   abandonment and psychology data), so nothing here is invented or drifts
+   out of sync with that playbook. The beneficiary types up to 3 candidate
+   niches; FocusPicker fetches the real stats for each. */
+const FOCUS_FIELDS = [
+  { key: "aov", label: "Average Order Value" },
+  { key: "abandon", label: "Cart Abandonment" },
+  { key: "repeat", label: "Repeat Purchase Rate" },
+  { key: "competition", label: "Agency Competition" },
+  { key: "why", label: "Why This Niche" },
+  { key: "psychology", label: "Buyer Psychology" },
+  { key: "find", label: "Where To Find Stores" },
+  { key: "flow", label: "Strongest Opening Flow" },
+  { key: "note", label: "Note" },
+];
+
+/* Scout Methods — genuinely different ways of finding real stores inside
+   a niche, not sequential steps of one method. Drawn from the real "find"
+   data already documented across NICHES, separated out as parallel,
+   nameable options. */
+const SCOUT_METHODS = [
+  { name: "Hashtag & Sub-Niche Sweep", icon: "🏷️",
+    detail: "Search the niche's own Instagram and TikTok hashtags, then go one layer deeper into sub-tags (\"clean beauty,\" \"K-beauty,\" \"men's grooming\" instead of just \"skincare\") — the deeper layer is where the real differentiation and lower competition live." },
+  { name: "TikTok Shop Category Scan", icon: "🛍️",
+    detail: "TikTok Shop's own category rankings surface stores with real, current sales velocity — especially strong for beauty, tech accessories and impulse-buy categories where \"as seen on TikTok\" is already the store's own marketing angle." },
+  { name: "Meta Ad Library Keyword Search", icon: "📢",
+    detail: "Search the Meta Ad Library for niche keywords (e.g. \"skincare routine\") to find stores actively spending on ads right now — active ad spend is a direct signal of real revenue and a real marketing budget to pitch into." },
+  { name: "DTC-Alternative Brand Search", icon: "🔎",
+    detail: "For every big-box or marketplace incumbent (Sephora, Chewy, PetSmart), search for the smaller independent DTC alternatives competing against it — these are exactly the under-resourced, single- or two-person teams this system is built to serve." },
+  { name: "Subscribe-and-Save Audit", icon: "🔁",
+    detail: "For naturally subscription-friendly niches (supplements, coffee), check whether a subscribe-and-save option even exists on the store — many offer it without a single flow actually supporting it, which is an immediate, provable gap to open the pitch with." },
 ];
 
 const SERVICES_4 = [
@@ -1091,7 +1111,6 @@ export default function RevenueRecoveryEngine() {
   const [tab,setTab]             = useState("plan");
   const [openWeek,setOpenWeek]   = useState(0);
   const [openDay,setOpenDay]     = useState(null);
-  const [openNiche,setOpenNiche] = useState(null);
   const [openSvc,setOpenSvc]     = useState(null);
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
@@ -1139,9 +1158,11 @@ export default function RevenueRecoveryEngine() {
   if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
+    {id:"start",   label:"🧭 Start Here"},
+    {id:"focus",   label:"🎯 Pick a Focus"},
+    {id:"scout",   label:"🔍 Scout Methods"},
     {id:"plan",    label:"📅 45-Day Plan"},
     {id:"notion",  label:"🗂️ Store CRM"},
-    {id:"niche",   label:"🎯 Pick Your Niche"},
     {id:"flows",   label:"📧 The 4 Flows"},
     {id:"scripts", label:"💬 Scripts"},
     {id:"pricing", label:"💰 Packages"},
@@ -1240,6 +1261,60 @@ export default function RevenueRecoveryEngine() {
 
       {/* CONTENT */}
       <div style={{maxWidth:880,margin:"0 auto",padding:"18px 13px 60px"}}>
+
+        {/* START HERE */}
+        {tab==="start"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How This System Works</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
+              The Revenue Recovery Engine is a 45-day system for building a paid Klaviyo email/SMS retainer for
+              one product niche — starting from a free dummy-store portfolio, through targeted store
+              prospecting, a real outreach wave, and a converted flows-live retainer.
+            </p>
+            <PhaseOverview phases={PHASE_META}/>
+            <div style={{background:"#F8F5EE",border:"1px solid #FBF8F1",borderRadius:12,padding:"14px 16px",marginBottom:18}}>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>How to run this system</p>
+              <ol style={{margin:0,paddingLeft:18,fontSize:13,color:"#6E6459",lineHeight:1.8}}>
+                <li>Read <strong style={{color:"#201A16"}}>Pick a Focus</strong> and commit to one product category before Day 15 — you can't prospect or pitch a target you haven't chosen.</li>
+                <li>Learn <strong style={{color:"#201A16"}}>Scout Methods</strong> in Week 3 — they're the engine every later prospecting day runs on.</li>
+                <li>Work the <strong style={{color:"#201A16"}}>45-Day Plan</strong> in order, checking off tasks as you go — your rank climbs automatically.</li>
+                <li>Read <strong style={{color:"#201A16"}}>The 4 Flows</strong> whenever you're unsure what a retainer actually delivers.</li>
+              </ol>
+            </div>
+            <div>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>BPS Checkpoints Inside the 45 Days</p>
+              <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 10px",lineHeight:1.6}}>
+                Three days in the plan are marked ★ — Belief (Day 16), Affirmation (Day 30), and Evaluation (Day 45).
+              </p>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
+          </div>
+        )}
+
+        {/* PICK A FOCUS */}
+        {tab==="focus"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick a Focus</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Type up to 3 product niches you're drawn to from the E-commerce Prospecting Guide's full catalog.
+              Fetch each one's real AOV, abandonment and psychology data, compare, then specialize deeply in
+              one before Day 15.
+            </p>
+            <FocusPicker options={NICHES} getName={(o)=>o.name} fields={FOCUS_FIELDS} placeholder="e.g. Skincare & Beauty"/>
+          </div>
+        )}
+
+        {/* SCOUT METHODS */}
+        {tab==="scout"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Scout Methods</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Five genuinely different ways to find real stores inside your chosen niche — the engine behind
+              every prospecting day in the 45-Day Plan.
+            </p>
+            <ScoutMethodsList methods={SCOUT_METHODS}/>
+          </div>
+        )}
 
         {/* PLAN */}
         {tab==="plan"&&(
@@ -1387,50 +1462,6 @@ export default function RevenueRecoveryEngine() {
                   <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.5}}>{v.desc}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* NICHE */}
-        {tab==="niche"&&(
-          <div>
-            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick Your Niche</h2>
-            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
-              This is the decision that keeps you from competing with every other student running this
-              system. Choose one category and specialize — do not target "any ecommerce store."
-            </p>
-            <div style={{display:"flex",flexDirection:"column",gap:9}}>
-              {NICHES.map((n,i)=>{
-                const isOpen=openNiche===i;
-                return (
-                  <div key={i} onClick={()=>setOpenNiche(isOpen?null:i)}
-                    style={{background:isOpen?"#FBF8F1":"#F8F5EE",
-                      border:`1px solid ${isOpen?"#0D7A5F":"#FBF8F1"}`,
-                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
-                    <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:10}}>
-                      <span style={{fontSize:22,flexShrink:0}}>{n.icon}</span>
-                      <span style={{flex:1,fontWeight:600,fontSize:14,color:"#201A16"}}>{n.name}</span>
-                      <Chevron open={isOpen}/>
-                    </div>
-                    {isOpen&&(
-                      <div style={{padding:"0 14px 16px",borderTop:"1px solid #FBF8F1"}}>
-                        <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#0D7A5F",textTransform:"",
-                            letterSpacing:".07em",marginBottom:5}}>💡 Why This Works</div>
-                          <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #0D7A5F40",paddingLeft:10}}>{n.why}</p>
-                        </div>
-                        <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"",
-                            letterSpacing:".07em",marginBottom:5}}>📍 Where to Find Them</div>
-                          <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #C99A3B40",paddingLeft:10}}>{n.find}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}

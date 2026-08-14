@@ -258,7 +258,7 @@ const HIGH_COMPETITION = [
   HC(112, "🚗", "Auto Detailing", "$197–297/mo", "Low ticket, high churn, and a constant stream of competing agency and software offers.", 'Google Maps: "auto detailing [city]", "mobile car wash [city]"'),
 ];
 
-const ALL_BUSINESSES = [...BUSINESSES, ...TIER1_EXTRA, ...HIGH_COMPETITION];
+export const ALL_BUSINESSES = [...BUSINESSES, ...TIER1_EXTRA, ...HIGH_COMPETITION];
 
 
 function Block({ label, color, children }) {

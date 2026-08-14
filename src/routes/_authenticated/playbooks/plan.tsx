@@ -8,7 +8,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
-import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
+import { ALL_BUSINESSES } from "@/components/playbooks/global-parts";
 
 export const Route = createFileRoute("/_authenticated/playbooks/plan")({
   head: () => ({ meta: [{ title: "SMB Optimisation Engine — DBI" }] }),
@@ -1447,6 +1448,54 @@ const BPS_CHECKPOINTS = [
   { day:45, type:"Evaluation Goal", detail:"The full 40-day evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'" },
 ];
 
+/* Phase overview — the 7 weeks grouped into 3 arcs, same shape as every
+   other rebuilt path's Start Here tab. Scorecards are the weeks' own real
+   "goal" fields, combined, not new claims. */
+const PHASE_META = [
+  { name: "Phase 01 — Foundation & Harvest", range: "Weeks 1–2 · Days 1–14",
+    scorecard: "By end of Day 14: every free account live (GHL, Notion, Lovable), a working Review Automation demo and Lovable dashboard recorded on Loom, and at least 10 fully enriched HOT leads in the Notion CRM with founder email and all three connected problems identified — ready for outreach." },
+  { name: "Phase 02 — Outreach & First Close", range: "Weeks 3–4 · Days 15–28",
+    scorecard: "By end of Day 28: 5+ personalised emails sent from Gmail with matching LinkedIn requests, replies tracked in Notion, discovery calls run with the Performance Calculator live, and the first Review Automation subscription closed and paid." },
+  { name: "Phase 03 — Deliver, Scale & Launch Month 2", range: "Weeks 5–7 · Days 29–45",
+    scorecard: "By end of Day 45: first project delivered and paid with a real testimonial and case study secured, a third scouting round and full Notion pipeline running, LinkedIn content and a first retainer conversation open, and Month 2 targets set in writing with public proof shared." },
+];
+
+/* "Pick a Focus" — sourced from the SAME ALL_BUSINESSES catalog the SMB
+   Prospecting Guide itself renders (46 niches across Tier 1 and Tier 2), so
+   nothing here is invented or drifts out of sync with that playbook. The
+   beneficiary types up to 3 candidate niches; FocusPicker fetches the real
+   stats for each so the choice is informed instead of a guess. */
+const FOCUS_OPTIONS = ALL_BUSINESSES.map((b) => ({
+  ...b,
+  tier: b.competitive ? "Tier 2 — Highly Competitive Market (only work this once you have proof or referrals)" : "Tier 1 — The Boring Goldmine (start here)",
+}));
+const FOCUS_FIELDS = [
+  { key: "tier", label: "Tier" },
+  { key: "deal", label: "Average Deal" },
+  { key: "pain", label: "Their Pain Point" },
+  { key: "product", label: "Product You'd Build" },
+  { key: "find", label: "How To Find Them" },
+  { key: "tools", label: "Your Stack" },
+];
+
+/* Scout Methods — genuinely different ways of using Google Maps to source,
+   enrich and qualify SMB leads, not sequential steps of one method. Each is
+   drawn from the same real workflow already documented in RESEARCH_STEPS
+   and the country platform lists above, just separated out as parallel,
+   nameable options instead of one linear 9-step SOP. */
+const SCOUT_METHODS = [
+  { name: "Manual Notebook Sweep", icon: "🗺️",
+    detail: "Search '[niche] [city]' on Google Maps from your phone and browse 25–30 listings per session. Log business name, phone, review count and whether a website appears straight into a physical notebook — fast, low-friction scouting before anything touches a spreadsheet." },
+  { name: "Review-Gap Comparison Sweep", icon: "📊",
+    detail: "For each candidate business, pull up its 2–3 nearest same-niche competitors in the same Maps search and compare review counts side by side. This is what actually separates a genuine review-gap prospect from a business that only looks under-reviewed — the gap has to be real, not assumed." },
+  { name: "Owner-Trail Enrichment", icon: "🔎",
+    detail: "Google \"owner at [Business Name]\" to surface their LinkedIn profile faster than searching inside LinkedIn itself, click straight through, then use ContactOut to reveal their personal email. Turns a bare Maps listing into a named decision-maker with a real inbox, not just a phone number." },
+  { name: "Social Signal Cross-Check", icon: "📘",
+    detail: "Check the same business on Facebook and Instagram: when did they last post, and are customers commenting with pain points like 'hard to book' or 'never got a reply'? A business with an active Instagram but no booking system is a near-perfect target even before you check reviews." },
+  { name: "Alternate Directory Sweep", icon: "🌍",
+    detail: "When Maps alone under-represents a market or niche, cross-search the country's own business platform instead — Companies House or Checkatrade in the UK, KVK in the Netherlands, TrueLocal in Australia, XING in Germany, Clutch.co in Canada, Dubizzle or Bayut in the UAE. Useful both as a primary source and to verify a Maps listing is a real registered business." },
+];
+
 const NOTION_COLS = [
   {name:"SMB Name",          type:"Title",    icon:"🏢", desc:"Official business name from Google Maps"},
   {name:"Phone Number",      type:"Phone",    icon:"📞", desc:"Direct business phone from the listing"},
@@ -1856,15 +1905,18 @@ function PlanPage() {
   const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
 
   const TABS=[
-    {id:"plan",     label:"1. 📅 45-Day Plan"},
-    {id:"notion",   label:"2. 🗂️ Notion CRM"},
-    {id:"research", label:"3. 🔍 Lead Research"},
-    {id:"problems", label:"4. ⚡ 3-Problem Method"},
-    {id:"scripts",  label:"5. 📝 Scripts"},
-    {id:"match",    label:"6. 💰 What to Pitch"},
-    {id:"upsell",   label:"7. 📈 Upsell Ladder"},
-    {id:"ghl",      label:"8. 🔧 GHL Mastery"},
-    {id:"faq",      label:"9. ❓ FAQ"},
+    {id:"start",    label:"1. 🧭 Start Here"},
+    {id:"focus",    label:"2. 🎯 Pick a Focus"},
+    {id:"scout",    label:"3. 🔍 Scout Methods"},
+    {id:"plan",     label:"4. 📅 45-Day Plan"},
+    {id:"notion",   label:"5. 🗂️ Notion CRM"},
+    {id:"research", label:"6. 🔬 Lead Research"},
+    {id:"problems", label:"7. ⚡ 3-Problem Method"},
+    {id:"scripts",  label:"8. 📝 Scripts"},
+    {id:"match",    label:"9. 💰 What to Pitch"},
+    {id:"upsell",   label:"10. 📈 Upsell Ladder"},
+    {id:"ghl",      label:"11. 🔧 GHL Mastery"},
+    {id:"faq",      label:"12. ❓ FAQ"},
   ];
 
   return (
@@ -1953,6 +2005,62 @@ function PlanPage() {
 
       {/* CONTENT */}
       <div style={{maxWidth:880,margin:"0 auto",padding:"18px 13px 60px"}}>
+
+        {/* START HERE */}
+        {tab==="start"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>How This System Works</h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 14px",lineHeight:1.65}}>
+              The SMB Optimisation Engine is a 45-day, zero-budget system for landing your first subscription
+              client selling the Google Review Automation System to map-reliant local service businesses —
+              built entirely on manual prospecting, because paid outreach tools aren't the starting point here,
+              they're the scale-up.
+            </p>
+            <PhaseOverview phases={PHASE_META}/>
+            <div style={{background:"#FFFFFF",border:"1px solid #E8DCC0",borderRadius:12,padding:"14px 16px",marginBottom:18}}>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>How to run this system</p>
+              <ol style={{margin:0,paddingLeft:18,fontSize:13,color:"#6B5D3F",lineHeight:1.8}}>
+                <li>Read <strong style={{color:"#1A1410"}}>Pick a Focus</strong> and commit to 2–3 candidate niches before Day 3 — you can't scout a target you haven't chosen.</li>
+                <li>Learn <strong style={{color:"#1A1410"}}>Scout Methods</strong>, then run the full sequence in <strong style={{color:"#1A1410"}}>Lead Research</strong> — they're the engine every Week 1–2 day runs on.</li>
+                <li>Work the <strong style={{color:"#1A1410"}}>45-Day Plan</strong> in order, checking off tasks as you go — your rank climbs automatically.</li>
+                <li>Only reach for paid tools beyond Lovable and GoHighLevel once you have a first paying client — see the 🚀 Scale Fast tab inside the SMB Prospecting Guide.</li>
+              </ol>
+            </div>
+            <div>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>BPS Checkpoints Inside the 45 Days</p>
+              <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 10px",lineHeight:1.65}}>
+                Three days in the plan are marked ★ — Belief (Day 16), Affirmation (Day 30), and Evaluation (Day 45).
+              </p>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
+          </div>
+        )}
+
+        {/* PICK A FOCUS */}
+        {tab==="focus"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>Pick a Focus</h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 14px",lineHeight:1.65}}>
+              Type up to 3 niches you're drawn to from the SMB Prospecting Guide's full 46-niche catalog —
+              Tier 1's boring goldmine and Tier 2's highly competitive markets both included. Fetch each one's
+              real deal size, pain point and how-to-find data, compare, then commit to one before Day 3.
+            </p>
+            <FocusPicker options={FOCUS_OPTIONS} getName={(o)=>o.name} fields={FOCUS_FIELDS} placeholder="e.g. Garage Door Repair"/>
+          </div>
+        )}
+
+        {/* SCOUT METHODS */}
+        {tab==="scout"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#1A1410"}}>Scout Methods</h2>
+            <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 14px",lineHeight:1.65}}>
+              Five genuinely different ways to source, enrich and qualify leads inside your chosen niche — the
+              engine behind every Week 1–2 day in the 45-Day Plan, and the full sequence walked step-by-step in
+              Lead Research.
+            </p>
+            <ScoutMethodsList methods={SCOUT_METHODS}/>
+          </div>
+        )}
 
         {/* 45-DAY PLAN */}
         {tab==="plan"&&(
