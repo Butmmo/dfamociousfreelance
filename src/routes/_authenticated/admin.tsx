@@ -155,7 +155,7 @@ function Admin() {
           <Crown className="h-9 w-9 text-gold" /> Council
           {isSuperAdmin && <span className="ml-2 rounded-full bg-gold px-3 py-1 text-xs font-bold text-onyx">SUPER ADMIN</span>}
         </h1>
-        <p className="text-muted-foreground">Issue invitations, appoint admins, assign mentors, and manage the escalation cadence.</p>
+        <p className="text-muted-foreground">Issue invitations, appoint admins, assign DSE Reps, and manage the escalation cadence.</p>
         <Link to="/council-reports" className="mt-3 inline-flex items-center gap-2 rounded-md border border-gold bg-accent/30 px-4 py-2 text-sm font-semibold text-gold-deep hover:bg-accent/60">
           <FileText className="h-4 w-4" /> View weekly filings
         </Link>
@@ -302,14 +302,14 @@ function Admin() {
                   {isSuperAdmin ? (
                     <label className="col-span-2 flex items-center gap-2">
                       <Link2 className="h-3.5 w-3.5" />
-                      <span className="text-muted-foreground">Mentor:</span>
+                      <span className="text-muted-foreground">DSE Rep:</span>
                       <select value={assignedAdmin} onChange={(e) => doAssign(b.id, e.target.value || null)} className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-xs">
                         <option value="">— unassigned —</option>
                         {admins.map((a) => (<option key={a.id} value={a.id}>{a.full_name ?? a.email}</option>))}
                       </select>
                     </label>
                   ) : (
-                    <div className="col-span-2 text-muted-foreground">Mentor: {admins.find((a) => a.id === assignedAdmin)?.full_name ?? "unassigned"}</div>
+                    <div className="col-span-2 text-muted-foreground">DSE Rep: {admins.find((a) => a.id === assignedAdmin)?.full_name ?? "unassigned"}</div>
                   )}
 
                   <button onClick={() => doEscalate(b.id, "at_risk")} className="rounded-md border border-gold py-1.5 text-gold-deep hover:bg-gold/10">Flag at-risk</button>

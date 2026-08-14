@@ -88,8 +88,8 @@ const PROPRIETOR = [
 const SYSTEMS = [
   { icon: LayoutDashboard, t: "The Dashboard", d: "Rank, XP, streaks, and your Yesterday / Today / Tomorrow missions the moment you log in." },
   { icon: Calendar, t: "45-Day Calendar", d: "A sealing day-grid plus a full monthly view. Days seal as tasks complete — or seal them by hand." },
-  { icon: LineChart, t: "The Report", d: "Escalation score dial, cadence heatstrips, velocity to first close, and mentor check-in notes." },
-  { icon: Users, t: "The Council", d: "Admins add beneficiaries, get assigned as mentors, log check-ins, and unlock gated programmes." },
+  { icon: LineChart, t: "The Report", d: "Escalation score dial, cadence heatstrips, velocity to first close, and DSE Rep check-in notes." },
+  { icon: Users, t: "The Council", d: "Admins add beneficiaries, get assigned as DSE Reps, log check-ins, and unlock gated programmes." },
   { icon: Bell, t: "Escalation Engine", d: "Fewer than 6 active days in 7 triggers a $5 notice. Fewer than 10 in 14 triggers $10 and a suspension notice." },
   { icon: Mail, t: "Report Cadence", d: "Weekly progress emails to beneficiaries, cohort digests to admins, and the full Citadel report to the founder." },
 ];

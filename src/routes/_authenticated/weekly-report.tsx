@@ -102,7 +102,7 @@ function WeeklyReportPage() {
         <NumField label="Revenue this week (₦)" value={revenueNgn} onChange={setRevenueNgn} big />
 
         <TextArea label="Wins this week" value={wins} onChange={setWins} placeholder="What went well? Any breakthroughs?" />
-        <TextArea label="Blockers" value={blockers} onChange={setBlockers} placeholder="What's stuck? What would you ask your mentor?" />
+        <TextArea label="Blockers" value={blockers} onChange={setBlockers} placeholder="What's stuck? What would you ask your DSE Rep?" />
         <TextArea label="Commitment for next week" value={nextWeek} onChange={setNextWeek} placeholder="What will you have completed by next Sunday?" />
 
         <div className="flex justify-end">

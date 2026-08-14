@@ -99,7 +99,7 @@ function PlaybooksIndex() {
         <div className="text-[10px] tracking-widest text-gold-deep">Cadence</div>
         <h2 className="mt-1 font-display text-2xl font-bold">Weekly report ritual</h2>
         <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-          Every Sunday, <Link to="/weekly-report" className="text-primary font-semibold hover:underline">file a weekly report</Link> — outreach count, calls booked, wins, blockers. Reports feed the council escalation queue: any beneficiary who misses two consecutive weeks or logs zero outreach for seven days is auto-flagged for a mentor call.
+          Every Sunday, <Link to="/weekly-report" className="text-primary font-semibold hover:underline">file a weekly report</Link> — outreach count, calls booked, wins, blockers. Reports feed the council escalation queue: any beneficiary who misses two consecutive weeks or logs zero outreach for seven days is auto-flagged for a DSE Rep call.
         </p>
       </section>
     </div>

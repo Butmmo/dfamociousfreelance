@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
         <li><b>Total XP:</b> ${b.xp ?? 0}</li>
         <li><b>Tasks completed this ${period}:</b> ${stats.done}</li>
         <li><b>Playbooks touched:</b> ${stats.playbooks.size}</li>
-        ${flag ? `<li><b>Status flag:</b> <span style="color:#B33A3A">${flag}</span> — your mentor will reach out.</li>` : ""}
+        ${flag ? `<li><b>Status flag:</b> <span style="color:#B33A3A">${flag}</span> — your DSE Rep will reach out.</li>` : ""}
       </ul>
       <p>Keep the cadence. Small daily reps compound into rank.</p>
     `);
