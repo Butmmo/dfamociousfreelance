@@ -14,14 +14,14 @@ import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authenticated/weekly-report'
-import { Route as AuthenticatedDfyRouteImport } from './routes/_authenticated/dfy'
+import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMentorshipRouteImport } from './routes/_authenticated/mentorship'
-import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_authenticated/council-mentorship'
-import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
+import { Route as AuthenticatedDfyRouteImport } from './routes/_authenticated/dfy'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
+import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_authenticated/council-mentorship'
 import { Route as AuthenticatedChoosePathRouteImport } from './routes/_authenticated/choose-path'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -78,11 +78,6 @@ const AuthenticatedReportRoute = AuthenticatedReportRouteImport.update({
   path: '/report',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedDfyRoute = AuthenticatedDfyRouteImport.update({
-  id: '/dfy',
-  path: '/dfy',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -98,9 +93,9 @@ const AuthenticatedMentorshipRoute = AuthenticatedMentorshipRouteImport.update({
   path: '/mentorship',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedCouncilMentorshipRoute = AuthenticatedCouncilMentorshipRouteImport.update({
-  id: '/council-mentorship',
-  path: '/council-mentorship',
+const AuthenticatedDfyRoute = AuthenticatedDfyRouteImport.update({
+  id: '/dfy',
+  path: '/dfy',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -112,6 +107,12 @@ const AuthenticatedCouncilReportsRoute =
   AuthenticatedCouncilReportsRouteImport.update({
     id: '/council-reports',
     path: '/council-reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCouncilMentorshipRoute =
+  AuthenticatedCouncilMentorshipRouteImport.update({
+    id: '/council-mentorship',
+    path: '/council-mentorship',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedChoosePathRoute = AuthenticatedChoosePathRouteImport.update({
@@ -553,25 +554,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dfy': {
-      id: '/_authenticated/dfy'
-      path: '/dfy'
-      fullPath: '/dfy'
-      preLoaderRoute: typeof AuthenticatedDfyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/mentorship': {
-      id: '/_authenticated/mentorship'
-      path: '/mentorship'
-      fullPath: '/mentorship'
-      preLoaderRoute: typeof AuthenticatedMentorshipRouteImport
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/messages': {
@@ -581,11 +568,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+    '/_authenticated/mentorship': {
+      id: '/_authenticated/mentorship'
+      path: '/mentorship'
+      fullPath: '/mentorship'
+      preLoaderRoute: typeof AuthenticatedMentorshipRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dfy': {
+      id: '/_authenticated/dfy'
+      path: '/dfy'
+      fullPath: '/dfy'
+      preLoaderRoute: typeof AuthenticatedDfyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/council-reports': {
@@ -784,8 +785,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedChoosePathRoute: typeof AuthenticatedChoosePathRoute
-  AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedCouncilMentorshipRoute: typeof AuthenticatedCouncilMentorshipRoute
+  AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDfyRoute: typeof AuthenticatedDfyRoute
   AuthenticatedMentorshipRoute: typeof AuthenticatedMentorshipRoute
@@ -821,8 +822,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedChoosePathRoute: AuthenticatedChoosePathRoute,
-  AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedCouncilMentorshipRoute: AuthenticatedCouncilMentorshipRoute,
+  AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDfyRoute: AuthenticatedDfyRoute,
   AuthenticatedMentorshipRoute: AuthenticatedMentorshipRoute,
