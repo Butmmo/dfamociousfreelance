@@ -16,6 +16,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authenticated/weekly-report'
 import { Route as AuthenticatedDfyRouteImport } from './routes/_authenticated/dfy'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedMentorshipRouteImport } from './routes/_authenticated/mentorship'
+import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_authenticated/council-mentorship'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
@@ -83,6 +86,21 @@ const AuthenticatedDfyRoute = AuthenticatedDfyRouteImport.update({
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMentorshipRoute = AuthenticatedMentorshipRouteImport.update({
+  id: '/mentorship',
+  path: '/mentorship',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCouncilMentorshipRoute = AuthenticatedCouncilMentorshipRouteImport.update({
+  id: '/council-mentorship',
+  path: '/council-mentorship',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -251,9 +269,12 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
+  '/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dfy': typeof AuthenticatedDfyRoute
+  '/mentorship': typeof AuthenticatedMentorshipRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -287,9 +308,12 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
+  '/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dfy': typeof AuthenticatedDfyRoute
+  '/mentorship': typeof AuthenticatedMentorshipRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -325,9 +349,12 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/choose-path': typeof AuthenticatedChoosePathRoute
+  '/_authenticated/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
   '/_authenticated/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dfy': typeof AuthenticatedDfyRoute
+  '/_authenticated/mentorship': typeof AuthenticatedMentorshipRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
@@ -363,9 +390,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/calendar'
     | '/choose-path'
+    | '/council-mentorship'
     | '/council-reports'
     | '/dashboard'
     | '/dfy'
+    | '/mentorship'
+    | '/messages'
     | '/profile'
     | '/report'
     | '/weekly-report'
@@ -399,9 +429,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/calendar'
     | '/choose-path'
+    | '/council-mentorship'
     | '/council-reports'
     | '/dashboard'
     | '/dfy'
+    | '/mentorship'
+    | '/messages'
     | '/profile'
     | '/report'
     | '/weekly-report'
@@ -436,9 +469,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/calendar'
     | '/_authenticated/choose-path'
+    | '/_authenticated/council-mentorship'
     | '/_authenticated/council-reports'
     | '/_authenticated/dashboard'
     | '/_authenticated/dfy'
+    | '/_authenticated/mentorship'
+    | '/_authenticated/messages'
     | '/_authenticated/profile'
     | '/_authenticated/report'
     | '/_authenticated/weekly-report'
@@ -531,6 +567,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDfyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mentorship': {
+      id: '/_authenticated/mentorship'
+      path: '/mentorship'
+      fullPath: '/mentorship'
+      preLoaderRoute: typeof AuthenticatedMentorshipRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -543,6 +593,13 @@ declare module '@tanstack/react-router' {
       path: '/council-reports'
       fullPath: '/council-reports'
       preLoaderRoute: typeof AuthenticatedCouncilReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/council-mentorship': {
+      id: '/_authenticated/council-mentorship'
+      path: '/council-mentorship'
+      fullPath: '/council-mentorship'
+      preLoaderRoute: typeof AuthenticatedCouncilMentorshipRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/choose-path': {
@@ -728,8 +785,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedChoosePathRoute: typeof AuthenticatedChoosePathRoute
   AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
+  AuthenticatedCouncilMentorshipRoute: typeof AuthenticatedCouncilMentorshipRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDfyRoute: typeof AuthenticatedDfyRoute
+  AuthenticatedMentorshipRoute: typeof AuthenticatedMentorshipRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
@@ -762,8 +822,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedChoosePathRoute: AuthenticatedChoosePathRoute,
   AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
+  AuthenticatedCouncilMentorshipRoute: AuthenticatedCouncilMentorshipRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDfyRoute: AuthenticatedDfyRoute,
+  AuthenticatedMentorshipRoute: AuthenticatedMentorshipRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,

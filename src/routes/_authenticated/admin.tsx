@@ -14,7 +14,7 @@ import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
 import { Compass, FileText } from "lucide-react";
-import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2 } from "lucide-react";
+import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Council — DBI Admin" }] }),
@@ -191,9 +191,14 @@ function Admin() {
           {isSuperAdmin && <span className="ml-2 rounded-full bg-gold px-3 py-1 text-xs font-bold text-onyx">SUPER ADMIN</span>}
         </h1>
         <p className="text-muted-foreground">Issue invitations, appoint admins, assign DSE Reps, and manage the escalation cadence.</p>
-        <Link to="/council-reports" className="mt-3 inline-flex items-center gap-2 rounded-md border border-gold bg-accent/30 px-4 py-2 text-sm font-semibold text-gold-deep hover:bg-accent/60">
-          <FileText className="h-4 w-4" /> View weekly filings
-        </Link>
+        <div className="mt-3 flex flex-wrap gap-3">
+          <Link to="/council-reports" className="inline-flex items-center gap-2 rounded-md border border-gold bg-accent/30 px-4 py-2 text-sm font-semibold text-gold-deep hover:bg-accent/60">
+            <FileText className="h-4 w-4" /> View weekly filings
+          </Link>
+          <Link to="/council-mentorship" className="inline-flex items-center gap-2 rounded-md border border-gold bg-accent/30 px-4 py-2 text-sm font-semibold text-gold-deep hover:bg-accent/60">
+            <Users className="h-4 w-4" /> Mentorship oversight
+          </Link>
+        </div>
       </div>
 
 

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { pickWeightedMentor, MENTOR_SOFT_CAP, AUTO_ASSIGN_AFTER_DAYS } from "@/lib/mentorship";
 
 const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
 
@@ -382,6 +383,99 @@ export const certifyVettedDse = createServerFn({ method: "POST" })
       .eq("id", data.user_id);
     if (error) throw error;
     return { ok: true };
+  });
+
+/* ── Leadership by Influence: admin oversight ────────────── */
+
+export const listAllMentorships = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { data: rows, error } = await context.supabase
+      .from("mentorships").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    const ids = new Set<string>();
+    for (const r of (rows ?? []) as any[]) { ids.add(r.mentor_id); ids.add(r.mentee_id); }
+    const { data: profiles } = ids.size
+      ? await context.supabase.from("profiles").select("id,full_name,email,vetted_dse_certified_at").in("id", Array.from(ids))
+      : { data: [] as any[] };
+    const byId = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    const { data: flagged } = await context.supabase
+      .from("mentorship_reviews").select("mentorship_id").eq("flag_raised", true);
+    const flaggedIds = new Set((flagged ?? []).map((f: any) => f.mentorship_id));
+    return ((rows ?? []) as any[]).map((r) => ({
+      ...r,
+      mentor: byId.get(r.mentor_id) ?? null,
+      mentee: byId.get(r.mentee_id) ?? null,
+      hasFlag: flaggedIds.has(r.id),
+    }));
+  });
+
+// No mentee goes more than AUTO_ASSIGN_AFTER_DAYS unmatched — past that
+// window this assigns a weighted-random mentor (favoring stronger verified
+// track records without concentrating everyone onto whoever's best right
+// now). The mentee still confirms afterward like any other request; this
+// only skips the browse-and-choose step, it doesn't skip consent.
+export const runAutoAssignMentees = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profiles } = await supabaseAdmin.from("profiles").select("id,created_at,vetted_dse_certified_at");
+    const { data: adminRows } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin");
+    const adminIds = new Set((adminRows ?? []).map((r: any) => r.user_id));
+    const beneficiaries = (profiles ?? []).filter((p: any) => !adminIds.has(p.id));
+    const certById = new Map(beneficiaries.map((p: any) => [p.id, !!p.vetted_dse_certified_at]));
+
+    const { data: allMentorships } = await supabaseAdmin.from("mentorships").select("*");
+    const byMentee = new Map<string, any[]>();
+    for (const m of (allMentorships ?? []) as any[]) {
+      const arr = byMentee.get(m.mentee_id) ?? [];
+      arr.push(m);
+      byMentee.set(m.mentee_id, arr);
+    }
+
+    const now = Date.now();
+    const overdue: string[] = [];
+    for (const b of beneficiaries as any[]) {
+      const rows = (byMentee.get(b.id) ?? []).sort(
+        (a, b2) => new Date(b2.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+      const latest = rows[0];
+      if (latest && (latest.status === "pending" || latest.status === "active")) continue;
+      const since = latest ? new Date(latest.ended_at ?? latest.created_at) : new Date(b.created_at);
+      const days = Math.floor((now - since.getTime()) / 86_400_000);
+      if (days >= AUTO_ASSIGN_AFTER_DAYS) overdue.push(b.id);
+    }
+
+    const loadByMentor = new Map<string, number>();
+    const verifiedByMentor = new Map<string, number>();
+    for (const m of (allMentorships ?? []) as any[]) {
+      if (m.status === "active" || m.status === "pending") {
+        loadByMentor.set(m.mentor_id, (loadByMentor.get(m.mentor_id) ?? 0) + 1);
+      }
+      if (certById.get(m.mentee_id)) {
+        verifiedByMentor.set(m.mentor_id, (verifiedByMentor.get(m.mentor_id) ?? 0) + 1);
+      }
+    }
+
+    let assigned = 0;
+    for (const menteeId of overdue) {
+      const candidates = (beneficiaries as any[])
+        .filter((b) => b.id !== menteeId && (loadByMentor.get(b.id) ?? 0) < MENTOR_SOFT_CAP)
+        .map((b) => ({ mentorId: b.id as string, verifiedCompletions: verifiedByMentor.get(b.id) ?? 0 }));
+      const chosen = pickWeightedMentor(candidates);
+      if (!chosen) continue;
+      const { error } = await supabaseAdmin.from("mentorships").insert({
+        mentor_id: chosen, mentee_id: menteeId, mentor_confirmed: true, mentee_confirmed: false,
+      });
+      if (!error) {
+        assigned++;
+        loadByMentor.set(chosen, (loadByMentor.get(chosen) ?? 0) + 1);
+      }
+    }
+    return { ok: true, overdueCount: overdue.length, assigned };
   });
 
 // ── Path assignment ─────────────────────────────────────────────────────────
