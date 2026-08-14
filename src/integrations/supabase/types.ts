@@ -116,6 +116,57 @@ export type Database = {
         }
         Relationships: []
       }
+      dfy_months: {
+        Row: {
+          created_at: string
+          id: string
+          net_income_usd: number
+          notes: string | null
+          period_month: string
+          qualified: boolean
+          remittance_owed_usd: number
+          remittance_paid: boolean
+          remittance_paid_at: string | null
+          status: Database["public"]["Enums"]["dfy_month_status"]
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          net_income_usd: number
+          notes?: string | null
+          period_month: string
+          qualified?: boolean
+          remittance_owed_usd?: number
+          remittance_paid?: boolean
+          remittance_paid_at?: string | null
+          status?: Database["public"]["Enums"]["dfy_month_status"]
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          net_income_usd?: number
+          notes?: string | null
+          period_month?: string
+          qualified?: boolean
+          remittance_owed_usd?: number
+          remittance_paid?: boolean
+          remittance_paid_at?: string | null
+          status?: Database["public"]["Enums"]["dfy_month_status"]
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       direct_messages: {
         Row: {
           body: string
@@ -280,6 +331,8 @@ export type Database = {
           suspended_by: string | null
           suspension_reason: string | null
           updated_at: string
+          vetted_dse_certified_at: string | null
+          vetted_dse_certified_by: string | null
           xp: number
         }
         Insert: {
@@ -308,6 +361,8 @@ export type Database = {
           suspended_by?: string | null
           suspension_reason?: string | null
           updated_at?: string
+          vetted_dse_certified_at?: string | null
+          vetted_dse_certified_by?: string | null
           xp?: number
         }
         Update: {
@@ -336,6 +391,8 @@ export type Database = {
           suspended_by?: string | null
           suspension_reason?: string | null
           updated_at?: string
+          vetted_dse_certified_at?: string | null
+          vetted_dse_certified_by?: string | null
           xp?: number
         }
         Relationships: [
@@ -485,6 +542,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "beneficiary"
+      dfy_month_status:
+        | "submitted"
+        | "remittance_paid"
+        | "verified"
+        | "disputed"
       invitation_status: "pending" | "accepted" | "expired" | "revoked"
       rank_tier: "recruit" | "operator" | "closer" | "lion" | "crown"
     }
@@ -615,6 +677,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "beneficiary"],
+      dfy_month_status: [
+        "submitted",
+        "remittance_paid",
+        "verified",
+        "disputed",
+      ],
       invitation_status: ["pending", "accepted", "expired", "revoked"],
       rank_tier: ["recruit", "operator", "closer", "lion", "crown"],
     },
