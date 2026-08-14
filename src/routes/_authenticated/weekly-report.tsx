@@ -24,7 +24,7 @@ function WeeklyReportPage() {
   const [demos, setDemos] = useState(0);
   const [calls, setCalls] = useState(0);
   const [clients, setClients] = useState(0);
-  const [revenueNgn, setRevenueNgn] = useState(0);
+  const [revenueUsd, setRevenueUsd] = useState(0);
   const [wins, setWins] = useState("");
   const [blockers, setBlockers] = useState("");
   const [nextWeek, setNextWeek] = useState("");
@@ -53,7 +53,7 @@ function WeeklyReportPage() {
       demos_built: demos,
       calls_booked: calls,
       clients_closed: clients,
-      revenue_usd: revenueNgn,
+      revenue_usd: revenueUsd,
       wins: wins.trim(),
       blockers: blockers.trim(),
       next_week_focus: nextWeek.trim(),
@@ -65,7 +65,7 @@ function WeeklyReportPage() {
     }
     toast.success("Report filed. Council notified.");
     setWins(""); setBlockers(""); setNextWeek("");
-    setOutreach(0); setDemos(0); setCalls(0); setClients(0); setRevenueNgn(0);
+    setOutreach(0); setDemos(0); setCalls(0); setClients(0); setRevenueUsd(0);
     const { data } = await supabase
       .from("weekly_reports")
       .select("*")
@@ -87,7 +87,7 @@ function WeeklyReportPage() {
           Your <Link to="/report" className="text-primary font-semibold hover:underline">Field Report</Link> aggregates these into your escalation score.
         </p>
         <div className="mt-3 rounded-lg border border-crimson/40 bg-crimson/5 px-4 py-2.5 text-xs text-crimson max-w-2xl">
-          <strong>Missed filing = ₦2,500 fine</strong> and a hit to your escalation rating. File it — even if every count is zero.
+          <strong>Missed filing = $5 fine</strong> and a hit to your escalation rating. File it — even if every count is zero.
         </div>
       </header>
 
@@ -99,7 +99,7 @@ function WeeklyReportPage() {
           <NumField label="Clients closed" value={clients} onChange={setClients} />
         </div>
 
-        <NumField label="Revenue this week (₦)" value={revenueNgn} onChange={setRevenueNgn} big />
+        <NumField label="Revenue this week ($)" value={revenueUsd} onChange={setRevenueUsd} big />
 
         <TextArea label="Wins this week" value={wins} onChange={setWins} placeholder="What went well? Any breakthroughs?" />
         <TextArea label="Blockers" value={blockers} onChange={setBlockers} placeholder="What's stuck? What would you ask your DSE Rep?" />
@@ -137,7 +137,7 @@ function WeeklyReportPage() {
                   <MiniStat label="Closed" value={h.clients_closed ?? 0} />
                 </div>
                 {h.revenue_usd ? (
-                  <p className="mt-3 text-xs text-muted-foreground"><strong className="text-foreground">Revenue:</strong> ₦{Number(h.revenue_usd).toLocaleString()}</p>
+                  <p className="mt-3 text-xs text-muted-foreground"><strong className="text-foreground">Revenue:</strong> ${Number(h.revenue_usd).toLocaleString()}</p>
                 ) : null}
                 {h.wins && (
                   <p className="mt-2 text-xs text-muted-foreground"><strong className="text-foreground">Wins:</strong> {h.wins}</p>

@@ -131,14 +131,14 @@ function ReportPage() {
           <Stat icon={Target} label="Tasks (last 14d)" value={`${snapshot.tasksLast14}`} />
         </div>
 
-        {(snapshot.fineNGN > 0 || snapshot.suspensionWeeks > 0) && (
+        {(snapshot.fineUSD > 0 || snapshot.suspensionWeeks > 0) && (
           <div className="mt-6 rounded-xl border border-crimson bg-crimson/10 p-4 flex items-start gap-3">
             <ShieldAlert className="h-5 w-5 text-crimson flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <div className="font-display font-bold text-crimson">
                 {snapshot.suspensionWeeks > 0
-                  ? `Escalation: ${snapshot.suspensionWeeks}-week suspension + ₦${snapshot.fineNGN.toLocaleString()} fine`
-                  : `Warning: ₦${snapshot.fineNGN.toLocaleString()} fine active`}
+                  ? `Escalation: ${snapshot.suspensionWeeks}-week suspension + $${snapshot.fineUSD.toLocaleString()} fine`
+                  : `Warning: $${snapshot.fineUSD.toLocaleString()} fine active`}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Your council admin and the super admin have been notified. Reverse this by hitting your cadence targets this week.

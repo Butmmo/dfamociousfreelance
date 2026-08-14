@@ -158,7 +158,7 @@ function Detail({ report, onBack }: { report: any; onBack: () => void }) {
         <Stat label="Demos" value={report.demos_built ?? 0} />
         <Stat label="Calls" value={report.calls_booked ?? 0} />
         <Stat label="Closed" value={report.clients_closed ?? 0} />
-        <Stat label="Revenue ₦" value={Number(report.revenue_usd ?? 0).toLocaleString()} />
+        <Stat label="Revenue $" value={Number(report.revenue_usd ?? 0).toLocaleString()} />
       </div>
 
       <div className="space-y-4">
