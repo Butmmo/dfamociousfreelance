@@ -33,7 +33,7 @@ const SPACES = [
    bestFits:["Business & Entrepreneurship","Interview & Conversational","Self-Improvement & Personal Development"]},
 ];
 
-const GENRES = [
+export const GENRES = [
   {icon:"💼", name:"Business & Entrepreneurship", color:"#7A5A00",
    why:"A large, well-monetized audience — hosts often already understand marketing ROI and have real budget for production.",
    find:"Apple Podcasts Business category charts, Spotify business podcast charts, LinkedIn posts where hosts promote their own show."},

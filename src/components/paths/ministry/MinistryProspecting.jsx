@@ -73,7 +73,7 @@ const COUNTRIES = [
    signal:"Nigerian-, Ghanaian-, or Caribbean-founded congregation renting a hall or former cinema, growing across multiple UK cities, coordinated entirely by WhatsApp."},
 ];
 
-const MINISTRY_TYPES = [
+export const MINISTRY_TYPES = [
   {icon:"⛪", color:"#7A5A00", name:"Local Parish / Congregation",
    blurb:"The foundational unit of this whole system — a single church, parish, or assembly with one primary pastor or priest. This is every student's own starting point, and remains the highest-volume, most warmly-reachable client type anywhere in the world.",
    size:"Typically under 500 members; budget usually modest and controlled by one or two decision-makers.",

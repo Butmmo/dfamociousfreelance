@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 
-const TARGETS = [
+export const TARGETS = [
   {icon:"🏠", name:"Real Estate Agents & Team Leaders", tag:"High-ticket, referral-driven",
    why:"Commission income makes marketing spend feel normal, and referral business lives or dies on visible credibility — yet most agents only post listings, not authority.",
    pain:"Posts are 90% listing photos and \"just closed\" graphics, with zero personal story or expertise showing through.",

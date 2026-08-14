@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
+import { MINISTRY_TYPES } from "./MinistryProspecting";
 
 const STORAGE_KEY = "ministry-progress-v1";
 
@@ -21,6 +22,50 @@ const BPS_CHECKPOINTS = [
   { day:16, type:"Belief Goal", detail:"Commit to your personal case-study and network formula — how you'll document the pilot's results and which warm relationships you'll approach first — chosen from your own Week 1-2 experience, not a guess." },
   { day:40, type:"Affirmation Goal", detail:"A real, honest effort report from Belief Goal to here. Strict remark bands apply: 72%+ 'Effort is satisfactory, goal set to be achieved.' 60-71% 'Effort is minimal, goal not taken seriously.' Below 60% 'Effort is below requisite, failure of goal is imminent.'" },
   { day:60, type:"Evaluation Goal", detail:"The full evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'" },
+];
+
+/* Phase overview — the 9 weeks grouped into 3 arcs across this system's
+   60-day arc, same shape as every other rebuilt path's Start Here tab.
+   Scorecards are the weeks' own real "goal" fields, combined, not new
+   claims. */
+const PHASE_META = [
+  { name: "Phase 01 — Audit, Pilot & Case Study", range: "Weeks 1–3 · Days 1–21",
+    scorecard: "By end of Day 21: your own parish audited with a pilot chosen and verbal buy-in secured, the pilot live and running for a real event with early friction fixed, and a real case study with numbers and a packaged offer ready to show any parish or ministry." },
+  { name: "Phase 02 — Warm Network, Close & Deliver", range: "Weeks 4–6 · Days 22–42",
+    scorecard: "By end of Day 42: a prioritized list of real warm relationships (no cold outreach), your first paying ministry client with a clear agreement on package, price and timeline, and the system fully built, tested and live for them." },
+  { name: "Phase 03 — Support, Expand & Scale", range: "Weeks 7–9 · Days 43–60",
+    scorecard: "By end of Day 60: a smoothly running system and a client who feels genuinely supported, an upsold client and at least one warm referral inside the diocesan or denominational network, and a full honest review with your own refined playbook documented." },
+];
+
+/* "Pick a Focus" — sourced from the SAME MINISTRY_TYPES catalog the
+   Ministry Prospecting Guide itself renders (7 client types from Local
+   Parish through Diaspora Congregation), so nothing here is invented or
+   drifts out of sync with that playbook. The beneficiary types up to 3
+   candidate client types; FocusPicker fetches the real stats for each. */
+const FOCUS_FIELDS = [
+  { key: "blurb", label: "About This Client Type" },
+  { key: "size", label: "Typical Size & Budget" },
+  { key: "entryService", label: "Best Entry Service" },
+  { key: "receptiveness", label: "Receptiveness To Outreach" },
+];
+
+/* Scout Methods — genuinely different ways of finding real ministry
+   clients, not sequential steps of one method. Drawn from the real
+   culture/comms/pilot data already documented in the Ministry Prospecting
+   Guide's REGIONAL_NOTES and COUNTRIES, separated out as parallel,
+   nameable options — this system runs on warm relationships first, not
+   cold outreach. */
+const SCOUT_METHODS = [
+  { name: "Denominational HQ Multiplier", icon: "🏛️",
+    detail: "One relationship at a diocese or denominational headquarters can open dozens of individual congregations at once. Start conversations at the network level, not just the parish level, whenever a HQ contact exists." },
+  { name: "Warm Elder / Clergy Referral", icon: "🤝",
+    detail: "A referral from a respected elder or clergy member carries far more weight than any pitch deck, especially in Sub-Saharan Africa and Latin America. This is the primary channel this whole system is built on, not a fallback." },
+  { name: "Event-Signal Scouting", icon: "📅",
+    detail: "Watch for a parish's next big event — a feast day, camp meeting, crusade, novena, or regional convention. These are the highest-visibility, highest-pain-point moments to pitch a pilot around, since the headcount and coordination pain is freshest right then." },
+  { name: "WhatsApp / Messenger Channel Scan", icon: "💬",
+    detail: "In most of this system's strongest markets, WhatsApp (or Facebook Messenger in the Philippines) is the parish's real communication backbone, not email. A parish still coordinating entirely by group chat or paper sign-up is a direct signal of the gap this system fills." },
+  { name: "Diaspora Congregation Search", icon: "🌍",
+    detail: "In mature markets like the US and UK, the real opening sits inside African, Filipino and Latino immigrant congregations the mature incumbents rarely design for. Search specifically for fast-growing diaspora congregations coordinated by one overworked pastor's phone." },
 ];
 
 const WEEKS = [
@@ -1334,6 +1379,9 @@ export default function DigitalMinistrySystems() {
   if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
+    {id:"start",    label:"🧭 Start Here"},
+    {id:"focus",    label:"🎯 Pick a Focus"},
+    {id:"scout",    label:"🔍 Scout Methods"},
     {id:"plan",     label:"📅 60-Day Plan"},
     {id:"notion",   label:"🗂️ Ministry CRM"},
     {id:"services", label:"⛪ The 4 Services"},
@@ -1433,6 +1481,60 @@ export default function DigitalMinistrySystems() {
 
       {/* CONTENT */}
       <div style={{maxWidth:880,margin:"0 auto",padding:"18px 13px 60px"}}>
+
+        {/* START HERE */}
+        {tab==="start"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How This System Works</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
+              Digital Ministry Systems is a 60-day system for building a paid parish or ministry retainer,
+              proven first inside your own community — starting from a self-audited pilot, through a real case
+              study, warm-network outreach, and a converted support retainer.
+            </p>
+            <PhaseOverview phases={PHASE_META}/>
+            <div style={{background:"#F8F5EE",border:"1px solid #FBF8F1",borderRadius:12,padding:"14px 16px",marginBottom:18}}>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>How to run this system</p>
+              <ol style={{margin:0,paddingLeft:18,fontSize:13,color:"#6E6459",lineHeight:1.8}}>
+                <li>Read <strong style={{color:"#201A16"}}>Pick a Focus</strong> and commit to the client type closest to your own community before Day 8 — your pilot has to be somewhere real.</li>
+                <li>Learn <strong style={{color:"#201A16"}}>Scout Methods</strong> before Week 4 — this system runs on warm relationships, not cold outreach.</li>
+                <li>Work the <strong style={{color:"#201A16"}}>60-Day Plan</strong> in order, checking off tasks as you go — your rank climbs automatically.</li>
+                <li>Read <strong style={{color:"#201A16"}}>The 4 Services</strong> whenever you're unsure what to actually build for a client.</li>
+              </ol>
+            </div>
+            <div>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>BPS Checkpoints Inside the 60 Days</p>
+              <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 10px",lineHeight:1.6}}>
+                Three days in the plan are marked ★ — Belief (Day 16), Affirmation (Day 40), and Evaluation (Day 60).
+              </p>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
+          </div>
+        )}
+
+        {/* PICK A FOCUS */}
+        {tab==="focus"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick a Focus</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Type up to 3 client types you're drawn to from the Ministry Prospecting Guide's full catalog —
+              from Local Parish through Diaspora Congregation. Fetch each one's real size, entry service and
+              receptiveness data, compare, then commit to the one closest to your own community before Day 8.
+            </p>
+            <FocusPicker options={MINISTRY_TYPES} getName={(o)=>o.name} fields={FOCUS_FIELDS} placeholder="e.g. Local Parish / Congregation"/>
+          </div>
+        )}
+
+        {/* SCOUT METHODS */}
+        {tab==="scout"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Scout Methods</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Five genuinely different ways to find real ministry clients — the engine behind Week 4's warm
+              network and every outreach day after it. This system runs on trust first, not cold outreach.
+            </p>
+            <ScoutMethodsList methods={SCOUT_METHODS}/>
+          </div>
+        )}
 
         {/* PLAN */}
         {tab==="plan"&&(

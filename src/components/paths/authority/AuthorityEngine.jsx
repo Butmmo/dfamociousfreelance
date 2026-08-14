@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
+import { TARGETS } from "./AuthorityProspecting";
 
 const STORAGE_KEY = "authority-progress-v1";
 
@@ -789,31 +790,48 @@ const NOTION_VIEWS = [
   {name:"💰 Active Clients",     desc:"Filter: Stage = Retainer. Your recurring revenue base and referral source list."},
 ];
 
-const PERSONAS = [
-  {icon:"🏠", name:"Real Estate Coaches & Agents",
-   why:"A high-ticket industry where personal brand drives referrals directly — agents who post consistently visibly outperform those who don't.",
-   find:"LinkedIn search 'real estate coach,' real estate Facebook groups cross-referenced with a LinkedIn presence, real estate conference speaker lists"},
-  {icon:"💪", name:"Fitness & Health Coaches",
-   why:"Transformation stories and client wins perform exceptionally well — the audience is naturally primed to engage with authentic content.",
-   find:"LinkedIn search 'fitness coach' or 'wellness coach,' Instagram fitness coaches who are underutilizing LinkedIn"},
-  {icon:"💻", name:"B2B SaaS Founders",
-   why:"Thought leadership content directly drives inbound sales leads — founders know this but rarely have time to write consistently themselves.",
-   find:"LinkedIn search by job title 'Founder' plus 'SaaS,' Product Hunt launches where founders are actively building an audience"},
-  {icon:"💰", name:"Financial Advisors & Consultants",
-   why:"Trust-building content is essential in this industry — consistent posting differentiates advisors in an otherwise commoditized market.",
-   find:"LinkedIn search 'financial advisor,' CFP professional groups"},
-  {icon:"🎯", name:"Executive & Leadership Coaches",
-   why:"Authority-building is the entire product for this persona — contrarian, high-conviction takes perform unusually well.",
-   find:"LinkedIn search 'executive coach' or 'leadership coach,' ICF member directories"},
-  {icon:"🧑‍💼", name:"Recruiters & HR Consultants",
-   why:"Hiring trends and career advice content has broad, highly engaged audience appeal — visible expertise directly drives referrals.",
-   find:"LinkedIn search 'recruiter' or 'talent acquisition,' HR conference attendee lists"},
-  {icon:"📈", name:"Marketing & Sales Consultants",
-   why:"Tactical how-to content and case studies perform extremely well — this audience actively studies and shares good marketing content.",
-   find:"LinkedIn search 'marketing consultant' or 'fractional CMO,' marketing agency owner profiles"},
-  {icon:"⚖️", name:"Legal Professionals & Consultants",
-   why:"Educational, myth-busting content builds trust in a traditionally opaque industry — underserved compared to other professional niches.",
-   find:"LinkedIn search by practice area plus 'attorney' or 'legal consultant,' bar association directories"},
+/* Phase overview — the 7 weeks grouped into 3 arcs, same shape as every
+   other rebuilt path's Start Here tab. Scorecards are the weeks' own real
+   "goal" fields, combined, not new claims. */
+const PHASE_META = [
+  { name: "Phase 01 — Foundation & Portfolio", range: "Weeks 1–2 · Days 1–14",
+    scorecard: "By end of Day 14: free tools set up, hook and structure patterns studied, a specific persona chosen, and 15–20 practice posts ready as your portfolio." },
+  { name: "Phase 02 — Identify, Engage & Sample", range: "Weeks 3–4 · Days 15–28",
+    scorecard: "By end of Day 28: 20–30 target profiles identified with your CRM live and genuine engagement running for a full week, plus free sample rewrites sent to your top 10 targets." },
+  { name: "Phase 03 — Close, Deliver & Prove", range: "Weeks 5–7 · Days 29–45",
+    scorecard: "By end of Day 45: first paying client closed with a full voice-capture interview and 30-day content calendar live, first results presented, an upsell conversation opened, and a referral requested." },
+];
+
+/* "Pick a Focus" — sourced from the SAME TARGETS catalog the Prospecting
+   Engine playbook itself renders (10 professional personas with real budget,
+   trigger and angle data), so nothing here is invented or drifts out of
+   sync with that playbook. The beneficiary types up to 3 candidate
+   personas; FocusPicker fetches the real stats for each. */
+const FOCUS_FIELDS = [
+  { key: "tag", label: "Tag" },
+  { key: "why", label: "Why This Works" },
+  { key: "pain", label: "Their Content Gap" },
+  { key: "budget", label: "Typical Budget" },
+  { key: "triggers", label: "Outreach Triggers" },
+  { key: "find", label: "Where To Find Them" },
+  { key: "angle", label: "Opening Angle" },
+];
+
+/* Scout Methods — genuinely different ways of finding each persona, not
+   sequential steps of one method. Each is drawn from the real "find" and
+   "triggers" data already documented across TARGETS, separated out as
+   parallel, nameable options. */
+const SCOUT_METHODS = [
+  { name: "LinkedIn Title & Keyword Search", icon: "🔍",
+    detail: "Search job titles and keywords for your chosen persona directly on LinkedIn — \"real estate team lead,\" \"executive coach,\" \"fractional CMO.\" The single fastest way to a long list of matching profiles." },
+  { name: "Association & Directory Trawl", icon: "📋",
+    detail: "Professional-association member directories (CFP Board, NAPFA, ICF, state bar associations) and industry award or \"rising star\" lists are curated, credibility-pre-vetted lists LinkedIn search alone won't surface as cleanly." },
+  { name: "Trigger-Event Monitoring", icon: "⚡",
+    detail: "Watch for the specific trigger events each persona has — a closed funding round, a notable placement, an award, a conference talk, a book launch. Outreach that references a real recent trigger consistently outperforms a cold, event-blind message." },
+  { name: "Conference & Guest-List Mining", icon: "🎤",
+    detail: "Speaker lists, exhibitor lists, and podcast guest directories (PodMatch, Podchaser, PodcastGuests.com) surface people already signaling they want more visibility — a warmer starting point than a cold search." },
+  { name: "Cross-Platform Presence Check", icon: "🐦",
+    detail: "For personas like investors, both LinkedIn AND X drive real deal flow. Checking both platforms instead of just LinkedIn catches targets who'd otherwise be missed entirely." },
 ];
 
 const SERVICE_COMPONENTS = [
@@ -933,7 +951,6 @@ export default function TheAuthorityEngine() {
   const [tab,setTab]             = useState("plan");
   const [openWeek,setOpenWeek]   = useState(0);
   const [openDay,setOpenDay]     = useState(null);
-  const [openPersona,setOpenPersona] = useState(null);
   const [openSvc,setOpenSvc]     = useState(null);
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
@@ -981,9 +998,11 @@ export default function TheAuthorityEngine() {
   if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
+    {id:"start",   label:"🧭 Start Here"},
+    {id:"focus",   label:"🎯 Pick a Focus"},
+    {id:"scout",   label:"🔍 Scout Methods"},
     {id:"plan",    label:"📅 45-Day Plan"},
     {id:"notion",  label:"🗂️ Prospect CRM"},
-    {id:"persona", label:"🎭 Pick Your Persona"},
     {id:"services",label:"✍️ Service Components"},
     {id:"scripts", label:"💬 Scripts"},
     {id:"pricing", label:"💰 Packages"},
@@ -1083,6 +1102,61 @@ export default function TheAuthorityEngine() {
 
       {/* CONTENT */}
       <div style={{maxWidth:880,margin:"0 auto",padding:"18px 13px 60px"}}>
+
+        {/* START HERE */}
+        {tab==="start"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>How This System Works</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px",lineHeight:1.6}}>
+              The Authority Engine is a 45-day system for building a paid LinkedIn ghostwriting retainer for
+              one professional persona — starting from free practice posts, through targeted engagement, a
+              written free-sample proof, and a converted content-calendar retainer.
+            </p>
+            <PhaseOverview phases={PHASE_META}/>
+            <div style={{background:"#F8F5EE",border:"1px solid #FBF8F1",borderRadius:12,padding:"14px 16px",marginBottom:18}}>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>How to run this system</p>
+              <ol style={{margin:0,paddingLeft:18,fontSize:13,color:"#6E6459",lineHeight:1.8}}>
+                <li>Read <strong style={{color:"#201A16"}}>Pick a Focus</strong> and commit to one persona before Day 8 — you can't write, engage, or pitch to a target you haven't chosen.</li>
+                <li>Learn <strong style={{color:"#201A16"}}>Scout Methods</strong> in Week 1 — they're the engine every later engagement day runs on.</li>
+                <li>Work the <strong style={{color:"#201A16"}}>45-Day Plan</strong> in order, checking off tasks as you go — your rank climbs automatically.</li>
+                <li>Read <strong style={{color:"#201A16"}}>Service Components</strong> whenever you're unsure what a retainer actually delivers.</li>
+              </ol>
+            </div>
+            <div>
+              <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",margin:"0 0 8px"}}>BPS Checkpoints Inside the 45 Days</p>
+              <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 10px",lineHeight:1.6}}>
+                Three days in the plan are marked ★ — Belief (Day 16), Affirmation (Day 30), and Evaluation (Day 45).
+              </p>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
+          </div>
+        )}
+
+        {/* PICK A FOCUS */}
+        {tab==="focus"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick a Focus</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Type up to 3 professional personas you're drawn to from the Prospecting Engine's full catalog.
+              Fetch each one's real budget, triggers, and opening angle, compare, then specialize deeply in
+              one before Day 8 — this is the decision that keeps you from competing with every other student
+              running this system.
+            </p>
+            <FocusPicker options={TARGETS} getName={(o)=>o.name} fields={FOCUS_FIELDS} placeholder="e.g. Independent Financial Advisors & RIAs"/>
+          </div>
+        )}
+
+        {/* SCOUT METHODS */}
+        {tab==="scout"&&(
+          <div>
+            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Scout Methods</h2>
+            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
+              Five genuinely different ways to find real targets inside your chosen persona — the engine
+              behind every outreach day in the 45-Day Plan.
+            </p>
+            <ScoutMethodsList methods={SCOUT_METHODS}/>
+          </div>
+        )}
 
         {/* PLAN */}
         {tab==="plan"&&(
@@ -1230,50 +1304,6 @@ export default function TheAuthorityEngine() {
                   <p style={{fontSize:12.5,color:"#6E6459",margin:0,lineHeight:1.5}}>{v.desc}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* PERSONA */}
-        {tab==="persona"&&(
-          <div>
-            <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>Pick Your Persona</h2>
-            <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 16px",lineHeight:1.6}}>
-              This is the decision that keeps you from competing with every other student running
-              this system. Choose one professional persona and specialize deeply.
-            </p>
-            <div style={{display:"flex",flexDirection:"column",gap:9}}>
-              {PERSONAS.map((n,i)=>{
-                const isOpen=openPersona===i;
-                return (
-                  <div key={i} onClick={()=>setOpenPersona(isOpen?null:i)}
-                    style={{background:isOpen?"#FBF8F1":"#F8F5EE",
-                      border:`1px solid ${isOpen?"#0D7A5F":"#FBF8F1"}`,
-                      borderRadius:11,cursor:"pointer",overflow:"hidden"}}>
-                    <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:10}}>
-                      <span style={{fontSize:22,flexShrink:0}}>{n.icon}</span>
-                      <span style={{flex:1,fontWeight:600,fontSize:14,color:"#201A16"}}>{n.name}</span>
-                      <Chevron open={isOpen}/>
-                    </div>
-                    {isOpen&&(
-                      <div style={{padding:"0 14px 16px",borderTop:"1px solid #FBF8F1"}}>
-                        <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#0D7A5F",textTransform:"",
-                            letterSpacing:".07em",marginBottom:5}}>💡 Why This Works</div>
-                          <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #0D7A5F40",paddingLeft:10}}>{n.why}</p>
-                        </div>
-                        <div style={{marginTop:12}}>
-                          <div style={{fontSize:10,fontWeight:700,color:"#C99A3B",textTransform:"",
-                            letterSpacing:".07em",marginBottom:5}}>📍 Where to Find Them</div>
-                          <p style={{fontSize:13,color:"#6E6459",margin:0,lineHeight:1.6,
-                            borderLeft:"2px solid #C99A3B40",paddingLeft:10}}>{n.find}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}

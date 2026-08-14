@@ -1,8 +1,11 @@
 // Shared DBI Regal primitives — palette, typography tokens, and the small set
 // of UI building blocks every path's Engine/Machine component is built from
-// (ScoreDots, CalloutBox, AccordionShell, NextLink, TaskRow, DayCard, BpsCheckpoints).
+// (ScoreDots, CalloutBox, AccordionShell, NextLink, TaskRow, DayCard, BpsCheckpoints,
+// PhaseOverview, ScoutMethodsList, FocusPicker).
 // Extracted from AscentMachine.jsx so every path stays visually and behaviorally
 // in sync instead of each one carrying its own drifting copy.
+
+import { useState } from "react";
 
 /* ─── PALETTE (DBI Regal) ─── */
 export const CREAM = "#F8F5EE";
@@ -192,6 +195,123 @@ export function BpsCheckpoints({ checkpoints }) {
           <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.65, margin: 0 }}>{c.detail}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ─── PHASE OVERVIEW ───
+   The "Start Here" phase-card block — name / day-or-week range / scorecard —
+   shared across every path so the overview tab reads identically no matter
+   which system a beneficiary is running. */
+export function PhaseOverview({ phases }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
+      {phases.map((meta, i) => (
+        <div key={i} style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 16px" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+            <p style={{ fontWeight: 700, fontSize: 13.5, color: INK, margin: 0 }}>{meta.name}</p>
+            <p style={{ fontSize: 11, color: GOLD_DEEP, fontWeight: 700, margin: 0, whiteSpace: "nowrap" }}>{meta.range}</p>
+          </div>
+          <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.6, margin: 0 }}>{meta.scorecard}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── SCOUT METHODS LIST ───
+   A simple card per named prospecting method — used whenever a path's
+   Scout Methods tab lists several genuinely different ways to find leads,
+   instead of one method with sequential sub-steps. */
+export function ScoutMethodsList({ methods }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {methods.map((m) => (
+        <div key={m.name} style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 6 }}>
+            {m.icon && <span style={{ fontSize: 18 }}>{m.icon}</span>}
+            <p style={{ fontWeight: 700, fontSize: 14, color: INK, margin: 0 }}>{m.name}</p>
+          </div>
+          <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.6, margin: 0 }}>{m.detail}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── FOCUS PICKER ───
+   "Pick a Focus" mechanic: the beneficiary types up to 3 names, drawn from
+   this path's own real Prospecting Guide catalog (via a <datalist>, so the
+   options are never invented — always fetched from the same data the
+   Prospecting Guide itself renders), and the matching stats are pulled and
+   displayed so the choice is informed rather than a guess. */
+export function FocusPicker({ options, getName, fields, placeholder = "Start typing a name…", listId = "focus-picker-options" }) {
+  const [picks, setPicks] = useState(["", "", ""]);
+
+  function findMatch(text) {
+    const norm = text.trim().toLowerCase();
+    if (!norm) return null;
+    return (
+      options.find((o) => getName(o).toLowerCase() === norm) ||
+      options.find((o) => getName(o).toLowerCase().includes(norm))
+    );
+  }
+
+  return (
+    <div>
+      <datalist id={listId}>
+        {options.map((o, i) => (
+          <option key={i} value={getName(o)} />
+        ))}
+      </datalist>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10, marginBottom: 18 }}>
+        {picks.map((p, i) => (
+          <div key={i}>
+            <p style={labelStyle}>Choice {i + 1}</p>
+            <input
+              list={listId}
+              value={p}
+              onChange={(e) => setPicks((prev) => prev.map((v, j) => (j === i ? e.target.value : v)))}
+              placeholder={placeholder}
+              style={{
+                width: "100%", boxSizing: "border-box", padding: "9px 11px", borderRadius: 8,
+                border: `1px solid ${BORDER}`, fontSize: 13, background: "#FFFFFF", color: INK, fontFamily: "inherit",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {picks.map((p, i) => {
+          if (!p.trim()) return null;
+          const opt = findMatch(p);
+          if (!opt) {
+            return (
+              <div key={i} style={{ background: TONE.caution.bg, border: `1px solid ${TONE.caution.bd}`, borderRadius: 12, padding: "12px 15px" }}>
+                <p style={{ fontSize: 12.5, color: INK, margin: 0 }}>No match for "{p}" — check the spelling against the list above.</p>
+              </div>
+            );
+          }
+          return (
+            <div key={i} style={{ background: "#FFFFFF", border: `1px solid ${GOLD}55`, borderRadius: 12, padding: "14px 16px" }}>
+              <p style={{ fontWeight: 700, fontSize: 14.5, color: INK, margin: "0 0 10px" }}>
+                {opt.icon ? `${opt.icon} ` : ""}{getName(opt)}
+              </p>
+              {fields.map((f) => {
+                const raw = opt[f.key];
+                if (raw == null || raw === "") return null;
+                const value = Array.isArray(raw) ? raw.join(" · ") : raw;
+                return (
+                  <div key={f.key} style={{ marginBottom: 8 }}>
+                    <p style={labelStyle}>{f.label}</p>
+                    <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.6, margin: 0 }}>{value}</p>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
