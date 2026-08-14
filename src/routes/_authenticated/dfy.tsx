@@ -48,6 +48,7 @@ function DfyPage() {
       supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
       supabase.from("dfy_months").select("*").eq("user_id", user.id).order("period_month", { ascending: false }),
     ]);
+    if (mRes.error) toast.error("DFY tracker isn't available on this environment yet.");
     setProfile(pRes.data);
     setMonths((mRes.data as any) ?? []);
     const current = (mRes.data as any[])?.find((m) => m.period_month === thisMonth);

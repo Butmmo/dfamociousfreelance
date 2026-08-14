@@ -63,13 +63,21 @@ function Admin() {
 
   const refresh = async () => {
     try {
-      const [b, i, a, s, e, d] = await Promise.all([
+      const [b, i, a, s, e] = await Promise.all([
         listBens({ data: undefined as never }), listInvs({ data: undefined as never }),
         listAdms({ data: undefined as never }), listAssigns({ data: undefined as never }),
-        listEsc({ data: undefined as never }), listDfy({ data: undefined as never }),
+        listEsc({ data: undefined as never }),
       ]);
-      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e); setDfyMonths(d);
+      setBens(b); setInvs(i); setAdmins(a); setAssigns(s); setEscs(e);
     } catch (e: any) { toast.error(e.message ?? "Failed to load"); }
+    // Isolated: the DFY tracker is a newer, separate feature. If its table
+    // isn't migrated yet on this environment, that must never take down
+    // the rest of the Council page — it just fails quietly here and the
+    // DFY panels stay empty until it's available.
+    try {
+      const d = await listDfy({ data: undefined as never });
+      setDfyMonths(d);
+    } catch { /* DFY tracker not available yet on this environment */ }
   };
   useEffect(() => { if (role === "admin") refresh(); /* eslint-disable-next-line */ }, [role]);
 
