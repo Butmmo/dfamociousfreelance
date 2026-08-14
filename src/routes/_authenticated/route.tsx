@@ -5,7 +5,7 @@ import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
 import { useEffect } from "react";
-import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert, UserRound, MessageSquare, Users } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -74,6 +74,8 @@ function AuthedShell() {
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
     { to: "/calendar", label: "Calendar", icon: CalendarDays, show: !needsChoice },
     { to: "/report", label: "Report", icon: FileBarChart, show: !needsChoice },
+    { to: "/messages", label: "Messages", icon: MessageSquare, show: !needsChoice },
+    { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
     // Only the founder keeps the Paths tab; everyone else sees it solely inside their 24-hour window.
     { to: "/choose-path", label: isSuperAdmin ? "Paths" : "Your Path", icon: Compass, show: isSuperAdmin || needsChoice },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
@@ -104,6 +106,9 @@ function AuthedShell() {
                 {path ? ` · ${path.short}` : ""}
               </div>
             </div>
+            <Link to="/profile" className="p-2 rounded-md hover:bg-muted shrink-0" aria-label="Profile" title="Profile">
+              <UserRound className="h-4 w-4" />
+            </Link>
             <button onClick={signOut} className="p-2 rounded-md hover:bg-muted shrink-0" aria-label="Sign out">
               <LogOut className="h-4 w-4" />
             </button>
