@@ -1,174 +1,760 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+
+const STORAGE_KEY = "broadcast-progress-v1";
+
+const RANKS = [
+  { name:"Broadcast Recruit", threshold:0, blurb:"Day 1. Audacity and CapCut installed, shows bookmarked to study." },
+  { name:"Production Scout", threshold:10, blurb:"Core editing techniques learned, first practice episode edited." },
+  { name:"Genre Prospector", threshold:23, blurb:"A full demo portfolio — episodes, clips, show notes and a genre chosen." },
+  { name:"Broadcast Apprentice", threshold:37, blurb:"Outreach sent to real hosts. The pipeline is live." },
+  { name:"Field Production Partner", threshold:51, blurb:"First discovery call run, real workflow gaps understood." },
+  { name:"Contract Broadcast Engineer", threshold:66, blurb:"First retainer signed. A real show, onboarded." },
+  { name:"Certified Broadcast Engineer", threshold:79, blurb:"45 days, one genre, one real episode published. This one's earned." },
+];
+
+/* BPS checkpoints — Belief (Day 16) → Affirmation (Day 30) → Evaluation (Day 45),
+   the same three days as CareBridge and the SMB Optimisation Engine. */
+const BPS_CHECKPOINTS = [
+  { day:16, type:"Belief Goal", detail:"Commit to your personal prospecting formula — how many shows you audit daily, how many outreach messages you send weekly — chosen from your own Week 1-2 practice, not a guess." },
+  { day:30, type:"Affirmation Goal", detail:"A 14-day honest effort report on your formula. Strict remark bands apply: 72%+ 'Effort is satisfactory, goal set to be achieved.' 60-71% 'Effort is minimal, goal not taken seriously.' Below 60% 'Effort is below requisite, failure of goal is imminent.'" },
+  { day:45, type:"Evaluation Goal", detail:"The full 40-day evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'" },
+];
 
 const WEEKS = [
   {
-    week:1, title:"Learn the System, Build Your Editing Skills", range:"Days 1-7",
-    icon:"🎧", color:"#7A5A00",
-    goal:"Free tools set up, core editing techniques learned, and your first practice episode edited.",
-    days:[
-      {day:1, focus:"Free Tool Setup", icon:"⚡",
-       note:"Total cost today: $0. Audacity is unlimited and genuinely professional — no watermarks, no time caps.",
-       tasks:[
-         {id:"1a",text:"Download Audacity — free, unlimited, no time or feature restrictions"},
-         {id:"1b",text:"Create a free CapCut account for social clip creation"},
-         {id:"1c",text:"Create a free Notion account — this becomes your Show CRM"},
-         {id:"1d",text:"Bookmark 10-15 podcasts across genres you're considering, to study production quality"},
-       ]},
-      {day:2, focus:"Learn Audacity Basics", icon:"🎛️",
-       tasks:[{id:"2a",text:"Complete a beginner Audacity tutorial covering noise reduction, leveling, and cutting dead air"}]},
-      {day:3, focus:"Study Podcast Editing Standards", icon:"🔍",
-       note:"Train your ear before you train your hands. Knowing what 'good' sounds like is half the skill.",
-       tasks:[
-         {id:"3a",text:"Listen to 5 well-produced podcasts and 5 poorly-produced ones — note the specific differences"},
-         {id:"3b",text:"Study pacing, filler-word removal, and level consistency across the well-produced examples"},
-       ]},
-      {day:4, focus:"Learn Show Notes and Timestamps", icon:"📝",
-       tasks:[{id:"4a",text:"Study 5 examples of well-written show notes and note what makes them effective"}]},
-      {day:5, focus:"Learn Clip Creation Basics", icon:"✂️",
-       note:"Most new listeners discover a show through a clip, not the platform itself — this skill matters as much as editing.",
-       tasks:[{id:"5a",text:"Study 10 high-performing podcast clips on TikTok, Reels, or Shorts — note the hook, captions, and format"}]},
-      {day:6, focus:"Edit Practice Episode 1", icon:"🎬",
-       tasks:[
-         {id:"6a",text:"Find royalty-free or your own recorded raw podcast audio"},
-         {id:"6b",text:"Edit a full practice episode start to finish in Audacity"},
-       ]},
-      {day:7, focus:"Week 1 Review", icon:"✅",
-       tasks:[{id:"7a",text:"Listen back critically — does it sound professionally produced?"}]},
-    ]},
+    "week": 1,
+    "title": "Learn the System, Build Your Editing Skills",
+    "range": "Days 1-7",
+    "icon": "🎧",
+    "color": "#7A5A00",
+    "goal": "Free tools set up, core editing techniques learned, and your first practice episode edited.",
+    "days": [
+      {
+        "day": 1,
+        "focus": "Free Tool Setup",
+        "icon": "⚡",
+        "note": "Total cost today: $0. Audacity is unlimited and genuinely professional — no watermarks, no time caps.",
+        "tasks": [
+          {
+            "id": "1a",
+            "xp": 10,
+            "text": "Download Audacity — free, unlimited, no time or feature restrictions"
+          },
+          {
+            "id": "1b",
+            "xp": 10,
+            "text": "Create a free CapCut account for social clip creation"
+          },
+          {
+            "id": "1c",
+            "xp": 10,
+            "text": "Create a free Notion account — this becomes your Show CRM"
+          },
+          {
+            "id": "1d",
+            "xp": 15,
+            "text": "Bookmark 10-15 podcasts across genres you're considering, to study production quality"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Learn Audacity Basics",
+        "icon": "🎛️",
+        "tasks": [
+          {
+            "id": "2a",
+            "xp": 10,
+            "text": "Complete a beginner Audacity tutorial covering noise reduction, leveling, and cutting dead air"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Study Podcast Editing Standards",
+        "icon": "🔍",
+        "note": "Train your ear before you train your hands. Knowing what 'good' sounds like is half the skill.",
+        "tasks": [
+          {
+            "id": "3a",
+            "xp": 10,
+            "text": "Listen to 5 well-produced podcasts and 5 poorly-produced ones — note the specific differences"
+          },
+          {
+            "id": "3b",
+            "xp": 15,
+            "text": "Study pacing, filler-word removal, and level consistency across the well-produced examples"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Learn Show Notes and Timestamps",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "4a",
+            "xp": 10,
+            "text": "Study 5 examples of well-written show notes and note what makes them effective"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Learn Clip Creation Basics",
+        "icon": "✂️",
+        "note": "Most new listeners discover a show through a clip, not the platform itself — this skill matters as much as editing.",
+        "tasks": [
+          {
+            "id": "5a",
+            "xp": 10,
+            "text": "Study 10 high-performing podcast clips on TikTok, Reels, or Shorts — note the hook, captions, and format"
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Edit Practice Episode 1",
+        "icon": "🎬",
+        "tasks": [
+          {
+            "id": "6a",
+            "xp": 10,
+            "text": "Find royalty-free or your own recorded raw podcast audio"
+          },
+          {
+            "id": "6b",
+            "xp": 15,
+            "text": "Edit a full practice episode start to finish in Audacity"
+          }
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Week 1 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "7a",
+            "xp": 10,
+            "text": "Listen back critically — does it sound professionally produced?"
+          },
+          {
+            "id": "d7badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "🎧",
+            "text": "Editing Skills Proven — your first practice episode edited and reviewed critically."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:2, title:"Build Your Full Demo Portfolio", range:"Days 8-14",
-    icon:"📁", color:"#0D7A5F",
-    goal:"Two fully-produced practice episodes, show notes, social clips, and a Loom demo ready.",
-    days:[
-      {day:8, focus:"Edit Practice Episode 2", icon:"🎬",
-       tasks:[{id:"8a",text:"Edit a second practice episode, ideally in a different style than episode 1"}]},
-      {day:9, focus:"Write Show Notes for Both Episodes", icon:"📝",
-       tasks:[{id:"9a",text:"Write complete show notes and timestamps for both practice episodes"}]},
-      {day:10, focus:"Create Social Clips", icon:"✂️",
-       tasks:[{id:"10a",text:"Cut 3-5 clips from your practice episodes using CapCut, with captions and vertical formatting"}]},
-      {day:11, focus:"Set Up a Distribution Demo", icon:"📡",
-       tasks:[
-         {id:"11a",text:"Create a free Buzzsprout or Spotify for Podcasters account"},
-         {id:"11b",text:"Upload one practice episode to demonstrate the publishing process"},
-       ]},
-      {day:12, focus:"Build Your Case Study Page", icon:"📄",
-       tasks:[{id:"12a",text:"Create a simple document showing before/after audio samples, show notes, and clip examples"}]},
-      {day:13, focus:"Record Loom Walkthroughs", icon:"🎥",
-       tasks:[{id:"13a",text:"Record a 60-90 second Loom explaining your editing process and showing the finished clips"}]},
-      {day:14, focus:"Week 2 Review", icon:"✅",
-       tasks:[{id:"14a",text:"Confirm you have 2 edited episodes, show notes, clips, and a Loom demo ready"}]},
-    ]},
+    "week": 2,
+    "title": "Build Your Full Demo Portfolio",
+    "range": "Days 8-14",
+    "icon": "📁",
+    "color": "#0D7A5F",
+    "goal": "Two fully-produced practice episodes, show notes, social clips, and a Loom demo ready.",
+    "days": [
+      {
+        "day": 8,
+        "focus": "Edit Practice Episode 2",
+        "icon": "🎬",
+        "tasks": [
+          {
+            "id": "8a",
+            "xp": 13,
+            "text": "Edit a second practice episode, ideally in a different style than episode 1"
+          }
+        ]
+      },
+      {
+        "day": 9,
+        "focus": "Write Show Notes for Both Episodes",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "9a",
+            "xp": 13,
+            "text": "Write complete show notes and timestamps for both practice episodes"
+          }
+        ]
+      },
+      {
+        "day": 10,
+        "focus": "Create Social Clips",
+        "icon": "✂️",
+        "tasks": [
+          {
+            "id": "10a",
+            "xp": 13,
+            "text": "Cut 3-5 clips from your practice episodes using CapCut, with captions and vertical formatting"
+          }
+        ]
+      },
+      {
+        "day": 11,
+        "focus": "Set Up a Distribution Demo",
+        "icon": "📡",
+        "tasks": [
+          {
+            "id": "11a",
+            "xp": 13,
+            "text": "Create a free Buzzsprout or Spotify for Podcasters account"
+          },
+          {
+            "id": "11b",
+            "xp": 18,
+            "text": "Upload one practice episode to demonstrate the publishing process"
+          }
+        ]
+      },
+      {
+        "day": 12,
+        "focus": "Build Your Case Study Page",
+        "icon": "📄",
+        "tasks": [
+          {
+            "id": "12a",
+            "xp": 13,
+            "text": "Create a simple document showing before/after audio samples, show notes, and clip examples"
+          }
+        ]
+      },
+      {
+        "day": 13,
+        "focus": "Record Loom Walkthroughs",
+        "icon": "🎥",
+        "tasks": [
+          {
+            "id": "13a",
+            "xp": 13,
+            "text": "Record a 60-90 second Loom explaining your editing process and showing the finished clips"
+          }
+        ]
+      },
+      {
+        "day": 14,
+        "focus": "Week 2 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "14a",
+            "xp": 13,
+            "text": "Confirm you have 2 edited episodes, show notes, clips, and a Loom demo ready"
+          },
+          {
+            "id": "d14badge",
+            "xp": 45,
+            "badge": true,
+            "emoji": "📁",
+            "text": "Portfolio Complete — 2 fully-produced episodes, show notes, clips and a Loom demo ready."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:3, title:"Pick Your Genre and Prospect", range:"Days 15-21",
-    icon:"🎙️", color:"#C99A3B",
-    goal:"A genre specialization chosen and 15-20 real shows identified, audited, and scored.",
-    days:[
-      {day:15, focus:"Choose Your Genre Specialization", icon:"🎯",
-       note:"This decision is what keeps you from competing with every other student running this system. See the Pick Your Genre tab.",
-       tasks:[
-         {id:"15a",text:"Review the 8 genre options in the Pick Your Genre tab"},
-         {id:"15b",text:"Choose ONE genre to specialize in"},
-       ]},
-      {day:16, focus:"Build Your Show CRM", icon:"🗂️",
-       tasks:[{id:"16a",text:"Build the full Notion database using every column in the Show CRM tab"}]},
-      {day:17, focus:"Search Podcast Directories", icon:"🔎",
-       tasks:[{id:"17a",text:"Search Apple Podcasts and Spotify by your chosen genre for shows with real engagement but visible gaps"}]},
-      {day:18, focus:"Build Your Target List", icon:"📋",
-       tasks:[{id:"18a",text:"List 20-30 shows matching this profile"}]},
-      {day:19, focus:"Audit Each Show", icon:"🔬",
-       tasks:[{id:"19a",text:"Listen to a recent episode from each — note specific gaps: rough audio, no clips, inconsistent schedule"}]},
-      {day:20, focus:"Score and Prioritize", icon:"🔥",
-       tasks:[
-         {id:"20a",text:"Tag each show: 🔥 Hot, ⚡ Warm, ❄️ Cold based on gap size and audience engagement"},
-         {id:"20b",text:"Focus only on Hot and Warm shows"},
-       ]},
-      {day:21, focus:"Week 3 Review", icon:"✅",
-       tasks:[{id:"21a",text:"Confirm you have 15-20 scored, audited target shows ready for outreach"}]},
-    ]},
+    "week": 3,
+    "title": "Pick Your Genre and Prospect",
+    "range": "Days 15-21",
+    "icon": "🎙️",
+    "color": "#C99A3B",
+    "goal": "A genre specialization chosen and 15-20 real shows identified, audited, and scored.",
+    "days": [
+      {
+        "day": 15,
+        "focus": "Choose Your Genre Specialization",
+        "icon": "🎯",
+        "note": "This decision is what keeps you from competing with every other student running this system. See the Pick Your Genre tab.",
+        "tasks": [
+          {
+            "id": "15a",
+            "xp": 16,
+            "text": "Review the 8 genre options in the Pick Your Genre tab"
+          },
+          {
+            "id": "15b",
+            "xp": 21,
+            "text": "Choose ONE genre to specialize in"
+          }
+        ]
+      },
+      {
+        "day": 16,
+        "focus": "Build Your Show CRM",
+        "icon": "🗂️",
+        "tasks": [
+          {
+            "id": "16a",
+            "xp": 16,
+            "text": "Build the full Notion database using every column in the Show CRM tab"
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 17,
+        "focus": "Search Podcast Directories",
+        "icon": "🔎",
+        "tasks": [
+          {
+            "id": "17a",
+            "xp": 16,
+            "text": "Search Apple Podcasts and Spotify by your chosen genre for shows with real engagement but visible gaps"
+          }
+        ]
+      },
+      {
+        "day": 18,
+        "focus": "Build Your Target List",
+        "icon": "📋",
+        "tasks": [
+          {
+            "id": "18a",
+            "xp": 16,
+            "text": "List 20-30 shows matching this profile"
+          }
+        ]
+      },
+      {
+        "day": 19,
+        "focus": "Audit Each Show",
+        "icon": "🔬",
+        "tasks": [
+          {
+            "id": "19a",
+            "xp": 16,
+            "text": "Listen to a recent episode from each — note specific gaps: rough audio, no clips, inconsistent schedule"
+          }
+        ]
+      },
+      {
+        "day": 20,
+        "focus": "Score and Prioritize",
+        "icon": "🔥",
+        "tasks": [
+          {
+            "id": "20a",
+            "xp": 16,
+            "text": "Tag each show: 🔥 Hot, ⚡ Warm, ❄️ Cold based on gap size and audience engagement"
+          },
+          {
+            "id": "20b",
+            "xp": 21,
+            "text": "Focus only on Hot and Warm shows"
+          }
+        ]
+      },
+      {
+        "day": 21,
+        "focus": "Week 3 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "21a",
+            "xp": 16,
+            "text": "Confirm you have 15-20 scored, audited target shows ready for outreach"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:4, title:"Outreach Launch", range:"Days 22-28",
-    icon:"📧", color:"#8B2E1F",
-    goal:"First wave of outreach sent, with replies being tracked and calls beginning to book.",
-    days:[
-      {day:22, focus:"Find Host Contact Info", icon:"🔍",
-       tasks:[{id:"22a",text:"Find each host's email or social handle — often listed in show notes or the podcast website"}]},
-      {day:23, focus:"Draft Personalized Outreach", icon:"✍️",
-       tasks:[{id:"23a",text:"Personalize the outreach script with a specific observation about each show"}]},
-      {day:24, focus:"Send Wave 1", icon:"🚀",
-       tasks:[
-         {id:"24a",text:"Send outreach to your top 10 targets"},
-         {id:"24b",text:"Update Notion Stage to 'Contacted' for each"},
-       ]},
-      {day:25, focus:"Send Wave 2", icon:"🚀",
-       tasks:[{id:"25a",text:"Send outreach to your next 10 targets"}]},
-      {day:26, focus:"Monitor and Reply", icon:"🔔",
-       tasks:[{id:"26a",text:"Reply to every response within a few hours, positive or negative"}]},
-      {day:27, focus:"Follow Up", icon:"📬",
-       tasks:[{id:"27a",text:"Send the follow-up script to anyone who hasn't responded after a few days"}]},
-      {day:28, focus:"Week 4 Review", icon:"✅",
-       tasks:[{id:"28a",text:"Tally messages sent, replies received, and calls booked"}]},
-    ]},
+    "week": 4,
+    "title": "Outreach Launch",
+    "range": "Days 22-28",
+    "icon": "📧",
+    "color": "#8B2E1F",
+    "goal": "First wave of outreach sent, with replies being tracked and calls beginning to book.",
+    "days": [
+      {
+        "day": 22,
+        "focus": "Find Host Contact Info",
+        "icon": "🔍",
+        "tasks": [
+          {
+            "id": "22a",
+            "xp": 19,
+            "text": "Find each host's email or social handle — often listed in show notes or the podcast website"
+          }
+        ]
+      },
+      {
+        "day": 23,
+        "focus": "Draft Personalized Outreach",
+        "icon": "✍️",
+        "tasks": [
+          {
+            "id": "23a",
+            "xp": 19,
+            "text": "Personalize the outreach script with a specific observation about each show"
+          }
+        ]
+      },
+      {
+        "day": 24,
+        "focus": "Send Wave 1",
+        "icon": "🚀",
+        "tasks": [
+          {
+            "id": "24a",
+            "xp": 19,
+            "text": "Send outreach to your top 10 targets"
+          },
+          {
+            "id": "24b",
+            "xp": 24,
+            "text": "Update Notion Stage to 'Contacted' for each"
+          },
+          {
+            "id": "d24badge",
+            "xp": 50,
+            "badge": true,
+            "emoji": "🎯",
+            "text": "First Contact — your first wave of outreach sent to real podcast hosts."
+          }
+        ]
+      },
+      {
+        "day": 25,
+        "focus": "Send Wave 2",
+        "icon": "🚀",
+        "tasks": [
+          {
+            "id": "25a",
+            "xp": 19,
+            "text": "Send outreach to your next 10 targets"
+          }
+        ]
+      },
+      {
+        "day": 26,
+        "focus": "Monitor and Reply",
+        "icon": "🔔",
+        "tasks": [
+          {
+            "id": "26a",
+            "xp": 19,
+            "text": "Reply to every response within a few hours, positive or negative"
+          },
+          {
+            "id": "d26badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "💬",
+            "text": "First Reply — a real host responded to your outreach."
+          }
+        ]
+      },
+      {
+        "day": 27,
+        "focus": "Follow Up",
+        "icon": "📬",
+        "tasks": [
+          {
+            "id": "27a",
+            "xp": 19,
+            "text": "Send the follow-up script to anyone who hasn't responded after a few days"
+          }
+        ]
+      },
+      {
+        "day": 28,
+        "focus": "Week 4 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "28a",
+            "xp": 19,
+            "text": "Tally messages sent, replies received, and calls booked"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:5, title:"Close Your First Client", range:"Days 29-35",
-    icon:"🏆", color:"#7A5A00",
-    goal:"Your first paying podcast production client closed and fully onboarded.",
-    days:[
-      {day:29, focus:"Book Discovery Calls", icon:"📅",
-       tasks:[{id:"29a",text:"Schedule calls with anyone who responded positively"}]},
-      {day:30, focus:"Run Your First Discovery Call", icon:"📞",
-       tasks:[{id:"30a",text:"Use the discovery call questions to understand their current workflow and goals"}]},
-      {day:31, focus:"Send Proposal", icon:"📄",
-       tasks:[{id:"31a",text:"Send your 3-tier package (Starter / Growth / Full Production) within 24 hours"}]},
-      {day:32, focus:"Handle Objections", icon:"🛡️",
-       tasks:[{id:"32a",text:"Use the 'already edit it myself' and 'can't afford it' objection scripts as needed"}]},
-      {day:33, focus:"Close Your First Client", icon:"🤝",
-       tasks:[
-         {id:"33a",text:"Get agreement on package and price"},
-         {id:"33b",text:"Collect 50% deposit before beginning production"},
-       ]},
-      {day:34, focus:"Onboard — Get Raw Files", icon:"📥",
-       tasks:[
-         {id:"34a",text:"Set up a file-sharing system for raw audio delivery"},
-         {id:"34b",text:"Confirm their brand requirements — intro, outro, tone preferences"},
-       ]},
-      {day:35, focus:"Week 5 Review", icon:"✅",
-       tasks:[{id:"35a",text:"Confirm the first client is closed, paid, and onboarded"}]},
-    ]},
+    "week": 5,
+    "title": "Close Your First Client",
+    "range": "Days 29-35",
+    "icon": "🏆",
+    "color": "#7A5A00",
+    "goal": "Your first paying podcast production client closed and fully onboarded.",
+    "days": [
+      {
+        "day": 29,
+        "focus": "Book Discovery Calls",
+        "icon": "📅",
+        "tasks": [
+          {
+            "id": "29a",
+            "xp": 22,
+            "text": "Schedule calls with anyone who responded positively"
+          }
+        ]
+      },
+      {
+        "day": 30,
+        "focus": "Run Your First Discovery Call",
+        "icon": "📞",
+        "tasks": [
+          {
+            "id": "30a",
+            "xp": 22,
+            "text": "Use the discovery call questions to understand their current workflow and goals"
+          },
+          {
+            "id": "d30badge",
+            "xp": 55,
+            "badge": true,
+            "emoji": "📞",
+            "text": "First Discovery Call — ran your first real call about their production workflow."
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 31,
+        "focus": "Send Proposal",
+        "icon": "📄",
+        "tasks": [
+          {
+            "id": "31a",
+            "xp": 22,
+            "text": "Send your 3-tier package (Starter / Growth / Full Production) within 24 hours"
+          }
+        ]
+      },
+      {
+        "day": 32,
+        "focus": "Handle Objections",
+        "icon": "🛡️",
+        "tasks": [
+          {
+            "id": "32a",
+            "xp": 22,
+            "text": "Use the 'already edit it myself' and 'can't afford it' objection scripts as needed"
+          }
+        ]
+      },
+      {
+        "day": 33,
+        "focus": "Close Your First Client",
+        "icon": "🤝",
+        "tasks": [
+          {
+            "id": "33a",
+            "xp": 22,
+            "text": "Get agreement on package and price"
+          },
+          {
+            "id": "33b",
+            "xp": 27,
+            "text": "Collect 50% deposit before beginning production"
+          },
+          {
+            "id": "d33badge",
+            "xp": 80,
+            "badge": true,
+            "emoji": "🤝",
+            "text": "First Client Signed — your first podcast production retainer closed and deposited."
+          }
+        ]
+      },
+      {
+        "day": 34,
+        "focus": "Onboard — Get Raw Files",
+        "icon": "📥",
+        "tasks": [
+          {
+            "id": "34a",
+            "xp": 22,
+            "text": "Set up a file-sharing system for raw audio delivery"
+          },
+          {
+            "id": "34b",
+            "xp": 27,
+            "text": "Confirm their brand requirements — intro, outro, tone preferences"
+          }
+        ]
+      },
+      {
+        "day": 35,
+        "focus": "Week 5 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "35a",
+            "xp": 22,
+            "text": "Confirm the first client is closed, paid, and onboarded"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:6, title:"Deliver", range:"Days 36-42",
-    icon:"🚀", color:"#0D7A5F",
-    goal:"The first real episode fully produced, approved, and published.",
-    days:[
-      {day:36, focus:"Edit the First Real Episode — Part 1", icon:"🎬",
-       tasks:[{id:"36a",text:"Begin editing the client's real raw audio"}]},
-      {day:37, focus:"Edit the First Real Episode — Part 2", icon:"🎬",
-       tasks:[{id:"37a",text:"Finish the full edit — cleanup, pacing, intro/outro placement"}]},
-      {day:38, focus:"Write Show Notes", icon:"📝",
-       tasks:[{id:"38a",text:"Write show notes and timestamps for the episode"}]},
-      {day:39, focus:"Create Clips", icon:"✂️",
-       tasks:[{id:"39a",text:"Cut 3-5 social clips from the finished episode"}]},
-      {day:40, focus:"Client Review", icon:"👀",
-       tasks:[{id:"40a",text:"Send everything for approval before anything publishes"}]},
-      {day:41, focus:"Publish", icon:"📡",
-       tasks:[{id:"41a",text:"Publish the finished episode and clips across the agreed platforms"}]},
-      {day:42, focus:"Week 6 Review", icon:"✅",
-       tasks:[{id:"42a",text:"Confirm the first real episode is live and the client is satisfied"}]},
-    ]},
+    "week": 6,
+    "title": "Deliver",
+    "range": "Days 36-42",
+    "icon": "🚀",
+    "color": "#0D7A5F",
+    "goal": "The first real episode fully produced, approved, and published.",
+    "days": [
+      {
+        "day": 36,
+        "focus": "Edit the First Real Episode — Part 1",
+        "icon": "🎬",
+        "tasks": [
+          {
+            "id": "36a",
+            "xp": 25,
+            "text": "Begin editing the client's real raw audio"
+          }
+        ]
+      },
+      {
+        "day": 37,
+        "focus": "Edit the First Real Episode — Part 2",
+        "icon": "🎬",
+        "tasks": [
+          {
+            "id": "37a",
+            "xp": 25,
+            "text": "Finish the full edit — cleanup, pacing, intro/outro placement"
+          }
+        ]
+      },
+      {
+        "day": 38,
+        "focus": "Write Show Notes",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "38a",
+            "xp": 25,
+            "text": "Write show notes and timestamps for the episode"
+          }
+        ]
+      },
+      {
+        "day": 39,
+        "focus": "Create Clips",
+        "icon": "✂️",
+        "tasks": [
+          {
+            "id": "39a",
+            "xp": 25,
+            "text": "Cut 3-5 social clips from the finished episode"
+          }
+        ]
+      },
+      {
+        "day": 40,
+        "focus": "Client Review",
+        "icon": "👀",
+        "tasks": [
+          {
+            "id": "40a",
+            "xp": 25,
+            "text": "Send everything for approval before anything publishes"
+          }
+        ]
+      },
+      {
+        "day": 41,
+        "focus": "Publish",
+        "icon": "📡",
+        "tasks": [
+          {
+            "id": "41a",
+            "xp": 25,
+            "text": "Publish the finished episode and clips across the agreed platforms"
+          },
+          {
+            "id": "d41badge",
+            "xp": 60,
+            "badge": true,
+            "emoji": "🚀",
+            "text": "First Episode Live — the client's first real episode published across platforms."
+          }
+        ]
+      },
+      {
+        "day": 42,
+        "focus": "Week 6 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "42a",
+            "xp": 25,
+            "text": "Confirm the first real episode is live and the client is satisfied"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:7, title:"Prove Value, Upsell, Referral", range:"Days 43-45",
-    icon:"📈", color:"#7A5A00",
-    goal:"First results presented, an upsell conversation opened, and a referral requested.",
-    days:[
-      {day:43, focus:"Present Results", icon:"📊",
-       tasks:[{id:"43a",text:"Show clip performance and any listen/download growth from the first episode"}]},
-      {day:44, focus:"Pitch the Upsell", icon:"📈",
-       tasks:[{id:"44a",text:"Propose increasing clip volume or moving to a Full Production package"}]},
-      {day:45, focus:"Ask for a Referral and Set Next Targets", icon:"🎯",
-       tasks:[
-         {id:"45a",text:"Ask if they know other hosts in your genre who might want the same support"},
-         {id:"45b",text:"Set your next 30-day targets"},
-       ]},
-    ]},
+    "week": 7,
+    "title": "Prove Value, Upsell, Referral",
+    "range": "Days 43-45",
+    "icon": "📈",
+    "color": "#7A5A00",
+    "goal": "First results presented, an upsell conversation opened, and a referral requested.",
+    "days": [
+      {
+        "day": 43,
+        "focus": "Present Results",
+        "icon": "📊",
+        "tasks": [
+          {
+            "id": "43a",
+            "xp": 28,
+            "text": "Show clip performance and any listen/download growth from the first episode"
+          }
+        ]
+      },
+      {
+        "day": 44,
+        "focus": "Pitch the Upsell",
+        "icon": "📈",
+        "tasks": [
+          {
+            "id": "44a",
+            "xp": 28,
+            "text": "Propose increasing clip volume or moving to a Full Production package"
+          }
+        ]
+      },
+      {
+        "day": 45,
+        "focus": "Ask for a Referral and Set Next Targets",
+        "icon": "🎯",
+        "tasks": [
+          {
+            "id": "45a",
+            "xp": 28,
+            "text": "Ask if they know other hosts in your genre who might want the same support"
+          },
+          {
+            "id": "45b",
+            "xp": 33,
+            "text": "Set your next 30-day targets"
+          },
+          {
+            "id": "d45badge",
+            "xp": 100,
+            "badge": true,
+            "emoji": "🏆",
+            "text": "Certified — you completed the full 45-Day Broadcast Engine."
+          }
+        ],
+        "bpsCheckpoint": true
+      }
+    ]
+  }
 ];
 
 const NOTION_COLS = [
@@ -346,17 +932,47 @@ export default function TheBroadcastEngine() {
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
   const [done,setDone]           = useState({});
+  const [loaded,setLoaded]       = useState(false);
+  const [confirmingReset,setConfirmingReset] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await window.storage.get(STORAGE_KEY, false);
+        if (res && res.value) setDone(JSON.parse(res.value).done || {});
+      } catch (e) { /* no saved progress yet */ }
+      finally { setLoaded(true); }
+    })();
+  }, []);
+
+  const persist = useCallback(async (next) => {
+    try { await window.storage.set(STORAGE_KEY, JSON.stringify({ done: next, savedAt: Date.now() }), false); }
+    catch (e) { /* best effort */ }
+  }, []);
+
+  const toggle = id=>setDone(p=>{ const next={...p,[id]:!p[id]}; persist(next); return next; });
+  const handleReset = () => {
+    if (!confirmingReset) { setConfirmingReset(true); return; }
+    setDone({}); persist({}); setConfirmingReset(false);
+  };
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
   const totalTasks     = allTasks.length;
   const completedTasks = allTasks.filter(t=>done[t.id]).length;
-  const progress = totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
+  const totalXP  = useMemo(()=>allTasks.reduce((s,t)=>s+t.xp,0),[allTasks]);
+  const earnedXP = useMemo(()=>allTasks.reduce((s,t)=>s+(done[t.id]?t.xp:0),0),[allTasks,done]);
+  const pct = totalXP?(earnedXP/totalXP)*100:0;
+  const progress = Math.round(pct);
   const progressColor = progress>=70?"#0D7A5F":progress>=35?"#C99A3B":"#7A5A00";
-  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const weekPct = w=>{
     const t=w.days.flatMap(d=>d.tasks);
     return t.length>0?Math.round((t.filter(x=>done[x.id]).length/t.length)*100):0;
   };
+  const currentRank = useMemo(()=>{ let r=RANKS[0]; for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; } return r; },[pct]);
+  const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
+  const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
+
+  if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
     {id:"plan",    label:"📅 45-Day Plan"},
@@ -402,14 +1018,43 @@ export default function TheBroadcastEngine() {
               background who hasn't found their lane yet.
             </p>
           </div>
-          <div style={{background:"#F8F5EE",borderRadius:10,padding:"11px 14px",border:"1px solid #FBF8F1"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-              <span style={{fontSize:12,fontWeight:600,color:"#6E6459"}}>Overall Progress</span>
-              <span style={{fontSize:13,fontWeight:800,color:progressColor}}>
-                {completedTasks} / {totalTasks} tasks · {progress}%
-              </span>
+          <div style={{background:"#F8F5EE",borderRadius:10,padding:"14px 16px",border:"1px solid #FBF8F1"}}>
+            <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",gap:10,flexWrap:"wrap",marginBottom:10}}>
+              <div>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Current Rank</p>
+                <p style={{fontSize:17,fontWeight:800,color:"#7A5A00",margin:0}}>{currentRank.name}</p>
+                <p style={{fontSize:11,color:"#6E6459",margin:"2px 0 0",maxWidth:360,lineHeight:1.5}}>{currentRank.blurb}</p>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Progress</p>
+                <p style={{fontSize:17,fontWeight:800,color:progressColor,margin:0}}>{progress}%</p>
+                {nextRank && <p style={{fontSize:10.5,color:"#6E6459",margin:"2px 0 0"}}>{Math.max(0,nextRank.threshold-progress)}% to {nextRank.name}</p>}
+              </div>
             </div>
-            <ProgressBar value={progress} color={progressColor} height={8}/>
+            <div style={{display:"flex",gap:2,marginBottom:12}}>
+              {Array.from({length:20}).map((_,i)=>(
+                <div key={i} style={{height:6,flex:1,borderRadius:3,
+                  background:i<Math.round(pct/5)?"#C99A3B":"transparent",
+                  border:i<Math.round(pct/5)?"none":"1px solid #FBF8F1"}}/>
+              ))}
+            </div>
+            <div style={{fontSize:11,color:"#6E6459",marginBottom:8}}>{completedTasks} / {totalTasks} tasks complete</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+              {badgeItems.map(b=>{
+                const earned=!!done[b.id];
+                return (
+                  <span key={b.id} title={b.text} style={{
+                    width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:13,background:earned?"#C99A3B":"#FFFFFF",
+                    border:earned?"none":"1px solid #FBF8F1",opacity:earned?1:0.5,
+                  }}>{b.emoji}</span>
+                );
+              })}
+              <button onClick={handleReset} style={{
+                marginLeft:"auto",background:"none",border:"none",padding:0,cursor:"pointer",fontFamily:"inherit",
+                fontSize:11,color:confirmingReset?"#8B2E1F":"#6E6459",textDecoration:"underline",
+              }}>{confirmingReset?"Click again to confirm reset":"Reset progress"}</button>
+            </div>
           </div>
         </div>
       </div>
@@ -438,8 +1083,14 @@ export default function TheBroadcastEngine() {
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>45-Day Action Plan</h2>
             <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
-              Tap a week → tap a day → tick tasks as you complete them.
+              Tap a week → tap a day → tick tasks as you complete them. Days marked ★ carry a BPS checkpoint.
             </p>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",marginBottom:8}}>
+                BPS Checkpoints Inside the 45 Days
+              </div>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
             {WEEKS.map((w,wi)=>{
               const wp=weekPct(w); const wOpen=openWeek===wi;
               return (
@@ -483,7 +1134,7 @@ export default function TheBroadcastEngine() {
                                 <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                   <span style={{fontSize:10,fontWeight:700,color:w.color,
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
-                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
+                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}{d.bpsCheckpoint?" ★":""}</span>
                                 </div>
                                 <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
@@ -497,15 +1148,29 @@ export default function TheBroadcastEngine() {
                                     borderRadius:7,padding:"7px 10px",marginBottom:10,
                                     fontSize:12,color:w.color+"CC",lineHeight:1.5}}>💡 {d.note}</div>
                                 )}
-                                {d.tasks.map(t=>(
+                                {d.tasks.map(t=>t.badge?(
+                                  <div key={t.id} onClick={()=>toggle(t.id)}
+                                    style={{display:"flex",gap:10,alignItems:"center",
+                                      padding:"9px 11px",margin:"6px 0",borderRadius:9,
+                                      border:`1px solid ${done[t.id]?"#C99A3B":"#FBF8F1"}`,
+                                      background:done[t.id]?"rgba(201,154,59,0.10)":"#FFFFFF",cursor:"pointer"}}>
+                                    <span style={{flexShrink:0,width:30,height:30,borderRadius:"50%",
+                                      display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,
+                                      background:done[t.id]?"#C99A3B":"#FFFFFF",
+                                      border:done[t.id]?"none":"1px solid #FBF8F1"}}>{t.emoji}</span>
+                                    <span style={{flex:1,fontSize:13,fontWeight:600,color:done[t.id]?"#7A5A00":"#201A16"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:11,fontWeight:700,color:"#7A5A00"}}>+{t.xp} XP</span>
+                                  </div>
+                                ):(
                                   <div key={t.id} onClick={()=>toggle(t.id)}
                                     style={{display:"flex",gap:9,alignItems:"flex-start",
                                       padding:"8px 0",borderBottom:"1px solid #FBF8F1",cursor:"pointer"}}>
                                     <Check checked={!!done[t.id]} color={w.color}/>
-                                    <span style={{fontSize:13,lineHeight:1.55,
+                                    <span style={{flex:1,fontSize:13,lineHeight:1.55,
                                       color:done[t.id]?"#D9CFBB":"#6E6459",
                                       textDecoration:done[t.id]?"line-through":"none",
                                       transition:"all .15s"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:10.5,color:"#6E6459",paddingTop:1}}>+{t.xp}</span>
                                   </div>
                                 ))}
                               </div>

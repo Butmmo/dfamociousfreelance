@@ -1,175 +1,763 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+
+const STORAGE_KEY = "authority-progress-v1";
+
+const RANKS = [
+  { name:"Authority Recruit", threshold:0, blurb:"Day 1. Notion CRM live, first creators bookmarked to study." },
+  { name:"Voice Scout", threshold:10, blurb:"Hooks and structures studied, first practice posts written." },
+  { name:"Persona Prospector", threshold:23, blurb:"A full practice portfolio in one chosen persona's real voice." },
+  { name:"Ghostwriting Apprentice", threshold:37, blurb:"Free samples sent to real targets — your written-word demo, out in the world." },
+  { name:"Field Authority Partner", threshold:51, blurb:"First discovery call run, the sample's real performance as your proof." },
+  { name:"Contract Authority Strategist", threshold:66, blurb:"First retainer signed. A real client's voice, captured and documented." },
+  { name:"Certified Authority Engineer", threshold:79, blurb:"45 days, one persona, one real client posting live. This one's earned." },
+];
+
+/* BPS checkpoints — Belief (Day 16) → Affirmation (Day 30) → Evaluation (Day 45),
+   the same three days as CareBridge and the SMB Optimisation Engine. */
+const BPS_CHECKPOINTS = [
+  { day:16, type:"Belief Goal", detail:"Commit to your personal engagement and outreach formula — how many targets you engage daily, how many free samples you send weekly — chosen from your own Week 1-2 practice, not a guess." },
+  { day:30, type:"Affirmation Goal", detail:"A 14-day honest effort report on your formula. Strict remark bands apply: 72%+ 'Effort is satisfactory, goal set to be achieved.' 60-71% 'Effort is minimal, goal not taken seriously.' Below 60% 'Effort is below requisite, failure of goal is imminent.'" },
+  { day:45, type:"Evaluation Goal", detail:"The full 40-day evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'" },
+];
 
 const WEEKS = [
   {
-    week:1, title:"Build Your Writing Foundation", range:"Days 1-7",
-    icon:"✍️", color:"#7A5A00",
-    goal:"Free tools set up, hook and structure patterns studied, and your first two practice posts written.",
-    days:[
-      {day:1, focus:"Free Tool Setup", icon:"⚡",
-       note:"Total cost today: $0. No new platform to master here — just Notion, a writing tool, and LinkedIn itself.",
-       tasks:[
-         {id:"1a",text:"Create a free Notion account — this becomes your content calendar and Prospect CRM"},
-         {id:"1b",text:"Set up ChatGPT or Claude for accelerating first drafts"},
-         {id:"1c",text:"Create a free Canva account for the occasional graphic"},
-         {id:"1d",text:"Bookmark 10-15 high-performing LinkedIn creators to study over the next week"},
-       ]},
-      {day:2, focus:"Study Hook Writing", icon:"🎣",
-       note:"The first 1-2 lines decide whether someone clicks 'see more.' This is the single highest-leverage skill in this entire system.",
-       tasks:[
-         {id:"2a",text:"Study what makes a LinkedIn hook stop the scroll before the 'see more' cutoff"},
-         {id:"2b",text:"Analyze 10 high-performing posts and note their hook patterns"},
-         {id:"2c",text:"Write down 5 hook formulas you notice repeating across different creators"},
-       ]},
-      {day:3, focus:"Study Post Structure", icon:"🏗️",
-       tasks:[
-         {id:"3a",text:"Learn the common structures — Story→Lesson, Listicle, Contrarian Take, Before/After, Question→Answer"},
-         {id:"3b",text:"Break down 5 real posts and identify which structure each one uses"},
-       ]},
-      {day:4, focus:"Study Voice Capture", icon:"🎙️",
-       note:"This is what separates real ghostwriting from generic AI output — capturing a specific person's actual opinions and stories.",
-       tasks:[
-         {id:"4a",text:"Learn how to interview someone to extract their authentic voice, opinions, and stories"},
-         {id:"4b",text:"Draft your own Voice Capture Questionnaire — 10-15 questions you'll ask every future client"},
-       ]},
-      {day:5, focus:"Write Practice Post 1", icon:"📝",
-       tasks:[{id:"5a",text:"Pick a persona and write your first practice post using a Story→Lesson structure"}]},
-      {day:6, focus:"Write Practice Post 2", icon:"📝",
-       tasks:[{id:"6a",text:"Write a second practice post using a different structure"}]},
-      {day:7, focus:"Week 1 Review", icon:"✅",
-       tasks:[{id:"7a",text:"Review both posts honestly — are the hooks strong? Does the voice feel distinct, not generic?"}]},
-    ]},
+    "week": 1,
+    "title": "Build Your Writing Foundation",
+    "range": "Days 1-7",
+    "icon": "✍️",
+    "color": "#7A5A00",
+    "goal": "Free tools set up, hook and structure patterns studied, and your first two practice posts written.",
+    "days": [
+      {
+        "day": 1,
+        "focus": "Free Tool Setup",
+        "icon": "⚡",
+        "note": "Total cost today: $0. No new platform to master here — just Notion, a writing tool, and LinkedIn itself.",
+        "tasks": [
+          {
+            "id": "1a",
+            "xp": 10,
+            "text": "Create a free Notion account — this becomes your content calendar and Prospect CRM"
+          },
+          {
+            "id": "1b",
+            "xp": 10,
+            "text": "Set up ChatGPT or Claude for accelerating first drafts"
+          },
+          {
+            "id": "1c",
+            "xp": 10,
+            "text": "Create a free Canva account for the occasional graphic"
+          },
+          {
+            "id": "1d",
+            "xp": 15,
+            "text": "Bookmark 10-15 high-performing LinkedIn creators to study over the next week"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Study Hook Writing",
+        "icon": "🎣",
+        "note": "The first 1-2 lines decide whether someone clicks 'see more.' This is the single highest-leverage skill in this entire system.",
+        "tasks": [
+          {
+            "id": "2a",
+            "xp": 10,
+            "text": "Study what makes a LinkedIn hook stop the scroll before the 'see more' cutoff"
+          },
+          {
+            "id": "2b",
+            "xp": 10,
+            "text": "Analyze 10 high-performing posts and note their hook patterns"
+          },
+          {
+            "id": "2c",
+            "xp": 15,
+            "text": "Write down 5 hook formulas you notice repeating across different creators"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Study Post Structure",
+        "icon": "🏗️",
+        "tasks": [
+          {
+            "id": "3a",
+            "xp": 10,
+            "text": "Learn the common structures — Story→Lesson, Listicle, Contrarian Take, Before/After, Question→Answer"
+          },
+          {
+            "id": "3b",
+            "xp": 15,
+            "text": "Break down 5 real posts and identify which structure each one uses"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Study Voice Capture",
+        "icon": "🎙️",
+        "note": "This is what separates real ghostwriting from generic AI output — capturing a specific person's actual opinions and stories.",
+        "tasks": [
+          {
+            "id": "4a",
+            "xp": 10,
+            "text": "Learn how to interview someone to extract their authentic voice, opinions, and stories"
+          },
+          {
+            "id": "4b",
+            "xp": 15,
+            "text": "Draft your own Voice Capture Questionnaire — 10-15 questions you'll ask every future client"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Write Practice Post 1",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "5a",
+            "xp": 10,
+            "text": "Pick a persona and write your first practice post using a Story→Lesson structure"
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Write Practice Post 2",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "6a",
+            "xp": 10,
+            "text": "Write a second practice post using a different structure"
+          }
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Week 1 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "7a",
+            "xp": 10,
+            "text": "Review both posts honestly — are the hooks strong? Does the voice feel distinct, not generic?"
+          },
+          {
+            "id": "d7badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "✍️",
+            "text": "Voice Found — your first two practice posts written, hooks studied, structures learned."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:2, title:"Build Your Portfolio", range:"Days 8-14",
-    icon:"📁", color:"#0D7A5F",
-    goal:"A specific persona chosen and 15-20 practice posts ready as your portfolio.",
-    days:[
-      {day:8, focus:"Choose Your Niche Persona", icon:"🎭",
-       note:"This decision is what keeps you from competing with every other student running this system. See the Pick Your Persona tab.",
-       tasks:[
-         {id:"8a",text:"Review the 8 persona options in the Pick Your Persona tab"},
-         {id:"8b",text:"Choose ONE persona to specialize in — do not write generically for 'any professional'"},
-       ]},
-      {day:9, focus:"Write 5 More Practice Posts", icon:"📝",
-       tasks:[{id:"9a",text:"Write 5 posts in your chosen persona's authentic voice, using different structures"}]},
-      {day:10, focus:"Write 5 More Practice Posts", icon:"📝",
-       tasks:[{id:"10a",text:"Continue building volume — 5 more posts today"}]},
-      {day:11, focus:"Write Your Final 5 Posts", icon:"📝",
-       tasks:[{id:"11a",text:"Round out to 15-20 total practice posts in your chosen persona"}]},
-      {day:12, focus:"Build Your Portfolio Page", icon:"🎨",
-       tasks:[{id:"12a",text:"Compile your best 8-10 posts into a simple, clean portfolio document"}]},
-      {day:13, focus:"Refine Your Discovery Call Script", icon:"📋",
-       tasks:[{id:"13a",text:"Build your voice-capture call framework using the Scripts tab as a starting point"}]},
-      {day:14, focus:"Week 2 Review", icon:"✅",
-       tasks:[{id:"14a",text:"Confirm you have a strong portfolio and a clearly chosen persona"}]},
-    ]},
+    "week": 2,
+    "title": "Build Your Portfolio",
+    "range": "Days 8-14",
+    "icon": "📁",
+    "color": "#0D7A5F",
+    "goal": "A specific persona chosen and 15-20 practice posts ready as your portfolio.",
+    "days": [
+      {
+        "day": 8,
+        "focus": "Choose Your Niche Persona",
+        "icon": "🎭",
+        "note": "This decision is what keeps you from competing with every other student running this system. See the Pick Your Persona tab.",
+        "tasks": [
+          {
+            "id": "8a",
+            "xp": 13,
+            "text": "Review the 8 persona options in the Pick Your Persona tab"
+          },
+          {
+            "id": "8b",
+            "xp": 18,
+            "text": "Choose ONE persona to specialize in — do not write generically for 'any professional'"
+          }
+        ]
+      },
+      {
+        "day": 9,
+        "focus": "Write 5 More Practice Posts",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "9a",
+            "xp": 13,
+            "text": "Write 5 posts in your chosen persona's authentic voice, using different structures"
+          }
+        ]
+      },
+      {
+        "day": 10,
+        "focus": "Write 5 More Practice Posts",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "10a",
+            "xp": 13,
+            "text": "Continue building volume — 5 more posts today"
+          }
+        ]
+      },
+      {
+        "day": 11,
+        "focus": "Write Your Final 5 Posts",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "11a",
+            "xp": 13,
+            "text": "Round out to 15-20 total practice posts in your chosen persona"
+          }
+        ]
+      },
+      {
+        "day": 12,
+        "focus": "Build Your Portfolio Page",
+        "icon": "🎨",
+        "tasks": [
+          {
+            "id": "12a",
+            "xp": 13,
+            "text": "Compile your best 8-10 posts into a simple, clean portfolio document"
+          }
+        ]
+      },
+      {
+        "day": 13,
+        "focus": "Refine Your Discovery Call Script",
+        "icon": "📋",
+        "tasks": [
+          {
+            "id": "13a",
+            "xp": 13,
+            "text": "Build your voice-capture call framework using the Scripts tab as a starting point"
+          }
+        ]
+      },
+      {
+        "day": 14,
+        "focus": "Week 2 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "14a",
+            "xp": 13,
+            "text": "Confirm you have a strong portfolio and a clearly chosen persona"
+          },
+          {
+            "id": "d14badge",
+            "xp": 45,
+            "badge": true,
+            "emoji": "📁",
+            "text": "Portfolio Complete — 15-20 practice posts ready in your chosen persona's authentic voice."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:3, title:"Identify and Engage", range:"Days 15-21",
-    icon:"🎯", color:"#C99A3B",
-    goal:"20-30 target profiles identified, your CRM live, and genuine engagement running for a full week.",
-    days:[
-      {day:15, focus:"Build Your Target List", icon:"🎯",
-       tasks:[
-         {id:"15a",text:"Search LinkedIn for people in your chosen persona who post inconsistently or with weak engagement"},
-         {id:"15b",text:"List 20-30 target profiles"},
-       ]},
-      {day:16, focus:"Set Up Your Prospect CRM", icon:"🗂️",
-       tasks:[{id:"16a",text:"Build the full Notion database using every column in the Prospect CRM tab"}]},
-      {day:17, focus:"Begin Genuine Engagement", icon:"💬",
-       note:"Generic praise gets ignored. Specific, thoughtful comments get noticed and remembered.",
-       tasks:[{id:"17a",text:"Comment thoughtfully on 3-5 posts from your target list — genuine and specific, never generic"}]},
-      {day:18, focus:"Continue Engagement", icon:"💬",
-       tasks:[{id:"18a",text:"Continue commenting daily on 3-5 target posts"}]},
-      {day:19, focus:"Continue Engagement", icon:"💬",
-       tasks:[{id:"19a",text:"Continue commenting daily and note which targets are most active or responsive"}]},
-      {day:20, focus:"Continue Engagement", icon:"💬",
-       tasks:[{id:"20a",text:"Keep the engagement streak going — consistency here builds real recognition"}]},
-      {day:21, focus:"Week 3 Review", icon:"✅",
-       tasks:[{id:"21a",text:"Confirm consistent engagement across your target list for a full week"}]},
-    ]},
+    "week": 3,
+    "title": "Identify and Engage",
+    "range": "Days 15-21",
+    "icon": "🎯",
+    "color": "#C99A3B",
+    "goal": "20-30 target profiles identified, your CRM live, and genuine engagement running for a full week.",
+    "days": [
+      {
+        "day": 15,
+        "focus": "Build Your Target List",
+        "icon": "🎯",
+        "tasks": [
+          {
+            "id": "15a",
+            "xp": 16,
+            "text": "Search LinkedIn for people in your chosen persona who post inconsistently or with weak engagement"
+          },
+          {
+            "id": "15b",
+            "xp": 21,
+            "text": "List 20-30 target profiles"
+          }
+        ]
+      },
+      {
+        "day": 16,
+        "focus": "Set Up Your Prospect CRM",
+        "icon": "🗂️",
+        "tasks": [
+          {
+            "id": "16a",
+            "xp": 16,
+            "text": "Build the full Notion database using every column in the Prospect CRM tab"
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 17,
+        "focus": "Begin Genuine Engagement",
+        "icon": "💬",
+        "note": "Generic praise gets ignored. Specific, thoughtful comments get noticed and remembered.",
+        "tasks": [
+          {
+            "id": "17a",
+            "xp": 16,
+            "text": "Comment thoughtfully on 3-5 posts from your target list — genuine and specific, never generic"
+          }
+        ]
+      },
+      {
+        "day": 18,
+        "focus": "Continue Engagement",
+        "icon": "💬",
+        "tasks": [
+          {
+            "id": "18a",
+            "xp": 16,
+            "text": "Continue commenting daily on 3-5 target posts"
+          }
+        ]
+      },
+      {
+        "day": 19,
+        "focus": "Continue Engagement",
+        "icon": "💬",
+        "tasks": [
+          {
+            "id": "19a",
+            "xp": 16,
+            "text": "Continue commenting daily and note which targets are most active or responsive"
+          }
+        ]
+      },
+      {
+        "day": 20,
+        "focus": "Continue Engagement",
+        "icon": "💬",
+        "tasks": [
+          {
+            "id": "20a",
+            "xp": 16,
+            "text": "Keep the engagement streak going — consistency here builds real recognition"
+          }
+        ]
+      },
+      {
+        "day": 21,
+        "focus": "Week 3 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "21a",
+            "xp": 16,
+            "text": "Confirm consistent engagement across your target list for a full week"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:4, title:"The Free Sample Approach", range:"Days 22-28",
-    icon:"🎁", color:"#8B2E1F",
-    goal:"Free sample rewrites sent to your top 10 targets — this is your written-word equivalent of a Lovable demo.",
-    days:[
-      {day:22, focus:"Pick Your Top 10", icon:"🔟",
-       tasks:[{id:"22a",text:"From your engaged targets, pick the top 10 most promising — active posters, clear audience, visible gap"}]},
-      {day:23, focus:"Write Free Sample Rewrites", icon:"✍️",
-       note:"Rewrite one of their real existing posts using a stronger hook and structure. This is your demo — make it genuinely better.",
-       tasks:[{id:"23a",text:"Rewrite one existing post per target using an improved hook and structure"}]},
-      {day:24, focus:"Send the Free Samples — Batch 1", icon:"📤",
-       tasks:[
-         {id:"24a",text:"Send DMs with the free sample rewrite to your first 5 targets"},
-         {id:"24b",text:"Update Notion Stage to 'Sample Sent' for each"},
-       ]},
-      {day:25, focus:"Send the Free Samples — Batch 2", icon:"📤",
-       tasks:[{id:"25a",text:"Send DMs to your remaining 5 targets"}]},
-      {day:26, focus:"Monitor Responses", icon:"🔔",
-       tasks:[{id:"26a",text:"Reply within 2 hours to anything positive"}]},
-      {day:27, focus:"Follow Up", icon:"📬",
-       tasks:[{id:"27a",text:"Follow up with anyone who hasn't responded after 2-3 days"}]},
-      {day:28, focus:"Week 4 Review", icon:"✅",
-       tasks:[{id:"28a",text:"Tally samples sent, replies received, and positive responses"}]},
-    ]},
+    "week": 4,
+    "title": "The Free Sample Approach",
+    "range": "Days 22-28",
+    "icon": "🎁",
+    "color": "#8B2E1F",
+    "goal": "Free sample rewrites sent to your top 10 targets — this is your written-word equivalent of a Lovable demo.",
+    "days": [
+      {
+        "day": 22,
+        "focus": "Pick Your Top 10",
+        "icon": "🔟",
+        "tasks": [
+          {
+            "id": "22a",
+            "xp": 19,
+            "text": "From your engaged targets, pick the top 10 most promising — active posters, clear audience, visible gap"
+          }
+        ]
+      },
+      {
+        "day": 23,
+        "focus": "Write Free Sample Rewrites",
+        "icon": "✍️",
+        "note": "Rewrite one of their real existing posts using a stronger hook and structure. This is your demo — make it genuinely better.",
+        "tasks": [
+          {
+            "id": "23a",
+            "xp": 19,
+            "text": "Rewrite one existing post per target using an improved hook and structure"
+          }
+        ]
+      },
+      {
+        "day": 24,
+        "focus": "Send the Free Samples — Batch 1",
+        "icon": "📤",
+        "tasks": [
+          {
+            "id": "24a",
+            "xp": 19,
+            "text": "Send DMs with the free sample rewrite to your first 5 targets"
+          },
+          {
+            "id": "24b",
+            "xp": 24,
+            "text": "Update Notion Stage to 'Sample Sent' for each"
+          },
+          {
+            "id": "d24badge",
+            "xp": 50,
+            "badge": true,
+            "emoji": "🎯",
+            "text": "First Contact — your first 5 free sample rewrites sent to real targets."
+          }
+        ]
+      },
+      {
+        "day": 25,
+        "focus": "Send the Free Samples — Batch 2",
+        "icon": "📤",
+        "tasks": [
+          {
+            "id": "25a",
+            "xp": 19,
+            "text": "Send DMs to your remaining 5 targets"
+          }
+        ]
+      },
+      {
+        "day": 26,
+        "focus": "Monitor Responses",
+        "icon": "🔔",
+        "tasks": [
+          {
+            "id": "26a",
+            "xp": 19,
+            "text": "Reply within 2 hours to anything positive"
+          },
+          {
+            "id": "d26badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "💬",
+            "text": "First Reply — a real prospect responded to your free sample."
+          }
+        ]
+      },
+      {
+        "day": 27,
+        "focus": "Follow Up",
+        "icon": "📬",
+        "tasks": [
+          {
+            "id": "27a",
+            "xp": 19,
+            "text": "Follow up with anyone who hasn't responded after 2-3 days"
+          }
+        ]
+      },
+      {
+        "day": 28,
+        "focus": "Week 4 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "28a",
+            "xp": 19,
+            "text": "Tally samples sent, replies received, and positive responses"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:5, title:"Close Your First Client", range:"Days 29-35",
-    icon:"🏆", color:"#7A5A00",
-    goal:"Your first paying LinkedIn ghostwriting client closed and a full voice-capture interview completed.",
-    days:[
-      {day:29, focus:"Book Discovery Calls", icon:"📅",
-       tasks:[{id:"29a",text:"Schedule calls with anyone who responded positively to their free sample"}]},
-      {day:30, focus:"Run Your First Discovery Call", icon:"📞",
-       tasks:[{id:"30a",text:"Use the discovery call script — reference how the sample post performed as your opening proof"}]},
-      {day:31, focus:"Send Proposal", icon:"📄",
-       tasks:[{id:"31a",text:"Send your 3-tier package (Starter / Growth / Authority) within 24 hours of the call"}]},
-      {day:32, focus:"Handle Objections", icon:"🛡️",
-       tasks:[{id:"32a",text:"Use the authenticity and trust objection scripts as needed"}]},
-      {day:33, focus:"Close Your First Client", icon:"🤝",
-       tasks:[
-         {id:"33a",text:"Get agreement on package and price"},
-         {id:"33b",text:"Collect 50% deposit before beginning the full voice-capture process"},
-       ]},
-      {day:34, focus:"Full Voice-Capture Interview", icon:"🎙️",
-       note:"This single conversation determines whether every future post sounds authentically like them or generically like anyone.",
-       tasks:[{id:"34a",text:"Run the full Voice Capture Questionnaire with your new client, take detailed notes"}]},
-      {day:35, focus:"Week 5 Review", icon:"✅",
-       tasks:[{id:"35a",text:"Confirm your first client is closed, paid, and their voice is documented"}]},
-    ]},
+    "week": 5,
+    "title": "Close Your First Client",
+    "range": "Days 29-35",
+    "icon": "🏆",
+    "color": "#7A5A00",
+    "goal": "Your first paying LinkedIn ghostwriting client closed and a full voice-capture interview completed.",
+    "days": [
+      {
+        "day": 29,
+        "focus": "Book Discovery Calls",
+        "icon": "📅",
+        "tasks": [
+          {
+            "id": "29a",
+            "xp": 22,
+            "text": "Schedule calls with anyone who responded positively to their free sample"
+          }
+        ]
+      },
+      {
+        "day": 30,
+        "focus": "Run Your First Discovery Call",
+        "icon": "📞",
+        "tasks": [
+          {
+            "id": "30a",
+            "xp": 22,
+            "text": "Use the discovery call script — reference how the sample post performed as your opening proof"
+          },
+          {
+            "id": "d30badge",
+            "xp": 55,
+            "badge": true,
+            "emoji": "📞",
+            "text": "First Discovery Call — ran your first real call, referencing the sample's performance as proof."
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 31,
+        "focus": "Send Proposal",
+        "icon": "📄",
+        "tasks": [
+          {
+            "id": "31a",
+            "xp": 22,
+            "text": "Send your 3-tier package (Starter / Growth / Authority) within 24 hours of the call"
+          }
+        ]
+      },
+      {
+        "day": 32,
+        "focus": "Handle Objections",
+        "icon": "🛡️",
+        "tasks": [
+          {
+            "id": "32a",
+            "xp": 22,
+            "text": "Use the authenticity and trust objection scripts as needed"
+          }
+        ]
+      },
+      {
+        "day": 33,
+        "focus": "Close Your First Client",
+        "icon": "🤝",
+        "tasks": [
+          {
+            "id": "33a",
+            "xp": 22,
+            "text": "Get agreement on package and price"
+          },
+          {
+            "id": "33b",
+            "xp": 27,
+            "text": "Collect 50% deposit before beginning the full voice-capture process"
+          },
+          {
+            "id": "d33badge",
+            "xp": 80,
+            "badge": true,
+            "emoji": "🤝",
+            "text": "First Client Signed — your first ghostwriting retainer closed and deposited."
+          }
+        ]
+      },
+      {
+        "day": 34,
+        "focus": "Full Voice-Capture Interview",
+        "icon": "🎙️",
+        "note": "This single conversation determines whether every future post sounds authentically like them or generically like anyone.",
+        "tasks": [
+          {
+            "id": "34a",
+            "xp": 22,
+            "text": "Run the full Voice Capture Questionnaire with your new client, take detailed notes"
+          }
+        ]
+      },
+      {
+        "day": 35,
+        "focus": "Week 5 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "35a",
+            "xp": 22,
+            "text": "Confirm your first client is closed, paid, and their voice is documented"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:6, title:"Deliver", range:"Days 36-42",
-    icon:"🚀", color:"#0D7A5F",
-    goal:"A 30-day content calendar built, first posts written and approved, and posting live.",
-    days:[
-      {day:36, focus:"Build the 30-Day Content Calendar", icon:"📅",
-       tasks:[{id:"36a",text:"Plan out topics and structures for the first month, drawing from the voice-capture interview"}]},
-      {day:37, focus:"Write First Batch of Posts", icon:"✍️",
-       tasks:[{id:"37a",text:"Write the first week's worth of posts — 3-5 depending on the package"}]},
-      {day:38, focus:"Continue Writing", icon:"✍️",
-       tasks:[{id:"38a",text:"Finish the first batch and review each post against the voice-capture notes"}]},
-      {day:39, focus:"Client Review", icon:"👀",
-       tasks:[{id:"39a",text:"Send drafts for approval before anything goes live"}]},
-      {day:40, focus:"Launch Posting", icon:"🚀",
-       tasks:[{id:"40a",text:"Begin posting per the agreed schedule"}]},
-      {day:41, focus:"Monitor Engagement", icon:"📊",
-       tasks:[{id:"41a",text:"Track likes, comments, and profile views on each new post"}]},
-      {day:42, focus:"Week 6 Review", icon:"✅",
-       tasks:[{id:"42a",text:"Confirm the first week of live posting went smoothly with positive early engagement"}]},
-    ]},
+    "week": 6,
+    "title": "Deliver",
+    "range": "Days 36-42",
+    "icon": "🚀",
+    "color": "#0D7A5F",
+    "goal": "A 30-day content calendar built, first posts written and approved, and posting live.",
+    "days": [
+      {
+        "day": 36,
+        "focus": "Build the 30-Day Content Calendar",
+        "icon": "📅",
+        "tasks": [
+          {
+            "id": "36a",
+            "xp": 25,
+            "text": "Plan out topics and structures for the first month, drawing from the voice-capture interview"
+          }
+        ]
+      },
+      {
+        "day": 37,
+        "focus": "Write First Batch of Posts",
+        "icon": "✍️",
+        "tasks": [
+          {
+            "id": "37a",
+            "xp": 25,
+            "text": "Write the first week's worth of posts — 3-5 depending on the package"
+          }
+        ]
+      },
+      {
+        "day": 38,
+        "focus": "Continue Writing",
+        "icon": "✍️",
+        "tasks": [
+          {
+            "id": "38a",
+            "xp": 25,
+            "text": "Finish the first batch and review each post against the voice-capture notes"
+          }
+        ]
+      },
+      {
+        "day": 39,
+        "focus": "Client Review",
+        "icon": "👀",
+        "tasks": [
+          {
+            "id": "39a",
+            "xp": 25,
+            "text": "Send drafts for approval before anything goes live"
+          }
+        ]
+      },
+      {
+        "day": 40,
+        "focus": "Launch Posting",
+        "icon": "🚀",
+        "tasks": [
+          {
+            "id": "40a",
+            "xp": 25,
+            "text": "Begin posting per the agreed schedule"
+          },
+          {
+            "id": "d40badge",
+            "xp": 60,
+            "badge": true,
+            "emoji": "🚀",
+            "text": "First Post Live — the client's content calendar launched and posting."
+          }
+        ]
+      },
+      {
+        "day": 41,
+        "focus": "Monitor Engagement",
+        "icon": "📊",
+        "tasks": [
+          {
+            "id": "41a",
+            "xp": 25,
+            "text": "Track likes, comments, and profile views on each new post"
+          }
+        ]
+      },
+      {
+        "day": 42,
+        "focus": "Week 6 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "42a",
+            "xp": 25,
+            "text": "Confirm the first week of live posting went smoothly with positive early engagement"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:7, title:"Prove Value, Upsell, Referral", range:"Days 43-45",
-    icon:"📈", color:"#7A5A00",
-    goal:"First results presented, an upsell conversation opened, and a referral requested.",
-    days:[
-      {day:43, focus:"Present First Results", icon:"📊",
-       tasks:[{id:"43a",text:"Share engagement metrics, follower growth, and any inbound opportunities the posts generated"}]},
-      {day:44, focus:"Pitch the Upsell", icon:"📈",
-       tasks:[{id:"44a",text:"Use the upsell script — propose increased posting frequency or engagement management"}]},
-      {day:45, focus:"Ask for a Referral and Set Next Targets", icon:"🎯",
-       tasks:[
-         {id:"45a",text:"Ask if they know other professionals in your persona who might want the same presence"},
-         {id:"45b",text:"Set your next 30-day targets — new prospects, new outreach, revenue goal"},
-       ]},
-    ]},
+    "week": 7,
+    "title": "Prove Value, Upsell, Referral",
+    "range": "Days 43-45",
+    "icon": "📈",
+    "color": "#7A5A00",
+    "goal": "First results presented, an upsell conversation opened, and a referral requested.",
+    "days": [
+      {
+        "day": 43,
+        "focus": "Present First Results",
+        "icon": "📊",
+        "tasks": [
+          {
+            "id": "43a",
+            "xp": 28,
+            "text": "Share engagement metrics, follower growth, and any inbound opportunities the posts generated"
+          }
+        ]
+      },
+      {
+        "day": 44,
+        "focus": "Pitch the Upsell",
+        "icon": "📈",
+        "tasks": [
+          {
+            "id": "44a",
+            "xp": 28,
+            "text": "Use the upsell script — propose increased posting frequency or engagement management"
+          }
+        ]
+      },
+      {
+        "day": 45,
+        "focus": "Ask for a Referral and Set Next Targets",
+        "icon": "🎯",
+        "tasks": [
+          {
+            "id": "45a",
+            "xp": 28,
+            "text": "Ask if they know other professionals in your persona who might want the same presence"
+          },
+          {
+            "id": "45b",
+            "xp": 33,
+            "text": "Set your next 30-day targets — new prospects, new outreach, revenue goal"
+          },
+          {
+            "id": "d45badge",
+            "xp": 100,
+            "badge": true,
+            "emoji": "🏆",
+            "text": "Certified — you completed the full 45-Day Authority Engine."
+          }
+        ],
+        "bpsCheckpoint": true
+      }
+    ]
+  }
 ];
 
 const NOTION_COLS = [
@@ -350,17 +938,47 @@ export default function TheAuthorityEngine() {
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
   const [done,setDone]           = useState({});
+  const [loaded,setLoaded]       = useState(false);
+  const [confirmingReset,setConfirmingReset] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await window.storage.get(STORAGE_KEY, false);
+        if (res && res.value) setDone(JSON.parse(res.value).done || {});
+      } catch (e) { /* no saved progress yet */ }
+      finally { setLoaded(true); }
+    })();
+  }, []);
+
+  const persist = useCallback(async (next) => {
+    try { await window.storage.set(STORAGE_KEY, JSON.stringify({ done: next, savedAt: Date.now() }), false); }
+    catch (e) { /* best effort */ }
+  }, []);
+
+  const toggle = id=>setDone(p=>{ const next={...p,[id]:!p[id]}; persist(next); return next; });
+  const handleReset = () => {
+    if (!confirmingReset) { setConfirmingReset(true); return; }
+    setDone({}); persist({}); setConfirmingReset(false);
+  };
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
   const totalTasks     = allTasks.length;
   const completedTasks = allTasks.filter(t=>done[t.id]).length;
-  const progress = totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
+  const totalXP  = useMemo(()=>allTasks.reduce((s,t)=>s+t.xp,0),[allTasks]);
+  const earnedXP = useMemo(()=>allTasks.reduce((s,t)=>s+(done[t.id]?t.xp:0),0),[allTasks,done]);
+  const pct = totalXP?(earnedXP/totalXP)*100:0;
+  const progress = Math.round(pct);
   const progressColor = progress>=70?"#0D7A5F":progress>=35?"#C99A3B":"#7A5A00";
-  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const weekPct = w=>{
     const t=w.days.flatMap(d=>d.tasks);
     return t.length>0?Math.round((t.filter(x=>done[x.id]).length/t.length)*100):0;
   };
+  const currentRank = useMemo(()=>{ let r=RANKS[0]; for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; } return r; },[pct]);
+  const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
+  const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
+
+  if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
     {id:"plan",    label:"📅 45-Day Plan"},
@@ -406,14 +1024,43 @@ export default function TheAuthorityEngine() {
               GHL or Klaviyo mastery at all.
             </p>
           </div>
-          <div style={{background:"#F8F5EE",borderRadius:10,padding:"11px 14px",border:"1px solid #FBF8F1"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-              <span style={{fontSize:12,fontWeight:600,color:"#6E6459"}}>Overall Progress</span>
-              <span style={{fontSize:13,fontWeight:800,color:progressColor}}>
-                {completedTasks} / {totalTasks} tasks · {progress}%
-              </span>
+          <div style={{background:"#F8F5EE",borderRadius:10,padding:"14px 16px",border:"1px solid #FBF8F1"}}>
+            <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",gap:10,flexWrap:"wrap",marginBottom:10}}>
+              <div>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Current Rank</p>
+                <p style={{fontSize:17,fontWeight:800,color:"#7A5A00",margin:0}}>{currentRank.name}</p>
+                <p style={{fontSize:11,color:"#6E6459",margin:"2px 0 0",maxWidth:360,lineHeight:1.5}}>{currentRank.blurb}</p>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Progress</p>
+                <p style={{fontSize:17,fontWeight:800,color:progressColor,margin:0}}>{progress}%</p>
+                {nextRank && <p style={{fontSize:10.5,color:"#6E6459",margin:"2px 0 0"}}>{Math.max(0,nextRank.threshold-progress)}% to {nextRank.name}</p>}
+              </div>
             </div>
-            <ProgressBar value={progress} color={progressColor} height={8}/>
+            <div style={{display:"flex",gap:2,marginBottom:12}}>
+              {Array.from({length:20}).map((_,i)=>(
+                <div key={i} style={{height:6,flex:1,borderRadius:3,
+                  background:i<Math.round(pct/5)?"#C99A3B":"transparent",
+                  border:i<Math.round(pct/5)?"none":"1px solid #FBF8F1"}}/>
+              ))}
+            </div>
+            <div style={{fontSize:11,color:"#6E6459",marginBottom:8}}>{completedTasks} / {totalTasks} tasks complete</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+              {badgeItems.map(b=>{
+                const earned=!!done[b.id];
+                return (
+                  <span key={b.id} title={b.text} style={{
+                    width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:13,background:earned?"#C99A3B":"#FFFFFF",
+                    border:earned?"none":"1px solid #FBF8F1",opacity:earned?1:0.5,
+                  }}>{b.emoji}</span>
+                );
+              })}
+              <button onClick={handleReset} style={{
+                marginLeft:"auto",background:"none",border:"none",padding:0,cursor:"pointer",fontFamily:"inherit",
+                fontSize:11,color:confirmingReset?"#8B2E1F":"#6E6459",textDecoration:"underline",
+              }}>{confirmingReset?"Click again to confirm reset":"Reset progress"}</button>
+            </div>
           </div>
         </div>
       </div>
@@ -442,8 +1089,14 @@ export default function TheAuthorityEngine() {
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>45-Day Action Plan</h2>
             <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
-              Tap a week → tap a day → tick tasks as you complete them.
+              Tap a week → tap a day → tick tasks as you complete them. Days marked ★ carry a BPS checkpoint.
             </p>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",marginBottom:8}}>
+                BPS Checkpoints Inside the 45 Days
+              </div>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
             {WEEKS.map((w,wi)=>{
               const wp=weekPct(w); const wOpen=openWeek===wi;
               return (
@@ -487,7 +1140,7 @@ export default function TheAuthorityEngine() {
                                 <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                   <span style={{fontSize:10,fontWeight:700,color:w.color,
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
-                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
+                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}{d.bpsCheckpoint?" ★":""}</span>
                                 </div>
                                 <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
@@ -501,15 +1154,29 @@ export default function TheAuthorityEngine() {
                                     borderRadius:7,padding:"7px 10px",marginBottom:10,
                                     fontSize:12,color:w.color+"CC",lineHeight:1.5}}>💡 {d.note}</div>
                                 )}
-                                {d.tasks.map(t=>(
+                                {d.tasks.map(t=>t.badge?(
+                                  <div key={t.id} onClick={()=>toggle(t.id)}
+                                    style={{display:"flex",gap:10,alignItems:"center",
+                                      padding:"9px 11px",margin:"6px 0",borderRadius:9,
+                                      border:`1px solid ${done[t.id]?"#C99A3B":"#FBF8F1"}`,
+                                      background:done[t.id]?"rgba(201,154,59,0.10)":"#FFFFFF",cursor:"pointer"}}>
+                                    <span style={{flexShrink:0,width:30,height:30,borderRadius:"50%",
+                                      display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,
+                                      background:done[t.id]?"#C99A3B":"#FFFFFF",
+                                      border:done[t.id]?"none":"1px solid #FBF8F1"}}>{t.emoji}</span>
+                                    <span style={{flex:1,fontSize:13,fontWeight:600,color:done[t.id]?"#7A5A00":"#201A16"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:11,fontWeight:700,color:"#7A5A00"}}>+{t.xp} XP</span>
+                                  </div>
+                                ):(
                                   <div key={t.id} onClick={()=>toggle(t.id)}
                                     style={{display:"flex",gap:9,alignItems:"flex-start",
                                       padding:"8px 0",borderBottom:"1px solid #FBF8F1",cursor:"pointer"}}>
                                     <Check checked={!!done[t.id]} color={w.color}/>
-                                    <span style={{fontSize:13,lineHeight:1.55,
+                                    <span style={{flex:1,fontSize:13,lineHeight:1.55,
                                       color:done[t.id]?"#D9CFBB":"#6E6459",
                                       textDecoration:done[t.id]?"line-through":"none",
                                       transition:"all .15s"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:10.5,color:"#6E6459",paddingTop:1}}>+{t.xp}</span>
                                   </div>
                                 ))}
                               </div>

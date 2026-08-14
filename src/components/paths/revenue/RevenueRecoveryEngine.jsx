@@ -1,258 +1,912 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+
+const STORAGE_KEY = "revenue-progress-v1";
+
+const RANKS = [
+  { name:"Revenue Recruit", threshold:0, blurb:"Day 1. Klaviyo and dummy store live, zero spent." },
+  { name:"Flow Scout", threshold:10, blurb:"The 4 money flows understood, first two demo flows built." },
+  { name:"Niche Prospector", threshold:23, blurb:"A niche chosen, a Store CRM built, 15-20 scored prospects ready." },
+  { name:"Revenue Apprentice", threshold:37, blurb:"Outreach sent to real stores. The pipeline is live." },
+  { name:"Field Revenue Partner", threshold:51, blurb:"First discovery call run, real revenue-from-email numbers on the table." },
+  { name:"Contract Revenue Engineer", threshold:66, blurb:"First retainer signed. A real store's flows, being built." },
+  { name:"Certified Revenue Recovery Engineer", threshold:79, blurb:"45 days, one niche, one real store's flows live. This one's earned." },
+];
+
+/* BPS checkpoints — Belief (Day 16) → Affirmation (Day 30) → Evaluation (Day 45),
+   the same three days as CareBridge and the SMB Optimisation Engine. */
+const BPS_CHECKPOINTS = [
+  { day:16, type:"Belief Goal", detail:"Commit to your personal scouting and outreach formula — how many stores you audit daily, how many DMs or emails you send weekly — chosen from your own Week 1-2 practice, not a guess." },
+  { day:30, type:"Affirmation Goal", detail:"A 14-day honest effort report on your formula. Strict remark bands apply: 72%+ 'Effort is satisfactory, goal set to be achieved.' 60-71% 'Effort is minimal, goal not taken seriously.' Below 60% 'Effort is below requisite, failure of goal is imminent.'" },
+  { day:45, type:"Evaluation Goal", detail:"The full 40-day evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'" },
+];
 
 const WEEKS = [
   {
-    week:1, title:"Learn the System", range:"Days 1-7",
-    icon:"⚡", color:"#7A5A00",
-    goal:"Klaviyo fundamentals learned, dummy store live, first two flows built and tested — all at zero cost.",
-    days:[
-      {day:1, focus:"Free Account Setup", icon:"⚡",
-       note:"Total cost today: $0. Klaviyo's free plan runs real, working automation flows — genuinely enough to build your entire demo.",
-       tasks:[
-         {id:"1a",text:"Create a free Klaviyo account — supports up to 250 profiles with real flows, no credit card required"},
-         {id:"1b",text:"Start a free Shopify trial to build a dummy demo store"},
-         {id:"1c",text:"Create a free Notion account — this becomes your Store Prospecting CRM"},
-         {id:"1d",text:"Create a Canva account (free) for email template design"},
-       ]},
-      {day:2, focus:"Klaviyo Academy Fundamentals", icon:"🎓",
-       note:"Klaviyo Academy is free and official — complete the core certification path before building anything.",
-       tasks:[
-         {id:"2a",text:"Complete the Klaviyo Academy 'Email Marketing Fundamentals' course"},
-         {id:"2b",text:"Complete the 'Flow Building Basics' module"},
-         {id:"2c",text:"Watch 2-3 YouTube walkthroughs of real abandoned cart flows for extra context"},
-       ]},
-      {day:3, focus:"Understand the 4 Money Flows", icon:"💡",
-       note:"Every ecommerce brand loses revenue in the same 4 places. Understand the WHY before you build the HOW.",
-       tasks:[
-         {id:"3a",text:"Study why Abandoned Cart flows exist — recovering revenue from people who almost bought"},
-         {id:"3b",text:"Study why Welcome Series exist — converting new subscribers into first-time buyers"},
-         {id:"3c",text:"Study why Post-Purchase flows exist — building trust and setting up the second sale"},
-         {id:"3d",text:"Study why Win-Back flows exist — re-engaging lapsed customers at near-zero cost"},
-       ]},
-      {day:4, focus:"Build Your Dummy Store", icon:"🏗️",
-       tasks:[
-         {id:"4a",text:"Set up a free Shopify trial store with a fictional but realistic brand name in your chosen niche"},
-         {id:"4b",text:"Add 5-8 sample products with real images and descriptions"},
-         {id:"4c",text:"Connect the Klaviyo-Shopify integration so customer and order data syncs properly"},
-       ]},
-      {day:5, focus:"Build Demo Flow 1 — Abandoned Cart", icon:"🛒",
-       note:"Always build this one first. It is the highest-ROI, easiest-to-explain flow that exists.",
-       tasks:[
-         {id:"5a",text:"Open Klaviyo → Flows → use the Abandoned Checkout template as your starting point"},
-         {id:"5b",text:"Customize into a 3-email sequence at 1 hour, 24 hours, and 72 hours after abandonment"},
-         {id:"5c",text:"Add a small discount incentive on the final email only"},
-         {id:"5d",text:"Test the entire flow yourself by abandoning a cart on your dummy store"},
-       ]},
-      {day:6, focus:"Build Demo Flow 2 — Welcome Series", icon:"👋",
-       tasks:[
-         {id:"6a",text:"Open Klaviyo → Flows → use the Welcome Series template"},
-         {id:"6b",text:"Customize into a 4-5 email sequence introducing the brand story and a first-purchase incentive"},
-         {id:"6c",text:"Connect it to a signup popup on your dummy store"},
-         {id:"6d",text:"Test by signing up as a new subscriber"},
-       ]},
-      {day:7, focus:"Week 1 Review", icon:"✅",
-       tasks:[
-         {id:"7a",text:"Confirm both flows trigger correctly and render well on mobile"},
-         {id:"7b",text:"Note anything that felt confusing in Klaviyo — revisit the Academy module if needed"},
-       ]},
-    ]},
+    "week": 1,
+    "title": "Learn the System",
+    "range": "Days 1-7",
+    "icon": "⚡",
+    "color": "#7A5A00",
+    "goal": "Klaviyo fundamentals learned, dummy store live, first two flows built and tested — all at zero cost.",
+    "days": [
+      {
+        "day": 1,
+        "focus": "Free Account Setup",
+        "icon": "⚡",
+        "note": "Total cost today: $0. Klaviyo's free plan runs real, working automation flows — genuinely enough to build your entire demo.",
+        "tasks": [
+          {
+            "id": "1a",
+            "xp": 10,
+            "text": "Create a free Klaviyo account — supports up to 250 profiles with real flows, no credit card required"
+          },
+          {
+            "id": "1b",
+            "xp": 10,
+            "text": "Start a free Shopify trial to build a dummy demo store"
+          },
+          {
+            "id": "1c",
+            "xp": 10,
+            "text": "Create a free Notion account — this becomes your Store Prospecting CRM"
+          },
+          {
+            "id": "1d",
+            "xp": 15,
+            "text": "Create a Canva account (free) for email template design"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Klaviyo Academy Fundamentals",
+        "icon": "🎓",
+        "note": "Klaviyo Academy is free and official — complete the core certification path before building anything.",
+        "tasks": [
+          {
+            "id": "2a",
+            "xp": 10,
+            "text": "Complete the Klaviyo Academy 'Email Marketing Fundamentals' course"
+          },
+          {
+            "id": "2b",
+            "xp": 10,
+            "text": "Complete the 'Flow Building Basics' module"
+          },
+          {
+            "id": "2c",
+            "xp": 15,
+            "text": "Watch 2-3 YouTube walkthroughs of real abandoned cart flows for extra context"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Understand the 4 Money Flows",
+        "icon": "💡",
+        "note": "Every ecommerce brand loses revenue in the same 4 places. Understand the WHY before you build the HOW.",
+        "tasks": [
+          {
+            "id": "3a",
+            "xp": 10,
+            "text": "Study why Abandoned Cart flows exist — recovering revenue from people who almost bought"
+          },
+          {
+            "id": "3b",
+            "xp": 10,
+            "text": "Study why Welcome Series exist — converting new subscribers into first-time buyers"
+          },
+          {
+            "id": "3c",
+            "xp": 10,
+            "text": "Study why Post-Purchase flows exist — building trust and setting up the second sale"
+          },
+          {
+            "id": "3d",
+            "xp": 15,
+            "text": "Study why Win-Back flows exist — re-engaging lapsed customers at near-zero cost"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Build Your Dummy Store",
+        "icon": "🏗️",
+        "tasks": [
+          {
+            "id": "4a",
+            "xp": 10,
+            "text": "Set up a free Shopify trial store with a fictional but realistic brand name in your chosen niche"
+          },
+          {
+            "id": "4b",
+            "xp": 10,
+            "text": "Add 5-8 sample products with real images and descriptions"
+          },
+          {
+            "id": "4c",
+            "xp": 15,
+            "text": "Connect the Klaviyo-Shopify integration so customer and order data syncs properly"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Build Demo Flow 1 — Abandoned Cart",
+        "icon": "🛒",
+        "note": "Always build this one first. It is the highest-ROI, easiest-to-explain flow that exists.",
+        "tasks": [
+          {
+            "id": "5a",
+            "xp": 10,
+            "text": "Open Klaviyo → Flows → use the Abandoned Checkout template as your starting point"
+          },
+          {
+            "id": "5b",
+            "xp": 10,
+            "text": "Customize into a 3-email sequence at 1 hour, 24 hours, and 72 hours after abandonment"
+          },
+          {
+            "id": "5c",
+            "xp": 10,
+            "text": "Add a small discount incentive on the final email only"
+          },
+          {
+            "id": "5d",
+            "xp": 15,
+            "text": "Test the entire flow yourself by abandoning a cart on your dummy store"
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Build Demo Flow 2 — Welcome Series",
+        "icon": "👋",
+        "tasks": [
+          {
+            "id": "6a",
+            "xp": 10,
+            "text": "Open Klaviyo → Flows → use the Welcome Series template"
+          },
+          {
+            "id": "6b",
+            "xp": 10,
+            "text": "Customize into a 4-5 email sequence introducing the brand story and a first-purchase incentive"
+          },
+          {
+            "id": "6c",
+            "xp": 10,
+            "text": "Connect it to a signup popup on your dummy store"
+          },
+          {
+            "id": "6d",
+            "xp": 15,
+            "text": "Test by signing up as a new subscriber"
+          }
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Week 1 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "7a",
+            "xp": 10,
+            "text": "Confirm both flows trigger correctly and render well on mobile"
+          },
+          {
+            "id": "7b",
+            "xp": 15,
+            "text": "Note anything that felt confusing in Klaviyo — revisit the Academy module if needed"
+          },
+          {
+            "id": "d7badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "⚡",
+            "text": "Flows Proven — your first two demo flows built, tested and firing correctly."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:2, title:"Build Your Full Demo Portfolio", range:"Days 8-14",
-    icon:"🎨", color:"#0D7A5F",
-    goal:"All 4 flows built and working, a case study asset ready, and your Store CRM fully set up.",
-    days:[
-      {day:8, focus:"Build Demo Flow 3 — Post-Purchase", icon:"📦",
-       tasks:[
-         {id:"8a",text:"Open Klaviyo → Flows → use the Post-Purchase template"},
-         {id:"8b",text:"Customize into thank-you, shipping update, and review-request emails timed after delivery"},
-         {id:"8c",text:"Add a cross-sell or replenishment suggestion to the final email"},
-       ]},
-      {day:9, focus:"Build Demo Flow 4 — Win-Back", icon:"🔄",
-       tasks:[
-         {id:"9a",text:"Open Klaviyo → Flows → use the Win-Back / Re-engagement template"},
-         {id:"9b",text:"Segment by 'no purchase in 60+ days' and customize a compelling return offer"},
-         {id:"9c",text:"Test all 4 flows end to end one final time"},
-       ]},
-      {day:10, focus:"Design Professional Email Templates", icon:"🎨",
-       tasks:[
-         {id:"10a",text:"Use Klaviyo's drag-and-drop editor or Canva to design clean, on-brand email templates"},
-         {id:"10b",text:"Keep design simple and mobile-first — cluttered templates hurt conversion"},
-       ]},
-      {day:11, focus:"Record Loom Walkthroughs", icon:"🎬",
-       note:"Your Loom is your closer. Keep it under 90 seconds per flow, explain the problem before the solution.",
-       tasks:[
-         {id:"11a",text:"Record a 60-90 second Loom walkthrough of the abandoned cart flow"},
-         {id:"11b",text:"Record a 60-90 second Loom walkthrough of the full 4-flow system"},
-       ]},
-      {day:12, focus:"Build Your Case Study Page", icon:"📄",
-       tasks:[
-         {id:"12a",text:"Create a simple one-page overview showing all 4 flows with screenshots"},
-         {id:"12b",text:"Write a 100-word description of what problem each flow solves"},
-       ]},
-      {day:13, focus:"Set Up Your Store Prospecting CRM", icon:"🗂️",
-       tasks:[
-         {id:"13a",text:"Build the full Notion database using every column in the Store CRM tab"},
-         {id:"13b",text:"Set up your 5 views for tracking prospects through the pipeline"},
-       ]},
-      {day:14, focus:"Week 2 Review", icon:"✅",
-       tasks:[{id:"14a",text:"Confirm you have 4 working flows, a Loom demo, a case study page, and a CRM ready to use"}]},
-    ]},
+    "week": 2,
+    "title": "Build Your Full Demo Portfolio",
+    "range": "Days 8-14",
+    "icon": "🎨",
+    "color": "#0D7A5F",
+    "goal": "All 4 flows built and working, a case study asset ready, and your Store CRM fully set up.",
+    "days": [
+      {
+        "day": 8,
+        "focus": "Build Demo Flow 3 — Post-Purchase",
+        "icon": "📦",
+        "tasks": [
+          {
+            "id": "8a",
+            "xp": 13,
+            "text": "Open Klaviyo → Flows → use the Post-Purchase template"
+          },
+          {
+            "id": "8b",
+            "xp": 13,
+            "text": "Customize into thank-you, shipping update, and review-request emails timed after delivery"
+          },
+          {
+            "id": "8c",
+            "xp": 18,
+            "text": "Add a cross-sell or replenishment suggestion to the final email"
+          }
+        ]
+      },
+      {
+        "day": 9,
+        "focus": "Build Demo Flow 4 — Win-Back",
+        "icon": "🔄",
+        "tasks": [
+          {
+            "id": "9a",
+            "xp": 13,
+            "text": "Open Klaviyo → Flows → use the Win-Back / Re-engagement template"
+          },
+          {
+            "id": "9b",
+            "xp": 13,
+            "text": "Segment by 'no purchase in 60+ days' and customize a compelling return offer"
+          },
+          {
+            "id": "9c",
+            "xp": 18,
+            "text": "Test all 4 flows end to end one final time"
+          }
+        ]
+      },
+      {
+        "day": 10,
+        "focus": "Design Professional Email Templates",
+        "icon": "🎨",
+        "tasks": [
+          {
+            "id": "10a",
+            "xp": 13,
+            "text": "Use Klaviyo's drag-and-drop editor or Canva to design clean, on-brand email templates"
+          },
+          {
+            "id": "10b",
+            "xp": 18,
+            "text": "Keep design simple and mobile-first — cluttered templates hurt conversion"
+          }
+        ]
+      },
+      {
+        "day": 11,
+        "focus": "Record Loom Walkthroughs",
+        "icon": "🎬",
+        "note": "Your Loom is your closer. Keep it under 90 seconds per flow, explain the problem before the solution.",
+        "tasks": [
+          {
+            "id": "11a",
+            "xp": 13,
+            "text": "Record a 60-90 second Loom walkthrough of the abandoned cart flow"
+          },
+          {
+            "id": "11b",
+            "xp": 18,
+            "text": "Record a 60-90 second Loom walkthrough of the full 4-flow system"
+          }
+        ]
+      },
+      {
+        "day": 12,
+        "focus": "Build Your Case Study Page",
+        "icon": "📄",
+        "tasks": [
+          {
+            "id": "12a",
+            "xp": 13,
+            "text": "Create a simple one-page overview showing all 4 flows with screenshots"
+          },
+          {
+            "id": "12b",
+            "xp": 18,
+            "text": "Write a 100-word description of what problem each flow solves"
+          }
+        ]
+      },
+      {
+        "day": 13,
+        "focus": "Set Up Your Store Prospecting CRM",
+        "icon": "🗂️",
+        "tasks": [
+          {
+            "id": "13a",
+            "xp": 13,
+            "text": "Build the full Notion database using every column in the Store CRM tab"
+          },
+          {
+            "id": "13b",
+            "xp": 18,
+            "text": "Set up your 5 views for tracking prospects through the pipeline"
+          }
+        ]
+      },
+      {
+        "day": 14,
+        "focus": "Week 2 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "14a",
+            "xp": 13,
+            "text": "Confirm you have 4 working flows, a Loom demo, a case study page, and a CRM ready to use"
+          },
+          {
+            "id": "d14badge",
+            "xp": 45,
+            "badge": true,
+            "emoji": "📁",
+            "text": "Portfolio Complete — all 4 flows live, a case study ready, and your Store CRM built."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:3, title:"Pick Your Niche and Prospect", range:"Days 15-21",
-    icon:"🎯", color:"#C99A3B",
-    goal:"A specific product category chosen and 30-40 real prospects identified, audited, and scored.",
-    days:[
-      {day:15, focus:"Choose Your Niche Specialization", icon:"🎯",
-       note:"This single decision is what keeps you from competing with every other student running this same system. See the Pick Your Niche tab.",
-       tasks:[
-         {id:"15a",text:"Review the 8 niche options in the Pick Your Niche tab"},
-         {id:"15b",text:"Choose ONE product category to specialize in — do not target 'any ecommerce store'"},
-         {id:"15c",text:"Rebuild your dummy store's products to match this niche if they don't already"},
-       ]},
-      {day:16, focus:"Learn to Scout Stores", icon:"🔍",
-       tasks:[
-         {id:"16a",text:"Search your niche's hashtags on Instagram and TikTok Shop to find active brands"},
-         {id:"16b",text:"Check the Meta Ad Library for brands running paid ads in your niche — active ad spend signals real budget"},
-         {id:"16c",text:"Browse r/shopify and relevant ecommerce Facebook groups for visible brands"},
-       ]},
-      {day:17, focus:"Build Your Prospect List", icon:"📋",
-       tasks:[
-         {id:"17a",text:"Record 30-40 stores in your niche in a spreadsheet — name, URL, Instagram handle, follower count"},
-       ]},
-      {day:18, focus:"Audit Each Prospect", icon:"🔬",
-       note:"Add something to cart and abandon it on each site. Sign up for their list. This tells you exactly what's missing.",
-       tasks:[
-         {id:"18a",text:"Add a product to cart and leave — note whether any abandoned cart email arrives within 24 hours"},
-         {id:"18b",text:"Sign up for their email list — note whether a real welcome series arrives or just one generic email"},
-       ]},
-      {day:19, focus:"Score and Prioritize", icon:"🔥",
-       tasks:[
-         {id:"19a",text:"Tag each store: 🔥 Hot (no flows at all, active ad spend), ⚡ Warm (weak flows, some ad spend), ❄️ Cold (strong flows already running)"},
-         {id:"19b",text:"Focus only on Hot and Warm — Cold stores rarely convert into clients quickly"},
-       ]},
-      {day:20, focus:"Enrich Your Top Prospects", icon:"🔎",
-       tasks:[
-         {id:"20a",text:"Find the founder or marketing lead's name via the site's About page or Instagram bio"},
-         {id:"20b",text:"Note their Instagram handle for DM outreach and, if available, a contact email"},
-       ]},
-      {day:21, focus:"Week 3 Review", icon:"✅",
-       tasks:[{id:"21a",text:"Confirm you have 15-20 scored, enriched Hot and Warm prospects entered in Notion"}]},
-    ]},
+    "week": 3,
+    "title": "Pick Your Niche and Prospect",
+    "range": "Days 15-21",
+    "icon": "🎯",
+    "color": "#C99A3B",
+    "goal": "A specific product category chosen and 30-40 real prospects identified, audited, and scored.",
+    "days": [
+      {
+        "day": 15,
+        "focus": "Choose Your Niche Specialization",
+        "icon": "🎯",
+        "note": "This single decision is what keeps you from competing with every other student running this same system. See the Pick Your Niche tab.",
+        "tasks": [
+          {
+            "id": "15a",
+            "xp": 16,
+            "text": "Review the 8 niche options in the Pick Your Niche tab"
+          },
+          {
+            "id": "15b",
+            "xp": 16,
+            "text": "Choose ONE product category to specialize in — do not target 'any ecommerce store'"
+          },
+          {
+            "id": "15c",
+            "xp": 21,
+            "text": "Rebuild your dummy store's products to match this niche if they don't already"
+          }
+        ]
+      },
+      {
+        "day": 16,
+        "focus": "Learn to Scout Stores",
+        "icon": "🔍",
+        "tasks": [
+          {
+            "id": "16a",
+            "xp": 16,
+            "text": "Search your niche's hashtags on Instagram and TikTok Shop to find active brands"
+          },
+          {
+            "id": "16b",
+            "xp": 16,
+            "text": "Check the Meta Ad Library for brands running paid ads in your niche — active ad spend signals real budget"
+          },
+          {
+            "id": "16c",
+            "xp": 21,
+            "text": "Browse r/shopify and relevant ecommerce Facebook groups for visible brands"
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 17,
+        "focus": "Build Your Prospect List",
+        "icon": "📋",
+        "tasks": [
+          {
+            "id": "17a",
+            "xp": 16,
+            "text": "Record 30-40 stores in your niche in a spreadsheet — name, URL, Instagram handle, follower count"
+          }
+        ]
+      },
+      {
+        "day": 18,
+        "focus": "Audit Each Prospect",
+        "icon": "🔬",
+        "note": "Add something to cart and abandon it on each site. Sign up for their list. This tells you exactly what's missing.",
+        "tasks": [
+          {
+            "id": "18a",
+            "xp": 16,
+            "text": "Add a product to cart and leave — note whether any abandoned cart email arrives within 24 hours"
+          },
+          {
+            "id": "18b",
+            "xp": 21,
+            "text": "Sign up for their email list — note whether a real welcome series arrives or just one generic email"
+          }
+        ]
+      },
+      {
+        "day": 19,
+        "focus": "Score and Prioritize",
+        "icon": "🔥",
+        "tasks": [
+          {
+            "id": "19a",
+            "xp": 16,
+            "text": "Tag each store: 🔥 Hot (no flows at all, active ad spend), ⚡ Warm (weak flows, some ad spend), ❄️ Cold (strong flows already running)"
+          },
+          {
+            "id": "19b",
+            "xp": 21,
+            "text": "Focus only on Hot and Warm — Cold stores rarely convert into clients quickly"
+          }
+        ]
+      },
+      {
+        "day": 20,
+        "focus": "Enrich Your Top Prospects",
+        "icon": "🔎",
+        "tasks": [
+          {
+            "id": "20a",
+            "xp": 16,
+            "text": "Find the founder or marketing lead's name via the site's About page or Instagram bio"
+          },
+          {
+            "id": "20b",
+            "xp": 21,
+            "text": "Note their Instagram handle for DM outreach and, if available, a contact email"
+          }
+        ]
+      },
+      {
+        "day": 21,
+        "focus": "Week 3 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "21a",
+            "xp": 16,
+            "text": "Confirm you have 15-20 scored, enriched Hot and Warm prospects entered in Notion"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:4, title:"Outreach Launch", range:"Days 22-28",
-    icon:"📧", color:"#8B2E1F",
-    goal:"First wave of outreach sent, replies being tracked, and discovery calls beginning to book.",
-    days:[
-      {day:22, focus:"Draft Personalized Outreach", icon:"✍️",
-       note:"Instagram DM is your primary channel here — ecommerce founders live on Instagram, not necessarily their inbox.",
-       tasks:[
-         {id:"22a",text:"Open the Scripts tab — read the Instagram DM and cold email templates"},
-         {id:"22b",text:"Personalize the opening line for your top 10 prospects — mention something specific you noticed"},
-       ]},
-      {day:23, focus:"Send Wave 1", icon:"🚀",
-       tasks:[
-         {id:"23a",text:"Send Instagram DMs to your top 10 Hot prospects"},
-         {id:"23b",text:"Update Notion Stage to 'Contacted' for each, set Last Contacted date"},
-       ]},
-      {day:24, focus:"Send Wave 2", icon:"🚀",
-       tasks:[
-         {id:"24a",text:"Send DMs or emails to your next 10 prospects"},
-         {id:"24b",text:"Update Notion for each"},
-       ]},
-      {day:25, focus:"Monitor and Reply", icon:"🔔",
-       note:"Reply to everything within 2 hours. Ecommerce founders move fast and expect the same.",
-       tasks:[
-         {id:"25a",text:"Reply to every response within 2 hours, positive or negative"},
-         {id:"25b",text:"For positive replies, send your Calendly link immediately"},
-       ]},
-      {day:26, focus:"Follow-Up Message", icon:"📬",
-       tasks:[
-         {id:"26a",text:"Send the follow-up script to anyone from Wave 1 who has not replied after 3 days"},
-       ]},
-      {day:27, focus:"Book Discovery Calls", icon:"📅",
-       tasks:[
-         {id:"27a",text:"Confirm any booked calls, review each prospect's store again before the call"},
-       ]},
-      {day:28, focus:"Week 4 Review", icon:"✅",
-       tasks:[{id:"28a",text:"Tally messages sent, replies received, and calls booked"}]},
-    ]},
+    "week": 4,
+    "title": "Outreach Launch",
+    "range": "Days 22-28",
+    "icon": "📧",
+    "color": "#8B2E1F",
+    "goal": "First wave of outreach sent, replies being tracked, and discovery calls beginning to book.",
+    "days": [
+      {
+        "day": 22,
+        "focus": "Draft Personalized Outreach",
+        "icon": "✍️",
+        "note": "Instagram DM is your primary channel here — ecommerce founders live on Instagram, not necessarily their inbox.",
+        "tasks": [
+          {
+            "id": "22a",
+            "xp": 19,
+            "text": "Open the Scripts tab — read the Instagram DM and cold email templates"
+          },
+          {
+            "id": "22b",
+            "xp": 24,
+            "text": "Personalize the opening line for your top 10 prospects — mention something specific you noticed"
+          }
+        ]
+      },
+      {
+        "day": 23,
+        "focus": "Send Wave 1",
+        "icon": "🚀",
+        "tasks": [
+          {
+            "id": "23a",
+            "xp": 19,
+            "text": "Send Instagram DMs to your top 10 Hot prospects"
+          },
+          {
+            "id": "23b",
+            "xp": 24,
+            "text": "Update Notion Stage to 'Contacted' for each, set Last Contacted date"
+          },
+          {
+            "id": "d23badge",
+            "xp": 50,
+            "badge": true,
+            "emoji": "🎯",
+            "text": "First Contact — your first wave of outreach sent to real ecommerce stores."
+          }
+        ]
+      },
+      {
+        "day": 24,
+        "focus": "Send Wave 2",
+        "icon": "🚀",
+        "tasks": [
+          {
+            "id": "24a",
+            "xp": 19,
+            "text": "Send DMs or emails to your next 10 prospects"
+          },
+          {
+            "id": "24b",
+            "xp": 24,
+            "text": "Update Notion for each"
+          }
+        ]
+      },
+      {
+        "day": 25,
+        "focus": "Monitor and Reply",
+        "icon": "🔔",
+        "note": "Reply to everything within 2 hours. Ecommerce founders move fast and expect the same.",
+        "tasks": [
+          {
+            "id": "25a",
+            "xp": 19,
+            "text": "Reply to every response within 2 hours, positive or negative"
+          },
+          {
+            "id": "25b",
+            "xp": 24,
+            "text": "For positive replies, send your Calendly link immediately"
+          },
+          {
+            "id": "d25badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "💬",
+            "text": "First Reply — a real store owner responded to your outreach."
+          }
+        ]
+      },
+      {
+        "day": 26,
+        "focus": "Follow-Up Message",
+        "icon": "📬",
+        "tasks": [
+          {
+            "id": "26a",
+            "xp": 19,
+            "text": "Send the follow-up script to anyone from Wave 1 who has not replied after 3 days"
+          }
+        ]
+      },
+      {
+        "day": 27,
+        "focus": "Book Discovery Calls",
+        "icon": "📅",
+        "tasks": [
+          {
+            "id": "27a",
+            "xp": 19,
+            "text": "Confirm any booked calls, review each prospect's store again before the call"
+          }
+        ]
+      },
+      {
+        "day": 28,
+        "focus": "Week 4 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "28a",
+            "xp": 19,
+            "text": "Tally messages sent, replies received, and calls booked"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:5, title:"Close and Begin Delivery", range:"Days 29-35",
-    icon:"🏆", color:"#7A5A00",
-    goal:"Your first paying ecommerce client closed and the Blueprint phase underway.",
-    days:[
-      {day:29, focus:"Run the Discovery Call", icon:"📞",
-       note:"Ask what % of their revenue currently comes from email. Most without flows sit under 3% — this number does the selling for you.",
-       tasks:[
-         {id:"29a",text:"Use the discovery call questions from the Scripts tab"},
-         {id:"29b",text:"Ask specifically what percentage of revenue currently comes from email"},
-       ]},
-      {day:30, focus:"Send Proposal", icon:"📄",
-       tasks:[
-         {id:"30a",text:"Send your 3-tier package (Starter / Growth / Full Revenue System) within 24 hours of the call"},
-       ]},
-      {day:31, focus:"Handle Objections", icon:"🛡️",
-       tasks:[
-         {id:"31a",text:"Use the 'already have Klaviyo' and 'how much revenue' objection scripts as needed"},
-       ]},
-      {day:32, focus:"Close Your First Client", icon:"🤝",
-       tasks:[
-         {id:"32a",text:"Get agreement on package and price"},
-         {id:"32b",text:"Collect 50% deposit before starting real build work"},
-       ]},
-      {day:33, focus:"Blueprint Their Flows", icon:"📐",
-       tasks:[
-         {id:"33a",text:"Map exactly which flows and segments their store needs based on the discovery call"},
-       ]},
-      {day:34, focus:"Begin the Build", icon:"🛠️",
-       tasks:[
-         {id:"34a",text:"Connect their Shopify store to Klaviyo"},
-         {id:"34b",text:"Begin building the abandoned cart flow first — fastest visible win"},
-       ]},
-      {day:35, focus:"Week 5 Review", icon:"✅",
-       tasks:[{id:"35a",text:"Confirm the first client is closed, paid, and the build is underway"}]},
-    ]},
+    "week": 5,
+    "title": "Close and Begin Delivery",
+    "range": "Days 29-35",
+    "icon": "🏆",
+    "color": "#7A5A00",
+    "goal": "Your first paying ecommerce client closed and the Blueprint phase underway.",
+    "days": [
+      {
+        "day": 29,
+        "focus": "Run the Discovery Call",
+        "icon": "📞",
+        "note": "Ask what % of their revenue currently comes from email. Most without flows sit under 3% — this number does the selling for you.",
+        "tasks": [
+          {
+            "id": "29a",
+            "xp": 22,
+            "text": "Use the discovery call questions from the Scripts tab"
+          },
+          {
+            "id": "29b",
+            "xp": 27,
+            "text": "Ask specifically what percentage of revenue currently comes from email"
+          },
+          {
+            "id": "d29badge",
+            "xp": 55,
+            "badge": true,
+            "emoji": "📞",
+            "text": "First Discovery Call — ran your first real call, revenue-from-email question asked."
+          }
+        ]
+      },
+      {
+        "day": 30,
+        "focus": "Send Proposal",
+        "icon": "📄",
+        "tasks": [
+          {
+            "id": "30a",
+            "xp": 22,
+            "text": "Send your 3-tier package (Starter / Growth / Full Revenue System) within 24 hours of the call"
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 31,
+        "focus": "Handle Objections",
+        "icon": "🛡️",
+        "tasks": [
+          {
+            "id": "31a",
+            "xp": 22,
+            "text": "Use the 'already have Klaviyo' and 'how much revenue' objection scripts as needed"
+          }
+        ]
+      },
+      {
+        "day": 32,
+        "focus": "Close Your First Client",
+        "icon": "🤝",
+        "tasks": [
+          {
+            "id": "32a",
+            "xp": 22,
+            "text": "Get agreement on package and price"
+          },
+          {
+            "id": "32b",
+            "xp": 27,
+            "text": "Collect 50% deposit before starting real build work"
+          },
+          {
+            "id": "d32badge",
+            "xp": 80,
+            "badge": true,
+            "emoji": "🤝",
+            "text": "First Client Signed — your first Klaviyo retainer closed and deposited."
+          }
+        ]
+      },
+      {
+        "day": 33,
+        "focus": "Blueprint Their Flows",
+        "icon": "📐",
+        "tasks": [
+          {
+            "id": "33a",
+            "xp": 22,
+            "text": "Map exactly which flows and segments their store needs based on the discovery call"
+          }
+        ]
+      },
+      {
+        "day": 34,
+        "focus": "Begin the Build",
+        "icon": "🛠️",
+        "tasks": [
+          {
+            "id": "34a",
+            "xp": 22,
+            "text": "Connect their Shopify store to Klaviyo"
+          },
+          {
+            "id": "34b",
+            "xp": 27,
+            "text": "Begin building the abandoned cart flow first — fastest visible win"
+          }
+        ]
+      },
+      {
+        "day": 35,
+        "focus": "Week 5 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "35a",
+            "xp": 22,
+            "text": "Confirm the first client is closed, paid, and the build is underway"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:6, title:"Launch and Prove Value", range:"Days 36-42",
-    icon:"🚀", color:"#0D7A5F",
-    goal:"All flows live for the client with the first real revenue numbers to show.",
-    days:[
-      {day:36, focus:"Continue the Build", icon:"🛠️",
-       tasks:[{id:"36a",text:"Build the welcome series and post-purchase flow for the client"}]},
-      {day:37, focus:"Finish the Build", icon:"🛠️",
-       tasks:[{id:"37a",text:"Build the win-back flow, completing all 4 core flows"}]},
-      {day:38, focus:"Test Thoroughly", icon:"🧪",
-       tasks:[{id:"38a",text:"Test every flow end to end using real test purchases and signups"}]},
-      {day:39, focus:"Launch Live", icon:"🚀",
-       tasks:[{id:"39a",text:"Activate all 4 flows for the live store"}]},
-      {day:40, focus:"Monitor Early Performance", icon:"👀",
-       tasks:[{id:"40a",text:"Check open rates, click rates, and any early recovered revenue daily"}]},
-      {day:41, focus:"Pull First Revenue Numbers", icon:"📊",
-       tasks:[{id:"41a",text:"Export the first week of revenue attributed directly to the new flows inside Klaviyo"}]},
-      {day:42, focus:"Week 6 Review", icon:"✅",
-       tasks:[{id:"42a",text:"Confirm the flows are running cleanly with real, positive early numbers"}]},
-    ]},
+    "week": 6,
+    "title": "Launch and Prove Value",
+    "range": "Days 36-42",
+    "icon": "🚀",
+    "color": "#0D7A5F",
+    "goal": "All flows live for the client with the first real revenue numbers to show.",
+    "days": [
+      {
+        "day": 36,
+        "focus": "Continue the Build",
+        "icon": "🛠️",
+        "tasks": [
+          {
+            "id": "36a",
+            "xp": 25,
+            "text": "Build the welcome series and post-purchase flow for the client"
+          }
+        ]
+      },
+      {
+        "day": 37,
+        "focus": "Finish the Build",
+        "icon": "🛠️",
+        "tasks": [
+          {
+            "id": "37a",
+            "xp": 25,
+            "text": "Build the win-back flow, completing all 4 core flows"
+          }
+        ]
+      },
+      {
+        "day": 38,
+        "focus": "Test Thoroughly",
+        "icon": "🧪",
+        "tasks": [
+          {
+            "id": "38a",
+            "xp": 25,
+            "text": "Test every flow end to end using real test purchases and signups"
+          }
+        ]
+      },
+      {
+        "day": 39,
+        "focus": "Launch Live",
+        "icon": "🚀",
+        "tasks": [
+          {
+            "id": "39a",
+            "xp": 25,
+            "text": "Activate all 4 flows for the live store"
+          },
+          {
+            "id": "d39badge",
+            "xp": 60,
+            "badge": true,
+            "emoji": "🚀",
+            "text": "First Flows Live — the client's 4 flows activated on their real store."
+          }
+        ]
+      },
+      {
+        "day": 40,
+        "focus": "Monitor Early Performance",
+        "icon": "👀",
+        "tasks": [
+          {
+            "id": "40a",
+            "xp": 25,
+            "text": "Check open rates, click rates, and any early recovered revenue daily"
+          }
+        ]
+      },
+      {
+        "day": 41,
+        "focus": "Pull First Revenue Numbers",
+        "icon": "📊",
+        "tasks": [
+          {
+            "id": "41a",
+            "xp": 25,
+            "text": "Export the first week of revenue attributed directly to the new flows inside Klaviyo"
+          }
+        ]
+      },
+      {
+        "day": 42,
+        "focus": "Week 6 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "42a",
+            "xp": 25,
+            "text": "Confirm the flows are running cleanly with real, positive early numbers"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:7, title:"Upsell, Referral, and Scale", range:"Days 43-45",
-    icon:"📈", color:"#7A5A00",
-    goal:"First revenue report delivered, SMS upsold, and a referral or new prospect wave launched.",
-    days:[
-      {day:43, focus:"Present the Revenue Report", icon:"📊",
-       note:"Klaviyo shows revenue-attributed numbers directly in the dashboard — screenshot this for every monthly check-in from now on.",
-       tasks:[
-         {id:"43a",text:"Send or present a simple report showing revenue recovered by each flow"},
-       ]},
-      {day:44, focus:"Pitch SMS as an Upsell", icon:"📱",
-       tasks:[
-         {id:"44a",text:"Use the SMS upsell script from the Scripts tab"},
-         {id:"44b",text:"Position it as the natural next layer now that email flows are proven"},
-       ]},
-      {day:45, focus:"Ask for a Referral and Set Next Targets", icon:"🎯",
-       tasks:[
-         {id:"45a",text:"Ask if they know other stores in your niche who might benefit"},
-         {id:"45b",text:"Set your next 30-day targets — new prospects, new outreach volume, revenue goal"},
-       ]},
-    ]},
+    "week": 7,
+    "title": "Upsell, Referral, and Scale",
+    "range": "Days 43-45",
+    "icon": "📈",
+    "color": "#7A5A00",
+    "goal": "First revenue report delivered, SMS upsold, and a referral or new prospect wave launched.",
+    "days": [
+      {
+        "day": 43,
+        "focus": "Present the Revenue Report",
+        "icon": "📊",
+        "note": "Klaviyo shows revenue-attributed numbers directly in the dashboard — screenshot this for every monthly check-in from now on.",
+        "tasks": [
+          {
+            "id": "43a",
+            "xp": 28,
+            "text": "Send or present a simple report showing revenue recovered by each flow"
+          }
+        ]
+      },
+      {
+        "day": 44,
+        "focus": "Pitch SMS as an Upsell",
+        "icon": "📱",
+        "tasks": [
+          {
+            "id": "44a",
+            "xp": 28,
+            "text": "Use the SMS upsell script from the Scripts tab"
+          },
+          {
+            "id": "44b",
+            "xp": 33,
+            "text": "Position it as the natural next layer now that email flows are proven"
+          }
+        ]
+      },
+      {
+        "day": 45,
+        "focus": "Ask for a Referral and Set Next Targets",
+        "icon": "🎯",
+        "tasks": [
+          {
+            "id": "45a",
+            "xp": 28,
+            "text": "Ask if they know other stores in your niche who might benefit"
+          },
+          {
+            "id": "45b",
+            "xp": 33,
+            "text": "Set your next 30-day targets — new prospects, new outreach volume, revenue goal"
+          },
+          {
+            "id": "d45badge",
+            "xp": 100,
+            "badge": true,
+            "emoji": "🏆",
+            "text": "Certified — you completed the full 45-Day Revenue Recovery Engine."
+          }
+        ],
+        "bpsCheckpoint": true
+      }
+    ]
+  }
 ];
 
 const NOTION_COLS = [
@@ -442,17 +1096,47 @@ export default function RevenueRecoveryEngine() {
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
   const [done,setDone]           = useState({});
+  const [loaded,setLoaded]       = useState(false);
+  const [confirmingReset,setConfirmingReset] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await window.storage.get(STORAGE_KEY, false);
+        if (res && res.value) setDone(JSON.parse(res.value).done || {});
+      } catch (e) { /* no saved progress yet */ }
+      finally { setLoaded(true); }
+    })();
+  }, []);
+
+  const persist = useCallback(async (next) => {
+    try { await window.storage.set(STORAGE_KEY, JSON.stringify({ done: next, savedAt: Date.now() }), false); }
+    catch (e) { /* best effort */ }
+  }, []);
+
+  const toggle = id=>setDone(p=>{ const next={...p,[id]:!p[id]}; persist(next); return next; });
+  const handleReset = () => {
+    if (!confirmingReset) { setConfirmingReset(true); return; }
+    setDone({}); persist({}); setConfirmingReset(false);
+  };
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
   const totalTasks     = allTasks.length;
   const completedTasks = allTasks.filter(t=>done[t.id]).length;
-  const progress = totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
+  const totalXP  = useMemo(()=>allTasks.reduce((s,t)=>s+t.xp,0),[allTasks]);
+  const earnedXP = useMemo(()=>allTasks.reduce((s,t)=>s+(done[t.id]?t.xp:0),0),[allTasks,done]);
+  const pct = totalXP?(earnedXP/totalXP)*100:0;
+  const progress = Math.round(pct);
   const progressColor = progress>=70?"#0D7A5F":progress>=35?"#C99A3B":"#7A5A00";
-  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const weekPct = w=>{
     const t=w.days.flatMap(d=>d.tasks);
     return t.length>0?Math.round((t.filter(x=>done[x.id]).length/t.length)*100):0;
   };
+  const currentRank = useMemo(()=>{ let r=RANKS[0]; for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; } return r; },[pct]);
+  const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
+  const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
+
+  if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
     {id:"plan",    label:"📅 45-Day Plan"},
@@ -497,14 +1181,43 @@ export default function RevenueRecoveryEngine() {
               in pet products. Pick your niche and own it.
             </p>
           </div>
-          <div style={{background:"#F8F5EE",borderRadius:10,padding:"11px 14px",border:"1px solid #FBF8F1"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-              <span style={{fontSize:12,fontWeight:600,color:"#6E6459"}}>Overall Progress</span>
-              <span style={{fontSize:13,fontWeight:800,color:progressColor}}>
-                {completedTasks} / {totalTasks} tasks · {progress}%
-              </span>
+          <div style={{background:"#F8F5EE",borderRadius:10,padding:"14px 16px",border:"1px solid #FBF8F1"}}>
+            <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",gap:10,flexWrap:"wrap",marginBottom:10}}>
+              <div>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Current Rank</p>
+                <p style={{fontSize:17,fontWeight:800,color:"#7A5A00",margin:0}}>{currentRank.name}</p>
+                <p style={{fontSize:11,color:"#6E6459",margin:"2px 0 0",maxWidth:360,lineHeight:1.5}}>{currentRank.blurb}</p>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Progress</p>
+                <p style={{fontSize:17,fontWeight:800,color:progressColor,margin:0}}>{progress}%</p>
+                {nextRank && <p style={{fontSize:10.5,color:"#6E6459",margin:"2px 0 0"}}>{Math.max(0,nextRank.threshold-progress)}% to {nextRank.name}</p>}
+              </div>
             </div>
-            <ProgressBar value={progress} color={progressColor} height={8}/>
+            <div style={{display:"flex",gap:2,marginBottom:12}}>
+              {Array.from({length:20}).map((_,i)=>(
+                <div key={i} style={{height:6,flex:1,borderRadius:3,
+                  background:i<Math.round(pct/5)?"#C99A3B":"transparent",
+                  border:i<Math.round(pct/5)?"none":"1px solid #FBF8F1"}}/>
+              ))}
+            </div>
+            <div style={{fontSize:11,color:"#6E6459",marginBottom:8}}>{completedTasks} / {totalTasks} tasks complete</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+              {badgeItems.map(b=>{
+                const earned=!!done[b.id];
+                return (
+                  <span key={b.id} title={b.text} style={{
+                    width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:13,background:earned?"#C99A3B":"#FFFFFF",
+                    border:earned?"none":"1px solid #FBF8F1",opacity:earned?1:0.5,
+                  }}>{b.emoji}</span>
+                );
+              })}
+              <button onClick={handleReset} style={{
+                marginLeft:"auto",background:"none",border:"none",padding:0,cursor:"pointer",fontFamily:"inherit",
+                fontSize:11,color:confirmingReset?"#8B2E1F":"#6E6459",textDecoration:"underline",
+              }}>{confirmingReset?"Click again to confirm reset":"Reset progress"}</button>
+            </div>
           </div>
         </div>
       </div>
@@ -533,8 +1246,14 @@ export default function RevenueRecoveryEngine() {
           <div>
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>45-Day Action Plan</h2>
             <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
-              Tap a week → tap a day → tick tasks as you complete them.
+              Tap a week → tap a day → tick tasks as you complete them. Days marked ★ carry a BPS checkpoint.
             </p>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",marginBottom:8}}>
+                BPS Checkpoints Inside the 45 Days
+              </div>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
             {WEEKS.map((w,wi)=>{
               const wp=weekPct(w); const wOpen=openWeek===wi;
               return (
@@ -578,7 +1297,7 @@ export default function RevenueRecoveryEngine() {
                                 <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                   <span style={{fontSize:10,fontWeight:700,color:w.color,
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
-                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
+                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}{d.bpsCheckpoint?" ★":""}</span>
                                 </div>
                                 <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
@@ -592,15 +1311,29 @@ export default function RevenueRecoveryEngine() {
                                     borderRadius:7,padding:"7px 10px",marginBottom:10,
                                     fontSize:12,color:w.color+"CC",lineHeight:1.5}}>💡 {d.note}</div>
                                 )}
-                                {d.tasks.map(t=>(
+                                {d.tasks.map(t=>t.badge?(
+                                  <div key={t.id} onClick={()=>toggle(t.id)}
+                                    style={{display:"flex",gap:10,alignItems:"center",
+                                      padding:"9px 11px",margin:"6px 0",borderRadius:9,
+                                      border:`1px solid ${done[t.id]?"#C99A3B":"#FBF8F1"}`,
+                                      background:done[t.id]?"rgba(201,154,59,0.10)":"#FFFFFF",cursor:"pointer"}}>
+                                    <span style={{flexShrink:0,width:30,height:30,borderRadius:"50%",
+                                      display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,
+                                      background:done[t.id]?"#C99A3B":"#FFFFFF",
+                                      border:done[t.id]?"none":"1px solid #FBF8F1"}}>{t.emoji}</span>
+                                    <span style={{flex:1,fontSize:13,fontWeight:600,color:done[t.id]?"#7A5A00":"#201A16"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:11,fontWeight:700,color:"#7A5A00"}}>+{t.xp} XP</span>
+                                  </div>
+                                ):(
                                   <div key={t.id} onClick={()=>toggle(t.id)}
                                     style={{display:"flex",gap:9,alignItems:"flex-start",
                                       padding:"8px 0",borderBottom:"1px solid #FBF8F1",cursor:"pointer"}}>
                                     <Check checked={!!done[t.id]} color={w.color}/>
-                                    <span style={{fontSize:13,lineHeight:1.55,
+                                    <span style={{flex:1,fontSize:13,lineHeight:1.55,
                                       color:done[t.id]?"#D9CFBB":"#6E6459",
                                       textDecoration:done[t.id]?"line-through":"none",
                                       transition:"all .15s"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:10.5,color:"#6E6459",paddingTop:1}}>+{t.xp}</span>
                                   </div>
                                 ))}
                               </div>
