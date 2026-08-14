@@ -27,6 +27,7 @@ const TABS = [
   { id: "maps", label: "🗺️ Map Searches" },
   { id: "score", label: "🎯 Score Leads" },
   { id: "gslam", label: "💎 Grand Slam" },
+  { id: "tools", label: "🚀 Scale Fast" },
   { id: "prioritize", label: "📊 Prioritize & Scale" },
 ];
 
@@ -74,7 +75,7 @@ function GlobalSmbEngine() {
       {/* CONTENT */}
       {(tab === "countries" || tab === "businesses") && <GlobalParts tab={tab} />}
       {tab === "maps" && <ProspectingParts tab="maps" />}
-      {(tab === "score" || tab === "gslam") && <GrandSlamParts tab={tab} />}
+      {(tab === "score" || tab === "gslam" || tab === "tools") && <GrandSlamParts tab={tab} />}
       {tab === "prioritize" && <PrioritizeParts />}
     </div>
   );

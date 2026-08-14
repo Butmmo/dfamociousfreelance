@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   CREAM, CREAM_DEEP, BORDER, INK, MUTED, GOLD, GOLD_DEEP, CRIMSON, EMERALD,
   TONE, tone, h2Style, pStyle, eyebrowStyle, labelStyle,
-  ScoreDots, CalloutBox, AccordionShell, NextLink, TaskRow, DayCard,
+  ScoreDots, CalloutBox, AccordionShell, NextLink, TaskRow, DayCard, BpsCheckpoints,
 } from "@/components/paths/shared/primitives";
 
 const STORAGE_KEY = "ascent-progress-v2";
@@ -36,6 +36,15 @@ const RANKS = [
   { name: "Field Closer", threshold: 58, blurb: `Pipeline sustained. Auditions in motion.` },
   { name: "Contract Closer", threshold: 78, blurb: `Terms on the table. A seat is close.` },
   { name: "Certified High-Ticket Closer", threshold: 95, blurb: `System complete. First live reps taken.` },
+];
+
+/* BPS checkpoints — Belief (Day 16) → Affirmation (Day 30) → Evaluation (Day 45),
+   the same three days as CareBridge and every rebuilt DSE path, so the cadence
+   reads identically no matter which path a beneficiary runs. */
+const BPS_CHECKPOINTS = [
+  { day: 16, type: "Belief Goal", detail: `Commit to your personal scouting and outreach formula — how many companies you scout daily, how many personalized messages you send weekly — chosen from your own Phase 1 data, not a guess.` },
+  { day: 30, type: "Affirmation Goal", detail: `A 14-day honest effort report on your formula. Strict remark bands apply: 72%+ 'Effort is satisfactory, goal set to be achieved.' 60-71% 'Effort is minimal, goal not taken seriously.' Below 60% 'Effort is below requisite, failure of goal is imminent.'` },
+  { day: 45, type: "Evaluation Goal", detail: `The full 40-day evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'` },
 ];
 
 const DAYS = [
@@ -146,7 +155,7 @@ const DAYS = [
       { id: "d15i2", xp: 15, text: `Name one thing that's working and one thing to adjust before Phase 2` },
     ]},
 
-  { day: 16, phase: 2, title: `Fresh Scouting Sprint`,
+  { day: 16, phase: 2, bpsCheckpoint: true, title: `Fresh Scouting Sprint`,
     objective: `Keep the pipeline fed — scouting never fully stops.`,
     items: [
       { id: "d16i1", xp: 30, text: `Run the Scout Method again (search or YouTube, your choice) for 8–10 new targets` },
@@ -234,7 +243,7 @@ const DAYS = [
       { id: "d29i1", xp: 15, text: `Update every stat in your tracker` },
       { id: "d29i2", xp: 10, text: `Name your single biggest bottleneck and one fix for it` },
     ]},
-  { day: 30, phase: 2, title: `Phase 2 Review`,
+  { day: 30, phase: 2, bpsCheckpoint: true, title: `Phase 2 Review`,
     objective: `Confirm you're ready to convert, not just prospect.`,
     items: [
       { id: "d30i1", xp: 15, text: `Full pipeline audit: how many companies at each stage` },
@@ -325,7 +334,7 @@ const DAYS = [
       { id: "d44i1", xp: 20, text: `Review every call you've taken so far against the rubric; find the one pattern that repeats` },
       { id: "d44i2", xp: 15, text: `Fix it in writing — an updated objection response or framework note` },
     ]},
-  { day: 45, phase: 3, title: `Certification Day`,
+  { day: 45, phase: 3, bpsCheckpoint: true, title: `Certification Day`,
     objective: `Close the loop on this system and open the next one.`,
     items: [
       { id: "d45i1", xp: 15, text: `Full system review: what worked, what needs sharpening` },
@@ -641,7 +650,7 @@ function StartTab() {
         if one does, that's already answered by the Vetting Checklist in Scripts.
       </CalloutBox>
 
-      <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px" }}>
+      <div style={{ background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "14px 16px", marginBottom: 18 }}>
         <p style={{ ...eyebrowStyle, color: GOLD_DEEP }}>How to run this system</p>
         <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: MUTED, lineHeight: 1.8 }}>
           <li>Read <strong style={{ color: INK }}>Pick Lane</strong> and lock a niche before Day 3.</li>
@@ -649,6 +658,15 @@ function StartTab() {
           <li>Work <strong style={{ color: INK }}>45 Days</strong> in order, checking off tasks as you go — your rank climbs automatically.</li>
           <li>Read <strong style={{ color: INK }}>Mastery</strong> whenever a call goes sideways — it's the "why" behind the framework, not just the "how."</li>
         </ol>
+      </div>
+
+      <div style={{ marginBottom: 4 }}>
+        <p style={{ ...eyebrowStyle, color: GOLD_DEEP }}>BPS Checkpoints Inside the 45 Days</p>
+        <p style={{ ...pStyle, marginTop: 0 }}>
+          Three days in the plan are marked ★ — Belief (Day 16), Affirmation (Day 30), and Evaluation (Day 45).
+          Each one is a short honest check-in against a formula you commit to yourself, not a task to check off.
+        </p>
+        <BpsCheckpoints checkpoints={BPS_CHECKPOINTS} />
       </div>
     </div>
   );

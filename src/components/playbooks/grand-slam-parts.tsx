@@ -6,99 +6,6 @@ import { useState } from "react";
    DATA
 ═══════════════════════════════════════════════ */
 
-const PHASES = [
-  {
-    id: "setup", num: "01", icon: "⚡", color: "#3B82F6",
-    title: "Set Up Your Free Arsenal", tag: "Day 1",
-    tasks: [
-      { id: "s1", text: "Sign up at Outscraper.com (free tier — your main lead scraper)" },
-      { id: "s2", text: "Create Apollo.io account — 50 free verified emails per month" },
-      { id: "s3", text: "Create Hunter.io account — 25 free email finds per month" },
-      { id: "s4", text: "Sign up for Notion CRM (free for up to 3 users)" },
-      { id: "s5", text: "Create Make.com account (free, 1,000 automation operations/month)" },
-      { id: "s6", text: "Set up Calendly and add your real weekly availability" },
-      { id: "s7", text: "Install Loom — record a 30-second test clip to get comfortable" },
-    ],
-    note: "Total cost today: $0. You only start spending money after your first client pays you.",
-  },
-  {
-    id: "niche", num: "02", icon: "🎯", color: "#6366F1",
-    title: "Lock In Your Niche", tag: "Day 1–2",
-    tasks: [
-      { id: "n1", text: "Choose ONE Tier-1 boring niche only to start — garage doors, tree service, junk removal, septic or pressure washing" },
-      { id: "n2", text: "Choose ONE city to target first (any city with 100k+ population works)" },
-      { id: "n3", text: "Find 5 real businesses in your niche on Google Maps with under 50 reviews and no owner replies" },
-      { id: "n4", text: "Compare each one to the top business in that map pack — write down both review counts and the date of their last review. That gap is your entire pitch" },
-      { id: "n5", text: "Write one sentence: 'My clients get [outcome] in [timeframe]' — your positioning statement" },
-    ],
-    note: "The review gap is your pitch. 'You have 38 reviews, they have 412' beats any feature list ever written.",
-  },
-  {
-    id: "leads", num: "03", icon: "🗺️", color: "#8B5CF6",
-    title: "Build Your Lead List", tag: "Day 2–3",
-    tasks: [
-      { id: "l1", text: "Open Google Maps → search '[niche] [city]' e.g. 'dentist Leeds' or 'hair salon Lagos'" },
-      { id: "l2", text: "Scan the top 20 results — mentally flag any business with a weak or absent website" },
-      { id: "l3", text: "In Outscraper, paste the same search → export 100 businesses as a CSV file" },
-      { id: "l4", text: "Repeat with 2 more search term variations in the same niche" },
-      { id: "l5", text: "Import the full CSV into Notion CRM — set all stage fields to 'Scraped'" },
-    ],
-    note: "Target: 200–300 raw leads imported. You'll filter these down to your 30 gold prospects in the next phase.",
-  },
-  {
-    id: "qualify", num: "04", icon: "🔥", color: "#F59E0B",
-    title: "Find the Hot Leads", tag: "Day 3–4",
-    tasks: [
-      { id: "q1", text: "Open each lead's Google listing — scan for hot signals and cold flags (use the Score tab)" },
-      { id: "q2", text: "Score each lead and tag any score of 7+ as Hot in Notion CRM" },
-      { id: "q3", text: "Archive or delete all leads with a -3 cold signal (franchise chains, government entities)" },
-      { id: "q4", text: "Goal: 30 confirmed hot leads ready before you send a single email" },
-    ],
-    note: "30 hot leads beat 300 random ones every time. This step alone separates closers from chasers.",
-  },
-  {
-    id: "emails", num: "05", icon: "📧", color: "#10B981",
-    title: "Get the Owner's Direct Email", tag: "Day 4–5",
-    tasks: [
-      { id: "e1", text: "Check the Google Business Profile 'About' tab for email — takes 5 seconds per lead" },
-      { id: "e2", text: "Visit their website /contact page or footer for the owner's direct address" },
-      { id: "e3", text: "No email found? Paste their domain into Apollo.io to find one" },
-      { id: "e4", text: "Apollo blank? Try Hunter.io with the same domain" },
-      { id: "e5", text: "Last resort only: find the owner on LinkedIn → connect → message after they accept" },
-      { id: "e6", text: "Log every email found in Notion CRM — move their stage to 'Ready to Contact'" },
-    ],
-    note: "info@ goes to an employee. The owner's direct email gets 3× the reply rate. Always dig deeper.",
-  },
-  {
-    id: "offer", num: "06", icon: "💎", color: "#EC4899",
-    title: "Build Your Grand Slam Offer", tag: "Day 5–6",
-    tasks: [
-      { id: "o1", text: "Write the Dream Outcome — what transformation does the client actually get? Not the deliverable" },
-      { id: "o2", text: "Build a live demo using the prospect's actual business name and real branding" },
-      { id: "o3", text: "Record a 90-second Loom walkthrough of that demo" },
-      { id: "o4", text: "Commit to a 14-day delivery deadline — put it in your pitch and mean it" },
-      { id: "o5", text: "Write your ease line: 'I need 1 hour of your time. I handle absolutely everything else.'" },
-      { id: "o6", text: "Go to the Grand Slam tab → fill in all 4 parts → your cold email pitch auto-generates" },
-      { id: "o7", text: "Test your pitch on a friend — can they understand it completely in 30 seconds?" },
-    ],
-    note: "Grand Slam = Dream Outcome + Proof + Speed + Ease. Four parts. One offer they can't logically refuse.",
-  },
-  {
-    id: "send", num: "07", icon: "🚀", color: "#14B8A6",
-    title: "Send, Follow Up, Get Paid", tag: "Week 2 onwards",
-    tasks: [
-      { id: "se1", text: "Send your first 10 cold emails manually — personalise each one individually" },
-      { id: "se2", text: "Day 3 follow-up: use a completely different angle — a stat, a question, a fresh insight. Never 'just checking in'" },
-      { id: "se3", text: "Day 7 follow-up: include your Loom demo link if not already shared" },
-      { id: "se4", text: "Every reply → move to Notion 'Replied' stage → book a Calendly discovery call immediately" },
-      { id: "se5", text: "Close your first Quick Win project ($300–600) and deliver in 10 days or fewer" },
-      { id: "se6", text: "On delivery day: introduce the Full Presence upsell ($800–1,500)" },
-      { id: "se7", text: "After the second project: pitch the Care Retainer ($200–400/month) — your recurring income foundation" },
-    ],
-    note: "Your first $500 client teaches more than six months of preparation. Send those 10 emails before perfecting anything else.",
-  },
-];
-
 const GSO = [
   {
     id: "dream", icon: "🌟", color: "#F59E0B",
@@ -155,54 +62,32 @@ const COLD = [
   { pts: -1, label: "No physical address — online only", why: "Harder to verify; lower trust baseline" },
 ];
 
-const LADDER = [
-  { num: "01", icon: "🌱", color: "#10B981", name: "Quick Win", price: "$300–600", tag: "One-time", yours: true,
-    what: "Landing page, Google-optimised, contact form, mobile-first. Delivered in under 10 days.",
-    up: `"Now let's add CRM so you don't lose a single lead this page brings in."` },
-  { num: "02", icon: "🌐", color: "#3B82F6", name: "Full Presence", price: "$800–1,500", tag: "One-time", yours: true,
-    what: "Multi-page website + Notion CRM setup + Calendly booking integration. The full digital shop front.",
-    up: `"Now let's add email marketing so those visitors keep coming back as repeat customers."` },
-  { num: "03", icon: "⚡", color: "#8B5CF6", name: "Custom System", price: "$2,000–4,000", tag: "One-time", yours: true,
-    what: "Custom Lovable or Lovable app + Make.com automation + CRM + Go High Level email marketing. The full stack.",
-    up: `"Let me stay on as your tech partner so this keeps performing and growing."` },
-  { num: "04", icon: "🔄", color: "#F59E0B", name: "Care Retainer", price: "$200–400", tag: "/month", yours: true,
-    what: "Monthly updates, uptime monitoring, content changes, priority support. Passive recurring income for you.",
-    up: `"Want me to also manage your email campaigns every month?"` },
-  { num: "05", icon: "📈", color: "#EC4899", name: "Growth Retainer", price: "$400–800", tag: "/month", yours: true,
-    what: "Go High Level campaigns designed and sent monthly + analytics report + CRM hygiene. Real growth work.",
-    up: `"Want me to bring in a paid ads specialist to feed leads directly into this system?"` },
-  { num: "06", icon: "📣", color: "#6E6459", name: "Paid Ads Management", price: "Refer + 10–20%", tag: "Partner", yours: false,
-    what: "Partner with a trusted Google/Meta ads specialist. You earn a referral fee and stay as the client's primary relationship owner." },
-  { num: "07", icon: "🔎", color: "#6E6459", name: "Advanced SEO", price: "Refer + 10–20%", tag: "Partner", yours: false,
-    what: "Partner with an SEO specialist for content strategy and link-building. Don't attempt solo while still mastering CRM." },
-];
-
+/* ── SCALE-FAST TOOLKIT ──────────────────────────────────
+   Unlock after your first paying subscriber. Manual prospecting (the
+   45-Day Plan) is how you get there spending nothing beyond Lovable + GHL —
+   these paid tools replace hours of manual scouting once revenue can fund
+   them. Trying to run this stack before that point is what the FAQ in the
+   45-Day Plan explicitly warns against: "manual first, automate what is
+   proven." ── */
 const TOOL_CATS = [
   { cat: "Find Leads", color: "#6366F1", tools: [
-    { name: "Outscraper", cost: "~$3/1K leads", url: "outscraper.com", desc: "Bulk Google Maps extraction. Set your search + city, export hundreds of leads as CSV in minutes. Your main workhorse." },
+    { name: "Outscraper", cost: "~$3/1K leads", url: "outscraper.com", desc: "Bulk Google Maps extraction. Set your search + city, export hundreds of leads as CSV in minutes — replaces a manual scouting session outright." },
     { name: "PhantomBuster", cost: "Free trial", url: "phantombuster.com", desc: "LinkedIn + Google Maps automation for targeted niche and location scraping." },
   ]},
   { cat: "Find Emails", color: "#10B981", tools: [
-    { name: "Apollo.io", cost: "Free · 50/mo", url: "apollo.io", desc: "Email + LinkedIn enrichment from any domain name. Your first stop when an email is missing." },
+    { name: "Apollo.io", cost: "Free · 50/mo", url: "apollo.io", desc: "Email + LinkedIn enrichment from any domain name — replaces the manual ContactOut lookup at volume." },
     { name: "Hunter.io", cost: "Free · 25/mo", url: "hunter.io", desc: "Domain-to-email finder with confidence scores. Only use addresses rated 80% or higher." },
-    { name: "Snov.io", cost: "Free · 50/mo", url: "snov.io", desc: "Email finder and verifier. Your third backup if Apollo and Hunter both draw blanks." },
+    { name: "Snov.io", cost: "Free · 50/mo", url: "snov.io", desc: "Email finder and verifier — the same tool from Day 1, now used at scale instead of one at a time." },
   ]},
   { cat: "Send Cold Outreach", color: "#F59E0B", tools: [
-    { name: "Instantly.ai", cost: "$37/mo", url: "instantly.ai", desc: "Cold email at scale. Only activate once you have 50+ hot leads validated and loaded." },
+    { name: "Instantly.ai", cost: "$37/mo", url: "instantly.ai", desc: "Cold email at scale. Only activate once you have 50+ hot leads validated and loaded — see the 45-Day Plan FAQ on when automation is worth it." },
     { name: "Lemlist", cost: "$39/mo", url: "lemlist.com", desc: "Cold email + LinkedIn outreach + personalised image thumbnails per email. Great for visual niches." },
   ]},
   { cat: "Automate Everything", color: "#3B82F6", tools: [
     { name: "Make.com", cost: "Free · 1K ops/mo", url: "make.com", desc: "Your silent automation engine. Connects Outscraper → Apollo → Notion → Instantly without you lifting a finger." },
   ]},
   { cat: "CRM & Nurture", color: "#EC4899", tools: [
-    { name: "Notion CRM", cost: "Free · 3 users", url: "notion.com/crm", desc: "Your full pipeline. Stages: Scraped → Contacted → Replied → Discovery Call → Proposal → Closed." },
-    { name: "Go High Level", cost: "Free · <250 contacts", url: "klaviyo.com", desc: "Email nurture sequences for leads who don't respond immediately. Stay visible until they're ready." },
-  ]},
-  { cat: "Close & Get Paid", color: "#14B8A6", tools: [
-    { name: "Calendly", cost: "Free", url: "calendly.com", desc: "Auto-schedule discovery calls from email replies. Put your link in every email signature you send." },
-    { name: "Loom", cost: "Free · 5-min clips", url: "loom.com", desc: "Record 90-second personalised video pitches and demo walkthroughs. Consistently beats plain text." },
-    { name: "Payoneer", cost: "Small % fee", url: "payoneer.com", desc: "Receive USD, GBP, and EUR from clients internationally. Best option from Nigeria." },
-    { name: "Stripe", cost: "Small % fee", url: "stripe.com", desc: "Embed payment links in proposals for clients who prefer card payment over bank transfer." },
+    { name: "Notion CRM", cost: "Free · 3 users", url: "notion.com/crm", desc: "The same pipeline you've been running since Day 2 — nothing changes here, it just fills faster." },
   ]},
 ];
 
@@ -217,8 +102,6 @@ const HOOKS = [
 ═══════════════════════════════════════════════ */
 
 export function GrandSlamParts({ tab }) {
-  const [openPhase, setOpenPhase] = useState(0);
-  const [openLadder, setOpenLadder] = useState(null);
   const [scoreChecks, setScoreChecks] = useState({});
   const [gso, setGso] = useState({ dream: "", proof: "", speed: "", ease: "" });
   const [copied, setCopied] = useState(false);
@@ -507,9 +390,48 @@ Boluwatife Famokunwa
           </div>
         )}
 
-        {/* ══ VALUE LADDER ══════════════════════════ */}
+        {/* ══ SCALE FAST — POST-FIRST-CLIENT TOOLKIT ══ */}
+        {tab === "tools" && (
+          <div>
+            <div style={{ ...card, marginBottom: 18, background: "#FBF6E9", border: "1px solid #7A5A0040", padding: "14px 16px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#7A5A00", textTransform: "", letterSpacing: "0.1em", marginBottom: 7 }}>
+                🚀 Unlock This After Your First Paying Subscriber
+              </div>
+              <p style={{ margin: 0, fontSize: 13, color: "#4A5568", lineHeight: 1.65 }}>
+                Everything below costs real money every month. The 45-Day Plan gets your first client spending
+                nothing beyond Lovable and GoHighLevel — both of which your first $297/month subscriber already
+                covers. Once your manual process is maxed out (25-30 personalised emails a week, 3+ deals closed,
+                a consistent pipeline) these tools replace hours of scouting and outreach with dollars. Not before.
+              </p>
+            </div>
 
-        {/* ══ TOOLS ═════════════════════════════════ */}
+            <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 800, color: "#1A140F" }}>🧰 The Scale-Fast Stack</h2>
+            <p style={{ margin: "0 0 16px", fontSize: 13, color: "#4A5568", lineHeight: 1.6 }}>
+              Same jobs as your manual process — scouting, enrichment, outreach — done at volume once revenue can fund it.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {TOOL_CATS.map((c) => (
+                <div key={c.cat}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: c.color, textTransform: "", letterSpacing: "0.08em", marginBottom: 8 }}>{c.cat}</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {c.tools.map((t) => (
+                      <div key={t.name} style={{ ...card, padding: "11px 14px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                            <span style={{ fontWeight: 700, fontSize: 13.5, color: "#1A140F" }}>{t.name}</span>
+                            <span style={tag(c.color, c.color + "18")}>{t.cost}</span>
+                          </div>
+                          <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "#4A5568", lineHeight: 1.55 }}>{t.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

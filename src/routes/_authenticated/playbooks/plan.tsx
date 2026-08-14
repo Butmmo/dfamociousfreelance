@@ -1,10 +1,14 @@
 // @ts-nocheck
-// 45-Day Implementation Playbook — installed verbatim from source; only colours
-// remapped to the DBI Regal palette. Progress persists via Supabase.
+// 45-Day Implementation Playbook. Progress persists via Supabase.
+// Days 4-6, 15, 23-25, 27-30 and 33-34 are wired to sell and deliver the one
+// product this file actually teaches (Google Review Automation on GHL, see
+// the What to Pitch / Scripts / Upsell Ladder / GHL Mastery tabs), and Day 24
+// now opens the SMB Performance Calculator live on the discovery call.
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { SaveBar } from "@/components/dfs/SaveBar";
+import { BpsCheckpoints } from "@/components/paths/shared/primitives";
 
 export const Route = createFileRoute("/_authenticated/playbooks/plan")({
   head: () => ({ meta: [{ title: "SMB Optimisation Engine — DBI" }] }),
@@ -14,409 +18,1433 @@ export const Route = createFileRoute("/_authenticated/playbooks/plan")({
 
 export const WEEKS = [
   {
-    week:1, title:"Build Your Foundation", range:"Days 1-7",
-    icon:"🏗️", color:"#7A5A00",
-    goal:"All free accounts live. Notion CRM built. Two Lovable demos recorded on Loom. You are ready to go to market with zero budget spent.",
-    days:[
-      {day:1, focus:"Free Account Arsenal", icon:"⚡",
-       note:"Total spend today: $0. The only money you will spend this week is Lovable Pro — and only when you start Day 4.",
-       tasks:[
-         {id:"1a",text:"Create a dedicated professional Gmail for outreach only: firstname.lastname@gmail.com — never use a personal or shared inbox"},
-         {id:"1b",text:"Sign up for Notion (free) at notion.so — this is your CRM, deal tracker, and knowledge base"},
-         {id:"1c",text:"Create a Google Sheets spreadsheet titled 'Lead Scouting Raw Data' — your notebook-to-digital bridge"},
-         {id:"1d",text:"Sign up for Calendly (free tier) and link it to your new Gmail — your discovery call booking link"},
-         {id:"1e",text:"Create a Loom account (free, 5-min videos) — your demo walkthroughs live here"},
-         {id:"1f",text:"Update LinkedIn headline: Digital Systems Engineer | Web Apps, Automation and CRM for Growing Businesses"},
-         {id:"1g",text:"Create your Lovable.dev account using this invite link → https://lovable.dev/invite/60XF22Z — you get 10 bonus credits the moment you sign up through it. Upgrade to Pro (~$25/month) only when you begin Day 4"},
-         {id:"1h",text:"Sign up at https://ContactOut.com — this is how you find the owner's personal email during lead research"},
-         {id:"1i",text:"Install the ContactOut extension on your Chrome browser on your laptop. If you do not have a laptop, mark this as done"},
-         {id:"1j",text:"REQUIRED — Create a free Snov.io account at https://snov.io using your new outreach Gmail"},
-         {id:"1k",text:"REQUIRED — Install the Snov.io Email Tracker extension into that same Google account (Chrome Web Store → 'Snov.io Email Tracker' → Add to Chrome), then enable tracking inside Gmail so every outreach email records opens"},
-         {id:"1l",text:"Send one test email to yourself, open it, and confirm Snov.io logs the open and the open count — outreach does not start until this is verified working"},
-       ]},
-      {day:2, focus:"Build Your Notion CRM Database", icon:"🗂️",
-       note:"This database is your entire business operating system. Build it right once — you will use it every single day.",
-       tasks:[
-         {id:"2a",text:"Open Notion → New Page → Full-page Database (Table view). Name it: Lead Pipeline"},
-         {id:"2b",text:"Add all 23 columns listed in the Notion CRM tab — do not skip any, each one has a purpose"},
-         {id:"2c",text:"Create 5 views: All Leads (table), Hot Leads (filtered by Priority), Active Outreach (Stage = Contacted or Replied Positively), Pipeline Board (Kanban by Stage), Closed Won (Stage = Closed or Retainer)"},
-         {id:"2d",text:"Configure Lead Stage as a Select with these exact options in order: Not Contacted, Contacted, Replied Positively, Replied Negatively, Call Booked, Proposal Sent, Closed, Retainer"},
-         {id:"2e",text:"Add yourself as a test entry and fill every column — confirm every field works as expected"},
-       ]},
-      {day:3, focus:"Google Sheets Lead Tracker Setup", icon:"📊",
-       note:"Google Sheets is your raw scouting pad. Notion is your enriched command centre. Never confuse the two.",
-       tasks:[
-         {id:"3a",text:"Open your Lead Scouting Raw Data sheet → create columns: SMB Name | Phone | Website | Google Reviews | City | Country | Niche | Date Found | In Notion (Y/N)"},
-         {id:"3b",text:"Create a second tab called Scoring Scratch Pad — you apply the scoring rubric here before entering leads into Notion"},
-         {id:"3c",text:"Bold and color the header row — it must be easy to read quickly when transferring from a notebook"},
-         {id:"3d",text:"Practice: enter 3 fictional businesses and score them — confirm the flow feels comfortable"},
-       ]},
-      {day:4, focus:"Build Demo #1 on Lovable", icon:"🛠️",
-       note:"This is the day Lovable Pro earns its cost. A working demo closes more deals than three weeks of cold emails without one.",
-       tasks:[
-         {id:"4a",text:"Choose your first niche from the Tier-1 boring list in the SMB Prospecting Guide — garage door repair, tree service, junk removal, septic, pressure washing or restoration. Do NOT choose dentists, salons, restaurants or coaches: they are pitched daily and almost never reply"},
-         {id:"4b",text:"Open Lovable.dev → New Project → describe it: landing page and online booking system for a [niche] business. Use a fictional but realistic business name."},
-         {id:"4c",text:"Iterate until it looks modern and professional: hero section, services list, booking form or calendar, contact section"},
-         {id:"4d",text:"Publish to a live Lovable URL — open it on your phone. If it looks wrong on mobile, fix it before moving on"},
-         {id:"4e",text:"Write a 100-word description: problem it solves, who it is for, what outcome it creates"},
-       ]},
-      {day:5, focus:"Build Demo #2 on Lovable", icon:"🛠️",
-       note:"Two demos show range. If Demo 1 was a website, make Demo 2 a booking system, client portal, or lead capture page.",
-       tasks:[
-         {id:"5a",text:"Choose a second niche — different from Day 4 — and build a second Lovable demo"},
-         {id:"5b",text:"Make it visually distinct from Demo 1 — different layout, different niche, different problem solved"},
-         {id:"5c",text:"Publish and test on mobile — every demo must be flawless on a phone screen"},
-         {id:"5d",text:"Write the 100-word outcome description for Demo 2"},
-       ]},
-      {day:6, focus:"Record Loom Walkthroughs for Both Demos", icon:"🎬",
-       note:"Keep each Loom under 90 seconds. Structure: problem it solves (10 sec) → what you built (60 sec) → how to get one (10 sec).",
-       tasks:[
-         {id:"6a",text:"Record 60-90 second Loom for Demo 1 — speak confidently, explain the problem before showing the solution"},
-         {id:"6b",text:"Record 60-90 second Loom for Demo 2"},
-         {id:"6c",text:"Watch both recordings immediately — retake if your voice lacks confidence or any part of the demo freezes"},
-         {id:"6d",text:"Save both Loom links in a Notion page titled 'Demo Assets' — these go into Email 3 for every lead"},
-       ]},
-      {day:7, focus:"LinkedIn Profile Audit and Week 1 Review", icon:"✅",
-       note:"Decision-makers check your LinkedIn before replying to your email. Make sure it does not undermine you.",
-       tasks:[
-         {id:"7a",text:"Update LinkedIn: professional photo, headline from Day 1, About section (3-5 lines on who you help and how)"},
-         {id:"7b",text:"Add your Lovable demo links to the LinkedIn Featured section"},
-         {id:"7c",text:"Open both demos on your phone — do they look sharp and professional? Refine if not before Week 2"},
-         {id:"7d",text:"Confirm Notion CRM has all columns and all 5 views working correctly"},
-         {id:"7e",text:"Write your Week 2 target in your notebook: which niche, which city or country, minimum leads to find"},
-       ]},
-    ]},
+    "week": 1,
+    "title": "Build Your Foundation",
+    "range": "Days 1-7",
+    "icon": "🏗️",
+    "color": "#7A5A00",
+    "goal": "All free accounts live. Notion CRM built. A working GHL Review Automation demo and a Lovable Review Dashboard, both recorded on Loom. You are ready to go to market having spent nothing beyond Lovable Pro.",
+    "days": [
+      {
+        "day": 1,
+        "focus": "Free Account Arsenal",
+        "icon": "⚡",
+        "note": "Total spend today: $0. The only money you will spend this week is Lovable Pro — and only when you start Day 4.",
+        "tasks": [
+          {
+            "id": "1a",
+            "xp": 10,
+            "text": "Create a dedicated professional Gmail for outreach only: firstname.lastname@gmail.com — never use a personal or shared inbox"
+          },
+          {
+            "id": "1b",
+            "xp": 10,
+            "text": "Sign up for Notion (free) at notion.so — this is your CRM, deal tracker, and knowledge base"
+          },
+          {
+            "id": "1c",
+            "xp": 10,
+            "text": "Create a Google Sheets spreadsheet titled 'Lead Scouting Raw Data' — your notebook-to-digital bridge"
+          },
+          {
+            "id": "1d",
+            "xp": 10,
+            "text": "Sign up for Calendly (free tier) and link it to your new Gmail — your discovery call booking link"
+          },
+          {
+            "id": "1e",
+            "xp": 10,
+            "text": "Create a Loom account (free, 5-min videos) — your demo walkthroughs live here"
+          },
+          {
+            "id": "1f",
+            "xp": 10,
+            "text": "Update LinkedIn headline: Digital Systems Engineer | Web Apps, Automation and CRM for Growing Businesses"
+          },
+          {
+            "id": "1g",
+            "xp": 10,
+            "text": "Create your Lovable.dev account using this invite link → https://lovable.dev/invite/60XF22Z — you get 10 bonus credits the moment you sign up through it. Upgrade to Pro (~$25/month) only when you begin Day 4"
+          },
+          {
+            "id": "1h",
+            "xp": 10,
+            "text": "Sign up at https://ContactOut.com — this is how you find the owner's personal email during lead research"
+          },
+          {
+            "id": "1i",
+            "xp": 10,
+            "text": "Install the ContactOut extension on your Chrome browser on your laptop. If you do not have a laptop, mark this as done"
+          },
+          {
+            "id": "1j",
+            "xp": 10,
+            "text": "REQUIRED — Create a free Snov.io account at https://snov.io using your new outreach Gmail"
+          },
+          {
+            "id": "1k",
+            "xp": 10,
+            "text": "REQUIRED — Install the Snov.io Email Tracker extension into that same Google account (Chrome Web Store → 'Snov.io Email Tracker' → Add to Chrome), then enable tracking inside Gmail so every outreach email records opens"
+          },
+          {
+            "id": "1l",
+            "xp": 15,
+            "text": "Send one test email to yourself, open it, and confirm Snov.io logs the open and the open count — outreach does not start until this is verified working"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Build Your Notion CRM Database",
+        "icon": "🗂️",
+        "note": "This database is your entire business operating system. Build it right once — you will use it every single day.",
+        "tasks": [
+          {
+            "id": "2a",
+            "xp": 10,
+            "text": "Open Notion → New Page → Full-page Database (Table view). Name it: Lead Pipeline"
+          },
+          {
+            "id": "2b",
+            "xp": 10,
+            "text": "Add all 23 columns listed in the Notion CRM tab — do not skip any, each one has a purpose"
+          },
+          {
+            "id": "2c",
+            "xp": 10,
+            "text": "Create 5 views: All Leads (table), Hot Leads (filtered by Priority), Active Outreach (Stage = Contacted or Replied Positively), Pipeline Board (Kanban by Stage), Closed Won (Stage = Closed or Retainer)"
+          },
+          {
+            "id": "2d",
+            "xp": 10,
+            "text": "Configure Lead Stage as a Select with these exact options in order: Not Contacted, Contacted, Replied Positively, Replied Negatively, Call Booked, Proposal Sent, Closed, Retainer"
+          },
+          {
+            "id": "2e",
+            "xp": 15,
+            "text": "Add yourself as a test entry and fill every column — confirm every field works as expected"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Google Sheets Lead Tracker Setup",
+        "icon": "📊",
+        "note": "Google Sheets is your raw scouting pad. Notion is your enriched command centre. Never confuse the two.",
+        "tasks": [
+          {
+            "id": "3a",
+            "xp": 10,
+            "text": "Open your Lead Scouting Raw Data sheet → create columns: SMB Name | Phone | Website | Google Reviews | City | Country | Niche | Date Found | In Notion (Y/N)"
+          },
+          {
+            "id": "3b",
+            "xp": 10,
+            "text": "Create a second tab called Scoring Scratch Pad — you apply the scoring rubric here before entering leads into Notion"
+          },
+          {
+            "id": "3c",
+            "xp": 10,
+            "text": "Bold and color the header row — it must be easy to read quickly when transferring from a notebook"
+          },
+          {
+            "id": "3d",
+            "xp": 15,
+            "text": "Practice: enter 3 fictional businesses and score them — confirm the flow feels comfortable"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Build Your Review Automation Demo in GoHighLevel",
+        "icon": "🛠️",
+        "note": "This is the day GHL earns its cost. You are building the ONE product every Tier-1 pitch in this playbook sells first — see the What to Pitch tab. Not a website. Not yet.",
+        "tasks": [
+          {
+            "id": "4a",
+            "xp": 10,
+            "text": "Choose your first niche from the Tier-1 boring list in the SMB Prospecting Guide — garage door repair, tree service, junk removal, septic, pressure washing or restoration. Do NOT choose dentists, salons, restaurants or coaches: they are pitched daily and almost never reply"
+          },
+          {
+            "id": "4b",
+            "xp": 10,
+            "text": "Sign up for GoHighLevel's 30-day free trial (no card required) — see the GHL Mastery tab, step 01"
+          },
+          {
+            "id": "4c",
+            "xp": 10,
+            "text": "Create a demo sub-account for a fictional business in your chosen niche — GHL Mastery tab, step 02"
+          },
+          {
+            "id": "4d",
+            "xp": 10,
+            "text": "Build the 2-message Review Request workflow exactly as written in GHL Mastery tab, step 03: job-complete trigger → wait 2h → SMS 1 → wait 2h → SMS 2 with review link"
+          },
+          {
+            "id": "4e",
+            "xp": 15,
+            "text": "Test it end to end by sending it to your own phone number — confirm both messages land and the review link works"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Build Your Proof Assets",
+        "icon": "🎬",
+        "note": "You are not selling a website today. You are selling proof that a review-request system works. The video and the dashboard exist to make that provable in 90 seconds.",
+        "tasks": [
+          {
+            "id": "5a",
+            "xp": 10,
+            "text": "Record a 2-minute 'review gap' video for a real Tier-1 business archetype in your niche — walk through their listing, their review count vs. a named competitor, and what the GHL workflow does about it. This is the video Email 1 (Scripts tab) offers to send"
+          },
+          {
+            "id": "5b",
+            "xp": 10,
+            "text": "In Lovable, build a simple branded 'Review Dashboard' mockup page showing review count growing over time — this becomes the $97/month reporting add-on described in the What to Pitch tab"
+          },
+          {
+            "id": "5c",
+            "xp": 10,
+            "text": "Publish the Lovable dashboard and open it on your phone — confirm it reads cleanly on mobile"
+          },
+          {
+            "id": "5d",
+            "xp": 15,
+            "text": "Write a 100-word description of the demo: the gap it shows, the fix it proves, the outcome it creates"
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Record Loom Walkthroughs of Both Assets",
+        "icon": "🎬",
+        "note": "Keep each Loom under 90 seconds. Structure: the gap (10 sec) → the fix running live (60 sec) → what happens next (10 sec).",
+        "tasks": [
+          {
+            "id": "6a",
+            "xp": 10,
+            "text": "Record a 60-90 second Loom of the GHL Review Automation workflow actually firing — the SMS arriving is the proof, show it live"
+          },
+          {
+            "id": "6b",
+            "xp": 10,
+            "text": "Record a 60-90 second Loom of the Lovable Review Dashboard"
+          },
+          {
+            "id": "6c",
+            "xp": 10,
+            "text": "Watch both recordings immediately — retake if your voice lacks confidence or any part of the demo freezes"
+          },
+          {
+            "id": "6d",
+            "xp": 15,
+            "text": "Save both Loom links in a Notion page titled 'Demo Assets' — the GHL Loom is what Email 1 (Scripts tab) offers to send"
+          }
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "LinkedIn Profile Audit and Week 1 Review",
+        "icon": "✅",
+        "note": "Decision-makers check your LinkedIn before replying to your email. Make sure it does not undermine you.",
+        "tasks": [
+          {
+            "id": "7a",
+            "xp": 10,
+            "text": "Update LinkedIn: professional photo, headline from Day 1, About section (3-5 lines on who you help and how)"
+          },
+          {
+            "id": "7b",
+            "xp": 10,
+            "text": "Add your Lovable demo links to the LinkedIn Featured section"
+          },
+          {
+            "id": "7c",
+            "xp": 10,
+            "text": "Open both demos on your phone — do they look sharp and professional? Refine if not before Week 2"
+          },
+          {
+            "id": "7d",
+            "xp": 10,
+            "text": "Confirm Notion CRM has all columns and all 5 views working correctly"
+          },
+          {
+            "id": "7e",
+            "xp": 15,
+            "text": "Write your Week 2 target in your notebook: which niche, which city or country, minimum leads to find"
+          },
+          {
+            "id": "d7badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "🛠️",
+            "text": "Arsenal Complete — every free account live, your Notion CRM built, and a working Review Automation demo tested end to end."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:2, title:"Manual Lead Harvest", range:"Days 8-14",
-    icon:"🔍", color:"#0D7A5F",
-    goal:"Minimum 10 fully enriched HOT leads in Notion CRM with founder email, 3 connected problems identified, and ready for outreach.",
-    days:[
-      {day:8, focus:"Google Maps Scouting Session 1", icon:"🗺️",
-       note:"Your physical notebook is your best tool today. Move fast through listings — this is a scouting pass, not research. Enrichment starts tomorrow.",
-       tasks:[
-         {id:"8a",text:"Open Google Maps on your phone → search '[niche] [city]' → browse the first 25-30 listings"},
-         {id:"8b",text:"In your notebook, record for each: business name, phone, review count, whether a website link appears, and a quick gut-feel note (no site / outdated site / looks promising)"},
-         {id:"8c",text:"Flag businesses with under 30 reviews, no website, or a clearly outdated site — these are your highest-priority targets"},
-         {id:"8d",text:"Run 3 different search terms in the same niche: e.g. 'garage door repair', 'garage door opener installation', 'overhead door company' — different terms surface different businesses"},
-         {id:"8e",text:"Target: 15-20 raw leads recorded in your notebook by end of today"},
-       ]},
-      {day:9, focus:"Transfer Notebook to Google Sheets", icon:"📋",
-       note:"Do this same evening or first thing next morning while the listings are still fresh in your memory.",
-       tasks:[
-         {id:"9a",text:"Open Google Sheets → create a new row for every business from your notebook"},
-         {id:"9b",text:"Fill: SMB Name | Phone | Website URL (or 'None') | Google Reviews | City | Country | Niche | Date Found"},
-         {id:"9c",text:"Visit each website briefly (30 seconds max): note in a comment cell — mobile-friendly Y/N, has online booking Y/N, looks modern Y/N"},
-         {id:"9d",text:"Highlight any row with no website or an obviously outdated one in yellow — these are Priority A"},
-       ]},
-      {day:10, focus:"Manual Enrichment — Top 5 Leads", icon:"🔬",
-       note:"Enrichment is where you earn your reply. A deeply researched email feels personal. A generic one gets deleted in 2 seconds.",
-       tasks:[
-         {id:"10a",text:"Pick your top 5 Priority A leads from Google Sheets"},
-         {id:"10b",text:"For each: search '[Business Name] [City] owner' or '[Business Name] LinkedIn' to find the founder, owner, or director by name"},
-         {id:"10c",text:"Open their LinkedIn profile — note full name, job title, profile URL, and whether they post content (active users reply faster)"},
-         {id:"10d",text:"Check their Facebook and Instagram: when did they last post? Any customer comments mentioning 'hard to book' or 'could not find contact'? This is your Gap evidence."},
-         {id:"10e",text:"Google '[Founder Name] [Business] email' or check the website /contact and /about pages — look for a personal email, not info@ or contact@"},
-       ]},
-      {day:11, focus:"Manual Enrichment — Next 5 Leads", icon:"🔬",
-       note:"Same process as Day 10. By your fifth lead today you should be completing enrichment in under 20 minutes per lead.",
-       tasks:[
-         {id:"11a",text:"Enrich leads 6-10 using the same Day 10 process"},
-         {id:"11b",text:"For any lead where you cannot find a direct email: note 'LinkedIn DM only' — they go into your LinkedIn outreach queue"},
-         {id:"11c",text:"End of today: 10 leads with founder name, contact method, and notes on their digital presence"},
-       ]},
-      {day:12, focus:"Score All Leads and Enter into Notion CRM", icon:"🎯",
-       note:"Score every lead using the 7 green signals and 5 red flags from the Grand Slam Playbook. Only Hot and Warm leads enter Notion.",
-       tasks:[
-         {id:"12a",text:"Open your Google Sheets Scoring Scratch Pad → apply the scoring rubric to each of your 10 leads"},
-         {id:"12b",text:"Tag each: 🔥 Hot (score 7+) · ⚡ Warm (score 4-6) · ❄️ Cold (score 0-3)"},
-         {id:"12c",text:"Enter every Hot and Warm lead into your Notion CRM database — fill every available column, set Stage to 'Not Contacted'"},
-         {id:"12d",text:"Archive Cold leads in Google Sheets only — do not enter them into Notion, do not contact them"},
-       ]},
-      {day:13, focus:"Identify 3 Connected Problems Per HOT Lead", icon:"⚡",
-       note:"This is the most important research step in the entire playbook. One hour here produces a week of highly targeted outreach that actually converts.",
-       tasks:[
-         {id:"13a",text:"Open the 3-Problem Method tab in this playbook — read the full framework before you begin"},
-         {id:"13b",text:"For each HOT lead: identify The Gap (what is visibly missing), The Leak (what it silently costs them), The Lift (the revenue they could capture)"},
-         {id:"13c",text:"Confirm all three form a causal chain — The Gap causes The Leak, and The Leak prevents The Lift"},
-         {id:"13d",text:"Enter The Gap, The Leak, and The Lift into the matching Notion columns for each HOT lead"},
-         {id:"13e",text:"Review: do all 3 problems point naturally to ONE solution — your Lovable demo? If not, rethink the connection before drafting any email"},
-       ]},
-      {day:14, focus:"Google Maps Scouting Session 2", icon:"🗺️",
-       note:"While you prepare outreach for Batch 1, the pipeline keeps moving. This habit separates consistent earners from one-time closers.",
-       tasks:[
-         {id:"14a",text:"Choose: second city in same country OR second niche in same city"},
-         {id:"14b",text:"Repeat the Day 8 scouting process — notebook, 15-20 raw leads, flagged Priority A entries"},
-         {id:"14c",text:"Do not enrich this batch yet — enrichment begins Day 18 after your first outreach wave is running"},
-       ]},
-    ]},
+    "week": 2,
+    "title": "Manual Lead Harvest",
+    "range": "Days 8-14",
+    "icon": "🔍",
+    "color": "#0D7A5F",
+    "goal": "Minimum 10 fully enriched HOT leads in Notion CRM with founder email, 3 connected problems identified, and ready for outreach.",
+    "days": [
+      {
+        "day": 8,
+        "focus": "Google Maps Scouting Session 1",
+        "icon": "🗺️",
+        "note": "Your physical notebook is your best tool today. Move fast through listings — this is a scouting pass, not research. Enrichment starts tomorrow.",
+        "tasks": [
+          {
+            "id": "8a",
+            "xp": 13,
+            "text": "Open Google Maps on your phone → search '[niche] [city]' → browse the first 25-30 listings"
+          },
+          {
+            "id": "8b",
+            "xp": 13,
+            "text": "In your notebook, record for each: business name, phone, review count, whether a website link appears, and a quick gut-feel note (no site / outdated site / looks promising)"
+          },
+          {
+            "id": "8c",
+            "xp": 13,
+            "text": "Flag businesses with under 30 reviews, no website, or a clearly outdated site — these are your highest-priority targets"
+          },
+          {
+            "id": "8d",
+            "xp": 13,
+            "text": "Run 3 different search terms in the same niche: e.g. 'garage door repair', 'garage door opener installation', 'overhead door company' — different terms surface different businesses"
+          },
+          {
+            "id": "8e",
+            "xp": 18,
+            "text": "Target: 15-20 raw leads recorded in your notebook by end of today"
+          }
+        ]
+      },
+      {
+        "day": 9,
+        "focus": "Transfer Notebook to Google Sheets",
+        "icon": "📋",
+        "note": "Do this same evening or first thing next morning while the listings are still fresh in your memory.",
+        "tasks": [
+          {
+            "id": "9a",
+            "xp": 13,
+            "text": "Open Google Sheets → create a new row for every business from your notebook"
+          },
+          {
+            "id": "9b",
+            "xp": 13,
+            "text": "Fill: SMB Name | Phone | Website URL (or 'None') | Google Reviews | City | Country | Niche | Date Found"
+          },
+          {
+            "id": "9c",
+            "xp": 13,
+            "text": "Visit each website briefly (30 seconds max): note in a comment cell — mobile-friendly Y/N, has online booking Y/N, looks modern Y/N"
+          },
+          {
+            "id": "9d",
+            "xp": 18,
+            "text": "Highlight any row with no website or an obviously outdated one in yellow — these are Priority A"
+          }
+        ]
+      },
+      {
+        "day": 10,
+        "focus": "Manual Enrichment — Top 5 Leads",
+        "icon": "🔬",
+        "note": "Enrichment is where you earn your reply. A deeply researched email feels personal. A generic one gets deleted in 2 seconds.",
+        "tasks": [
+          {
+            "id": "10a",
+            "xp": 13,
+            "text": "Pick your top 5 Priority A leads from Google Sheets"
+          },
+          {
+            "id": "10b",
+            "xp": 13,
+            "text": "For each: search '[Business Name] [City] owner' or '[Business Name] LinkedIn' to find the founder, owner, or director by name"
+          },
+          {
+            "id": "10c",
+            "xp": 13,
+            "text": "Open their LinkedIn profile — note full name, job title, profile URL, and whether they post content (active users reply faster)"
+          },
+          {
+            "id": "10d",
+            "xp": 13,
+            "text": "Check their Facebook and Instagram: when did they last post? Any customer comments mentioning 'hard to book' or 'could not find contact'? This is your Gap evidence."
+          },
+          {
+            "id": "10e",
+            "xp": 18,
+            "text": "Google '[Founder Name] [Business] email' or check the website /contact and /about pages — look for a personal email, not info@ or contact@"
+          }
+        ]
+      },
+      {
+        "day": 11,
+        "focus": "Manual Enrichment — Next 5 Leads",
+        "icon": "🔬",
+        "note": "Same process as Day 10. By your fifth lead today you should be completing enrichment in under 20 minutes per lead.",
+        "tasks": [
+          {
+            "id": "11a",
+            "xp": 13,
+            "text": "Enrich leads 6-10 using the same Day 10 process"
+          },
+          {
+            "id": "11b",
+            "xp": 13,
+            "text": "For any lead where you cannot find a direct email: note 'LinkedIn DM only' — they go into your LinkedIn outreach queue"
+          },
+          {
+            "id": "11c",
+            "xp": 18,
+            "text": "End of today: 10 leads with founder name, contact method, and notes on their digital presence"
+          }
+        ]
+      },
+      {
+        "day": 12,
+        "focus": "Score All Leads and Enter into Notion CRM",
+        "icon": "🎯",
+        "note": "Score every lead using the 7 green signals and 5 red flags from the Grand Slam Playbook. Only Hot and Warm leads enter Notion.",
+        "tasks": [
+          {
+            "id": "12a",
+            "xp": 13,
+            "text": "Open your Google Sheets Scoring Scratch Pad → apply the scoring rubric to each of your 10 leads"
+          },
+          {
+            "id": "12b",
+            "xp": 13,
+            "text": "Tag each: 🔥 Hot (score 7+) · ⚡ Warm (score 4-6) · ❄️ Cold (score 0-3)"
+          },
+          {
+            "id": "12c",
+            "xp": 13,
+            "text": "Enter every Hot and Warm lead into your Notion CRM database — fill every available column, set Stage to 'Not Contacted'"
+          },
+          {
+            "id": "12d",
+            "xp": 18,
+            "text": "Archive Cold leads in Google Sheets only — do not enter them into Notion, do not contact them"
+          }
+        ]
+      },
+      {
+        "day": 13,
+        "focus": "Identify 3 Connected Problems Per HOT Lead",
+        "icon": "⚡",
+        "note": "This is the most important research step in the entire playbook. One hour here produces a week of highly targeted outreach that actually converts.",
+        "tasks": [
+          {
+            "id": "13a",
+            "xp": 13,
+            "text": "Open the 3-Problem Method tab in this playbook — read the full framework before you begin"
+          },
+          {
+            "id": "13b",
+            "xp": 13,
+            "text": "For each HOT lead: identify The Gap (what is visibly missing), The Leak (what it silently costs them), The Lift (the revenue they could capture)"
+          },
+          {
+            "id": "13c",
+            "xp": 13,
+            "text": "Confirm all three form a causal chain — The Gap causes The Leak, and The Leak prevents The Lift"
+          },
+          {
+            "id": "13d",
+            "xp": 13,
+            "text": "Enter The Gap, The Leak, and The Lift into the matching Notion columns for each HOT lead"
+          },
+          {
+            "id": "13e",
+            "xp": 18,
+            "text": "Review: do all 3 problems point naturally to ONE solution — your Lovable demo? If not, rethink the connection before drafting any email"
+          }
+        ]
+      },
+      {
+        "day": 14,
+        "focus": "Google Maps Scouting Session 2",
+        "icon": "🗺️",
+        "note": "While you prepare outreach for Batch 1, the pipeline keeps moving. This habit separates consistent earners from one-time closers.",
+        "tasks": [
+          {
+            "id": "14a",
+            "xp": 13,
+            "text": "Choose: second city in same country OR second niche in same city"
+          },
+          {
+            "id": "14b",
+            "xp": 13,
+            "text": "Repeat the Day 8 scouting process — notebook, 15-20 raw leads, flagged Priority A entries"
+          },
+          {
+            "id": "14c",
+            "xp": 18,
+            "text": "Do not enrich this batch yet — enrichment begins Day 18 after your first outreach wave is running"
+          },
+          {
+            "id": "d14badge",
+            "xp": 45,
+            "badge": true,
+            "emoji": "🔍",
+            "text": "Recon Complete — 10 fully enriched HOT leads in Notion, each with a real Gap, Leak and Lift identified."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:3, title:"Outreach Launch", range:"Days 15-21",
-    icon:"📧", color:"#B8860B",
-    goal:"5+ personalised emails sent manually from Gmail. LinkedIn requests to same leads. First replies tracked in Notion.",
-    days:[
-      {day:15, focus:"Draft Email 1 for Top 5 HOT Leads", icon:"✍️",
-       note:"Write each email individually. The goal is for the recipient to think you wrote it for them — because you did.",
-       tasks:[
-         {id:"15a",text:"Open the Scripts tab — read the Email 1 template and understand the PAS structure before writing a single word"},
-         {id:"15b",text:"For each of your top 5 HOT leads: personalise the opening line with something specific you noticed (review count, missing booking, outdated site date)"},
-         {id:"15c",text:"Reference your relevant Lovable demo or Loom link — this is the proof that makes the email real"},
-         {id:"15d",text:"Keep every email under 130 words. If it sounds like a template, rewrite the first two lines."},
-         {id:"15e",text:"Save each draft in Notion or Google Docs — review them tomorrow morning with fresh eyes before sending"},
-       ]},
-      {day:16, focus:"Send Email 1 Manually from Gmail", icon:"🚀",
-       note:"You are sending 5 emails. Not 500. That is the point. Every email goes from your Gmail to the founder's personal email — no tools, no batch sends.",
-       tasks:[
-         {id:"16a",text:"Reread each of your 5 drafts — make one final personalisation tweak per email if anything feels generic"},
-         {id:"16b",text:"Send them one by one from your dedicated Gmail — never BCC or CC multiple leads at once"},
-         {id:"16c",text:"After each send: open Notion → update Stage to 'Contacted' → set Last Contacted to today"},
-         {id:"16d",text:"Set phone notifications for Gmail replies — you must respond to any positive reply within 2 hours"},
-       ]},
-      {day:17, focus:"LinkedIn Connection Requests to Same 5 Leads", icon:"💼",
-       note:"Email and LinkedIn together doubles your touchpoints without doubling your effort. Use both channels — but not simultaneously on the same day.",
-       tasks:[
-         {id:"17a",text:"Search each of your 5 leads on LinkedIn by founder name → open their profile"},
-         {id:"17b",text:"Before requesting: comment thoughtfully on their most recent post — this warms them up before your connection request arrives"},
-         {id:"17c",text:"Send connection request with a personalised note (under 300 characters): 'Hi [Name], I help [niche] businesses in [City] with digital systems. Would love to connect.'"},
-         {id:"17d",text:"Do NOT mention your email or pitch in the connection request — that comes only after they accept"},
-         {id:"17e",text:"Tick the LinkedIn Connected checkbox in Notion for each lead where the request is sent"},
-       ]},
-      {day:18, focus:"Enrich the Day 14 Batch", icon:"🔬",
-       note:"While Batch 1 is in market, Batch 2 gets enriched. The pipeline never stops moving — this is how you avoid feast-and-famine.",
-       tasks:[
-         {id:"18a",text:"Transfer your Day 14 notebook entries to Google Sheets"},
-         {id:"18b",text:"Enrich the top 8-10 leads from this batch: founder name, email, LinkedIn, 3 connected problems"},
-         {id:"18c",text:"Score every enriched lead — enter Hot and Warm into Notion CRM with all columns filled"},
-       ]},
-      {day:19, focus:"Send Email 1 to Next 5 HOT Leads", icon:"📧",
-       note:"Second wave. Same process as Days 15-16. Each email individually written and manually sent.",
-       tasks:[
-         {id:"19a",text:"Draft personalised Email 1s for the next 5 HOT leads from your Day 18 enrichment"},
-         {id:"19b",text:"Send them manually from Gmail — one by one — update Notion Stage and Last Contacted date for each"},
-         {id:"19c",text:"Send LinkedIn connection requests to this second batch as well"},
-       ]},
-      {day:20, focus:"Monitor, Reply, and Update Notion", icon:"🔔",
-       note:"Speed of reply is your single biggest competitive advantage. Every hour of delay costs you the reply. Every unanswered reply costs you the deal.",
-       tasks:[
-         {id:"20a",text:"Check your Gmail — reply to every response within 2 hours. Positive, negative, or neutral — all get a reply."},
-         {id:"20b",text:"For positive replies: send your Calendly link and suggest 2 specific time slots — make booking effortless"},
-         {id:"20c",text:"Update Notion Stage for every reply: 'Replied Positively' or 'Replied Negatively'. Add their exact words to the Notes column."},
-         {id:"20d",text:"Check LinkedIn: accept new connections → send the DM to each one who accepts (see Scripts tab)"},
-       ]},
-      {day:21, focus:"Send Email 2 to Day 16 Non-Responders", icon:"📬",
-       note:"Email 2 is NOT a follow-up. It reveals The Leak — new information the lead has not thought about. The subject line must not say 'following up'.",
-       tasks:[
-         {id:"21a",text:"Identify which Day 16 leads have not replied — open their Notion entries"},
-         {id:"21b",text:"Draft Email 2 for each (see Scripts tab) — reference The Leak specifically identified in their Notion profile"},
-         {id:"21c",text:"Subject line must feel like a new conversation, not a reminder — see Scripts tab for proven subject line formulas"},
-         {id:"21d",text:"Send manually, update Notion Last Contacted date for each"},
-       ]},
-    ]},
+    "week": 3,
+    "title": "Outreach Launch",
+    "range": "Days 15-21",
+    "icon": "📧",
+    "color": "#B8860B",
+    "goal": "5+ personalised emails sent manually from Gmail. LinkedIn requests to same leads. First replies tracked in Notion.",
+    "days": [
+      {
+        "day": 15,
+        "focus": "Draft Email 1 for Top 5 HOT Leads",
+        "icon": "✍️",
+        "note": "Write each email individually. The goal is for the recipient to think you wrote it for them — because you did.",
+        "tasks": [
+          {
+            "id": "15a",
+            "xp": 16,
+            "text": "Open the Scripts tab — read Email 1 (The Gap) exactly as written before writing a single word. It asks permission to send a video. Nothing else."
+          },
+          {
+            "id": "15b",
+            "xp": 16,
+            "text": "For each of your top 5 HOT leads: swap in their business name, their competitor's name, and the specific review count gap you found during research"
+          },
+          {
+            "id": "15c",
+            "xp": 16,
+            "text": "Do not attach or mention the Lovable dashboard yet — Email 1 is about the review gap only. The Loom of your GHL workflow is what you are offering to send if they reply"
+          },
+          {
+            "id": "15d",
+            "xp": 16,
+            "text": "Keep every email under 130 words. If it sounds like a template, rewrite the first two lines."
+          },
+          {
+            "id": "15e",
+            "xp": 21,
+            "text": "Save each draft in Notion or Google Docs — review them tomorrow morning with fresh eyes before sending"
+          }
+        ]
+      },
+      {
+        "day": 16,
+        "focus": "Send Email 1 Manually from Gmail",
+        "icon": "🚀",
+        "note": "You are sending 5 emails. Not 500. That is the point. Every email goes from your Gmail to the founder's personal email — no tools, no batch sends.",
+        "bpsCheckpoint": true,
+        "tasks": [
+          {
+            "id": "16a",
+            "xp": 16,
+            "text": "Reread each of your 5 drafts — make one final personalisation tweak per email if anything feels generic"
+          },
+          {
+            "id": "16b",
+            "xp": 16,
+            "text": "Send them one by one from your dedicated Gmail — never BCC or CC multiple leads at once"
+          },
+          {
+            "id": "16c",
+            "xp": 16,
+            "text": "After each send: open Notion → update Stage to 'Contacted' → set Last Contacted to today"
+          },
+          {
+            "id": "16d",
+            "xp": 21,
+            "text": "Set phone notifications for Gmail replies — you must respond to any positive reply within 2 hours"
+          },
+          {
+            "id": "d16badge",
+            "xp": 50,
+            "badge": true,
+            "emoji": "🎯",
+            "text": "First Contact — your first 5 personalised Review Automation emails sent, one by one, from your own Gmail."
+          }
+        ]
+      },
+      {
+        "day": 17,
+        "focus": "LinkedIn Connection Requests to Same 5 Leads",
+        "icon": "💼",
+        "note": "Email and LinkedIn together doubles your touchpoints without doubling your effort. Use both channels — but not simultaneously on the same day.",
+        "tasks": [
+          {
+            "id": "17a",
+            "xp": 16,
+            "text": "Search each of your 5 leads on LinkedIn by founder name → open their profile"
+          },
+          {
+            "id": "17b",
+            "xp": 16,
+            "text": "Before requesting: comment thoughtfully on their most recent post — this warms them up before your connection request arrives"
+          },
+          {
+            "id": "17c",
+            "xp": 16,
+            "text": "Send connection request with a personalised note (under 300 characters): 'Hi [Name], I help [niche] businesses in [City] with digital systems. Would love to connect.'"
+          },
+          {
+            "id": "17d",
+            "xp": 16,
+            "text": "Do NOT mention your email or pitch in the connection request — that comes only after they accept"
+          },
+          {
+            "id": "17e",
+            "xp": 21,
+            "text": "Tick the LinkedIn Connected checkbox in Notion for each lead where the request is sent"
+          }
+        ]
+      },
+      {
+        "day": 18,
+        "focus": "Enrich the Day 14 Batch",
+        "icon": "🔬",
+        "note": "While Batch 1 is in market, Batch 2 gets enriched. The pipeline never stops moving — this is how you avoid feast-and-famine.",
+        "tasks": [
+          {
+            "id": "18a",
+            "xp": 16,
+            "text": "Transfer your Day 14 notebook entries to Google Sheets"
+          },
+          {
+            "id": "18b",
+            "xp": 16,
+            "text": "Enrich the top 8-10 leads from this batch: founder name, email, LinkedIn, 3 connected problems"
+          },
+          {
+            "id": "18c",
+            "xp": 21,
+            "text": "Score every enriched lead — enter Hot and Warm into Notion CRM with all columns filled"
+          }
+        ]
+      },
+      {
+        "day": 19,
+        "focus": "Send Email 1 to Next 5 HOT Leads",
+        "icon": "📧",
+        "note": "Second wave. Same process as Days 15-16. Each email individually written and manually sent.",
+        "tasks": [
+          {
+            "id": "19a",
+            "xp": 16,
+            "text": "Draft personalised Email 1s for the next 5 HOT leads from your Day 18 enrichment"
+          },
+          {
+            "id": "19b",
+            "xp": 16,
+            "text": "Send them manually from Gmail — one by one — update Notion Stage and Last Contacted date for each"
+          },
+          {
+            "id": "19c",
+            "xp": 21,
+            "text": "Send LinkedIn connection requests to this second batch as well"
+          }
+        ]
+      },
+      {
+        "day": 20,
+        "focus": "Monitor, Reply, and Update Notion",
+        "icon": "🔔",
+        "note": "Speed of reply is your single biggest competitive advantage. Every hour of delay costs you the reply. Every unanswered reply costs you the deal.",
+        "tasks": [
+          {
+            "id": "20a",
+            "xp": 16,
+            "text": "Check your Gmail — reply to every response within 2 hours. Positive, negative, or neutral — all get a reply."
+          },
+          {
+            "id": "20b",
+            "xp": 16,
+            "text": "For positive replies: send your Calendly link and suggest 2 specific time slots — make booking effortless"
+          },
+          {
+            "id": "20c",
+            "xp": 16,
+            "text": "Update Notion Stage for every reply: 'Replied Positively' or 'Replied Negatively'. Add their exact words to the Notes column."
+          },
+          {
+            "id": "20d",
+            "xp": 21,
+            "text": "Check LinkedIn: accept new connections → send the DM to each one who accepts (see Scripts tab)"
+          },
+          {
+            "id": "d20badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "💬",
+            "text": "First Reply — a real prospect responded to your outreach."
+          }
+        ]
+      },
+      {
+        "day": 21,
+        "focus": "Send Email 2 to Day 16 Non-Responders",
+        "icon": "📬",
+        "note": "Email 2 is NOT a follow-up. It reveals The Leak — new information the lead has not thought about. The subject line must not say 'following up'.",
+        "tasks": [
+          {
+            "id": "21a",
+            "xp": 16,
+            "text": "Identify which Day 16 leads have not replied — open their Notion entries"
+          },
+          {
+            "id": "21b",
+            "xp": 16,
+            "text": "Draft Email 2 for each (see Scripts tab) — reference The Leak specifically identified in their Notion profile"
+          },
+          {
+            "id": "21c",
+            "xp": 16,
+            "text": "Subject line must feel like a new conversation, not a reminder — see Scripts tab for proven subject line formulas"
+          },
+          {
+            "id": "21d",
+            "xp": 21,
+            "text": "Send manually, update Notion Last Contacted date for each"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:4, title:"First Close", range:"Days 22-28",
-    icon:"🏆", color:"#8B2E1F",
-    goal:"Discovery calls run, proposals sent, first paid project closed, 50% deposit collected.",
-    days:[
-      {day:22, focus:"LinkedIn DMs to Accepted Connections", icon:"💬",
-       note:"Only DM after they accept. Your first DM is not a pitch — it is a personal observation and a Loom link. The demo does the selling.",
-       tasks:[
-         {id:"22a",text:"Check which connection requests from Days 17 and 19 have been accepted"},
-         {id:"22b",text:"Send each new connection the DM from the Scripts tab — mention one specific thing about their business and share the Loom walkthrough"},
-         {id:"22c",text:"Do not pitch in the DM. End with: 'Worth 15 minutes to explore?' — not a hard close"},
-         {id:"22d",text:"Log every DM sent in Notion: LinkedIn DM Sent checkbox ticked, Last Contacted updated"},
-       ]},
-      {day:23, focus:"Send Email 3 to Non-Responders — The Lift", icon:"🎯",
-       note:"This is your strongest email. It leads with a live Lovable demo built for their type of business. The link makes it real in a way words never can.",
-       tasks:[
-         {id:"23a",text:"Identify all Day 16 leads who have not replied to Email 1 or Email 2"},
-         {id:"23b",text:"Draft Email 3 for each — lead with the Loom walkthrough and the live Lovable demo URL"},
-         {id:"23c",text:"Make clear in one sentence: this demo addresses their specific Gap, Leak, and Lift — not a generic showcase"},
-         {id:"23d",text:"Send manually, update Notion Last Contacted"},
-       ]},
-      {day:24, focus:"Discovery Calls — SPIN Framework", icon:"📞",
-       note:"Your job on a discovery call is to listen, not pitch. The client tells you exactly how to close them if you ask the right questions.",
-       tasks:[
-         {id:"24a",text:"5 minutes before each call: review their Notion entry — Gap, Leak, Lift, their exact words from the reply"},
-         {id:"24b",text:"SITUATION: 'How are you currently handling new client enquiries that come in online?'"},
-         {id:"24c",text:"PROBLEM: 'What is the biggest challenge with how that works right now?' — then be completely silent. Do not fill the pause."},
-         {id:"24d",text:"IMPLICATION: 'How much would it change things if you never missed an after-hours enquiry again?'"},
-         {id:"24e",text:"NEED-PAYOFF: 'If I could build a system that does that in 14 days, would that be worth exploring?' — wait for the yes"},
-       ]},
-      {day:25, focus:"Send Proposals Within 24 Hours", icon:"📄",
-       note:"Proposals sent within 24 hours of a discovery call close at 3x the rate of proposals sent 3 days later. Do not wait.",
-       tasks:[
-         {id:"25a",text:"Use the 3-tier structure from the Grand Slam Playbook — Starter, Standard, and Premium — always show all three"},
-         {id:"25b",text:"Name the outcome first in each tier, then the deliverables — never the other way around"},
-         {id:"25c",text:"Include your delivery guarantee: 'Live in [X] days or I work at no charge until it is'"},
-         {id:"25d",text:"Send as a shared Google Doc link — professional and easy for them to share with a business partner"},
-       ]},
-      {day:26, focus:"Follow Up on Proposals", icon:"🔁",
-       note:"Most deals die in silence, not rejection. One polite follow-up after 48 hours recovers 20-30% of proposals that would otherwise go cold.",
-       tasks:[
-         {id:"26a",text:"48 hours after sending: 'Hi [Name], just checking you received the proposal — any questions I can answer?'"},
-         {id:"26b",text:"5 days with no response: send a value-add message — a fresh insight about their business or a case study result"},
-         {id:"26c",text:"Any proposal older than 10 days with no response: mark Notion Stage as 'Replied Negatively' and move on"},
-       ]},
-      {day:27, focus:"Handle Objections on Live Calls", icon:"🗣️",
-       note:"Objections are questions the client has not yet asked out loud. Your job is to answer them before they walk away.",
-       tasks:[
-         {id:"27a",text:"'Too expensive' → Do not discount. Move to the Starter tier. Reframe value: 'At $X, this pays for itself with the first new client it brings in'"},
-         {id:"27b",text:"'Can I not build this myself with AI?' → Use the exact script from the Scripts tab — calm, educational, never defensive"},
-         {id:"27c",text:"'I need to think about it' → 'Of course — is there a specific part you are uncertain about? I am happy to clarify right now.'"},
-         {id:"27d",text:"'Send me more examples' → Send your Loom demos same day, not next day — same-day response converts significantly better"},
-       ]},
-      {day:28, focus:"Close and Collect 50% Deposit", icon:"💰",
-       note:"50% upfront is non-negotiable. It protects you and qualifies them. A client unwilling to pay 50% upfront will also be difficult about the final 50%.",
-       tasks:[
-         {id:"28a",text:"Once they say yes: send a simple 1-page agreement via Google Docs within the hour"},
-         {id:"28b",text:"Send a Payoneer or bank transfer request for 50% of the project fee — do not start work until payment clears"},
-         {id:"28c",text:"Send a kickoff questionnaire: brand colours, logo file, domain access, key services, any existing content"},
-         {id:"28d",text:"Update Notion Stage to 'Closed'. Begin the Blueprint phase immediately."},
-       ]},
-    ]},
+    "week": 4,
+    "title": "First Close",
+    "range": "Days 22-28",
+    "icon": "🏆",
+    "color": "#8B2E1F",
+    "goal": "Discovery calls run with the Performance Calculator live, proposals sent, first Review Automation subscription closed and paid.",
+    "days": [
+      {
+        "day": 22,
+        "focus": "LinkedIn DMs to Accepted Connections",
+        "icon": "💬",
+        "note": "Only DM after they accept. Your first DM is not a pitch — it is a personal observation and a Loom link. The demo does the selling.",
+        "tasks": [
+          {
+            "id": "22a",
+            "xp": 19,
+            "text": "Check which connection requests from Days 17 and 19 have been accepted"
+          },
+          {
+            "id": "22b",
+            "xp": 19,
+            "text": "Send each new connection the DM from the Scripts tab — mention one specific thing about their business and share the Loom walkthrough"
+          },
+          {
+            "id": "22c",
+            "xp": 19,
+            "text": "Do not pitch in the DM. End with: 'Worth 15 minutes to explore?' — not a hard close"
+          },
+          {
+            "id": "22d",
+            "xp": 24,
+            "text": "Log every DM sent in Notion: LinkedIn DM Sent checkbox ticked, Last Contacted updated"
+          }
+        ]
+      },
+      {
+        "day": 23,
+        "focus": "Send Email 3 to Non-Responders — The Lift",
+        "icon": "🎯",
+        "note": "This is your strongest email. It leads with proof — the Loom of your GHL workflow actually firing. Seeing it work is what words never quite achieve.",
+        "tasks": [
+          {
+            "id": "23a",
+            "xp": 19,
+            "text": "Identify all Day 16 leads who have not replied to Email 1 or Email 2"
+          },
+          {
+            "id": "23b",
+            "xp": 19,
+            "text": "Draft Email 3 for each exactly as written in the Scripts tab — it references a comparable client result, not a demo link"
+          },
+          {
+            "id": "23c",
+            "xp": 19,
+            "text": "If you have a real result by now, swap it in; if not, use your Day 6 Loom of the workflow firing on your demo account"
+          },
+          {
+            "id": "23d",
+            "xp": 24,
+            "text": "Send manually, update Notion Last Contacted"
+          }
+        ]
+      },
+      {
+        "day": 24,
+        "focus": "Discovery Calls — SPIN Framework + the Performance Calculator",
+        "icon": "📞",
+        "note": "Your job on a discovery call is to listen, not pitch. The client tells you exactly how to close them if you ask the right questions — and the Calculator turns their answers into a number they can see.",
+        "tasks": [
+          {
+            "id": "24a",
+            "xp": 19,
+            "text": "5 minutes before each call: review their Notion entry — Gap, Leak, Lift, their exact words from the reply"
+          },
+          {
+            "id": "24b",
+            "xp": 19,
+            "text": "SITUATION: 'How are you currently handling new client enquiries that come in online?'"
+          },
+          {
+            "id": "24c",
+            "xp": 19,
+            "text": "PROBLEM: 'What is the biggest challenge with how that works right now?' — then be completely silent. Do not fill the pause."
+          },
+          {
+            "id": "24d",
+            "xp": 19,
+            "text": "IMPLICATION: 'How much would it change things if you never missed an after-hours enquiry again?'"
+          },
+          {
+            "id": "24e",
+            "xp": 19,
+            "text": "NEED-PAYOFF: 'If I could build a system that does that in 14 days, would that be worth exploring?' — wait for the yes"
+          },
+          {
+            "id": "24f",
+            "xp": 19,
+            "text": "Open the SMB Performance Calculator (Playbooks menu) and enter their numbers live, screen-shared, on the call — their review count, competitor's review count, city population. This is the tool, not a slide deck: it turns 'we're losing customers' into an actual monthly dollar figure they watch build in real time"
+          },
+          {
+            "id": "24g",
+            "xp": 24,
+            "text": "Land on the Report tab — the total monthly revenue at risk and the #1 priority (almost always Review Automation for a Tier-1 lead) becomes the number you close on"
+          },
+          {
+            "id": "d24badge",
+            "xp": 55,
+            "badge": true,
+            "emoji": "📞",
+            "text": "First Discovery Call — ran a real call with the Performance Calculator live on screen."
+          }
+        ]
+      },
+      {
+        "day": 25,
+        "focus": "Send Your Proposal Within 24 Hours",
+        "icon": "📄",
+        "note": "Proposals sent within 24 hours of a discovery call close at 3x the rate of proposals sent 3 days later. Do not wait — and do not show a menu.",
+        "tasks": [
+          {
+            "id": "25a",
+            "xp": 19,
+            "text": "One product, one price: Google Review Automation at $297-497/month (What to Pitch tab). Do not offer a 3-tier menu — see the FAQ 'Why do we only sell the Google Review Automation System to a new client?'"
+          },
+          {
+            "id": "25b",
+            "xp": 19,
+            "text": "Attach the Report tab from Tuesday's Performance Calculator session as the proposal's opening page — the number they watched build live is the reason to sign"
+          },
+          {
+            "id": "25c",
+            "xp": 19,
+            "text": "Include your delivery guarantee: 'Live within 48 hours of your first payment, or I work at no charge until it is'"
+          },
+          {
+            "id": "25d",
+            "xp": 24,
+            "text": "If they ask for a website: note it in Notion under the upsell ladder and hold the line — that is a Month 7+ conversation (Upsell Ladder tab), not today's proposal"
+          }
+        ]
+      },
+      {
+        "day": 26,
+        "focus": "Follow Up on Proposals",
+        "icon": "🔁",
+        "note": "Most deals die in silence, not rejection. One polite follow-up after 48 hours recovers 20-30% of proposals that would otherwise go cold.",
+        "tasks": [
+          {
+            "id": "26a",
+            "xp": 19,
+            "text": "48 hours after sending: 'Hi [Name], just checking you received the proposal — any questions I can answer?'"
+          },
+          {
+            "id": "26b",
+            "xp": 19,
+            "text": "5 days with no response: send a value-add message — a fresh insight about their business or a case study result"
+          },
+          {
+            "id": "26c",
+            "xp": 24,
+            "text": "Any proposal older than 10 days with no response: mark Notion Stage as 'Replied Negatively' and move on"
+          }
+        ]
+      },
+      {
+        "day": 27,
+        "focus": "Handle Objections on Live Calls",
+        "icon": "🗣️",
+        "note": "Objections are questions the client has not yet asked out loud. Your job is to answer them before they walk away.",
+        "tasks": [
+          {
+            "id": "27a",
+            "xp": 19,
+            "text": "'Too expensive' → Do not discount and do not offer a cheaper tier — there isn't one. Reframe value using the Performance Calculator number: 'At $297, this pays for itself the moment it recovers even a fraction of the $[X]/month you're already losing'"
+          },
+          {
+            "id": "27b",
+            "xp": 19,
+            "text": "'Can I not build this myself with AI?' → Use the exact script from the Scripts tab — calm, educational, never defensive"
+          },
+          {
+            "id": "27c",
+            "xp": 19,
+            "text": "'I need to think about it' → 'Of course — is there a specific part you are uncertain about? I am happy to clarify right now.'"
+          },
+          {
+            "id": "27d",
+            "xp": 24,
+            "text": "'Send me more examples' → Send your Loom demos same day, not next day — same-day response converts significantly better"
+          }
+        ]
+      },
+      {
+        "day": 28,
+        "focus": "Close the First Month and Collect Payment",
+        "icon": "💰",
+        "note": "This is a subscription, not a project — there is no 50/50 split. You collect the first month upfront, then it renews monthly for as long as the system keeps working.",
+        "tasks": [
+          {
+            "id": "28a",
+            "xp": 19,
+            "text": "Once they say yes: send a simple 1-page agreement via Google Docs within the hour — one line item, $297-497/month, cancel anytime"
+          },
+          {
+            "id": "28b",
+            "xp": 19,
+            "text": "Send a Stripe payment link or Payoneer request for the first month — do not start work until payment clears"
+          },
+          {
+            "id": "28c",
+            "xp": 19,
+            "text": "Send a kickoff questionnaire: Google Business Profile access, a few recent completed-job examples, and the phone number their review requests should send from"
+          },
+          {
+            "id": "28d",
+            "xp": 24,
+            "text": "Update Notion Stage to 'Closed'. Begin building their live GHL sub-account immediately — see GHL Mastery tab, step 02."
+          },
+          {
+            "id": "d28badge",
+            "xp": 80,
+            "badge": true,
+            "emoji": "🤝",
+            "text": "First Client Signed — your first Review Automation subscription closed and paid."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:5, title:"Deliver and Expand", range:"Days 29-35",
-    icon:"🚀", color:"#8B2E1F",
-    goal:"First project delivered and fully paid. Upsell conversation started. Real testimonial and case study secured. New batch in outreach.",
-    days:[
-      {day:29, focus:"Blueprint Phase — Map Before You Build", icon:"📐",
-       note:"Blueprint first. Build second. Every time. This one habit separates professionals from order-takers — and prevents expensive scope creep.",
-       tasks:[
-         {id:"29a",text:"Map exactly what you are building: pages, features, forms, integrations, data flows — in writing or a simple diagram"},
-         {id:"29b",text:"Share the blueprint with the client via Google Doc and get written confirmation before opening Lovable"},
-         {id:"29c",text:"Set your internal delivery deadline 2 days before the promised date — buffer is not laziness, it is professionalism"},
-         {id:"29d",text:"Send client update: 'Blueprint approved — build starts today. You will hear from me in 48 hours.'"},
-       ]},
-      {day:30, focus:"Build Phase and New Scouting Session", icon:"⚙️",
-       note:"While you build the first project, the pipeline keeps running. One scouting hour today prevents a gap in income 3 weeks from now.",
-       tasks:[
-         {id:"30a",text:"Continue building Project 1 in Lovable — send the client a progress screenshot or short Loom update"},
-         {id:"30b",text:"Use 60 minutes to run a new Google Maps scouting session for a fresh city or niche"},
-         {id:"30c",text:"Record raw leads in notebook — enrichment begins on Day 31"},
-       ]},
-      {day:31, focus:"Enrich New Batch and Enter Notion", icon:"🔬",
-       note:"Enriching the new batch while delivering a project is how you avoid the feast-and-famine cycle permanently.",
-       tasks:[
-         {id:"31a",text:"Transfer Day 30 notebook entries to Google Sheets"},
-         {id:"31b",text:"Enrich your top 8-10 leads: founder name, direct email, LinkedIn, 3 connected problems"},
-         {id:"31c",text:"Score and enter Hot and Warm leads into Notion CRM with all columns filled"},
-       ]},
-      {day:32, focus:"Send Email 1 to New Batch HOT Leads", icon:"📧",
-       note:"Outreach never stops — even during delivery weeks. Commit to a minimum of 5 outreach actions every week for the next 12 months.",
-       tasks:[
-         {id:"32a",text:"Draft and send personalised Email 1 to your top 5 HOT leads from the new batch"},
-         {id:"32b",text:"Send LinkedIn connection requests to the same 5 leads"},
-         {id:"32c",text:"Update Notion Stage and Last Contacted date for each"},
-       ]},
-      {day:33, focus:"Deliver Project 1 — Make It a Ceremony", icon:"🎉",
-       note:"Delivery is not a file transfer — it is the moment a client's business changes. Treat it that way and you earn the testimonial, the referral, and the retainer conversation.",
-       tasks:[
-         {id:"33a",text:"Book a 30-minute Calendly screen-share call specifically for the delivery walkthrough"},
-         {id:"33b",text:"Walk through every page and feature — explain what each piece does for their business specifically"},
-         {id:"33c",text:"Send the final 50% payment request immediately after the walkthrough call"},
-         {id:"33d",text:"Schedule a 3-day check-in: 'Quick 10 minutes — just checking everything is running smoothly'"},
-       ]},
-      {day:34, focus:"Upsell Conversation", icon:"📈",
-       note:"The best moment to sell the next thing is within 48 hours of a great delivery. Trust is at its peak and the door is wide open.",
-       tasks:[
-         {id:"34a",text:"Send upsell message: 'Now that [site/system] is live, the next natural step is [CRM / email automation / booking integration]. Want me to show you what that looks like?'"},
-         {id:"34b",text:"Offer the Care Retainer ($200-400/month): maintenance, updates, and priority support"},
-         {id:"34c",text:"If they want more now: propose the next Standard or Premium package based on their next most urgent problem"},
-       ]},
-      {day:35, focus:"Testimonial, Case Study and 2 Referrals", icon:"⭐",
-       note:"One happy client can bring three more. This step is worth more than any cold email campaign — and it costs you nothing but the ask.",
-       tasks:[
-         {id:"35a",text:"Ask: 'Would you mind leaving a quick Google review? Here is the direct link: [URL]'"},
-         {id:"35b",text:"Ask for a LinkedIn recommendation — 5 minutes of their time, years of credibility for you"},
-         {id:"35c",text:"Ask for referrals: 'If you know any other [niche] owners who could use this, I would love an introduction'"},
-         {id:"35d",text:"Write your first real case study: Problem → What You Built → Specific Result. Add it to your portfolio site and update your email templates to reference it."},
-       ]},
-    ]},
+    "week": 5,
+    "title": "Deliver and Expand",
+    "range": "Days 29-35",
+    "icon": "🚀",
+    "color": "#8B2E1F",
+    "goal": "First project delivered and fully paid. Upsell conversation started. Real testimonial and case study secured. New batch in outreach.",
+    "days": [
+      {
+        "day": 29,
+        "focus": "Set Up Their Live GHL Sub-Account",
+        "icon": "📐",
+        "note": "Same workflow you already tested on your demo — see GHL Mastery tab, steps 02-03. This is a same-day build, not a blueprint-and-wait.",
+        "tasks": [
+          {
+            "id": "29a",
+            "xp": 22,
+            "text": "Create their sub-account in GHL and connect their Google Business Profile under Reputation → Settings — GHL Mastery tab, step 02"
+          },
+          {
+            "id": "29b",
+            "xp": 22,
+            "text": "Build their Review Request workflow exactly as tested on your demo: job-complete trigger → wait 2h → SMS 1 → wait 2h → SMS 2 with their review link"
+          },
+          {
+            "id": "29c",
+            "xp": 22,
+            "text": "Test it with your own number connected as a contact before it ever touches a real customer"
+          },
+          {
+            "id": "29d",
+            "xp": 27,
+            "text": "Send client update: 'Your system is built and tested — going live today. You will hear from me in 48 hours with your first results.'"
+          }
+        ]
+      },
+      {
+        "day": 30,
+        "focus": "Go Live and Run a New Scouting Session",
+        "icon": "⚙️",
+        "note": "Their system runs itself from here. While it works in the background, the pipeline keeps running — one scouting hour today prevents a gap in income 3 weeks from now.",
+        "bpsCheckpoint": true,
+        "tasks": [
+          {
+            "id": "30a",
+            "xp": 22,
+            "text": "Flip the workflow live on their real job-completion trigger — send the client a Loom confirming it is active"
+          },
+          {
+            "id": "30b",
+            "xp": 22,
+            "text": "Use 60 minutes to run a new Google Maps scouting session for a fresh city or niche"
+          },
+          {
+            "id": "30c",
+            "xp": 27,
+            "text": "Record raw leads in notebook — enrichment begins on Day 31"
+          }
+        ]
+      },
+      {
+        "day": 31,
+        "focus": "Enrich New Batch and Enter Notion",
+        "icon": "🔬",
+        "note": "Enriching the new batch while delivering a project is how you avoid the feast-and-famine cycle permanently.",
+        "tasks": [
+          {
+            "id": "31a",
+            "xp": 22,
+            "text": "Transfer Day 30 notebook entries to Google Sheets"
+          },
+          {
+            "id": "31b",
+            "xp": 22,
+            "text": "Enrich your top 8-10 leads: founder name, direct email, LinkedIn, 3 connected problems"
+          },
+          {
+            "id": "31c",
+            "xp": 27,
+            "text": "Score and enter Hot and Warm leads into Notion CRM with all columns filled"
+          }
+        ]
+      },
+      {
+        "day": 32,
+        "focus": "Send Email 1 to New Batch HOT Leads",
+        "icon": "📧",
+        "note": "Outreach never stops — even during delivery weeks. Commit to a minimum of 5 outreach actions every week for the next 12 months.",
+        "tasks": [
+          {
+            "id": "32a",
+            "xp": 22,
+            "text": "Draft and send personalised Email 1 to your top 5 HOT leads from the new batch"
+          },
+          {
+            "id": "32b",
+            "xp": 22,
+            "text": "Send LinkedIn connection requests to the same 5 leads"
+          },
+          {
+            "id": "32c",
+            "xp": 27,
+            "text": "Update Notion Stage and Last Contacted date for each"
+          }
+        ]
+      },
+      {
+        "day": 33,
+        "focus": "First Results Call — Make It a Ceremony",
+        "icon": "🎉",
+        "note": "The first review landing is not a notification — it is the moment a client's business changes. Treat it that way and you earn the testimonial, the referral, and the upsell conversation.",
+        "tasks": [
+          {
+            "id": "33a",
+            "xp": 22,
+            "text": "Book a 15-minute Calendly screen-share for their first-week results — do this even if only 1-2 reviews have landed so far"
+          },
+          {
+            "id": "33b",
+            "xp": 22,
+            "text": "Walk through the GHL Reputation dashboard live — show the review count, the workflow firing, and read one new review aloud together"
+          },
+          {
+            "id": "33c",
+            "xp": 22,
+            "text": "Confirm their card or payment method is set for the automatic renewal next month — no action needed from you if it is already on file from Day 28"
+          },
+          {
+            "id": "33d",
+            "xp": 27,
+            "text": "Schedule a Day-30 check-in now, on the call, before you hang up"
+          },
+          {
+            "id": "d33badge",
+            "xp": 60,
+            "badge": true,
+            "emoji": "⭐",
+            "text": "First Results Delivered — a real client's GHL workflow is live and their first reviews are landing."
+          }
+        ]
+      },
+      {
+        "day": 34,
+        "focus": "Upsell Conversation — Speed to Lead",
+        "icon": "📈",
+        "note": "The best moment to sell the next thing is within 48 hours of a great result. Trust is at its peak and the door is wide open. Use the exact script — see Upsell Ladder tab, Month 3-4.",
+        "tasks": [
+          {
+            "id": "34a",
+            "xp": 22,
+            "text": "Pull their contact-form submissions from the past 30 days and count how many got a callback within the hour — the gap is your opener"
+          },
+          {
+            "id": "34b",
+            "xp": 22,
+            "text": "Send the Month 3-4 intro line verbatim (Upsell Ladder tab): 'I pulled your form submissions from last month — you had [X] enquiries. Based on your response pattern, you're likely keeping about [X]%. Want me to make it automatic?'"
+          },
+          {
+            "id": "34c",
+            "xp": 27,
+            "text": "If they say yes: this is +$197-397/month on top of their existing $297-497/month Review Automation, not a separate deal — see What to Pitch tab"
+          }
+        ]
+      },
+      {
+        "day": 35,
+        "focus": "Testimonial, Case Study and 2 Referrals",
+        "icon": "⭐",
+        "note": "One happy client can bring three more. This step is worth more than any cold email campaign — and it costs you nothing but the ask.",
+        "tasks": [
+          {
+            "id": "35a",
+            "xp": 22,
+            "text": "Ask: 'Would you mind leaving a quick Google review? Here is the direct link: [URL]'"
+          },
+          {
+            "id": "35b",
+            "xp": 22,
+            "text": "Ask for a LinkedIn recommendation — 5 minutes of their time, years of credibility for you"
+          },
+          {
+            "id": "35c",
+            "xp": 22,
+            "text": "Ask for referrals: 'If you know any other [niche] owners who could use this, I would love an introduction'"
+          },
+          {
+            "id": "35d",
+            "xp": 27,
+            "text": "Write your first real case study: Problem → What You Built → Specific Result. Add it to your portfolio site and update your email templates to reference it."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:6, title:"Scale the Manual Machine", range:"Days 36-42",
-    icon:"⚙️", color:"#0D7A5F",
-    goal:"Third scouting round complete. Full Notion pipeline active. LinkedIn content started. First retainer conversation open.",
-    days:[
-      {day:36, focus:"Scouting Session 3 — New Niche or Country", icon:"🗺️",
-       note:"Everything you learned in the first two niches makes the third faster. Patterns repeat. The research sharpens. The emails get better.",
-       tasks:[
-         {id:"36a",text:"Choose: new niche you have not yet targeted, OR a new country (UK or Australia are strong for English-language outreach)"},
-         {id:"36b",text:"Run a full Google Maps scouting session — 15-20 raw leads in notebook"},
-         {id:"36c",text:"If the new Tier-1 niche needs a different proof asset (a tree-service review dashboard reads differently from a garage-door one), update your Lovable demo accordingly"},
-       ]},
-      {day:37, focus:"Enrich, Score and Enter New Batch", icon:"🔬",
-       note:"By Week 6 you should be completing a full lead enrichment in under 15 minutes per lead. Quality stays high — speed just improves with repetition.",
-       tasks:[
-         {id:"37a",text:"Transfer, enrich, score, and enter 8-10 leads from Day 36 into Notion CRM"},
-         {id:"37b",text:"Identify 3 connected problems for each HOT lead in the new batch"},
-         {id:"37c",text:"Update your email templates to reference your real Project 1 result — replace any demo reference with the actual outcome"},
-       ]},
-      {day:38, focus:"Draft Emails Using Your Real Case Study", icon:"✍️",
-       note:"Every email you send from this point forward references a real result — not a demo, not a promise. This is your first major credibility upgrade.",
-       tasks:[
-         {id:"38a",text:"Draft Email 1 for your top 5 HOT leads from the new batch — open with a reference to your Project 1 result"},
-         {id:"38b",text:"Example opener: 'I recently helped a [niche] business in [City] go from missed enquiries to a fully automated booking system — live in 12 days.'"},
-         {id:"38c",text:"Save all 5 drafts and review them the next morning before sending"},
-       ]},
-      {day:39, focus:"Send Wave 3 Outreach", icon:"📧",
-       note:"Third wave. You have a real case study now. The email converts at a meaningfully higher rate than your first wave did.",
-       tasks:[
-         {id:"39a",text:"Send Email 1 to your top 5 HOT leads from the new batch — manually, one by one from Gmail"},
-         {id:"39b",text:"Send LinkedIn connection requests to the same 5 leads"},
-         {id:"39c",text:"Update Notion Stage and Last Contacted for each"},
-       ]},
-      {day:40, focus:"First LinkedIn Content Post", icon:"📱",
-       note:"One LinkedIn post per week for 6 months builds more inbound than most ad campaigns. Today you start that habit.",
-       tasks:[
-         {id:"40a",text:"Write a post under 250 words: share one honest observation from working with your first client — what was the before, what changed after"},
-         {id:"40b",text:"End with a CTA: 'If you run a [niche] business and this sounds familiar, feel free to reach out'"},
-         {id:"40c",text:"Post it now. Do not over-edit. Authenticity outperforms polish on LinkedIn every single time."},
-       ]},
-      {day:41, focus:"Weekly Follow-Up Sweep Across All Batches", icon:"🔄",
-       note:"This 30-minute weekly sweep ensures nothing falls through the cracks. It is worth more than 2 hours of new prospecting.",
-       tasks:[
-         {id:"41a",text:"Open Notion → Active Outreach view → review every lead in 'Contacted' status"},
-         {id:"41b",text:"Any lead contacted 3-4 days ago with no reply: send Email 2 (The Leak)"},
-         {id:"41c",text:"Any lead contacted 7 days ago with no reply: send Email 3 (The Lift + Demo)"},
-         {id:"41d",text:"Any lead with 3 emails sent and no reply: mark as 'Replied Negatively' in Notion — archive for a 30-day nurture re-contact"},
-       ]},
-      {day:42, focus:"Full 6-Week Review", icon:"📊",
-       note:"The most important 45 minutes of the entire playbook. What you measure now, you can multiply in Month 2.",
-       tasks:[
-         {id:"42a",text:"Count: total leads scouted, enriched, entered into Notion, emailed, replied, calls booked, proposals sent, deals closed"},
-         {id:"42b",text:"Revenue collected to date — actual money received, not invoiced"},
-         {id:"42c",text:"Open Notion Pipeline Board — where is every lead? Which have been stuck in one stage for too long?"},
-         {id:"42d",text:"Write one honest sentence: what single thing, if done differently, would have closed more deals in Month 1?"},
-       ]},
-    ]},
+    "week": 6,
+    "title": "Scale the Manual Machine",
+    "range": "Days 36-42",
+    "icon": "⚙️",
+    "color": "#0D7A5F",
+    "goal": "Third scouting round complete. Full Notion pipeline active. LinkedIn content started. First retainer conversation open.",
+    "days": [
+      {
+        "day": 36,
+        "focus": "Scouting Session 3 — New Niche or Country",
+        "icon": "🗺️",
+        "note": "Everything you learned in the first two niches makes the third faster. Patterns repeat. The research sharpens. The emails get better.",
+        "tasks": [
+          {
+            "id": "36a",
+            "xp": 25,
+            "text": "Choose: new niche you have not yet targeted, OR a new country (UK or Australia are strong for English-language outreach)"
+          },
+          {
+            "id": "36b",
+            "xp": 25,
+            "text": "Run a full Google Maps scouting session — 15-20 raw leads in notebook"
+          },
+          {
+            "id": "36c",
+            "xp": 30,
+            "text": "If the new Tier-1 niche needs a different proof asset (a tree-service review dashboard reads differently from a garage-door one), update your Lovable demo accordingly"
+          }
+        ]
+      },
+      {
+        "day": 37,
+        "focus": "Enrich, Score and Enter New Batch",
+        "icon": "🔬",
+        "note": "By Week 6 you should be completing a full lead enrichment in under 15 minutes per lead. Quality stays high — speed just improves with repetition.",
+        "tasks": [
+          {
+            "id": "37a",
+            "xp": 25,
+            "text": "Transfer, enrich, score, and enter 8-10 leads from Day 36 into Notion CRM"
+          },
+          {
+            "id": "37b",
+            "xp": 25,
+            "text": "Identify 3 connected problems for each HOT lead in the new batch"
+          },
+          {
+            "id": "37c",
+            "xp": 30,
+            "text": "Update your email templates to reference your real Project 1 result — replace any demo reference with the actual outcome"
+          }
+        ]
+      },
+      {
+        "day": 38,
+        "focus": "Draft Emails Using Your Real Case Study",
+        "icon": "✍️",
+        "note": "Every email you send from this point forward references a real result — not a demo, not a promise. This is your first major credibility upgrade.",
+        "tasks": [
+          {
+            "id": "38a",
+            "xp": 25,
+            "text": "Draft Email 1 for your top 5 HOT leads from the new batch — open with a reference to your Project 1 result"
+          },
+          {
+            "id": "38b",
+            "xp": 25,
+            "text": "Example opener: 'I recently helped a [niche] business in [City] add [X] new reviews in their first month with zero extra effort on their end — happy to show you the exact system.'"
+          },
+          {
+            "id": "38c",
+            "xp": 30,
+            "text": "Save all 5 drafts and review them the next morning before sending"
+          }
+        ]
+      },
+      {
+        "day": 39,
+        "focus": "Send Wave 3 Outreach",
+        "icon": "📧",
+        "note": "Third wave. You have a real case study now. The email converts at a meaningfully higher rate than your first wave did.",
+        "tasks": [
+          {
+            "id": "39a",
+            "xp": 25,
+            "text": "Send Email 1 to your top 5 HOT leads from the new batch — manually, one by one from Gmail"
+          },
+          {
+            "id": "39b",
+            "xp": 25,
+            "text": "Send LinkedIn connection requests to the same 5 leads"
+          },
+          {
+            "id": "39c",
+            "xp": 30,
+            "text": "Update Notion Stage and Last Contacted for each"
+          }
+        ]
+      },
+      {
+        "day": 40,
+        "focus": "First LinkedIn Content Post",
+        "icon": "📱",
+        "note": "One LinkedIn post per week for 6 months builds more inbound than most ad campaigns. Today you start that habit.",
+        "tasks": [
+          {
+            "id": "40a",
+            "xp": 25,
+            "text": "Write a post under 250 words: share one honest observation from working with your first client — what was the before, what changed after"
+          },
+          {
+            "id": "40b",
+            "xp": 25,
+            "text": "End with a CTA: 'If you run a [niche] business and this sounds familiar, feel free to reach out'"
+          },
+          {
+            "id": "40c",
+            "xp": 30,
+            "text": "Post it now. Do not over-edit. Authenticity outperforms polish on LinkedIn every single time."
+          }
+        ]
+      },
+      {
+        "day": 41,
+        "focus": "Weekly Follow-Up Sweep Across All Batches",
+        "icon": "🔄",
+        "note": "This 30-minute weekly sweep ensures nothing falls through the cracks. It is worth more than 2 hours of new prospecting.",
+        "tasks": [
+          {
+            "id": "41a",
+            "xp": 25,
+            "text": "Open Notion → Active Outreach view → review every lead in 'Contacted' status"
+          },
+          {
+            "id": "41b",
+            "xp": 25,
+            "text": "Any lead contacted 3-4 days ago with no reply: send Email 2 (The Leak)"
+          },
+          {
+            "id": "41c",
+            "xp": 25,
+            "text": "Any lead contacted 7 days ago with no reply: send Email 3 (The Lift + Demo)"
+          },
+          {
+            "id": "41d",
+            "xp": 30,
+            "text": "Any lead with 3 emails sent and no reply: mark as 'Replied Negatively' in Notion — archive for a 30-day nurture re-contact"
+          }
+        ]
+      },
+      {
+        "day": 42,
+        "focus": "Full 6-Week Review",
+        "icon": "📊",
+        "note": "The most important 45 minutes of the entire playbook. What you measure now, you can multiply in Month 2.",
+        "tasks": [
+          {
+            "id": "42a",
+            "xp": 25,
+            "text": "Count: total leads scouted, enriched, entered into Notion, emailed, replied, calls booked, proposals sent, deals closed"
+          },
+          {
+            "id": "42b",
+            "xp": 25,
+            "text": "Revenue collected to date — actual money received, not invoiced"
+          },
+          {
+            "id": "42c",
+            "xp": 25,
+            "text": "Open Notion Pipeline Board — where is every lead? Which have been stuck in one stage for too long?"
+          },
+          {
+            "id": "42d",
+            "xp": 30,
+            "text": "Write one honest sentence: what single thing, if done differently, would have closed more deals in Month 1?"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:7, title:"Month 2 Launch", range:"Days 43-45",
-    icon:"🌅", color:"#B8860B",
-    goal:"Full debrief complete. Month 2 targets set in writing. Public proof shared. Pipeline actively running.",
-    days:[
-      {day:43, focus:"Full Month 1 Debrief", icon:"🪞",
-       note:"Honest self-assessment is not self-criticism — it is the raw material of a better Month 2.",
-       tasks:[
-         {id:"43a",text:"Pull all numbers from Gmail, Notion, and Google Sheets into one summary document"},
-         {id:"43b",text:"Calculate: revenue collected divided by total hours worked = your effective hourly rate. Is it improving?"},
-         {id:"43c",text:"Identify your best-performing niche, best-performing email subject line, and best-performing outreach channel"},
-         {id:"43d",text:"Write 3 things that exceeded expectations and 3 things to improve in Month 2"},
-       ]},
-      {day:44, focus:"Month 2 Planning Session", icon:"📋",
-       note:"Month 2 is where compounding begins. You have data, proof, and a case study. The machine is faster now.",
-       tasks:[
-         {id:"44a",text:"Set specific Month 2 targets in writing: leads scouted, emails sent, calls, proposals, closes, revenue"},
-         {id:"44b",text:"Decide: expand niche, expand country, or go deeper in your existing market?"},
-         {id:"44c",text:"Plan when automation tools make financial sense — rule: only when manual volume maxes out and you have consistent revenue to fund them"},
-         {id:"44d",text:"Block weekly time in your calendar for: scouting, enrichment, email, calls, delivery, review — treat each like a client appointment"},
-       ]},
-      {day:45, focus:"Public Commitment and Keep Shipping", icon:"🏁",
-       note:"The public post makes it real. It attracts clients, keeps you accountable, and builds an audience of future students who want to learn from your journey.",
-       tasks:[
-         {id:"45a",text:"Post on LinkedIn: what you set out to do, what you built, what you learned, where you are headed in Month 2"},
-         {id:"45b",text:"Write a private commitment: 'By Day 90, I will have [X] clients and [Y] monthly recurring revenue'"},
-         {id:"45c",text:"The outreach machine never pauses — send at least 2 new personalised emails today. Day 45 is not a rest day. It is a relaunch."},
-       ]},
-    ]},
+    "week": 7,
+    "title": "Month 2 Launch",
+    "range": "Days 43-45",
+    "icon": "🌅",
+    "color": "#B8860B",
+    "goal": "Full debrief complete. Month 2 targets set in writing. Public proof shared. Pipeline actively running.",
+    "days": [
+      {
+        "day": 43,
+        "focus": "Full Month 1 Debrief",
+        "icon": "🪞",
+        "note": "Honest self-assessment is not self-criticism — it is the raw material of a better Month 2.",
+        "tasks": [
+          {
+            "id": "43a",
+            "xp": 28,
+            "text": "Pull all numbers from Gmail, Notion, and Google Sheets into one summary document"
+          },
+          {
+            "id": "43b",
+            "xp": 28,
+            "text": "Calculate: revenue collected divided by total hours worked = your effective hourly rate. Is it improving?"
+          },
+          {
+            "id": "43c",
+            "xp": 28,
+            "text": "Identify your best-performing niche, best-performing email subject line, and best-performing outreach channel"
+          },
+          {
+            "id": "43d",
+            "xp": 33,
+            "text": "Write 3 things that exceeded expectations and 3 things to improve in Month 2"
+          }
+        ]
+      },
+      {
+        "day": 44,
+        "focus": "Month 2 Planning Session",
+        "icon": "📋",
+        "note": "Month 2 is where compounding begins. You have data, proof, and a case study. The machine is faster now.",
+        "tasks": [
+          {
+            "id": "44a",
+            "xp": 28,
+            "text": "Set specific Month 2 targets in writing: leads scouted, emails sent, calls, proposals, closes, revenue"
+          },
+          {
+            "id": "44b",
+            "xp": 28,
+            "text": "Decide: expand niche, expand country, or go deeper in your existing market?"
+          },
+          {
+            "id": "44c",
+            "xp": 28,
+            "text": "Plan when automation tools make financial sense — rule: only when manual volume maxes out and you have consistent revenue to fund them"
+          },
+          {
+            "id": "44d",
+            "xp": 33,
+            "text": "Block weekly time in your calendar for: scouting, enrichment, email, calls, delivery, review — treat each like a client appointment"
+          }
+        ]
+      },
+      {
+        "day": 45,
+        "focus": "Public Commitment and Keep Shipping",
+        "icon": "🏁",
+        "note": "The public post makes it real. It attracts clients, keeps you accountable, and builds an audience of future students who want to learn from your journey.",
+        "bpsCheckpoint": true,
+        "tasks": [
+          {
+            "id": "45a",
+            "xp": 28,
+            "text": "Post on LinkedIn: what you set out to do, what you built, what you learned, where you are headed in Month 2"
+          },
+          {
+            "id": "45b",
+            "xp": 28,
+            "text": "Write a private commitment: 'By Day 90, I will have [X] clients and [Y] monthly recurring revenue'"
+          },
+          {
+            "id": "45c",
+            "xp": 33,
+            "text": "The outreach machine never pauses — send at least 2 new personalised emails today. Day 45 is not a rest day. It is a relaunch."
+          },
+          {
+            "id": "d45badge",
+            "xp": 100,
+            "badge": true,
+            "emoji": "🏆",
+            "text": "Certified — you completed the full 45-Day SMB Optimisation Engine."
+          }
+        ]
+      }
+    ]
+  }
+];
+
+const RANKS = [
+  { name:"SMB Recruit", threshold:0, blurb:"Day 1. Free arsenal armed, zero spent." },
+  { name:"Growth Scout", threshold:10, blurb:"First demo built, first review-gap data scouted." },
+  { name:"Systems Prospector", threshold:23, blurb:"A tiered pipeline of real HOT leads, ready for outreach." },
+  { name:"SMB Apprentice", threshold:37, blurb:"First contact made. The pipeline is live." },
+  { name:"Field Systems Partner", threshold:51, blurb:"First discovery call run, Performance Calculator in hand." },
+  { name:"Contract Systems Engineer", threshold:66, blurb:"First subscription signed. Recurring revenue exists." },
+  { name:"Certified SMB Optimisation Engineer", threshold:79, blurb:"45 days, one proven product, one real client. This one's earned." },
+];
+
+/* BPS checkpoints — Belief (Day 16) → Affirmation (Day 30) → Evaluation (Day 45),
+   the same three days as the CareBridge and Ascent systems, so the cadence reads
+   identically no matter which path a beneficiary runs. */
+const BPS_CHECKPOINTS = [
+  { day:16, type:"Belief Goal", detail:"Commit to your personal outreach formula — a specific, weighted plan for scouting, enrichment and daily send volume, chosen from your own Week 1-2 data, not a guess." },
+  { day:30, type:"Affirmation Goal", detail:"A 14-day honest effort report on your formula. Strict remark bands apply: 72%+ 'Effort is satisfactory, goal set to be achieved.' 60-71% 'Effort is minimal, goal not taken seriously.' Below 60% 'Effort is below requisite, failure of goal is imminent.'" },
+  { day:45, type:"Evaluation Goal", detail:"The full 40-day evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'" },
 ];
 
 const NOTION_COLS = [
@@ -622,15 +1650,15 @@ const FAQS = [
   {q:"Does the Breakup email really work?",
    a:"It is often the highest-replying email in the whole sequence, because it removes pressure instead of adding it. Send it exactly as written, do not add a pitch to it, and genuinely close the file afterwards. Leads who reply to a breakup email are usually ready to talk."},
   {q:"I genuinely have no money right now. Can I start with zero spend?",
-   a:"Yes — for the first 7 days, everything is free. The one non-negotiable investment is Lovable.dev Pro at approximately $25 per month. Here is the math: your first deal, even at the lowest Starter price of $300, funds 12 months of Lovable Pro. The question is not whether $25 is affordable right now. It is whether one closed deal in 45 days is achievable following this playbook consistently. Based on this plan done properly, it is."},
+   a:"Yes — for the first 3 days, everything is free, including GHL's 30-day trial. The only two paid tools this entire playbook uses are Lovable Pro (~$25/month) and GHL (~$97/month after its trial ends), and both are affordable from your very first client's very first payment: one $297/month subscriber covers both with room to spare. Nothing else in this playbook costs money until you have consistent revenue to fund it — see the FAQ on when to invest in automation tools."},
   {q:"How many emails should I send per day without automation?",
    a:"Start with 5 deeply personalised emails per day. Each email should take 10-15 minutes to personalise properly — that is about 75 minutes of quality outreach daily. Volume is not your advantage at this stage. Quality is. A deeply researched email to 5 HOT leads consistently outperforms 100 generic emails every single time. Scale volume only when your quality standard is locked in."},
   {q:"What if I get no replies after the full 4-email sequence?",
    a:"Check three things in order. First: was the lead truly HOT (score 7+)? Second: did your subject lines sound like marketing emails? They should read like a note from a real person. Third: was the review gap you named specific and verifiable — an actual competitor name, an actual review count? If all three were done correctly and still no reply, test a different niche before changing anything about the offer."},
   {q:"Should I mention I am based in Nigeria when reaching out to international clients?",
    a:"You are not required to volunteer your location in a cold email. Position yourself as a Digital Systems Engineer serving businesses globally — which is true. Your demos, your professional Gmail, your LinkedIn presence, and your portfolio are what establish credibility. If a client asks directly, answer honestly and immediately follow with your portfolio link and demo. Results speak louder than geography every time."},
-  {q:"What if a client wants a refund after the project has started?",
-   a:"This is exactly why the 50% upfront rule exists. The deposit covers your time on setup and configuration. Your 1-page agreement should state that the deposit is non-refundable once work has commenced. Always get written approval of the plan before building anything — this single step eliminates the most common reason clients try to cancel."},
+  {q:"What if a client wants a refund after their first month has started?",
+   a:"This is exactly why you collect the first month upfront before building anything. Your 1-page agreement should state that the current month is non-refundable once the workflow is live, and that cancelling simply stops the next month's charge — there is no ongoing obligation on either side. This is a subscription, not a project: the client is never locked in, and neither are you."},
   {q:"When should I start investing in automation tools like Make.com or Apollo.io?",
    a:"When your manual process is maxed out — meaning you are sending 25-30 personalised emails per week, you have closed at least 3 deals, and your pipeline is consistent enough that automation would save meaningful time without sacrificing quality. Before that point, automation adds cost and complexity without adding proportional results. Manual first. Automate what is proven."},
 ];
@@ -808,13 +1836,24 @@ function PlanPage() {
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
   const totalTasks     = allTasks.length;
   const completedTasks = allTasks.filter(t=>done[t.id]).length;
-  const progress = totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
+  const totalXP   = useMemo(()=>allTasks.reduce((s,t)=>s+t.xp,0),[allTasks]);
+  const earnedXP  = useMemo(()=>allTasks.reduce((s,t)=>s+(done[t.id]?t.xp:0),0),[allTasks,done]);
+  const pct = totalXP?(earnedXP/totalXP)*100:0;
+  const progress = Math.round(pct);
   const progressColor = progress>=70?"#0D7A5F":progress>=35?"#B8860B":"#7A5A00";
   const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const weekPct = w=>{
     const t=w.days.flatMap(d=>d.tasks);
     return t.length>0?Math.round((t.filter(x=>done[x.id]).length/t.length)*100):0;
   };
+
+  const currentRank = useMemo(()=>{
+    let r=RANKS[0];
+    for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; }
+    return r;
+  },[pct]);
+  const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
+  const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
 
   const TABS=[
     {id:"plan",     label:"1. 📅 45-Day Plan"},
@@ -854,16 +1893,40 @@ function PlanPage() {
             scored on a rubric, enriched with 3 connected problems, and contacted personally from Gmail.
             This is how you build a freelance business when every cent counts.
           </p>
-          <div style={{background:"#FFFFFF",borderRadius:10,padding:"11px 14px",
+          <div style={{background:"#FFFFFF",borderRadius:10,padding:"14px 16px",
             border:"1px solid #E8DCC0"}}>
-            <div style={{display:"flex",justifyContent:"space-between",
-              alignItems:"center",marginBottom:7}}>
-              <span style={{fontSize:12,fontWeight:600,color:"#6B5D3F"}}>Overall Progress</span>
-              <span style={{fontSize:13,fontWeight:800,color:progressColor}}>
-                {completedTasks} / {totalTasks} tasks · {progress}%
-              </span>
+            <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",gap:10,flexWrap:"wrap",marginBottom:10}}>
+              <div>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6B5D3F",margin:"0 0 3px"}}>Current Rank</p>
+                <p style={{fontSize:17,fontWeight:800,color:"#7A5A00",margin:0}}>{currentRank.name}</p>
+                <p style={{fontSize:11,color:"#6B5D3F",margin:"2px 0 0",maxWidth:360,lineHeight:1.5}}>{currentRank.blurb}</p>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6B5D3F",margin:"0 0 3px"}}>Progress</p>
+                <p style={{fontSize:17,fontWeight:800,color:progressColor,margin:0}}>{progress}%</p>
+                {nextRank && <p style={{fontSize:10.5,color:"#6B5D3F",margin:"2px 0 0"}}>{Math.max(0,nextRank.threshold-progress)}% to {nextRank.name}</p>}
+              </div>
             </div>
-            <ProgressBar value={progress} color={progressColor} height={8}/>
+            <div style={{display:"flex",gap:2,marginBottom:12}}>
+              {Array.from({length:20}).map((_,i)=>(
+                <div key={i} style={{height:6,flex:1,borderRadius:3,
+                  background:i<Math.round(pct/5)?"#C99A3B":"transparent",
+                  border:i<Math.round(pct/5)?"none":"1px solid #E8DCC0"}}/>
+              ))}
+            </div>
+            <div style={{fontSize:11,color:"#6B5D3F",marginBottom:8}}>{completedTasks} / {totalTasks} tasks complete</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+              {badgeItems.map(b=>{
+                const earned=!!done[b.id];
+                return (
+                  <span key={b.id} title={b.text} style={{
+                    width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:13,background:earned?"#C99A3B":"#FFFFFF",
+                    border:earned?"none":"1px solid #E8DCC0",opacity:earned?1:0.5,
+                  }}>{b.emoji}</span>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -899,8 +1962,14 @@ function PlanPage() {
             </h2>
             <p style={{fontSize:12.5,color:"#6B5D3F",margin:"0 0 14px"}}>
               Tap a week → tap a day → tick tasks as you complete them.
-              Every task is manual. Zero automations required.
+              Every task is manual. Zero automations required. Days marked ★ carry a BPS checkpoint.
             </p>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",marginBottom:8}}>
+                BPS Checkpoints Inside the 45 Days
+              </div>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
             {WEEKS.map((w,wi)=>{
               const wp=weekPct(w); const wOpen=openWeek===wi;
               return (
@@ -961,7 +2030,7 @@ function PlanPage() {
                                     Day {d.day}
                                   </span>
                                   <span style={{fontSize:13,fontWeight:600,color:"#1A1410"}}>
-                                    {d.focus}
+                                    {d.focus}{d.bpsCheckpoint?" ★":""}
                                   </span>
                                 </div>
                                 <div style={{fontSize:11,color:"#6B5D3F",marginTop:2}}>
@@ -983,16 +2052,32 @@ function PlanPage() {
                                     💡 {d.note}
                                   </div>
                                 )}
-                                {d.tasks.map(t=>(
+                                {d.tasks.map(t=>t.badge?(
+                                  <div key={t.id} onClick={()=>toggle(t.id)}
+                                    style={{display:"flex",gap:10,alignItems:"center",
+                                      padding:"9px 11px",margin:"6px 0",borderRadius:9,
+                                      border:`1px solid ${done[t.id]?"#C99A3B":"#E8DCC0"}`,
+                                      background:done[t.id]?"rgba(201,154,59,0.10)":"#FFFFFF",
+                                      cursor:"pointer"}}>
+                                    <span style={{flexShrink:0,width:30,height:30,borderRadius:"50%",
+                                      display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,
+                                      background:done[t.id]?"#C99A3B":"#FFFFFF",
+                                      border:done[t.id]?"none":"1px solid #E8DCC0"}}>{t.emoji}</span>
+                                    <span style={{flex:1,fontSize:13,fontWeight:600,
+                                      color:done[t.id]?"#7A5A00":"#1A1410"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:11,fontWeight:700,color:"#7A5A00"}}>+{t.xp} XP</span>
+                                  </div>
+                                ):(
                                   <div key={t.id} onClick={()=>toggle(t.id)}
                                     style={{display:"flex",gap:9,alignItems:"flex-start",
                                       padding:"8px 0",
                                       borderBottom:"1px solid #FBF6E9",cursor:"pointer"}}>
                                     <Check checked={!!done[t.id]} color={w.color}/>
-                                    <span style={{fontSize:13,lineHeight:1.55,
+                                    <span style={{flex:1,fontSize:13,lineHeight:1.55,
                                       color:done[t.id]?"#6B5D3F":"#6B5D3F",
                                       textDecoration:done[t.id]?"line-through":"none",
                                       transition:"all .15s"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:10.5,color:"#6B5D3F",paddingTop:1}}>+{t.xp}</span>
                                   </div>
                                 ))}
                               </div>

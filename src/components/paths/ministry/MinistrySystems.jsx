@@ -1,318 +1,1140 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { BpsCheckpoints } from "@/components/paths/shared/primitives";
+
+const STORAGE_KEY = "ministry-progress-v1";
+
+const RANKS = [
+  { name:"Ministry Recruit", threshold:0, blurb:"Day 1. Free accounts live, your own parish honestly audited." },
+  { name:"Parish Scout", threshold:10, blurb:"A pilot project chosen and built, verbal buy-in secured from leadership." },
+  { name:"Network Prospector", threshold:23, blurb:"A real case study, testimonial and packaged offer, ready to show anyone." },
+  { name:"Ministry Apprentice", threshold:37, blurb:"Warm outreach made to real parishes and ministries in your own network." },
+  { name:"Field Ministry Partner", threshold:51, blurb:"First real presentation given, pricing and case study walked through together." },
+  { name:"Contract Ministry Engineer", threshold:66, blurb:"First paying ministry client signed. A real system, being built." },
+  { name:"Certified Ministry Systems Engineer", threshold:79, blurb:"60 days, one proven pilot, one real paying client. This one's earned." },
+];
+
+/* BPS checkpoints — Belief (Day 16) → Affirmation (Day 40) → Evaluation (Day 60).
+   Spaced across this system's 60-day arc rather than 45, at the same relative
+   position (roughly a quarter in, two-thirds in, and the final day) as CareBridge
+   and the SMB Optimisation Engine. */
+const BPS_CHECKPOINTS = [
+  { day:16, type:"Belief Goal", detail:"Commit to your personal case-study and network formula — how you'll document the pilot's results and which warm relationships you'll approach first — chosen from your own Week 1-2 experience, not a guess." },
+  { day:40, type:"Affirmation Goal", detail:"A real, honest effort report from Belief Goal to here. Strict remark bands apply: 72%+ 'Effort is satisfactory, goal set to be achieved.' 60-71% 'Effort is minimal, goal not taken seriously.' Below 60% 'Effort is below requisite, failure of goal is imminent.'" },
+  { day:60, type:"Evaluation Goal", detail:"The full evaluation from Belief Goal submission. 75%+ 'My effort is satisfactory, goal set will be achieved.' 60-74% 'My effort has been minimal, this goal may not be achieved.' Below 60% 'My effort has been poor, the goal is unmet.'" },
+];
 
 const WEEKS = [
   {
-    week:1, title:"Audit Your Own Ministry", range:"Days 1-7",
-    icon:"🔍", color:"#7A5A00",
-    goal:"Free tools set up, your own parish audited, one pilot project chosen, and verbal buy-in secured from leadership.",
-    days:[
-      {day:1, focus:"Free Account Setup", icon:"⚡",
-       note:"Total cost today: $0. This entire system runs on free tools until real revenue justifies an upgrade.",
-       tasks:[
-         {id:"1a",text:"Create a free Notion account — this becomes your Ministry CRM"},
-         {id:"1b",text:"Create a free Zapier or Make.com account — the free tier is enough to start"},
-         {id:"1c",text:"Confirm you already have Google Forms and Sheets access (most Gmail accounts do)"},
-         {id:"1d",text:"Research whether your diocese or denomination already has a preferred giving platform"},
-       ]},
-      {day:2, focus:"Audit Your Own Parish", icon:"🔎",
-       note:"You cannot pitch a solution until you understand the real, specific gap. Do this audit honestly.",
-       tasks:[
-         {id:"2a",text:"List every event your parish or ministry runs in a typical year — feast days, camps, retreats, fundraisers"},
-         {id:"2b",text:"Note how each currently handles registration — paper sign-up, WhatsApp, or nothing at all"},
-         {id:"2c",text:"Note how giving currently works — envelope only, or is there any online option"},
-         {id:"2d",text:"Note how announcements currently go out — pulpit only, WhatsApp broadcast, or a printed bulletin"},
-       ]},
-      {day:3, focus:"Pick Your Pilot Project", icon:"🎯",
-       note:"One gap, one fix, one pilot. Do not try to solve everything at once — that overwhelms both you and your leadership.",
-       tasks:[
-         {id:"3a",text:"Choose ONE upcoming event or ONE clear pain point to solve first"},
-         {id:"3b",text:"Best pilot candidates: an upcoming feast week, youth camp, retreat, or conference with a real registration need"},
-         {id:"3c",text:"Confirm the event date gives you at least 3 weeks to build, test, and launch"},
-       ]},
-      {day:4, focus:"Have the Conversation", icon:"💬",
-       note:"This is not a sales pitch. This is a trusted member of the community offering to help, for free, to prove a concept.",
-       tasks:[
-         {id:"4a",text:"Approach your parish priest, youth coordinator, or ministry leader directly"},
-         {id:"4b",text:"Use the 'Bringing It Up With Your Own Leadership' script from the Scripts tab"},
-         {id:"4c",text:"Get verbal buy-in to pilot the system for this one event, completely free"},
-       ]},
-      {day:5, focus:"Map the Pilot", icon:"📐",
-       note:"Blueprint before build. This one habit will define your entire career as a Digital Systems Engineer.",
-       tasks:[
-         {id:"5a",text:"Sketch exactly what the registration form needs to capture — name, contact, dietary needs, age group"},
-         {id:"5b",text:"Decide whether you need automated confirmation email, SMS, or both"},
-         {id:"5c",text:"Decide whether the planning committee needs a live headcount dashboard"},
-       ]},
-      {day:6, focus:"Build the Pilot — Part 1", icon:"🛠️",
-       note:"Simple beats fancy. A working Google Form beats an elaborate app nobody finishes.",
-       tasks:[
-         {id:"6a",text:"Build the Google Form with every field mapped out on Day 5"},
-         {id:"6b",text:"Connect it to a Google Sheet"},
-         {id:"6c",text:"Set up basic formulas or a simple view for real-time headcount tracking"},
-       ]},
-      {day:7, focus:"Build the Pilot — Part 2", icon:"✅",
-       note:"Test everything yourself, twice, before anyone else touches it. Broken links kill trust instantly.",
-       tasks:[
-         {id:"7a",text:"Set up the Zapier or Make automation — form submission triggers a confirmation email or SMS"},
-         {id:"7b",text:"Test the entire flow yourself end to end before anyone else sees it"},
-         {id:"7c",text:"Share the form link with the event coordinator for their review"},
-       ]},
-    ]},
+    "week": 1,
+    "title": "Audit Your Own Ministry",
+    "range": "Days 1-7",
+    "icon": "🔍",
+    "color": "#7A5A00",
+    "goal": "Free tools set up, your own parish audited, one pilot project chosen, and verbal buy-in secured from leadership.",
+    "days": [
+      {
+        "day": 1,
+        "focus": "Free Account Setup",
+        "icon": "⚡",
+        "note": "Total cost today: $0. This entire system runs on free tools until real revenue justifies an upgrade.",
+        "tasks": [
+          {
+            "id": "1a",
+            "xp": 10,
+            "text": "Create a free Notion account — this becomes your Ministry CRM"
+          },
+          {
+            "id": "1b",
+            "xp": 10,
+            "text": "Create a free Zapier or Make.com account — the free tier is enough to start"
+          },
+          {
+            "id": "1c",
+            "xp": 10,
+            "text": "Confirm you already have Google Forms and Sheets access (most Gmail accounts do)"
+          },
+          {
+            "id": "1d",
+            "xp": 15,
+            "text": "Research whether your diocese or denomination already has a preferred giving platform"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "focus": "Audit Your Own Parish",
+        "icon": "🔎",
+        "note": "You cannot pitch a solution until you understand the real, specific gap. Do this audit honestly.",
+        "tasks": [
+          {
+            "id": "2a",
+            "xp": 10,
+            "text": "List every event your parish or ministry runs in a typical year — feast days, camps, retreats, fundraisers"
+          },
+          {
+            "id": "2b",
+            "xp": 10,
+            "text": "Note how each currently handles registration — paper sign-up, WhatsApp, or nothing at all"
+          },
+          {
+            "id": "2c",
+            "xp": 10,
+            "text": "Note how giving currently works — envelope only, or is there any online option"
+          },
+          {
+            "id": "2d",
+            "xp": 15,
+            "text": "Note how announcements currently go out — pulpit only, WhatsApp broadcast, or a printed bulletin"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "focus": "Pick Your Pilot Project",
+        "icon": "🎯",
+        "note": "One gap, one fix, one pilot. Do not try to solve everything at once — that overwhelms both you and your leadership.",
+        "tasks": [
+          {
+            "id": "3a",
+            "xp": 10,
+            "text": "Choose ONE upcoming event or ONE clear pain point to solve first"
+          },
+          {
+            "id": "3b",
+            "xp": 10,
+            "text": "Best pilot candidates: an upcoming feast week, youth camp, retreat, or conference with a real registration need"
+          },
+          {
+            "id": "3c",
+            "xp": 15,
+            "text": "Confirm the event date gives you at least 3 weeks to build, test, and launch"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "focus": "Have the Conversation",
+        "icon": "💬",
+        "note": "This is not a sales pitch. This is a trusted member of the community offering to help, for free, to prove a concept.",
+        "tasks": [
+          {
+            "id": "4a",
+            "xp": 10,
+            "text": "Approach your parish priest, youth coordinator, or ministry leader directly"
+          },
+          {
+            "id": "4b",
+            "xp": 10,
+            "text": "Use the 'Bringing It Up With Your Own Leadership' script from the Scripts tab"
+          },
+          {
+            "id": "4c",
+            "xp": 15,
+            "text": "Get verbal buy-in to pilot the system for this one event, completely free"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "focus": "Map the Pilot",
+        "icon": "📐",
+        "note": "Blueprint before build. This one habit will define your entire career as a Digital Systems Engineer.",
+        "tasks": [
+          {
+            "id": "5a",
+            "xp": 10,
+            "text": "Sketch exactly what the registration form needs to capture — name, contact, dietary needs, age group"
+          },
+          {
+            "id": "5b",
+            "xp": 10,
+            "text": "Decide whether you need automated confirmation email, SMS, or both"
+          },
+          {
+            "id": "5c",
+            "xp": 15,
+            "text": "Decide whether the planning committee needs a live headcount dashboard"
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "focus": "Build the Pilot — Part 1",
+        "icon": "🛠️",
+        "note": "Simple beats fancy. A working Google Form beats an elaborate app nobody finishes.",
+        "tasks": [
+          {
+            "id": "6a",
+            "xp": 10,
+            "text": "Build the Google Form with every field mapped out on Day 5"
+          },
+          {
+            "id": "6b",
+            "xp": 10,
+            "text": "Connect it to a Google Sheet"
+          },
+          {
+            "id": "6c",
+            "xp": 15,
+            "text": "Set up basic formulas or a simple view for real-time headcount tracking"
+          }
+        ]
+      },
+      {
+        "day": 7,
+        "focus": "Build the Pilot — Part 2",
+        "icon": "✅",
+        "note": "Test everything yourself, twice, before anyone else touches it. Broken links kill trust instantly.",
+        "tasks": [
+          {
+            "id": "7a",
+            "xp": 10,
+            "text": "Set up the Zapier or Make automation — form submission triggers a confirmation email or SMS"
+          },
+          {
+            "id": "7b",
+            "xp": 10,
+            "text": "Test the entire flow yourself end to end before anyone else sees it"
+          },
+          {
+            "id": "7c",
+            "xp": 15,
+            "text": "Share the form link with the event coordinator for their review"
+          },
+          {
+            "id": "d7badge",
+            "xp": 40,
+            "badge": true,
+            "emoji": "🛠️",
+            "text": "Pilot Built — the registration system built and tested, ready for a real event."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:2, title:"Launch the Pilot", range:"Days 8-14",
-    icon:"🚀", color:"#0D7A5F",
-    goal:"The pilot system live and running for a real event, with early friction points caught and fixed.",
-    days:[
-      {day:8, focus:"Soft Launch", icon:"🚀",
-       note:"Watch the first few responses closely — small fixes now prevent bigger problems later.",
-       tasks:[
-         {id:"8a",text:"Share the registration link through your parish's normal channels — bulletin, WhatsApp, announcement"},
-         {id:"8b",text:"Monitor the first responses closely and fix any issues immediately"},
-       ]},
-      {day:9, focus:"Monitor and Support", icon:"👀",
-       tasks:[
-         {id:"9a",text:"Check for new registrations daily"},
-         {id:"9b",text:"Personally help any older or less tech-comfortable congregants who need assistance registering"},
-       ]},
-      {day:10, focus:"Continue Monitoring", icon:"👀",
-       tasks:[
-         {id:"10a",text:"Note any friction points people mention — these become improvements for your next parish"},
-         {id:"10b",text:"Keep the event coordinator updated on registration numbers"},
-       ]},
-      {day:11, focus:"Mid-Pilot Check-In", icon:"🗣️",
-       note:"Their exact words here become your testimonial. Write them down verbatim.",
-       tasks:[
-         {id:"11a",text:"Meet briefly with the event coordinator — ask how this compares to the usual paper process"},
-         {id:"11b",text:"Write down their exact words — this becomes your testimonial material"},
-       ]},
-      {day:12, focus:"Prepare for Event Day", icon:"📋",
-       tasks:[
-         {id:"12a",text:"Export the final headcount and registration list for the planning committee"},
-         {id:"12b",text:"If doing day-of check-in, prepare a simple sheet or QR-based system"},
-       ]},
-      {day:13, focus:"Brief Your Volunteers", icon:"🙋",
-       tasks:[
-         {id:"13a",text:"If others will help with check-in, walk them through the system in 5 minutes"},
-         {id:"13b",text:"Confirm everyone knows what to do if something goes wrong"},
-       ]},
-      {day:14, focus:"Event Day", icon:"🎉",
-       note:"This is the moment your case study is born. Pay close attention.",
-       tasks:[
-         {id:"14a",text:"Run the event using the system live"},
-         {id:"14b",text:"Note everything that worked well and anything that did not, honestly"},
-       ]},
-    ]},
+    "week": 2,
+    "title": "Launch the Pilot",
+    "range": "Days 8-14",
+    "icon": "🚀",
+    "color": "#0D7A5F",
+    "goal": "The pilot system live and running for a real event, with early friction points caught and fixed.",
+    "days": [
+      {
+        "day": 8,
+        "focus": "Soft Launch",
+        "icon": "🚀",
+        "note": "Watch the first few responses closely — small fixes now prevent bigger problems later.",
+        "tasks": [
+          {
+            "id": "8a",
+            "xp": 12,
+            "text": "Share the registration link through your parish's normal channels — bulletin, WhatsApp, announcement"
+          },
+          {
+            "id": "8b",
+            "xp": 17,
+            "text": "Monitor the first responses closely and fix any issues immediately"
+          }
+        ]
+      },
+      {
+        "day": 9,
+        "focus": "Monitor and Support",
+        "icon": "👀",
+        "tasks": [
+          {
+            "id": "9a",
+            "xp": 12,
+            "text": "Check for new registrations daily"
+          },
+          {
+            "id": "9b",
+            "xp": 17,
+            "text": "Personally help any older or less tech-comfortable congregants who need assistance registering"
+          }
+        ]
+      },
+      {
+        "day": 10,
+        "focus": "Continue Monitoring",
+        "icon": "👀",
+        "tasks": [
+          {
+            "id": "10a",
+            "xp": 12,
+            "text": "Note any friction points people mention — these become improvements for your next parish"
+          },
+          {
+            "id": "10b",
+            "xp": 17,
+            "text": "Keep the event coordinator updated on registration numbers"
+          }
+        ]
+      },
+      {
+        "day": 11,
+        "focus": "Mid-Pilot Check-In",
+        "icon": "🗣️",
+        "note": "Their exact words here become your testimonial. Write them down verbatim.",
+        "tasks": [
+          {
+            "id": "11a",
+            "xp": 12,
+            "text": "Meet briefly with the event coordinator — ask how this compares to the usual paper process"
+          },
+          {
+            "id": "11b",
+            "xp": 17,
+            "text": "Write down their exact words — this becomes your testimonial material"
+          }
+        ]
+      },
+      {
+        "day": 12,
+        "focus": "Prepare for Event Day",
+        "icon": "📋",
+        "tasks": [
+          {
+            "id": "12a",
+            "xp": 12,
+            "text": "Export the final headcount and registration list for the planning committee"
+          },
+          {
+            "id": "12b",
+            "xp": 17,
+            "text": "If doing day-of check-in, prepare a simple sheet or QR-based system"
+          }
+        ]
+      },
+      {
+        "day": 13,
+        "focus": "Brief Your Volunteers",
+        "icon": "🙋",
+        "tasks": [
+          {
+            "id": "13a",
+            "xp": 12,
+            "text": "If others will help with check-in, walk them through the system in 5 minutes"
+          },
+          {
+            "id": "13b",
+            "xp": 17,
+            "text": "Confirm everyone knows what to do if something goes wrong"
+          }
+        ]
+      },
+      {
+        "day": 14,
+        "focus": "Event Day",
+        "icon": "🎉",
+        "note": "This is the moment your case study is born. Pay close attention.",
+        "tasks": [
+          {
+            "id": "14a",
+            "xp": 12,
+            "text": "Run the event using the system live"
+          },
+          {
+            "id": "14b",
+            "xp": 17,
+            "text": "Note everything that worked well and anything that did not, honestly"
+          },
+          {
+            "id": "d14badge",
+            "xp": 45,
+            "badge": true,
+            "emoji": "🎉",
+            "text": "First Event Run — your own parish's pilot ran live, for a real event."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:3, title:"Document the Case Study", range:"Days 15-21",
-    icon:"📄", color:"#C99A3B",
-    goal:"A real case study, testimonial, numbers, and packaged offer ready to show any parish or ministry.",
-    days:[
-      {day:15, focus:"Debrief with Leadership", icon:"🪞",
-       note:"Ask directly. Most leaders are happy to give an honest, specific answer if you ask well.",
-       tasks:[
-         {id:"15a",text:"Sit down with the priest or coordinator after the event"},
-         {id:"15b",text:"Ask directly whether this was easier than the old way, and whether they would want it again"},
-         {id:"15c",text:"Ask for a specific quote you can use later — this is your testimonial"},
-       ]},
-      {day:16, focus:"Gather the Numbers", icon:"📊",
-       note:"Numbers make your case study credible. Vague impressions do not close deals — specific results do.",
-       tasks:[
-         {id:"16a",text:"Compare how many registered digitally versus what paper tracking would have captured"},
-         {id:"16b",text:"Ask the coordinator to estimate admin time saved"},
-         {id:"16c",text:"Note any other measurable wins — fewer no-shows, better dietary or accessibility planning"},
-       ]},
-      {day:17, focus:"Build Your One-Page Case Study", icon:"📝",
-       tasks:[
-         {id:"17a",text:"Create a simple document showing The Problem → What You Built → The Result"},
-         {id:"17b",text:"Include the testimonial quote and the real numbers from Day 16"},
-       ]},
-      {day:18, focus:"Build Your Notion Ministry CRM", icon:"🗂️",
-       tasks:[
-         {id:"18a",text:"Set up the full Notion database using every column in the Notion CRM tab"},
-         {id:"18b",text:"Enter your own parish as your first case study entry"},
-       ]},
-      {day:19, focus:"Package Your Offer", icon:"💰",
-       tasks:[
-         {id:"19a",text:"Finalize your three pricing tiers — Foundation, Growth, Full Ministry"},
-         {id:"19b",text:"Write a simple one-page overview of exactly what each tier includes"},
-       ]},
-      {day:20, focus:"Build a Visual Demo", icon:"🎨",
-       tasks:[
-         {id:"20a",text:"If you have Lovable access, build a simple branded demo page for a generic parish"},
-         {id:"20b",text:"This becomes your visual pitch tool, the same way your SMB Lovable demos work"},
-       ]},
-      {day:21, focus:"Week 3 Review", icon:"✅",
-       tasks:[
-         {id:"21a",text:"Confirm you now have a real case study, a real testimonial, real numbers, and a packaged offer"},
-       ]},
-    ]},
+    "week": 3,
+    "title": "Document the Case Study",
+    "range": "Days 15-21",
+    "icon": "📄",
+    "color": "#C99A3B",
+    "goal": "A real case study, testimonial, numbers, and packaged offer ready to show any parish or ministry.",
+    "days": [
+      {
+        "day": 15,
+        "focus": "Debrief with Leadership",
+        "icon": "🪞",
+        "note": "Ask directly. Most leaders are happy to give an honest, specific answer if you ask well.",
+        "tasks": [
+          {
+            "id": "15a",
+            "xp": 14,
+            "text": "Sit down with the priest or coordinator after the event"
+          },
+          {
+            "id": "15b",
+            "xp": 14,
+            "text": "Ask directly whether this was easier than the old way, and whether they would want it again"
+          },
+          {
+            "id": "15c",
+            "xp": 19,
+            "text": "Ask for a specific quote you can use later — this is your testimonial"
+          }
+        ]
+      },
+      {
+        "day": 16,
+        "focus": "Gather the Numbers",
+        "icon": "📊",
+        "note": "Numbers make your case study credible. Vague impressions do not close deals — specific results do.",
+        "tasks": [
+          {
+            "id": "16a",
+            "xp": 14,
+            "text": "Compare how many registered digitally versus what paper tracking would have captured"
+          },
+          {
+            "id": "16b",
+            "xp": 14,
+            "text": "Ask the coordinator to estimate admin time saved"
+          },
+          {
+            "id": "16c",
+            "xp": 19,
+            "text": "Note any other measurable wins — fewer no-shows, better dietary or accessibility planning"
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 17,
+        "focus": "Build Your One-Page Case Study",
+        "icon": "📝",
+        "tasks": [
+          {
+            "id": "17a",
+            "xp": 14,
+            "text": "Create a simple document showing The Problem → What You Built → The Result"
+          },
+          {
+            "id": "17b",
+            "xp": 19,
+            "text": "Include the testimonial quote and the real numbers from Day 16"
+          }
+        ]
+      },
+      {
+        "day": 18,
+        "focus": "Build Your Notion Ministry CRM",
+        "icon": "🗂️",
+        "tasks": [
+          {
+            "id": "18a",
+            "xp": 14,
+            "text": "Set up the full Notion database using every column in the Notion CRM tab"
+          },
+          {
+            "id": "18b",
+            "xp": 19,
+            "text": "Enter your own parish as your first case study entry"
+          }
+        ]
+      },
+      {
+        "day": 19,
+        "focus": "Package Your Offer",
+        "icon": "💰",
+        "tasks": [
+          {
+            "id": "19a",
+            "xp": 14,
+            "text": "Finalize your three pricing tiers — Foundation, Growth, Full Ministry"
+          },
+          {
+            "id": "19b",
+            "xp": 19,
+            "text": "Write a simple one-page overview of exactly what each tier includes"
+          }
+        ]
+      },
+      {
+        "day": 20,
+        "focus": "Build a Visual Demo",
+        "icon": "🎨",
+        "tasks": [
+          {
+            "id": "20a",
+            "xp": 14,
+            "text": "If you have Lovable access, build a simple branded demo page for a generic parish"
+          },
+          {
+            "id": "20b",
+            "xp": 19,
+            "text": "This becomes your visual pitch tool, the same way your SMB Lovable demos work"
+          }
+        ]
+      },
+      {
+        "day": 21,
+        "focus": "Week 3 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "21a",
+            "xp": 14,
+            "text": "Confirm you now have a real case study, a real testimonial, real numbers, and a packaged offer"
+          },
+          {
+            "id": "d21badge",
+            "xp": 50,
+            "badge": true,
+            "emoji": "📄",
+            "text": "Case Study Complete — a real testimonial, real numbers, and a packaged offer ready."
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:4, title:"Identify Your Warm Network", range:"Days 22-28",
-    icon:"🗺️", color:"#8B2E1F",
-    goal:"A prioritized list of real relationships — no cold outreach, only warm, trusted introductions.",
-    days:[
-      {day:22, focus:"Map Your Network", icon:"🗺️",
-       note:"This is the entire point of this system — your network is inherently different from every other student's.",
-       tasks:[
-         {id:"22a",text:"List every parish, ministry, youth group, or diocesan contact you have any real relationship with"},
-         {id:"22b",text:"Include other parishes in your diocese, youth society connections, and denominational conference contacts"},
-       ]},
-      {day:23, focus:"Prioritize Your List", icon:"🎯",
-       tasks:[
-         {id:"23a",text:"Rank contacts by relationship strength and likely need for these systems"},
-         {id:"23b",text:"Pick your top 5 to approach first"},
-       ]},
-      {day:24, focus:"Prepare Your Approach", icon:"📝",
-       note:"This is a warm, relational introduction — never a cold email. The tone must feel completely different.",
-       tasks:[
-         {id:"24a",text:"For each of the 5, think through the natural way to bring this up — after Mass, at a diocesan meeting, through a mutual friend"},
-       ]},
-      {day:25, focus:"Make Your First Approaches", icon:"🤝",
-       tasks:[
-         {id:"25a",text:"Reach out to your top 2-3 warm contacts using the 'Introducing to a New Parish' script"},
-         {id:"25b",text:"Share your case study and offer a similar pilot"},
-       ]},
-      {day:26, focus:"Continue Outreach", icon:"🤝",
-       tasks:[
-         {id:"26a",text:"Reach out to the remaining contacts on your top-5 list"},
-         {id:"26b",text:"Keep the tone warm and low-pressure throughout"},
-       ]},
-      {day:27, focus:"Follow Up", icon:"🔁",
-       tasks:[
-         {id:"27a",text:"Follow up with anyone who has not yet responded"},
-         {id:"27b",text:"Schedule proper conversations with anyone who showed interest"},
-       ]},
-      {day:28, focus:"Week 4 Review", icon:"✅",
-       tasks:[
-         {id:"28a",text:"Count how many real conversations have started and how many are moving toward a proposal"},
-       ]},
-    ]},
+    "week": 4,
+    "title": "Identify Your Warm Network",
+    "range": "Days 22-28",
+    "icon": "🗺️",
+    "color": "#8B2E1F",
+    "goal": "A prioritized list of real relationships — no cold outreach, only warm, trusted introductions.",
+    "days": [
+      {
+        "day": 22,
+        "focus": "Map Your Network",
+        "icon": "🗺️",
+        "note": "This is the entire point of this system — your network is inherently different from every other student's.",
+        "tasks": [
+          {
+            "id": "22a",
+            "xp": 16,
+            "text": "List every parish, ministry, youth group, or diocesan contact you have any real relationship with"
+          },
+          {
+            "id": "22b",
+            "xp": 21,
+            "text": "Include other parishes in your diocese, youth society connections, and denominational conference contacts"
+          }
+        ]
+      },
+      {
+        "day": 23,
+        "focus": "Prioritize Your List",
+        "icon": "🎯",
+        "tasks": [
+          {
+            "id": "23a",
+            "xp": 16,
+            "text": "Rank contacts by relationship strength and likely need for these systems"
+          },
+          {
+            "id": "23b",
+            "xp": 21,
+            "text": "Pick your top 5 to approach first"
+          }
+        ]
+      },
+      {
+        "day": 24,
+        "focus": "Prepare Your Approach",
+        "icon": "📝",
+        "note": "This is a warm, relational introduction — never a cold email. The tone must feel completely different.",
+        "tasks": [
+          {
+            "id": "24a",
+            "xp": 16,
+            "text": "For each of the 5, think through the natural way to bring this up — after Mass, at a diocesan meeting, through a mutual friend"
+          }
+        ]
+      },
+      {
+        "day": 25,
+        "focus": "Make Your First Approaches",
+        "icon": "🤝",
+        "tasks": [
+          {
+            "id": "25a",
+            "xp": 16,
+            "text": "Reach out to your top 2-3 warm contacts using the 'Introducing to a New Parish' script"
+          },
+          {
+            "id": "25b",
+            "xp": 21,
+            "text": "Share your case study and offer a similar pilot"
+          },
+          {
+            "id": "d25badge",
+            "xp": 45,
+            "badge": true,
+            "emoji": "🤝",
+            "text": "First Outreach — your first warm approaches made to real parishes and ministries."
+          }
+        ]
+      },
+      {
+        "day": 26,
+        "focus": "Continue Outreach",
+        "icon": "🤝",
+        "tasks": [
+          {
+            "id": "26a",
+            "xp": 16,
+            "text": "Reach out to the remaining contacts on your top-5 list"
+          },
+          {
+            "id": "26b",
+            "xp": 21,
+            "text": "Keep the tone warm and low-pressure throughout"
+          }
+        ]
+      },
+      {
+        "day": 27,
+        "focus": "Follow Up",
+        "icon": "🔁",
+        "tasks": [
+          {
+            "id": "27a",
+            "xp": 16,
+            "text": "Follow up with anyone who has not yet responded"
+          },
+          {
+            "id": "27b",
+            "xp": 21,
+            "text": "Schedule proper conversations with anyone who showed interest"
+          }
+        ]
+      },
+      {
+        "day": 28,
+        "focus": "Week 4 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "28a",
+            "xp": 16,
+            "text": "Count how many real conversations have started and how many are moving toward a proposal"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:5, title:"Present and Close", range:"Days 29-35",
-    icon:"🏆", color:"#7A5A00",
-    goal:"Your first paying ministry client, with a clear agreement on package, price, and timeline.",
-    days:[
-      {day:29, focus:"Prepare Your Presentation", icon:"🎤",
-       tasks:[
-         {id:"29a",text:"Adapt your case study and pricing to the specific ministry you are presenting to"},
-         {id:"29b",text:"Anticipate their single biggest pain point before the conversation"},
-       ]},
-      {day:30, focus:"Present to Your Top Prospect", icon:"🎤",
-       tasks:[
-         {id:"30a",text:"Walk through the case study, the demo, and the tiered pricing together"},
-         {id:"30b",text:"Lead with the tier that solves their specific biggest pain point first"},
-       ]},
-      {day:31, focus:"Present to Additional Prospects", icon:"🎤",
-       tasks:[
-         {id:"31a",text:"Repeat the presentation with your next 1-2 warm prospects"},
-       ]},
-      {day:32, focus:"Handle Objections", icon:"🛡️",
-       tasks:[
-         {id:"32a",text:"Use the 'No Budget' and 'Committee Approval' scripts from the Scripts tab as needed"},
-         {id:"32b",text:"Offer a small free pilot period if a full retainer feels too big a first step"},
-       ]},
-      {day:33, focus:"Close Your First Paying Client", icon:"🤝",
-       tasks:[
-         {id:"33a",text:"Get clear verbal or written agreement on the package and price"},
-         {id:"33b",text:"Set expectations for what gets built, by when, and the first payment"},
-       ]},
-      {day:34, focus:"Confirm and Kick Off", icon:"📋",
-       tasks:[
-         {id:"34a",text:"Send a simple written summary of what was agreed"},
-         {id:"34b",text:"Schedule the Blueprint conversation to map exactly what gets built"},
-       ]},
-      {day:35, focus:"Week 5 Review", icon:"✅",
-       tasks:[{id:"35a",text:"Confirm your first paying ministry client is locked in with clear next steps"}]},
-    ]},
+    "week": 5,
+    "title": "Present and Close",
+    "range": "Days 29-35",
+    "icon": "🏆",
+    "color": "#7A5A00",
+    "goal": "Your first paying ministry client, with a clear agreement on package, price, and timeline.",
+    "days": [
+      {
+        "day": 29,
+        "focus": "Prepare Your Presentation",
+        "icon": "🎤",
+        "tasks": [
+          {
+            "id": "29a",
+            "xp": 18,
+            "text": "Adapt your case study and pricing to the specific ministry you are presenting to"
+          },
+          {
+            "id": "29b",
+            "xp": 23,
+            "text": "Anticipate their single biggest pain point before the conversation"
+          }
+        ]
+      },
+      {
+        "day": 30,
+        "focus": "Present to Your Top Prospect",
+        "icon": "🎤",
+        "tasks": [
+          {
+            "id": "30a",
+            "xp": 18,
+            "text": "Walk through the case study, the demo, and the tiered pricing together"
+          },
+          {
+            "id": "30b",
+            "xp": 23,
+            "text": "Lead with the tier that solves their specific biggest pain point first"
+          },
+          {
+            "id": "d30badge",
+            "xp": 55,
+            "badge": true,
+            "emoji": "🎤",
+            "text": "First Presentation — walked a real prospect through your case study and pricing."
+          }
+        ]
+      },
+      {
+        "day": 31,
+        "focus": "Present to Additional Prospects",
+        "icon": "🎤",
+        "tasks": [
+          {
+            "id": "31a",
+            "xp": 18,
+            "text": "Repeat the presentation with your next 1-2 warm prospects"
+          }
+        ]
+      },
+      {
+        "day": 32,
+        "focus": "Handle Objections",
+        "icon": "🛡️",
+        "tasks": [
+          {
+            "id": "32a",
+            "xp": 18,
+            "text": "Use the 'No Budget' and 'Committee Approval' scripts from the Scripts tab as needed"
+          },
+          {
+            "id": "32b",
+            "xp": 23,
+            "text": "Offer a small free pilot period if a full retainer feels too big a first step"
+          }
+        ]
+      },
+      {
+        "day": 33,
+        "focus": "Close Your First Paying Client",
+        "icon": "🤝",
+        "tasks": [
+          {
+            "id": "33a",
+            "xp": 18,
+            "text": "Get clear verbal or written agreement on the package and price"
+          },
+          {
+            "id": "33b",
+            "xp": 23,
+            "text": "Set expectations for what gets built, by when, and the first payment"
+          },
+          {
+            "id": "d33badge",
+            "xp": 80,
+            "badge": true,
+            "emoji": "🤝",
+            "text": "First Client Signed — your first paying ministry client closed."
+          }
+        ]
+      },
+      {
+        "day": 34,
+        "focus": "Confirm and Kick Off",
+        "icon": "📋",
+        "tasks": [
+          {
+            "id": "34a",
+            "xp": 18,
+            "text": "Send a simple written summary of what was agreed"
+          },
+          {
+            "id": "34b",
+            "xp": 23,
+            "text": "Schedule the Blueprint conversation to map exactly what gets built"
+          }
+        ]
+      },
+      {
+        "day": 35,
+        "focus": "Week 5 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "35a",
+            "xp": 18,
+            "text": "Confirm your first paying ministry client is locked in with clear next steps"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:6, title:"Deliver", range:"Days 36-42",
-    icon:"⚙️", color:"#0D7A5F",
-    goal:"The system fully built, tested, and live for your first paying client.",
-    days:[
-      {day:36, focus:"Blueprint the Build", icon:"📐",
-       tasks:[
-         {id:"36a",text:"Map out exactly what this client needs, using the same Blueprint approach from your SMB work"},
-         {id:"36b",text:"Get written confirmation before building anything"},
-       ]},
-      {day:37, focus:"Build — Part 1", icon:"🛠️",
-       tasks:[{id:"37a",text:"Begin building the agreed system — forms, automations, or giving integration"}]},
-      {day:38, focus:"Build — Part 2", icon:"🛠️",
-       tasks:[
-         {id:"38a",text:"Continue building"},
-         {id:"38b",text:"Send the client a quick progress update"},
-       ]},
-      {day:39, focus:"Test Thoroughly", icon:"🧪",
-       tasks:[{id:"39a",text:"Test every part of the system yourself before the client sees it live"}]},
-      {day:40, focus:"Client Review", icon:"👀",
-       tasks:[
-         {id:"40a",text:"Walk the client through the system before public launch"},
-         {id:"40b",text:"Make any final adjustments they request"},
-       ]},
-      {day:41, focus:"Launch", icon:"🚀",
-       tasks:[{id:"41a",text:"Launch the system for the new client using the same soft-launch approach as your own parish pilot"}]},
-      {day:42, focus:"Week 6 Review", icon:"✅",
-       tasks:[{id:"42a",text:"Confirm the system is live and functioning correctly for the new client"}]},
-    ]},
+    "week": 6,
+    "title": "Deliver",
+    "range": "Days 36-42",
+    "icon": "⚙️",
+    "color": "#0D7A5F",
+    "goal": "The system fully built, tested, and live for your first paying client.",
+    "days": [
+      {
+        "day": 36,
+        "focus": "Blueprint the Build",
+        "icon": "📐",
+        "tasks": [
+          {
+            "id": "36a",
+            "xp": 20,
+            "text": "Map out exactly what this client needs, using the same Blueprint approach from your SMB work"
+          },
+          {
+            "id": "36b",
+            "xp": 25,
+            "text": "Get written confirmation before building anything"
+          }
+        ]
+      },
+      {
+        "day": 37,
+        "focus": "Build — Part 1",
+        "icon": "🛠️",
+        "tasks": [
+          {
+            "id": "37a",
+            "xp": 20,
+            "text": "Begin building the agreed system — forms, automations, or giving integration"
+          }
+        ]
+      },
+      {
+        "day": 38,
+        "focus": "Build — Part 2",
+        "icon": "🛠️",
+        "tasks": [
+          {
+            "id": "38a",
+            "xp": 20,
+            "text": "Continue building"
+          },
+          {
+            "id": "38b",
+            "xp": 25,
+            "text": "Send the client a quick progress update"
+          }
+        ]
+      },
+      {
+        "day": 39,
+        "focus": "Test Thoroughly",
+        "icon": "🧪",
+        "tasks": [
+          {
+            "id": "39a",
+            "xp": 20,
+            "text": "Test every part of the system yourself before the client sees it live"
+          }
+        ]
+      },
+      {
+        "day": 40,
+        "focus": "Client Review",
+        "icon": "👀",
+        "tasks": [
+          {
+            "id": "40a",
+            "xp": 20,
+            "text": "Walk the client through the system before public launch"
+          },
+          {
+            "id": "40b",
+            "xp": 25,
+            "text": "Make any final adjustments they request"
+          }
+        ],
+        "bpsCheckpoint": true
+      },
+      {
+        "day": 41,
+        "focus": "Launch",
+        "icon": "🚀",
+        "tasks": [
+          {
+            "id": "41a",
+            "xp": 20,
+            "text": "Launch the system for the new client using the same soft-launch approach as your own parish pilot"
+          },
+          {
+            "id": "d41badge",
+            "xp": 60,
+            "badge": true,
+            "emoji": "🚀",
+            "text": "First System Live — the new client's system launched and running."
+          }
+        ]
+      },
+      {
+        "day": 42,
+        "focus": "Week 6 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "42a",
+            "xp": 20,
+            "text": "Confirm the system is live and functioning correctly for the new client"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:7, title:"Support and Prove Value", range:"Days 43-49",
-    icon:"🛟", color:"#7A5A00",
-    goal:"A smoothly running system and a client who feels genuinely supported, not just sold to.",
-    days:[
-      {day:43, focus:"First Days of Live Support", icon:"🛟",
-       note:"This is where trust is won or lost. Respond fast to anything that comes up.",
-       tasks:[{id:"43a",text:"Check in every 2-3 days during the first two weeks live and fix any issues immediately"}]},
-      {day:44, focus:"Continue Monitoring", icon:"🛟",
-       tasks:[{id:"44a",text:"Check the system is running smoothly, resolve anything flagged"}]},
-      {day:45, focus:"Continue Monitoring", icon:"🛟",
-       tasks:[{id:"45a",text:"Check the system is running smoothly, resolve anything flagged"}]},
-      {day:46, focus:"Mid-Point Check-In Call", icon:"📞",
-       tasks:[{id:"46a",text:"Show the client results so far and gather honest feedback"}]},
-      {day:47, focus:"Address Any Feedback", icon:"🔧",
-       tasks:[{id:"47a",text:"Make any adjustments based on the check-in conversation"}]},
-      {day:48, focus:"Continue Supporting", icon:"🛟",
-       tasks:[{id:"48a",text:"Stay responsive and visible without being intrusive"}]},
-      {day:49, focus:"Week 7 Review", icon:"✅",
-       tasks:[{id:"49a",text:"Confirm the system is running smoothly with no outstanding issues"}]},
-    ]},
+    "week": 7,
+    "title": "Support and Prove Value",
+    "range": "Days 43-49",
+    "icon": "🛟",
+    "color": "#7A5A00",
+    "goal": "A smoothly running system and a client who feels genuinely supported, not just sold to.",
+    "days": [
+      {
+        "day": 43,
+        "focus": "First Days of Live Support",
+        "icon": "🛟",
+        "note": "This is where trust is won or lost. Respond fast to anything that comes up.",
+        "tasks": [
+          {
+            "id": "43a",
+            "xp": 22,
+            "text": "Check in every 2-3 days during the first two weeks live and fix any issues immediately"
+          }
+        ]
+      },
+      {
+        "day": 44,
+        "focus": "Continue Monitoring",
+        "icon": "🛟",
+        "tasks": [
+          {
+            "id": "44a",
+            "xp": 22,
+            "text": "Check the system is running smoothly, resolve anything flagged"
+          }
+        ]
+      },
+      {
+        "day": 45,
+        "focus": "Continue Monitoring",
+        "icon": "🛟",
+        "tasks": [
+          {
+            "id": "45a",
+            "xp": 22,
+            "text": "Check the system is running smoothly, resolve anything flagged"
+          }
+        ]
+      },
+      {
+        "day": 46,
+        "focus": "Mid-Point Check-In Call",
+        "icon": "📞",
+        "tasks": [
+          {
+            "id": "46a",
+            "xp": 22,
+            "text": "Show the client results so far and gather honest feedback"
+          }
+        ]
+      },
+      {
+        "day": 47,
+        "focus": "Address Any Feedback",
+        "icon": "🔧",
+        "tasks": [
+          {
+            "id": "47a",
+            "xp": 22,
+            "text": "Make any adjustments based on the check-in conversation"
+          }
+        ]
+      },
+      {
+        "day": 48,
+        "focus": "Continue Supporting",
+        "icon": "🛟",
+        "tasks": [
+          {
+            "id": "48a",
+            "xp": 22,
+            "text": "Stay responsive and visible without being intrusive"
+          }
+        ]
+      },
+      {
+        "day": 49,
+        "focus": "Week 7 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "49a",
+            "xp": 22,
+            "text": "Confirm the system is running smoothly with no outstanding issues"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:8, title:"Expand the Relationship", range:"Days 50-56",
-    icon:"📈", color:"#7A5A00",
-    goal:"An upsold client and at least one warm referral opened inside the diocesan or denominational network.",
-    days:[
-      {day:50, focus:"Identify the Next Need", icon:"🔍",
-       tasks:[{id:"50a",text:"Now that trust exists, identify their next biggest pain point — giving, communication, or digital formation"}]},
-      {day:51, focus:"Pitch the Upsell", icon:"📈",
-       tasks:[{id:"51a",text:"Use the same 'problem you already showed them' approach from your SMB upsell ladder"}]},
-      {day:52, focus:"Continue the Upsell Conversation", icon:"📈",
-       tasks:[{id:"52a",text:"Follow up on the upsell pitch, answer any questions"}]},
-      {day:53, focus:"Ask for a Referral", icon:"🙏",
-       note:"Diocesan meetings and denominational conferences are gold for this. Ask directly and warmly.",
-       tasks:[{id:"53a",text:"Use the 'Asking for a Referral' script — ask if they know another parish or ministry facing the same challenge"}]},
-      {day:54, focus:"Follow Up on Referrals", icon:"🔁",
-       tasks:[{id:"54a",text:"Reach out to any referral warmly, mentioning who connected you"}]},
-      {day:55, focus:"Follow Up on the Upsell", icon:"🔁",
-       tasks:[{id:"55a",text:"Close the upsell conversation if it has not yet concluded"}]},
-      {day:56, focus:"Week 8 Review", icon:"✅",
-       tasks:[{id:"56a",text:"Tally upsell revenue and any new referral conversations opened"}]},
-    ]},
+    "week": 8,
+    "title": "Expand the Relationship",
+    "range": "Days 50-56",
+    "icon": "📈",
+    "color": "#7A5A00",
+    "goal": "An upsold client and at least one warm referral opened inside the diocesan or denominational network.",
+    "days": [
+      {
+        "day": 50,
+        "focus": "Identify the Next Need",
+        "icon": "🔍",
+        "tasks": [
+          {
+            "id": "50a",
+            "xp": 24,
+            "text": "Now that trust exists, identify their next biggest pain point — giving, communication, or digital formation"
+          }
+        ]
+      },
+      {
+        "day": 51,
+        "focus": "Pitch the Upsell",
+        "icon": "📈",
+        "tasks": [
+          {
+            "id": "51a",
+            "xp": 24,
+            "text": "Use the same 'problem you already showed them' approach from your SMB upsell ladder"
+          }
+        ]
+      },
+      {
+        "day": 52,
+        "focus": "Continue the Upsell Conversation",
+        "icon": "📈",
+        "tasks": [
+          {
+            "id": "52a",
+            "xp": 24,
+            "text": "Follow up on the upsell pitch, answer any questions"
+          }
+        ]
+      },
+      {
+        "day": 53,
+        "focus": "Ask for a Referral",
+        "icon": "🙏",
+        "note": "Diocesan meetings and denominational conferences are gold for this. Ask directly and warmly.",
+        "tasks": [
+          {
+            "id": "53a",
+            "xp": 24,
+            "text": "Use the 'Asking for a Referral' script — ask if they know another parish or ministry facing the same challenge"
+          }
+        ]
+      },
+      {
+        "day": 54,
+        "focus": "Follow Up on Referrals",
+        "icon": "🔁",
+        "tasks": [
+          {
+            "id": "54a",
+            "xp": 24,
+            "text": "Reach out to any referral warmly, mentioning who connected you"
+          }
+        ]
+      },
+      {
+        "day": 55,
+        "focus": "Follow Up on the Upsell",
+        "icon": "🔁",
+        "tasks": [
+          {
+            "id": "55a",
+            "xp": 24,
+            "text": "Close the upsell conversation if it has not yet concluded"
+          }
+        ]
+      },
+      {
+        "day": 56,
+        "focus": "Week 8 Review",
+        "icon": "✅",
+        "tasks": [
+          {
+            "id": "56a",
+            "xp": 24,
+            "text": "Tally upsell revenue and any new referral conversations opened"
+          }
+        ]
+      }
+    ]
+  },
   {
-    week:9, title:"Review and Plan to Scale", range:"Days 57-60",
-    icon:"🌅", color:"#0D7A5F",
-    goal:"A full honest review complete and your own refined playbook documented for teaching others.",
-    days:[
-      {day:57, focus:"Full Revenue Review", icon:"📊",
-       tasks:[{id:"57a",text:"Tally total revenue collected, systems built, and relationships opened over the full 60 days"}]},
-      {day:58, focus:"Honest Retrospective", icon:"🪞",
-       tasks:[{id:"58a",text:"Write down what worked best and what you would do differently next time"}]},
-      {day:59, focus:"Set Your Next 30-Day Targets", icon:"🎯",
-       tasks:[{id:"59a",text:"Decide how many more parishes or ministries to approach next month"}]},
-      {day:60, focus:"Document Your Own Playbook", icon:"📚",
-       note:"This is what makes the system teachable — your own real, lived version of this process.",
-       tasks:[
-         {id:"60a",text:"Write your own refined version of this process in your own words"},
-         {id:"60b",text:"This becomes what you can teach other Digital Systems students to run in their own faith communities"},
-       ]},
-    ]},
+    "week": 9,
+    "title": "Review and Plan to Scale",
+    "range": "Days 57-60",
+    "icon": "🌅",
+    "color": "#0D7A5F",
+    "goal": "A full honest review complete and your own refined playbook documented for teaching others.",
+    "days": [
+      {
+        "day": 57,
+        "focus": "Full Revenue Review",
+        "icon": "📊",
+        "tasks": [
+          {
+            "id": "57a",
+            "xp": 26,
+            "text": "Tally total revenue collected, systems built, and relationships opened over the full 60 days"
+          }
+        ]
+      },
+      {
+        "day": 58,
+        "focus": "Honest Retrospective",
+        "icon": "🪞",
+        "tasks": [
+          {
+            "id": "58a",
+            "xp": 26,
+            "text": "Write down what worked best and what you would do differently next time"
+          }
+        ]
+      },
+      {
+        "day": 59,
+        "focus": "Set Your Next 30-Day Targets",
+        "icon": "🎯",
+        "tasks": [
+          {
+            "id": "59a",
+            "xp": 26,
+            "text": "Decide how many more parishes or ministries to approach next month"
+          }
+        ]
+      },
+      {
+        "day": 60,
+        "focus": "Document Your Own Playbook",
+        "icon": "📚",
+        "note": "This is what makes the system teachable — your own real, lived version of this process.",
+        "tasks": [
+          {
+            "id": "60a",
+            "xp": 26,
+            "text": "Write your own refined version of this process in your own words"
+          },
+          {
+            "id": "60b",
+            "xp": 31,
+            "text": "This becomes what you can teach other Digital Systems students to run in their own faith communities"
+          },
+          {
+            "id": "d60badge",
+            "xp": 100,
+            "badge": true,
+            "emoji": "🏆",
+            "text": "Certified — you completed the full 60-Day Digital Ministry Systems engine."
+          }
+        ],
+        "bpsCheckpoint": true
+      }
+    ]
+  }
 ];
 
 const NOTION_COLS = [
@@ -469,17 +1291,47 @@ export default function DigitalMinistrySystems() {
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
   const [done,setDone]           = useState({});
+  const [loaded,setLoaded]       = useState(false);
+  const [confirmingReset,setConfirmingReset] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await window.storage.get(STORAGE_KEY, false);
+        if (res && res.value) setDone(JSON.parse(res.value).done || {});
+      } catch (e) { /* no saved progress yet */ }
+      finally { setLoaded(true); }
+    })();
+  }, []);
+
+  const persist = useCallback(async (next) => {
+    try { await window.storage.set(STORAGE_KEY, JSON.stringify({ done: next, savedAt: Date.now() }), false); }
+    catch (e) { /* best effort */ }
+  }, []);
+
+  const toggle = id=>setDone(p=>{ const next={...p,[id]:!p[id]}; persist(next); return next; });
+  const handleReset = () => {
+    if (!confirmingReset) { setConfirmingReset(true); return; }
+    setDone({}); persist({}); setConfirmingReset(false);
+  };
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
   const totalTasks     = allTasks.length;
   const completedTasks = allTasks.filter(t=>done[t.id]).length;
-  const progress = totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
+  const totalXP  = useMemo(()=>allTasks.reduce((s,t)=>s+t.xp,0),[allTasks]);
+  const earnedXP = useMemo(()=>allTasks.reduce((s,t)=>s+(done[t.id]?t.xp:0),0),[allTasks,done]);
+  const pct = totalXP?(earnedXP/totalXP)*100:0;
+  const progress = Math.round(pct);
   const progressColor = progress>=70?"#0D7A5F":progress>=35?"#C99A3B":"#7A5A00";
-  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const weekPct = w=>{
     const t=w.days.flatMap(d=>d.tasks);
     return t.length>0?Math.round((t.filter(x=>done[x.id]).length/t.length)*100):0;
   };
+  const currentRank = useMemo(()=>{ let r=RANKS[0]; for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; } return r; },[pct]);
+  const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
+  const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
+
+  if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
     {id:"plan",     label:"📅 60-Day Plan"},
@@ -522,14 +1374,43 @@ export default function DigitalMinistrySystems() {
               system that structurally cannot saturate the way cold-outreach systems can.
             </p>
           </div>
-          <div style={{background:"#F8F5EE",borderRadius:10,padding:"11px 14px",border:"1px solid #FBF8F1"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
-              <span style={{fontSize:12,fontWeight:600,color:"#6E6459"}}>Overall Progress</span>
-              <span style={{fontSize:13,fontWeight:800,color:progressColor}}>
-                {completedTasks} / {totalTasks} tasks · {progress}%
-              </span>
+          <div style={{background:"#F8F5EE",borderRadius:10,padding:"14px 16px",border:"1px solid #FBF8F1"}}>
+            <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",gap:10,flexWrap:"wrap",marginBottom:10}}>
+              <div>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Current Rank</p>
+                <p style={{fontSize:17,fontWeight:800,color:"#7A5A00",margin:0}}>{currentRank.name}</p>
+                <p style={{fontSize:11,color:"#6E6459",margin:"2px 0 0",maxWidth:360,lineHeight:1.5}}>{currentRank.blurb}</p>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <p style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#6E6459",margin:"0 0 3px"}}>Progress</p>
+                <p style={{fontSize:17,fontWeight:800,color:progressColor,margin:0}}>{progress}%</p>
+                {nextRank && <p style={{fontSize:10.5,color:"#6E6459",margin:"2px 0 0"}}>{Math.max(0,nextRank.threshold-progress)}% to {nextRank.name}</p>}
+              </div>
             </div>
-            <ProgressBar value={progress} color={progressColor} height={8}/>
+            <div style={{display:"flex",gap:2,marginBottom:12}}>
+              {Array.from({length:20}).map((_,i)=>(
+                <div key={i} style={{height:6,flex:1,borderRadius:3,
+                  background:i<Math.round(pct/5)?"#C99A3B":"transparent",
+                  border:i<Math.round(pct/5)?"none":"1px solid #FBF8F1"}}/>
+              ))}
+            </div>
+            <div style={{fontSize:11,color:"#6E6459",marginBottom:8}}>{completedTasks} / {totalTasks} tasks complete</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+              {badgeItems.map(b=>{
+                const earned=!!done[b.id];
+                return (
+                  <span key={b.id} title={b.text} style={{
+                    width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:13,background:earned?"#C99A3B":"#FFFFFF",
+                    border:earned?"none":"1px solid #FBF8F1",opacity:earned?1:0.5,
+                  }}>{b.emoji}</span>
+                );
+              })}
+              <button onClick={handleReset} style={{
+                marginLeft:"auto",background:"none",border:"none",padding:0,cursor:"pointer",fontFamily:"inherit",
+                fontSize:11,color:confirmingReset?"#8B2E1F":"#6E6459",textDecoration:"underline",
+              }}>{confirmingReset?"Click again to confirm reset":"Reset progress"}</button>
+            </div>
           </div>
         </div>
       </div>
@@ -559,8 +1440,14 @@ export default function DigitalMinistrySystems() {
             <h2 style={{fontSize:16,fontWeight:700,margin:"0 0 4px",color:"#201A16"}}>60-Day Action Plan</h2>
             <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               Tap a week → tap a day → tick tasks as you complete them. This moves slower and warmer
-              than SMB outreach — that is intentional.
+              than SMB outreach — that is intentional. Days marked ★ carry a BPS checkpoint.
             </p>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",marginBottom:8}}>
+                BPS Checkpoints Inside the 60 Days
+              </div>
+              <BpsCheckpoints checkpoints={BPS_CHECKPOINTS}/>
+            </div>
             {WEEKS.map((w,wi)=>{
               const wp=weekPct(w); const wOpen=openWeek===wi;
               return (
@@ -604,7 +1491,7 @@ export default function DigitalMinistrySystems() {
                                 <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                   <span style={{fontSize:10,fontWeight:700,color:w.color,
                                     background:w.color+"18",borderRadius:4,padding:"1px 6px"}}>Day {d.day}</span>
-                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}</span>
+                                  <span style={{fontSize:13,fontWeight:600,color:"#201A16"}}>{d.focus}{d.bpsCheckpoint?" ★":""}</span>
                                 </div>
                                 <div style={{fontSize:11,color:"#6E6459",marginTop:2}}>{dDone}/{d.tasks.length} tasks</div>
                               </div>
@@ -618,15 +1505,29 @@ export default function DigitalMinistrySystems() {
                                     borderRadius:7,padding:"7px 10px",marginBottom:10,
                                     fontSize:12,color:w.color+"CC",lineHeight:1.5}}>💡 {d.note}</div>
                                 )}
-                                {d.tasks.map(t=>(
+                                {d.tasks.map(t=>t.badge?(
+                                  <div key={t.id} onClick={()=>toggle(t.id)}
+                                    style={{display:"flex",gap:10,alignItems:"center",
+                                      padding:"9px 11px",margin:"6px 0",borderRadius:9,
+                                      border:`1px solid ${done[t.id]?"#C99A3B":"#FBF8F1"}`,
+                                      background:done[t.id]?"rgba(201,154,59,0.10)":"#FFFFFF",cursor:"pointer"}}>
+                                    <span style={{flexShrink:0,width:30,height:30,borderRadius:"50%",
+                                      display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,
+                                      background:done[t.id]?"#C99A3B":"#FFFFFF",
+                                      border:done[t.id]?"none":"1px solid #FBF8F1"}}>{t.emoji}</span>
+                                    <span style={{flex:1,fontSize:13,fontWeight:600,color:done[t.id]?"#7A5A00":"#201A16"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:11,fontWeight:700,color:"#7A5A00"}}>+{t.xp} XP</span>
+                                  </div>
+                                ):(
                                   <div key={t.id} onClick={()=>toggle(t.id)}
                                     style={{display:"flex",gap:9,alignItems:"flex-start",
                                       padding:"8px 0",borderBottom:"1px solid #FBF8F1",cursor:"pointer"}}>
                                     <Check checked={!!done[t.id]} color={w.color}/>
-                                    <span style={{fontSize:13,lineHeight:1.55,
+                                    <span style={{flex:1,fontSize:13,lineHeight:1.55,
                                       color:done[t.id]?"#D9CFBB":"#6E6459",
                                       textDecoration:done[t.id]?"line-through":"none",
                                       transition:"all .15s"}}>{t.text}</span>
+                                    <span style={{flexShrink:0,fontSize:10.5,color:"#6E6459",paddingTop:1}}>+{t.xp}</span>
                                   </div>
                                 ))}
                               </div>
