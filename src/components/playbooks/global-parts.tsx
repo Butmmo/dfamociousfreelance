@@ -532,48 +532,60 @@ export function GlobalParts({ tab }) {
           <div>
             <div style={{ marginBottom: 20 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 5px", color: "#1A140F" }}>Tier 1 — The Boring Goldmine</h2>
-              <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: 0 }}>The full Tier 1 list — map-reliant, emergency-driven trades with high tickets, weak reputations and almost no agency competition. The saturated categories are still listed at the bottom, tagged Highly Competitive Market, so you know exactly what you are choosing against. Tap one for the pain, the single product you sell, the pitch and how to find them.</p>
+              <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: 0 }}>Map-reliant, emergency-driven trades with high tickets, weak reputations and almost no agency competition — start here. Tier 2, the saturated categories every other agency already pitches, is listed further down so you know exactly what you're choosing against if you go there. Tap one for the pain, the single product you sell, the pitch and how to find them.</p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-              {ALL_BUSINESSES.map((b, i) => (
-                <div key={b.id}
-                  onClick={() => setOpenBiz(openBiz === i ? null : i)}
-                  style={{ background: openBiz === i ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${openBiz === i ? "#6366F1" : "#D9CFBB"}`, borderRadius: 12, cursor: "pointer", overflow: "hidden", transition: "border-color 0.2s" }}>
-
-                  <div style={{ padding: "13px 15px", display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 38, height: 38, borderRadius: 8, background: "#EDE7DA", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{b.icon}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, fontSize: 13.5, color: "#1A140F", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{b.name}</div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginTop: 2 }}>
-                        <span style={{ fontSize: 11, color: b.competitive ? "#8A7C6D" : "#0D7A5F", fontWeight: 600 }}>Avg deal: {b.deal}</span>
-                        {b.competitive && (
-                          <span style={{ fontSize: 9.5, fontWeight: 700, color: "#8B0000", background: "#8B000012", border: "1px solid #8B000030", borderRadius: 5, padding: "1px 6px", letterSpacing: "0.03em" }}>Highly Competitive Market</span>
-                        )}
-                      </div>
-                    </div>
-                    <span style={{ color: "#8A7C6D", fontSize: 20, display: "inline-block", transform: openBiz === i ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>›</span>
-                  </div>
-
-                  {openBiz === i && (
-                    <div style={{ padding: "4px 15px 18px", borderTop: "1px solid #D9CFBB" }}>
-                      <Block label="🔥 Their Pain Point" color="#EF4444">{b.pain}</Block>
-                      <Block label="🛠️ Your Product to Build" color="#6366F1">{b.product}</Block>
-                      <Block label="🎤 Pitch Script" color="#10B981">
-                        <em style={{ color: "#6EE7B7" }}>{b.pitch}</em>
-                      </Block>
-                      <Block label="📍 How to Find Them" color="#F59E0B">{b.find}</Block>
-                      <div style={{ marginTop: 14 }}>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.08em", marginBottom: 7 }}>Your Stack for This</div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                          {b.tools.map(t => (
-                            <span key={t} style={{ fontSize: 11.5, background: "#EDE7DA", border: "1px solid #1E2E46", borderRadius: 6, padding: "3px 9px", color: "#6E6459" }}>{t}</span>
-                          ))}
-                        </div>
-                      </div>
+              {ALL_BUSINESSES.map((b, i) => {
+                const prev = ALL_BUSINESSES[i - 1];
+                const isTier2Start = !!b.competitive && !prev?.competitive;
+                return (
+                <div key={b.id}>
+                  {isTier2Start && (
+                    <div style={{ margin: "18px 0 11px" }}>
+                      <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 5px", color: "#1A140F" }}>Tier 2 — Highly Competitive Market</h2>
+                      <p style={{ fontSize: 12.5, color: "#8A7C6D", margin: 0 }}>Real budgets, real deal sizes — but pitched by an agency almost daily. Only work this tier once you already have proof, referrals, or a warm-enough intro that you aren't the fifth cold message this week.</p>
                     </div>
                   )}
+                  <div
+                    onClick={() => setOpenBiz(openBiz === i ? null : i)}
+                    style={{ background: openBiz === i ? "#FDF9F0" : "#FFFFFF", border: `1px solid ${openBiz === i ? "#6366F1" : "#D9CFBB"}`, borderRadius: 12, cursor: "pointer", overflow: "hidden", transition: "border-color 0.2s" }}>
+
+                    <div style={{ padding: "13px 15px", display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 38, height: 38, borderRadius: 8, background: "#EDE7DA", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{b.icon}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 13.5, color: "#1A140F", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{b.name}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginTop: 2 }}>
+                          <span style={{ fontSize: 11, color: b.competitive ? "#8A7C6D" : "#0D7A5F", fontWeight: 600 }}>Avg deal: {b.deal}</span>
+                          {b.competitive && (
+                            <span style={{ fontSize: 9.5, fontWeight: 700, color: "#8B0000", background: "#8B000012", border: "1px solid #8B000030", borderRadius: 5, padding: "1px 6px", letterSpacing: "0.03em" }}>Tier 2 · Highly Competitive Market</span>
+                          )}
+                        </div>
+                      </div>
+                      <span style={{ color: "#8A7C6D", fontSize: 20, display: "inline-block", transform: openBiz === i ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>›</span>
+                    </div>
+
+                    {openBiz === i && (
+                      <div style={{ padding: "4px 15px 18px", borderTop: "1px solid #D9CFBB" }}>
+                        <Block label="🔥 Their Pain Point" color="#EF4444">{b.pain}</Block>
+                        <Block label="🛠️ Your Product to Build" color="#6366F1">{b.product}</Block>
+                        <Block label="🎤 Pitch Script" color="#10B981">
+                          <em style={{ color: "#6EE7B7" }}>{b.pitch}</em>
+                        </Block>
+                        <Block label="📍 How to Find Them" color="#F59E0B">{b.find}</Block>
+                        <div style={{ marginTop: 14 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", textTransform: "", letterSpacing: "0.08em", marginBottom: 7 }}>Your Stack for This</div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {b.tools.map(t => (
+                              <span key={t} style={{ fontSize: 11.5, background: "#EDE7DA", border: "1px solid #1E2E46", borderRadius: 6, padding: "3px 9px", color: "#6E6459" }}>{t}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
