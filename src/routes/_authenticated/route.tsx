@@ -24,6 +24,7 @@ function AuthedShell() {
   const { path, needsChoice, msRemaining, loading: pathLoading } = usePath();
   const status = useAccountStatus();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [moreOpen, setMoreOpen] = useState(false);
 
   // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
