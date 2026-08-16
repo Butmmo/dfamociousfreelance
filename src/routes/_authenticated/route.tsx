@@ -4,8 +4,8 @@ import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
-import { useEffect } from "react";
-import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert, UserRound, MessageSquare, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert, UserRound, MessageSquare, Users, MoreHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
