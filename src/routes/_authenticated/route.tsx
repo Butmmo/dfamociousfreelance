@@ -5,7 +5,7 @@ import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert, UserRound, MessageSquare, Users, MoreHorizontal, X } from "lucide-react";
+import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert, UserRound, MessageSquare, Users, MoreHorizontal, X, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -75,6 +75,7 @@ function AuthedShell() {
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
     { to: "/calendar", label: "Calendar", icon: CalendarDays, show: !needsChoice },
     { to: "/report", label: "Report", icon: FileBarChart, show: !needsChoice },
+    { to: "/dfy", label: "DFY", icon: DollarSign, show: !needsChoice },
     { to: "/messages", label: "Messages", icon: MessageSquare, show: !needsChoice },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
     // Only the founder keeps the Paths tab; everyone else sees it solely inside their 24-hour window.
