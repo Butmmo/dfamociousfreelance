@@ -137,15 +137,40 @@ function AuthedShell() {
         <Outlet />
       </main>
 
-      {/* Mobile / tablet bottom nav */}
-      <nav
-        className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 rounded-2xl border border-gold/40 bg-card/95 backdrop-blur shadow-regal px-2 py-2 flex items-center gap-1 max-w-[calc(100vw-1.5rem)] overflow-x-auto"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
-        {tabs.map((t) => (
+      {/* Mobile / tablet bottom nav — never more than four buttons; the rest live under "More" */}
+      {moreOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm" onClick={() => setMoreOpen(false)} />
+      )}
+      {moreOpen && (
+        <div className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-1.5rem)] max-w-sm rounded-2xl border border-gold/40 bg-card shadow-regal p-3">
+          <div className="flex items-center justify-between px-1 pb-2">
+            <span className="text-[10px] tracking-widest text-gold-deep">More Of The Citadel</span>
+            <button onClick={() => setMoreOpen(false)} className="p-1 rounded-md hover:bg-muted" aria-label="Close menu">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {secondaryTabs.map((t) => (
+              <Link
+                key={t.to}
+                to={t.to}
+                onClick={() => setMoreOpen(false)}
+                className="flex flex-col items-center gap-1 rounded-xl border border-border px-2 py-3 text-[10px] font-semibold text-muted-foreground text-center"
+                activeProps={{ className: "bg-gold/15 text-gold-deep border-gold/40" }}
+              >
+                <t.icon className="h-5 w-5" />
+                <span>{t.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+      <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 rounded-2xl border border-gold/40 bg-card/95 backdrop-blur shadow-regal px-2 py-2 flex items-center gap-1">
+        {primaryTabs.map((t) => (
           <Link
             key={t.to}
             to={t.to}
+            onClick={() => setMoreOpen(false)}
             className="flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground shrink-0"
             activeProps={{ className: "bg-gold/15 text-gold-deep" }}
           >
@@ -153,6 +178,18 @@ function AuthedShell() {
             <span>{t.label}</span>
           </Link>
         ))}
+        {secondaryTabs.length > 0 && (
+          <button
+            onClick={() => setMoreOpen((v) => !v)}
+            className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-semibold shrink-0 ${
+              moreOpen ? "bg-gold/15 text-gold-deep" : "text-muted-foreground"
+            }`}
+            aria-expanded={moreOpen}
+          >
+            <MoreHorizontal className="h-5 w-5" />
+            <span>More</span>
+          </button>
+        )}
       </nav>
     </div>
   );
