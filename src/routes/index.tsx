@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 const DESC =
-  "D'Famocious Business Incubator — an invitation-only, two-stage incubator by D'Famocious Group. Stage 1: Digital Systems Engineering, seven client-acquisition systems. Stage 2: The Start-up Catalyst, fourteen paths to an owned business.";
+  "DBI forges Digital Systems Engineers and backs them to build, launch and scale profitable global businesses in record time.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
