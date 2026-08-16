@@ -81,6 +81,11 @@ function AuthedShell() {
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
 
+  // The bottom bar shows at most four buttons: three primaries plus "More".
+  const primaryTabs = tabs.slice(0, 3);
+  const secondaryTabs = tabs.slice(3);
+
+
 
   return (
     <div className="min-h-screen bg-background">
