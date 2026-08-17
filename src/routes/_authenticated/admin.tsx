@@ -8,6 +8,7 @@ import {
   listEscalations, openEscalation, logCheckIn, setBeneficiaryPath,
   suspendBeneficiary, reinstateBeneficiary,
   listAllDfyMonths, verifyDfyMonth, certifyVettedDse,
+  createCohort, listCohorts,
 } from "@/lib/admin.functions";
 import { PATHS } from "@/lib/paths";
 import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
@@ -43,6 +44,8 @@ function Admin() {
   const listDfy = useServerFn(listAllDfyMonths);
   const verifyDfy = useServerFn(verifyDfyMonth);
   const certifyVdse = useServerFn(certifyVettedDse);
+  const createCoh = useServerFn(createCohort);
+  const listCoh = useServerFn(listCohorts);
 
   const [bens, setBens] = useState<any[]>([]);
   const [invs, setInvs] = useState<any[]>([]);
@@ -50,6 +53,9 @@ function Admin() {
   const [assigns, setAssigns] = useState<any[]>([]);
   const [escs, setEscs] = useState<any[]>([]);
   const [dfyMonths, setDfyMonths] = useState<any[]>([]);
+  const [cohorts, setCohorts] = useState<any[]>([]);
+  const [cohortDesc, setCohortDesc] = useState("");
+  const [creatingCohort, setCreatingCohort] = useState(false);
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
@@ -78,6 +84,11 @@ function Admin() {
       const d = await listDfy({ data: undefined as never });
       setDfyMonths(d);
     } catch { /* DFY tracker not available yet on this environment */ }
+    // Same isolation: the cohort system is newer still than DFY.
+    try {
+      const c = await listCoh({ data: undefined as never });
+      setCohorts(c);
+    } catch { /* cohort system not migrated yet on this environment */ }
   };
   useEffect(() => { if (role === "admin") refresh(); /* eslint-disable-next-line */ }, [role]);
 
@@ -172,6 +183,15 @@ function Admin() {
     try { await certifyVdse({ data: { user_id: b.id } }); toast.success("Certified."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
+  const onCreateCohort = async (ev: React.FormEvent) => {
+    ev.preventDefault(); setCreatingCohort(true);
+    try {
+      const c: any = await createCoh({ data: { description: cohortDesc.trim() || undefined } });
+      toast.success(`${c?.name ?? "Cohort"} formed — its group chat is live.`);
+      setCohortDesc(""); refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed"); }
+    finally { setCreatingCohort(false); }
+  };
   const submitCheckIn = async () => {
     if (!checkinTarget || checkinText.trim().length < 2) return;
     try {
@@ -226,6 +246,42 @@ function Admin() {
             </button>
           </div>
         </form>
+      </section>
+
+      {/* Cohorts */}
+      <section className="rounded-2xl border border-gold bg-card p-6 shadow-regal">
+        <h2 className="font-display text-xl font-bold flex items-center gap-2"><Users className="h-5 w-5" /> Cohorts</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          {isSuperAdmin
+            ? "Only you can form a new cohort. The moment one exists its group chat is live and active."
+            : "Only the super admin can form a new cohort."}
+        </p>
+        {isSuperAdmin && (
+          <form onSubmit={onCreateCohort} className="mt-4 flex flex-wrap items-center gap-3">
+            <input
+              value={cohortDesc}
+              onChange={(e) => setCohortDesc(e.target.value)}
+              placeholder="Description (optional)"
+              className="flex-1 min-w-[220px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+            <button disabled={creatingCohort} type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+              {creatingCohort && <Loader2 className="h-4 w-4 animate-spin" />} Form new cohort
+            </button>
+          </form>
+        )}
+        <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {cohorts.length === 0 && <p className="text-sm text-muted-foreground">No cohorts yet.</p>}
+          {cohorts.map((c) => (
+            <div key={c.id} className="rounded-xl border border-border bg-background p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="font-display font-semibold">{c.name}</div>
+                {!c.active && <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">INACTIVE</span>}
+              </div>
+              {c.description && <p className="text-xs text-muted-foreground mt-1">{c.description}</p>}
+              <div className="mt-2 text-xs text-muted-foreground">{c.member_count} member{c.member_count === 1 ? "" : "s"}</div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Escalations */}
