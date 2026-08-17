@@ -61,6 +61,9 @@ function Dashboard() {
   const [progressRows, setProgressRows] = useState<ProgressRow[]>([]);
   const [planProgress, setPlanProgress] = useState<{ task_id: string; completed: boolean }[]>([]);
   const [latestReport, setLatestReport] = useState<any>(null);
+  const [bpsSnapshot, setBpsSnapshot] = useState<{ clientCount: number; activityCount: number; doneToday: number }>({
+    clientCount: 0, activityCount: 0, doneToday: 0,
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -75,6 +78,23 @@ function Dashboard() {
       setProgressRows((tRes.data as any) ?? []);
       setPlanProgress((planRes.data as any) ?? []);
       setLatestReport(rRes.data);
+    })();
+    // Isolated from the core fetch above, same pattern as the admin
+    // console's DFY panel — BPS is newer still and must never take down
+    // the rest of the dashboard if its tables aren't migrated yet here.
+    (async () => {
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        const [{ count: clientCount }, { data: activities }] = await Promise.all([
+          supabase.from("crm_clients").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+          supabase.from("bps_activities").select("id").eq("user_id", user.id).eq("active", true),
+        ]);
+        const activityIds = (activities ?? []).map((a: any) => a.id);
+        const { data: checks } = activityIds.length
+          ? await supabase.from("bps_daily_checks").select("done").in("activity_id", activityIds).eq("check_date", today).eq("done", true)
+          : { data: [] as any[] };
+        setBpsSnapshot({ clientCount: clientCount ?? 0, activityCount: activityIds.length, doneToday: (checks ?? []).length });
+      } catch { /* BPS not migrated yet on this environment */ }
     })();
   }, [user]);
 
@@ -248,6 +268,35 @@ function Dashboard() {
           )}
         </section>
       </div>
+
+      {/* BPS snapshot */}
+      <section className="rounded-2xl border border-gold/40 bg-gold/5 p-5">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
+              <Target className="h-3.5 w-3.5" /> Productivity Scheme
+            </div>
+            <h2 className="mt-1 font-display text-xl font-bold">BPS — clients, tracker, goals</h2>
+          </div>
+          <Link to="/bps" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2 transition-all">
+            Open BPS <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          <div className="rounded-lg border border-border bg-background p-3 text-center">
+            <div className="font-display text-2xl font-bold">{bpsSnapshot.clientCount}</div>
+            <div className="text-[10px] tracking-widest text-muted-foreground mt-1">Clients in pipeline</div>
+          </div>
+          <div className="rounded-lg border border-border bg-background p-3 text-center">
+            <div className="font-display text-2xl font-bold">{bpsSnapshot.activityCount}</div>
+            <div className="text-[10px] tracking-widest text-muted-foreground mt-1">Tracked activities</div>
+          </div>
+          <div className="rounded-lg border border-border bg-background p-3 text-center">
+            <div className="font-display text-2xl font-bold">{bpsSnapshot.doneToday}/{bpsSnapshot.activityCount}</div>
+            <div className="text-[10px] tracking-widest text-muted-foreground mt-1">Sealed today</div>
+          </div>
+        </div>
+      </section>
 
       {/* Playbooks quick access */}
       <section>

@@ -20,6 +20,7 @@ import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMentorshipRouteImport } from './routes/_authenticated/mentorship'
 import { Route as AuthenticatedDfyRouteImport } from './routes/_authenticated/dfy'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBpsRouteImport } from './routes/_authenticated/bps'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
 import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_authenticated/council-mentorship'
 import { Route as AuthenticatedChoosePathRouteImport } from './routes/_authenticated/choose-path'
@@ -133,6 +134,11 @@ const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBpsRoute = AuthenticatedBpsRouteImport.update({
+  id: '/bps',
+  path: '/bps',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPlaybooksIndexRoute =
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/bps': typeof AuthenticatedBpsRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
@@ -313,6 +320,7 @@ export interface FileRoutesByTo {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/bps': typeof AuthenticatedBpsRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
@@ -355,6 +363,7 @@ export interface FileRoutesById {
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/bps': typeof AuthenticatedBpsRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/choose-path': typeof AuthenticatedChoosePathRoute
   '/_authenticated/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
+    | '/bps'
     | '/calendar'
     | '/choose-path'
     | '/council-escalations'
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/admin'
+    | '/bps'
     | '/calendar'
     | '/choose-path'
     | '/council-escalations'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/accept-invite'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/bps'
     | '/_authenticated/calendar'
     | '/_authenticated/choose-path'
     | '/_authenticated/council-escalations'
@@ -642,6 +654,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/bps': {
+      id: '/_authenticated/bps'
+      path: '/bps'
+      fullPath: '/bps'
+      preLoaderRoute: typeof AuthenticatedBpsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/playbooks/': {
       id: '/_authenticated/playbooks/'
       path: '/playbooks'
@@ -801,6 +820,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBpsRoute: typeof AuthenticatedBpsRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedChoosePathRoute: typeof AuthenticatedChoosePathRoute
   AuthenticatedCouncilMentorshipRoute: typeof AuthenticatedCouncilMentorshipRoute
@@ -838,6 +858,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBpsRoute: AuthenticatedBpsRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedChoosePathRoute: AuthenticatedChoosePathRoute,
   AuthenticatedCouncilMentorshipRoute: AuthenticatedCouncilMentorshipRoute,

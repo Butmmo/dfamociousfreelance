@@ -116,12 +116,14 @@ function AuthedShell() {
     );
   }
 
-  // Capped at 5: Dashboard/Playbooks/Messages/Mentorship only show once a
-  // path is chosen, and "Your Path" only shows during the choice window —
-  // the two sets are mutually exclusive, so the bar never exceeds 4 plus
-  // Council for admins. Calendar and Report stay one click away from
-  // Dashboard instead of living in the top bar; the founder's cross-path
-  // "Paths" browser moved into the profile dropdown to make room.
+  // Dashboard/Playbooks/BPS/Messages/Mentorship only show once a path is
+  // chosen, and "Your Path" only shows during the choice window — the two
+  // sets are mutually exclusive, so the bar never exceeds 5 plus Council
+  // for admins (6, for that one role only — BPS earns the extra slot as a
+  // genuinely daily-use tool, not a regression to the old 8-tab bar).
+  // Calendar, Report and DFY stay one click away from Dashboard instead of
+  // living in the top bar; the founder's cross-path "Paths" browser moved
+  // into the profile dropdown to make room.
   const tabs = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
