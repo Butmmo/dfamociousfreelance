@@ -110,7 +110,7 @@ function AuthedShell() {
   // sets are mutually exclusive, so the bar never exceeds 5 plus Council
   // for admins (6, for that one role only — BPS earns the extra slot as a
   // genuinely daily-use tool, not a regression to the old 8-tab bar).
-  // Calendar and Report stay one click away from Dashboard instead of
+  // Calendar, Report and DFY stay one click away from Dashboard instead of
   // living in the top bar; the founder's cross-path "Paths" browser moved
   // into the profile dropdown to make room.
   const tabs = [

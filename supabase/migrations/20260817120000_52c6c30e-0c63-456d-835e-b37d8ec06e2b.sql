@@ -1,4 +1,4 @@
--- =========== COHORT SYSTEM + MESSAGE REQUESTS ===========
+-- =========== COHORT SYSTEM ===========
 -- Everyone currently on the app belongs to one shared cohort. Going
 -- forward only the super admin can form a new cohort; the moment one
 -- exists its group chat (cohort_messages, filtered by cohort_id) is
@@ -6,6 +6,13 @@
 -- just the cohorts.active flag that gates it. Cohorts are auto-named
 -- sequentially ("Cohort-00001", "Cohort-00002", ...) so the caller never
 -- has to invent a label.
+--
+-- message_requests and the general/DBI-wide group chat are NOT defined
+-- here — 20260817103148 already created message_requests (as
+-- group_messages, room-based) and its own handle_new_user() with the
+-- correct cohort-defaulting + path_deadline logic; this file only adds
+-- what that one doesn't touch, so the two apply cleanly in sequence
+-- without either one clobbering the other's work.
 
 ALTER TABLE public.cohorts ADD COLUMN active boolean NOT NULL DEFAULT true;
 ALTER TABLE public.cohorts ADD COLUMN seq_number integer;
@@ -40,66 +47,11 @@ CREATE POLICY "Super admin deletes cohorts" ON public.cohorts FOR DELETE TO auth
   USING (public.is_super_admin(auth.uid()));
 
 -- Every existing beneficiary/admin who isn't already in a cohort joins
--- the founding one — in practice, everyone available on the app is in
--- the same cohort right now.
+-- the founding one — a one-time backfill; ongoing signups are handled by
+-- 20260817103148's handle_new_user(), not by this file.
 UPDATE public.profiles SET cohort_id = (
   SELECT id FROM public.cohorts ORDER BY created_at ASC LIMIT 1
 ) WHERE cohort_id IS NULL;
-
--- New signups default into that same shared cohort unless an invitation
--- names a different one explicitly.
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-  invited_full_name TEXT;
-  invited_cohort UUID;
-  invited_role app_role;
-  is_founder BOOLEAN;
-  default_cohort UUID;
-BEGIN
-  SELECT full_name, cohort_id, role
-    INTO invited_full_name, invited_cohort, invited_role
-  FROM public.invitations
-  WHERE LOWER(email) = LOWER(NEW.email)
-    AND status = 'pending'
-    AND expires_at > now()
-  ORDER BY created_at DESC
-  LIMIT 1;
-
-  is_founder := LOWER(NEW.email) = 'boluwatifefamokunwa@gmail.com';
-
-  SELECT id INTO default_cohort FROM public.cohorts ORDER BY created_at ASC LIMIT 1;
-
-  INSERT INTO public.profiles (id, email, full_name, cohort_id)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(invited_full_name, NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
-    COALESCE(invited_cohort, default_cohort)
-  )
-  ON CONFLICT (id) DO NOTHING;
-
-  IF is_founder THEN
-    INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'admin')
-    ON CONFLICT DO NOTHING;
-  ELSIF invited_role IS NOT NULL THEN
-    INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, invited_role)
-    ON CONFLICT DO NOTHING;
-    UPDATE public.invitations
-      SET status = 'accepted', accepted_at = now()
-      WHERE LOWER(email) = LOWER(NEW.email) AND status = 'pending';
-  ELSE
-    INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'beneficiary')
-    ON CONFLICT DO NOTHING;
-  END IF;
-
-  RETURN NEW;
-END;
-$$;
 
 -- A cohort's chat is only live while the cohort itself is active.
 DROP POLICY IF EXISTS "Cohort members read cohort messages" ON public.cohort_messages;
@@ -119,55 +71,13 @@ CREATE POLICY "Cohort members post cohort messages" ON public.cohort_messages FO
     AND EXISTS (SELECT 1 FROM public.cohorts c WHERE c.id = cohort_messages.cohort_id AND c.active)
   );
 
--- =========== GENERAL DBI GROUP CHAT ===========
--- App-wide, always-on — every authenticated member belongs to it,
--- independent of cohort.
-CREATE TABLE public.general_messages (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  sender_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  sender_name text NOT NULL,
-  body text NOT NULL,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-GRANT SELECT, INSERT ON public.general_messages TO authenticated;
-GRANT ALL ON public.general_messages TO service_role;
-ALTER TABLE public.general_messages ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Authenticated read general messages" ON public.general_messages FOR SELECT TO authenticated USING (true);
-CREATE POLICY "Authenticated post general messages" ON public.general_messages FOR INSERT TO authenticated
-  WITH CHECK (sender_id = auth.uid());
-
--- =========== MESSAGE REQUESTS ===========
--- Anyone can ask to start a private conversation with anyone else they
--- can see (cohort mates, general-chat members). RLS here is read-only
--- for participants, same as mentorships — the accept/decline transition
--- is enforced server-side via supabaseAdmin so only the recipient can
--- act on their own inbound request.
-CREATE TABLE public.message_requests (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  requester_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  recipient_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','accepted','declined')),
-  message text,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  responded_at timestamptz,
-  CONSTRAINT requester_not_recipient CHECK (requester_id <> recipient_id)
-);
--- At most one open (pending) request per unordered pair.
-CREATE UNIQUE INDEX one_open_request_per_pair ON public.message_requests (
-  LEAST(requester_id, recipient_id), GREATEST(requester_id, recipient_id)
-) WHERE status = 'pending';
-
-GRANT SELECT ON public.message_requests TO authenticated;
-GRANT ALL ON public.message_requests TO service_role;
-ALTER TABLE public.message_requests ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Participants read message requests" ON public.message_requests FOR SELECT TO authenticated
-  USING (requester_id = auth.uid() OR recipient_id = auth.uid());
-
 -- =========== DIRECT MESSAGES: real relationship required ===========
 -- The original policy let any authenticated user DM any other with no
 -- gating at all. Tighten it to admin, an admin_assignment (Rep ↔
 -- beneficiary), an active mentorship, or an accepted message_request —
 -- the only ways two people are supposed to be able to reach each other.
+-- References message_requests(requester_id, recipient_id, status) as
+-- defined by 20260817103148, which runs before this file.
 CREATE OR REPLACE FUNCTION public.can_message(_a uuid, _b uuid)
 RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT
