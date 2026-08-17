@@ -30,3 +30,8 @@ export function mentorshipCallUrl(mentorshipId: string): string {
 export function cohortCallUrl(cohortId: string): string {
   return `${JITSI_BASE}/DBI-cohort-${slug(cohortId.slice(0, 12))}`;
 }
+
+/** The one fixed room for the app-wide general DBI call. */
+export function generalCallUrl(): string {
+  return `${JITSI_BASE}/DBI-general-citadel-hall`;
+}
