@@ -54,19 +54,26 @@ export const sendMessageRequest = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // If they already asked you, accepting is the right move — open it straight away.
     const { data: reverse } = await supabaseAdmin
-      .from("message_requests").select("id,status")
-      .eq("requester_id", data.recipient_id).eq("recipient_id", context.userId).maybeSingle();
+      .from("message_requests")
+      .select("id,status")
+      .eq("requester_id", data.recipient_id)
+      .eq("recipient_id", context.userId)
+      .maybeSingle();
     if (reverse) {
       if (reverse.status !== "accepted") {
-        await supabaseAdmin.from("message_requests")
-          .update({ status: "accepted", responded_at: new Date().toISOString() }).eq("id", reverse.id);
+        await supabaseAdmin
+          .from("message_requests")
+          .update({ status: "accepted", responded_at: new Date().toISOString() })
+          .eq("id", reverse.id);
       }
       return { ok: true, status: "accepted" as const };
     }
-    const { error } = await supabaseAdmin.from("message_requests").upsert(
-      { requester_id: context.userId, recipient_id: data.recipient_id, status: "pending", responded_at: null },
-      { onConflict: "requester_id,recipient_id" },
-    );
+    const { error } = await supabaseAdmin
+      .from("message_requests")
+      .upsert(
+        { requester_id: context.userId, recipient_id: data.recipient_id, status: "pending", responded_at: null },
+        { onConflict: "requester_id,recipient_id" },
+      );
     if (error) throw error;
     return { ok: true, status: "pending" as const };
   });
@@ -77,13 +84,19 @@ export const respondToMessageRequest = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row } = await supabaseAdmin
-      .from("message_requests").select("recipient_id,status").eq("id", data.request_id).maybeSingle();
+      .from("message_requests")
+      .select("recipient_id,status")
+      .eq("id", data.request_id)
+      .maybeSingle();
     if (!row) throw new Error("Not found.");
     if (row.recipient_id !== context.userId) throw new Error("Forbidden: not your request.");
-    const { error } = await supabaseAdmin.from("message_requests").update({
-      status: data.accept ? "accepted" : "declined",
-      responded_at: new Date().toISOString(),
-    }).eq("id", data.request_id);
+    const { error } = await supabaseAdmin
+      .from("message_requests")
+      .update({
+        status: data.accept ? "accepted" : "declined",
+        responded_at: new Date().toISOString(),
+      })
+      .eq("id", data.request_id);
     if (error) throw error;
     return { ok: true };
   });

@@ -5,7 +5,18 @@ import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, BookOpen, LogOut, Crown, Compass, ShieldAlert, UserRound, MessageSquare, Users, ChevronDown, Target } from "lucide-react";
+import {
+  LayoutDashboard,
+  BookOpen,
+  LogOut,
+  Crown,
+  Compass,
+  ShieldAlert,
+  UserRound,
+  MessageSquare,
+  Users,
+  ChevronDown,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -116,13 +127,11 @@ function AuthedShell() {
   const tabs = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
-    { to: "/bps", label: "BPS", icon: Target, show: !needsChoice },
     { to: "/messages", label: "Messages", icon: MessageSquare, show: !needsChoice },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
     { to: "/choose-path", label: "Your Path", icon: Compass, show: needsChoice },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -137,7 +146,9 @@ function AuthedShell() {
           </Link>
           <nav className="hidden md:flex items-center gap-1 text-sm">
             {tabs.map((t) => (
-              <NavTab key={t.to} to={t.to} icon={t.icon}>{t.label}</NavTab>
+              <NavTab key={t.to} to={t.to} icon={t.icon}>
+                {t.label}
+              </NavTab>
             ))}
           </nav>
           <ProfileMenu
@@ -170,7 +181,6 @@ function AuthedShell() {
           </div>
         )}
       </header>
-
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-10 pb-28 md:pb-10">
         <Outlet />
@@ -239,9 +249,7 @@ function ProfileMenu({
           </span>
         )}
         {pathShort && (
-          <span className="text-[10px] font-semibold tracking-widest text-gold-deep hidden xs:inline">
-            {pathShort}
-          </span>
+          <span className="text-[10px] font-semibold tracking-widest text-gold-deep hidden xs:inline">{pathShort}</span>
         )}
         <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
