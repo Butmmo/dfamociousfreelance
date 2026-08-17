@@ -478,6 +478,130 @@ export const runAutoAssignMentees = createServerFn({ method: "POST" })
     return { ok: true, overdueCount: overdue.length, assigned };
   });
 
+/* ── Mentor-reported escalations: 48-72h SLA workflow ────── */
+
+export const listAllEscalations = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { data: rows, error } = await context.supabase
+      .from("mentorship_escalations").select("*").order("raised_at", { ascending: false });
+    if (error) throw error;
+    const escRows = (rows ?? []) as any[];
+    const mentorshipIds = Array.from(new Set(escRows.map((r) => r.mentorship_id)));
+    const { data: mentorships } = mentorshipIds.length
+      ? await context.supabase.from("mentorships").select("id,mentor_id,mentee_id").in("id", mentorshipIds)
+      : { data: [] as any[] };
+    const mById = new Map<string, any>((mentorships ?? []).map((m: any) => [m.id, m]));
+    const peopleIds = new Set<string>();
+    for (const r of escRows) {
+      peopleIds.add(r.raised_by);
+      const m = mById.get(r.mentorship_id);
+      if (m) { peopleIds.add(m.mentor_id); peopleIds.add(m.mentee_id); }
+    }
+    const { data: people } = peopleIds.size
+      ? await context.supabase.from("profiles").select("id,full_name,email").in("id", Array.from(peopleIds))
+      : { data: [] as any[] };
+    const pById = new Map<string, any>((people ?? []).map((p: any) => [p.id, p]));
+    return escRows.map((r) => {
+      const m = mById.get(r.mentorship_id);
+      return {
+        ...r,
+        reporter: pById.get(r.raised_by) ?? null,
+        mentor: m ? pById.get(m.mentor_id) ?? null : null,
+        mentee: m ? pById.get(m.mentee_id) ?? null : null,
+        mentee_id: m?.mentee_id ?? null,
+      };
+    });
+  });
+
+export const acknowledgeEscalation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ escalation_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("mentorship_escalations").update({
+      acknowledged_at: new Date().toISOString(), acknowledged_by: context.userId,
+    }).eq("id", data.escalation_id).is("acknowledged_at", null);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+const classifySchema = z.object({
+  escalation_id: z.string().uuid(),
+  classification: z.enum(["acceptable", "correctable", "disciplinary"]),
+  classification_note: z.string().trim().max(2000).optional(),
+});
+export const classifyEscalation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => classifySchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("mentorship_escalations").update({
+      classification: data.classification, classification_note: data.classification_note ?? null,
+    }).eq("id", data.escalation_id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+const resolveSchema = z.object({
+  escalation_id: z.string().uuid(),
+  resolution_note: z.string().trim().max(2000).optional(),
+  reassigned: z.boolean().default(false),
+});
+export const resolveEscalation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => resolveSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("mentorship_escalations").update({
+      resolved_at: new Date().toISOString(), resolved_by: context.userId,
+      resolution_note: data.resolution_note ?? null, reassigned: data.reassigned,
+    }).eq("id", data.escalation_id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+/* ── Cohorts: super-admin-only creation ──────────────────── */
+
+const createCohortSchema = z.object({
+  description: z.string().trim().max(500).optional(),
+});
+export const createCohort = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => createCohortSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    // Only the founder forms a cohort — RLS enforces this again at the DB layer.
+    await requireSuperAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: cohort, error } = await supabaseAdmin
+      .from("cohorts")
+      .insert({ description: data.description ?? null })
+      .select("*")
+      .single();
+    if (error) throw error;
+    return cohort;
+  });
+
+export const listCohorts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { data: cohorts, error } = await context.supabase
+      .from("cohorts").select("*").order("seq_number", { ascending: true, nullsFirst: true });
+    if (error) throw error;
+    const { data: members } = await context.supabase.from("profiles").select("cohort_id");
+    const countByCohort = new Map<string, number>();
+    for (const p of (members ?? []) as any[]) {
+      if (!p.cohort_id) continue;
+      countByCohort.set(p.cohort_id, (countByCohort.get(p.cohort_id) ?? 0) + 1);
+    }
+    return (cohorts ?? []).map((c: any) => ({ ...c, member_count: countByCohort.get(c.id) ?? 0 }));
+  });
+
 // ── Path assignment ─────────────────────────────────────────────────────────
 const PATH_KEYS = ["smb", "ascent", "revenue", "carebridge", "ministry", "broadcast", "authority"] as const;
 

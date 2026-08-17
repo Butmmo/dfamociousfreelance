@@ -33,6 +33,36 @@ function AuthedShell() {
     navigate({ to: "/choose-path", replace: true });
   }, [pathLoading, needsChoice, pathname, navigate, status.suspended]);
 
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    supabase
+      .from("profiles")
+      .select("full_name,avatar_url")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }: { data: { full_name: string | null; avatar_url: string | null } | null }) => {
+        if (!cancelled && data) setProfile({ full_name: data.full_name, avatar_url: data.avatar_url });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [menuOpen]);
+
+  // Close the menu on route change so it never lingers after navigating.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   const signOut = async () => {
     await supabase.auth.signOut();
     toast.success("Signed out.");
@@ -70,6 +100,12 @@ function AuthedShell() {
     );
   }
 
+  // Capped at 5: Dashboard/Playbooks/Messages/Mentorship only show once a
+  // path is chosen, and "Your Path" only shows during the choice window —
+  // the two sets are mutually exclusive, so the bar never exceeds 4 plus
+  // Council for admins. Calendar and Report stay one click away from
+  // Dashboard instead of living in the top bar; the founder's cross-path
+  // "Paths" browser moved into the profile dropdown to make room.
   const tabs = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
@@ -78,8 +114,7 @@ function AuthedShell() {
     { to: "/dfy", label: "DFY", icon: DollarSign, show: !needsChoice },
     { to: "/messages", label: "Messages", icon: MessageSquare, show: !needsChoice },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
-    // Only the founder keeps the Paths tab; everyone else sees it solely inside their 24-hour window.
-    { to: "/choose-path", label: isSuperAdmin ? "Paths" : "Your Path", icon: Compass, show: isSuperAdmin || needsChoice },
+    { to: "/choose-path", label: "Your Path", icon: Compass, show: needsChoice },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
 
@@ -105,21 +140,18 @@ function AuthedShell() {
               <NavTab key={t.to} to={t.to} icon={t.icon}>{t.label}</NavTab>
             ))}
           </nav>
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="text-right hidden sm:block min-w-0">
-              <div className="text-xs font-medium truncate max-w-[180px]">{user?.email}</div>
-              <div className="text-[10px] tracking-widest text-gold-deep">
-                {isSuperAdmin ? "Super Admin" : role === "admin" ? "Council Admin" : "Beneficiary"}
-                {path ? ` · ${path.short}` : ""}
-              </div>
-            </div>
-            <Link to="/profile" className="p-2 rounded-md hover:bg-muted shrink-0" aria-label="Profile" title="Profile">
-              <UserRound className="h-4 w-4" />
-            </Link>
-            <button onClick={signOut} className="p-2 rounded-md hover:bg-muted shrink-0" aria-label="Sign out">
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+          <ProfileMenu
+            open={menuOpen}
+            setOpen={setMenuOpen}
+            menuRef={menuRef}
+            fullName={profile.full_name}
+            avatarUrl={profile.avatar_url}
+            email={user?.email}
+            role={role}
+            isSuperAdmin={isSuperAdmin}
+            pathShort={path?.short}
+            onSignOut={signOut}
+          />
         </div>
 
         {needsChoice && (
@@ -198,6 +230,95 @@ function AuthedShell() {
           </button>
         )}
       </nav>
+    </div>
+  );
+}
+
+function ProfileMenu({
+  open,
+  setOpen,
+  menuRef,
+  fullName,
+  avatarUrl,
+  email,
+  role,
+  isSuperAdmin,
+  pathShort,
+  onSignOut,
+}: {
+  open: boolean;
+  setOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
+  menuRef: React.RefObject<HTMLDivElement | null>;
+  fullName: string | null;
+  avatarUrl: string | null;
+  email: string | undefined;
+  role: string | null | undefined;
+  isSuperAdmin: boolean;
+  pathShort: string | undefined;
+  onSignOut: () => void;
+}) {
+  const roleLabel = isSuperAdmin ? "Super Admin" : role === "admin" ? "Council Admin" : "Beneficiary";
+
+  return (
+    <div className="relative shrink-0" ref={menuRef}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 rounded-full pl-1 pr-2 py-1 hover:bg-muted"
+        aria-label="Account menu"
+        aria-expanded={open}
+        aria-haspopup="menu"
+      >
+        {avatarUrl ? (
+          <img src={avatarUrl} alt="" className="h-7 w-7 rounded-full object-cover border border-gold/40" />
+        ) : (
+          <span className="h-7 w-7 rounded-full bg-muted grid place-items-center border border-gold/40">
+            <UserRound className="h-3.5 w-3.5" />
+          </span>
+        )}
+        {pathShort && (
+          <span className="text-[10px] font-semibold tracking-widest text-gold-deep hidden xs:inline">
+            {pathShort}
+          </span>
+        )}
+        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-card shadow-regal py-1.5 z-50"
+        >
+          <div className="px-3 py-2 border-b border-border">
+            <div className="text-sm font-semibold truncate">{fullName || email}</div>
+            <div className="text-[10px] tracking-widest text-gold-deep mt-0.5">
+              {roleLabel}
+              {pathShort ? ` · ${pathShort}` : ""}
+            </div>
+          </div>
+          {isSuperAdmin && (
+            <Link
+              to="/choose-path"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted"
+            >
+              <Compass className="h-4 w-4" /> Paths
+            </Link>
+          )}
+          <Link
+            to="/profile"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted"
+          >
+            <UserRound className="h-4 w-4" /> Profile
+          </Link>
+          <button
+            onClick={onSignOut}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-crimson hover:bg-crimson/10"
+          >
+            <LogOut className="h-4 w-4" /> Sign out
+          </button>
+        </div>
+      )}
     </div>
   );
 }

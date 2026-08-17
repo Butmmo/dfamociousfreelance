@@ -166,10 +166,11 @@ export const logMentorshipReview = createServerFn({ method: "POST" })
     const { data: row } = await supabaseAdmin.from("mentorships").select("mentor_id").eq("id", data.mentorship_id).maybeSingle();
     if (!row) throw new Error("Not found.");
     if (row.mentor_id !== context.userId) throw new Error("Forbidden: only the mentor logs a checkpoint review.");
+    if (data.flag_raised && !data.flag_note?.trim()) throw new Error("Describe what's not working before flagging for admin.");
     const { count } = await supabaseAdmin
       .from("mentorship_reviews").select("id", { count: "exact", head: true }).eq("mentorship_id", data.mentorship_id);
     const nextCheckpoint = (count ?? 0) + 1;
-    const { error } = await supabaseAdmin.from("mentorship_reviews").insert({
+    const { data: review, error } = await supabaseAdmin.from("mentorship_reviews").insert({
       mentorship_id: data.mentorship_id,
       checkpoint_number: nextCheckpoint,
       mentee_progress_note: data.mentee_progress_note ?? null,
@@ -177,8 +178,21 @@ export const logMentorshipReview = createServerFn({ method: "POST" })
       flag_raised: data.flag_raised,
       flag_note: data.flag_note ?? null,
       created_by: context.userId,
-    });
+    }).select("id").single();
     if (error) throw error;
+
+    // The flag *is* the mentor's "structural shock" reporting function —
+    // raising it here creates the real, tracked escalation record that
+    // drives the 48-72h SLA notification cycle, not just a note on file.
+    if (data.flag_raised) {
+      const { error: escError } = await supabaseAdmin.from("mentorship_escalations").insert({
+        mentorship_id: data.mentorship_id,
+        review_id: review?.id ?? null,
+        raised_by: context.userId,
+        description: data.flag_note!.trim(),
+      });
+      if (escError) throw escError;
+    }
     return { ok: true, checkpoint_number: nextCheckpoint };
   });
 
@@ -194,6 +208,22 @@ export const listMentorshipReviews = createServerFn({ method: "POST" })
     if (row.mentor_id !== context.userId && row.mentee_id !== context.userId && !isAdmin) throw new Error("Forbidden.");
     const { data: rows, error } = await supabaseAdmin
       .from("mentorship_reviews").select("*").eq("mentorship_id", data.mentorship_id).order("checkpoint_number", { ascending: true });
+    if (error) throw error;
+    return rows ?? [];
+  });
+
+export const listEscalationsForMentorship = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ mentorship_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("mentorships").select("mentor_id,mentee_id").eq("id", data.mentorship_id).maybeSingle();
+    if (!row) throw new Error("Not found.");
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (row.mentor_id !== context.userId && row.mentee_id !== context.userId && !isAdmin) throw new Error("Forbidden.");
+    const { data: rows, error } = await supabaseAdmin
+      .from("mentorship_escalations").select("*").eq("mentorship_id", data.mentorship_id).order("raised_at", { ascending: false });
     if (error) throw error;
     return rows ?? [];
   });

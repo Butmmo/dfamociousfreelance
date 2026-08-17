@@ -25,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/messages")({
 });
 
 type Contact = { key: string; id: string; name: string; sub: string; icon: any };
+type Member = { id: string; full_name: string | null; avatar_url: string | null; email?: string | null };
 
 function MessagesPage() {
   const { user } = useSession();
@@ -50,6 +51,23 @@ function MessagesPage() {
     setRequests(r as any[]);
   };
 
+  const loadAll = async () => {
+    const [{ data: prof }, r, m, gm, rc, mr] = await Promise.all([
+      supabase.from("profiles").select("id,full_name,cohort_id").eq("id", user!.id).maybeSingle(),
+      getRep({ data: undefined as never }).catch(() => null),
+      listMine({ data: undefined as never }).catch(() => []),
+      listGeneral({ data: undefined as never }).catch(() => []),
+      listRequested({ data: undefined as never }).catch(() => []),
+      listRequests({ data: undefined as never }).catch(() => []),
+    ]);
+    setProfile(prof);
+    setRep(r);
+    setMentorships(m);
+    setGeneralMembers(gm as Member[]);
+    setRequestedContacts(rc as Member[]);
+    setMyRequests(mr);
+  };
+
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -69,6 +87,11 @@ function MessagesPage() {
     })();
     // eslint-disable-next-line
   }, [user]);
+
+  const refreshRequests = async () => {
+    const mr = await listRequests({ data: undefined as never }).catch(() => []);
+    setMyRequests(mr);
+  };
 
   const contacts: Contact[] = useMemo(() => {
     const list: Contact[] = [];
@@ -180,10 +203,10 @@ function MessagesPage() {
               onClick={() => setSelected("cohort")}
               className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${cohortSelected ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
             >
-              <Users className="h-4 w-4 shrink-0" />
+              <Globe2 className="h-4 w-4 shrink-0" />
               <span className="min-w-0">
-                <span className="block truncate font-medium">Cohort chat</span>
-                <span className={`block text-[10px] tracking-widest ${cohortSelected ? "opacity-80" : "text-muted-foreground"}`}>Successes · performance · encouragement</span>
+                <span className="block truncate font-medium">General DBI chat</span>
+                <span className={`block text-[10px] tracking-widest ${generalSelected ? "opacity-80" : "text-muted-foreground"}`}>Everyone in the Citadel</span>
               </span>
             </button>
           )}
@@ -245,7 +268,7 @@ function MessagesPage() {
           </div>
         </div>
 
-        {/* THREAD */}
+        {/* THREAD / PANEL */}
         <div className="flex flex-col">
           {activeContact && user && (
             <DmThread key={activeContact.key} meId={user.id} counterpart={activeContact} />
@@ -464,6 +487,79 @@ function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }
         <div ref={bottomRef} />
       </div>
       <Composer value={body} onChange={setBody} onSubmit={send} sending={sending} placeholder="Share with the cohort…" />
+    </>
+  );
+}
+
+function GeneralThread({ myName }: { myName: string }) {
+  const { user } = useSession();
+  const [messages, setMessages] = useState<any[]>([]);
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const load = async () => {
+    const { data, error } = await supabase
+      .from("general_messages").select("*").order("created_at", { ascending: true }).limit(200);
+    if (error) { toast.error(error.message); return; }
+    setMessages(data ?? []);
+  };
+
+  useEffect(() => {
+    load();
+    const interval = setInterval(load, 4000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
+
+  const send = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!body.trim() || !user) return;
+    setSending(true);
+    const { error } = await supabase.from("general_messages").insert({
+      sender_id: user.id, sender_name: myName, body: body.trim(),
+    });
+    setSending(false);
+    if (error) { toast.error(error.message); return; }
+    setBody("");
+    load();
+  };
+
+  return (
+    <>
+      <div className="flex items-center justify-between gap-3 border-b border-border p-4">
+        <div>
+          <div className="font-semibold">General DBI chat</div>
+          <div className="text-[10px] tracking-widest text-muted-foreground">The whole Citadel, in one room</div>
+        </div>
+        <a href={generalCallUrl()} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10">
+          <Video className="h-3.5 w-3.5" /> Group call
+        </a>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
+        {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — say hello to the Citadel.</p>}
+        {messages.map((m) => {
+          const mine = m.sender_id === user?.id;
+          return (
+            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                {!mine && <div className="text-[10px] font-semibold text-gold-deep mb-0.5">{m.sender_name}</div>}
+                {m.body}
+                <div className={`mt-1 text-[9px] ${mine ? "opacity-70" : "text-muted-foreground"}`}>{new Date(m.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={bottomRef} />
+      </div>
+      <form onSubmit={send} className="flex items-center gap-2 border-t border-border p-3">
+        <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="Share with the Citadel…" className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm" />
+        <button type="submit" disabled={sending} className="rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+          {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+        </button>
+      </form>
     </>
   );
 }
