@@ -265,6 +265,33 @@ export type Database = {
         }
         Relationships: []
       }
+      group_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          room: string
+          sender_id: string
+          sender_name: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          room?: string
+          sender_id: string
+          sender_name: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          room?: string
+          sender_id?: string
+          sender_name?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -436,6 +463,33 @@ export type Database = {
           started_at?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      message_requests: {
+        Row: {
+          created_at: string
+          id: string
+          recipient_id: string
+          requester_id: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recipient_id: string
+          requester_id: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recipient_id?: string
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
         }
         Relationships: []
       }
