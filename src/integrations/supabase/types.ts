@@ -92,6 +92,41 @@ export type Database = {
         }
         Relationships: []
       }
+      cohort_messages: {
+        Row: {
+          body: string
+          cohort_id: string
+          created_at: string
+          id: string
+          sender_id: string
+          sender_name: string
+        }
+        Insert: {
+          body: string
+          cohort_id: string
+          created_at?: string
+          id?: string
+          sender_id: string
+          sender_name: string
+        }
+        Update: {
+          body?: string
+          cohort_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+          sender_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cohort_messages_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cohorts: {
         Row: {
           created_at: string
@@ -113,6 +148,57 @@ export type Database = {
           id?: string
           name?: string
           start_date?: string
+        }
+        Relationships: []
+      }
+      dfy_months: {
+        Row: {
+          created_at: string
+          id: string
+          net_income_usd: number
+          notes: string | null
+          period_month: string
+          qualified: boolean
+          remittance_owed_usd: number
+          remittance_paid: boolean
+          remittance_paid_at: string | null
+          status: Database["public"]["Enums"]["dfy_month_status"]
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          net_income_usd: number
+          notes?: string | null
+          period_month: string
+          qualified?: boolean
+          remittance_owed_usd?: number
+          remittance_paid?: boolean
+          remittance_paid_at?: string | null
+          status?: Database["public"]["Enums"]["dfy_month_status"]
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          net_income_usd?: number
+          notes?: string | null
+          period_month?: string
+          qualified?: boolean
+          remittance_owed_usd?: number
+          remittance_paid?: boolean
+          remittance_paid_at?: string | null
+          status?: Database["public"]["Enums"]["dfy_month_status"]
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: []
       }
@@ -179,6 +265,33 @@ export type Database = {
         }
         Relationships: []
       }
+      group_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          room: string
+          sender_id: string
+          sender_name: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          room?: string
+          sender_id: string
+          sender_name: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          room?: string
+          sender_id?: string
+          sender_name?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -225,6 +338,160 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mentorship_checkins: {
+        Row: {
+          created_at: string
+          happened: boolean
+          id: string
+          logged_by: string
+          mentorship_id: string
+          note: string | null
+          week_of: string
+        }
+        Insert: {
+          created_at?: string
+          happened: boolean
+          id?: string
+          logged_by: string
+          mentorship_id: string
+          note?: string | null
+          week_of: string
+        }
+        Update: {
+          created_at?: string
+          happened?: boolean
+          id?: string
+          logged_by?: string
+          mentorship_id?: string
+          note?: string | null
+          week_of?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentorship_checkins_mentorship_id_fkey"
+            columns: ["mentorship_id"]
+            isOneToOne: false
+            referencedRelation: "mentorships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentorship_reviews: {
+        Row: {
+          checkpoint_number: number
+          created_at: string
+          created_by: string
+          flag_note: string | null
+          flag_raised: boolean
+          id: string
+          mentee_progress_note: string | null
+          mentorship_id: string
+          rep_support_assessment: string | null
+        }
+        Insert: {
+          checkpoint_number: number
+          created_at?: string
+          created_by: string
+          flag_note?: string | null
+          flag_raised?: boolean
+          id?: string
+          mentee_progress_note?: string | null
+          mentorship_id: string
+          rep_support_assessment?: string | null
+        }
+        Update: {
+          checkpoint_number?: number
+          created_at?: string
+          created_by?: string
+          flag_note?: string | null
+          flag_raised?: boolean
+          id?: string
+          mentee_progress_note?: string | null
+          mentorship_id?: string
+          rep_support_assessment?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentorship_reviews_mentorship_id_fkey"
+            columns: ["mentorship_id"]
+            isOneToOne: false
+            referencedRelation: "mentorships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentorships: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          ended_reason: string | null
+          id: string
+          mentee_confirmed: boolean
+          mentee_id: string
+          mentor_confirmed: boolean
+          mentor_id: string
+          requested_at: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          id?: string
+          mentee_confirmed?: boolean
+          mentee_id: string
+          mentor_confirmed?: boolean
+          mentor_id: string
+          requested_at?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          id?: string
+          mentee_confirmed?: boolean
+          mentee_id?: string
+          mentor_confirmed?: boolean
+          mentor_id?: string
+          requested_at?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      message_requests: {
+        Row: {
+          created_at: string
+          id: string
+          recipient_id: string
+          requester_id: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recipient_id: string
+          requester_id: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recipient_id?: string
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: []
       }
       paths: {
         Row: {
@@ -280,6 +547,8 @@ export type Database = {
           suspended_by: string | null
           suspension_reason: string | null
           updated_at: string
+          vetted_dse_certified_at: string | null
+          vetted_dse_certified_by: string | null
           xp: number
         }
         Insert: {
@@ -308,6 +577,8 @@ export type Database = {
           suspended_by?: string | null
           suspension_reason?: string | null
           updated_at?: string
+          vetted_dse_certified_at?: string | null
+          vetted_dse_certified_by?: string | null
           xp?: number
         }
         Update: {
@@ -336,6 +607,8 @@ export type Database = {
           suspended_by?: string | null
           suspension_reason?: string | null
           updated_at?: string
+          vetted_dse_certified_at?: string | null
+          vetted_dse_certified_by?: string | null
           xp?: number
         }
         Relationships: [
@@ -485,6 +758,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "beneficiary"
+      dfy_month_status:
+        | "submitted"
+        | "remittance_paid"
+        | "verified"
+        | "disputed"
       invitation_status: "pending" | "accepted" | "expired" | "revoked"
       rank_tier: "recruit" | "operator" | "closer" | "lion" | "crown"
     }
@@ -615,6 +893,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "beneficiary"],
+      dfy_month_status: [
+        "submitted",
+        "remittance_paid",
+        "verified",
+        "disputed",
+      ],
       invitation_status: ["pending", "accepted", "expired", "revoked"],
       rank_tier: ["recruit", "operator", "closer", "lion", "crown"],
     },

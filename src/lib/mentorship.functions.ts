@@ -56,7 +56,7 @@ export const respondToMentorshipRequest = createServerFn({ method: "POST" })
     if (!row) throw new Error("Not found.");
     if (row.mentee_id !== context.userId) throw new Error("Forbidden: not your mentorship request.");
     if (row.status !== "pending") throw new Error("This request is no longer pending.");
-    const patch: Record<string, unknown> = data.accept
+    const patch = data.accept
       ? { mentee_confirmed: true }
       : { ended_at: new Date().toISOString(), ended_reason: "declined by mentee" };
     const { error } = await supabaseAdmin.from("mentorships").update(patch).eq("id", data.mentorship_id);
