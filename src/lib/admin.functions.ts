@@ -565,6 +565,43 @@ export const resolveEscalation = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/* ── Cohorts: super-admin-only creation ──────────────────── */
+
+const createCohortSchema = z.object({
+  description: z.string().trim().max(500).optional(),
+});
+export const createCohort = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => createCohortSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    // Only the founder forms a cohort — RLS enforces this again at the DB layer.
+    await requireSuperAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: cohort, error } = await supabaseAdmin
+      .from("cohorts")
+      .insert({ description: data.description ?? null })
+      .select("*")
+      .single();
+    if (error) throw error;
+    return cohort;
+  });
+
+export const listCohorts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { data: cohorts, error } = await context.supabase
+      .from("cohorts").select("*").order("seq_number", { ascending: true, nullsFirst: true });
+    if (error) throw error;
+    const { data: members } = await context.supabase.from("profiles").select("cohort_id");
+    const countByCohort = new Map<string, number>();
+    for (const p of (members ?? []) as any[]) {
+      if (!p.cohort_id) continue;
+      countByCohort.set(p.cohort_id, (countByCohort.get(p.cohort_id) ?? 0) + 1);
+    }
+    return (cohorts ?? []).map((c: any) => ({ ...c, member_count: countByCohort.get(c.id) ?? 0 }));
+  });
+
 // ── Path assignment ─────────────────────────────────────────────────────────
 const PATH_KEYS = ["smb", "ascent", "revenue", "carebridge", "ministry", "broadcast", "authority"] as const;
 
