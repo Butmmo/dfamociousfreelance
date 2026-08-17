@@ -9,7 +9,7 @@ import { PATH_PLAYBOOKS } from "@/lib/path-playbooks";
 import { computeEscalation, forecastFirstClose, type ProgressRow } from "@/lib/escalation";
 import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, BookOpen, Sparkles, Globe, ArrowRight,
-  Gauge, AlertTriangle, ChevronLeft, ChevronRight, CheckCircle2,
+  Gauge, AlertTriangle, DollarSign, ChevronLeft, ChevronRight, CheckCircle2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
