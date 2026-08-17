@@ -4,12 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { getMyRep, listMyMentorships } from "@/lib/mentorship.functions";
-import {
-  listMembers,
-  listMessageRequests,
-  sendMessageRequest,
-  respondToMessageRequest,
-} from "@/lib/social.functions";
+import { listMembers, listMessageRequests, sendMessageRequest, respondToMessageRequest } from "@/lib/social.functions";
 import { directCallUrl, cohortCallUrl } from "@/lib/video";
 import { toast } from "sonner";
 import { MessageSquare, Send, Video, Loader2, Shield, Users, User, Plus, Check, X, Globe } from "lucide-react";
@@ -18,7 +13,11 @@ export const Route = createFileRoute("/_authenticated/messages")({
   head: () => ({
     meta: [
       { title: "Messages — DBI Citadel" },
-      { name: "description", content: "Cohort rooms, the general DBI chat, mentorship threads and private conversations inside the DBI Citadel." },
+      {
+        name: "description",
+        content:
+          "Cohort rooms, the general DBI chat, mentorship threads and private conversations inside the DBI Citadel.",
+      },
     ],
   }),
   component: MessagesPage,
@@ -39,7 +38,7 @@ function MessagesPage() {
   const [profile, setProfile] = useState<any>(null);
   const [rep, setRep] = useState<any>(null);
   const [mentorships, setMentorships] = useState<any[]>([]);
-  const [members, setMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string | null>("dbi");
@@ -49,23 +48,6 @@ function MessagesPage() {
   const refreshRequests = async () => {
     const r = await fetchRequests({ data: undefined as never }).catch(() => []);
     setRequests(r as any[]);
-  };
-
-  const loadAll = async () => {
-    const [{ data: prof }, r, m, gm, rc, mr] = await Promise.all([
-      supabase.from("profiles").select("id,full_name,cohort_id").eq("id", user!.id).maybeSingle(),
-      getRep({ data: undefined as never }).catch(() => null),
-      listMine({ data: undefined as never }).catch(() => []),
-      listGeneral({ data: undefined as never }).catch(() => []),
-      listRequested({ data: undefined as never }).catch(() => []),
-      listRequests({ data: undefined as never }).catch(() => []),
-    ]);
-    setProfile(prof);
-    setRep(r);
-    setMentorships(m);
-    setGeneralMembers(gm as Member[]);
-    setRequestedContacts(rc as Member[]);
-    setMyRequests(mr);
   };
 
   useEffect(() => {
@@ -81,17 +63,12 @@ function MessagesPage() {
       setProfile(prof);
       setRep(r);
       setMentorships(m as any[]);
-      setMembers(mem as any[]);
+      setMembers(mem as Member[]);
       setRequests(req as any[]);
       setLoading(false);
     })();
     // eslint-disable-next-line
   }, [user]);
-
-  const refreshRequests = async () => {
-    const mr = await listRequests({ data: undefined as never }).catch(() => []);
-    setMyRequests(mr);
-  };
 
   const contacts: Contact[] = useMemo(() => {
     const list: Contact[] = [];
@@ -101,15 +78,43 @@ function MessagesPage() {
       seen.add(c.id);
       list.push(c);
     };
-    if (rep) push({ key: `dm:${rep.id}`, id: rep.id, name: rep.full_name ?? rep.email ?? "Your DSE Rep", sub: "DSE Rep", icon: Shield });
+    if (rep)
+      push({
+        key: `dm:${rep.id}`,
+        id: rep.id,
+        name: rep.full_name ?? rep.email ?? "Your DSE Rep",
+        sub: "DSE Rep",
+        icon: Shield,
+      });
     const mentor = mentorships.find((m) => m.role === "mentee" && m.status === "active");
-    if (mentor?.partner?.id) push({ key: `dm:${mentor.partner.id}`, id: mentor.partner.id, name: mentor.partner.full_name ?? "Your mentor", sub: "Mentor", icon: User });
+    if (mentor?.partner?.id)
+      push({
+        key: `dm:${mentor.partner.id}`,
+        id: mentor.partner.id,
+        name: mentor.partner.full_name ?? "Your mentor",
+        sub: "Mentor",
+        icon: User,
+      });
     for (const m of mentorships.filter((x) => x.role === "mentor" && x.status === "active")) {
-      if (m.partner?.id) push({ key: `dm:${m.partner.id}`, id: m.partner.id, name: m.partner.full_name ?? "Mentee", sub: "Mentee", icon: User });
+      if (m.partner?.id)
+        push({
+          key: `dm:${m.partner.id}`,
+          id: m.partner.id,
+          name: m.partner.full_name ?? "Mentee",
+          sub: "Mentee",
+          icon: User,
+        });
     }
     // Accepted message requests open a conversation immediately, both ways.
     for (const r of requests.filter((x) => x.status === "accepted")) {
-      if (r.partner?.id) push({ key: `dm:${r.partner.id}`, id: r.partner.id, name: r.partner.full_name ?? r.partner.email ?? "Member", sub: "Private", icon: MessageSquare });
+      if (r.partner?.id)
+        push({
+          key: `dm:${r.partner.id}`,
+          id: r.partner.id,
+          name: r.partner.full_name ?? r.partner.email ?? "Member",
+          sub: "Private",
+          icon: MessageSquare,
+        });
     }
     return list;
   }, [rep, mentorships, requests]);
@@ -168,13 +173,20 @@ function MessagesPage() {
             {incoming.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span>
-                  <strong>{r.partner?.full_name ?? r.partner?.email ?? "A member"}</strong> wants to start a private conversation.
+                  <strong>{r.partner?.full_name ?? r.partner?.email ?? "A member"}</strong> wants to start a private
+                  conversation.
                 </span>
                 <span className="flex items-center gap-2">
-                  <button onClick={() => respond(r.id, true)} className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+                  <button
+                    onClick={() => respond(r.id, true)}
+                    className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+                  >
                     <Check className="h-3.5 w-3.5" /> Accept
                   </button>
-                  <button onClick={() => respond(r.id, false)} className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-semibold">
+                  <button
+                    onClick={() => respond(r.id, false)}
+                    className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-semibold"
+                  >
                     <X className="h-3.5 w-3.5" /> Decline
                   </button>
                 </span>
@@ -194,7 +206,11 @@ function MessagesPage() {
             <Globe className="h-4 w-4 shrink-0" />
             <span className="min-w-0">
               <span className="block truncate font-medium">DBI General</span>
-              <span className={`block text-[10px] tracking-widest ${dbiSelected ? "opacity-80" : "text-muted-foreground"}`}>Everyone in the incubator</span>
+              <span
+                className={`block text-[10px] tracking-widest ${dbiSelected ? "opacity-80" : "text-muted-foreground"}`}
+              >
+                Everyone in the incubator
+              </span>
             </span>
           </button>
 
@@ -203,10 +219,14 @@ function MessagesPage() {
               onClick={() => setSelected("cohort")}
               className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${cohortSelected ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
             >
-              <Globe2 className="h-4 w-4 shrink-0" />
+              <Users className="h-4 w-4 shrink-0" />
               <span className="min-w-0">
-                <span className="block truncate font-medium">General DBI chat</span>
-                <span className={`block text-[10px] tracking-widest ${generalSelected ? "opacity-80" : "text-muted-foreground"}`}>Everyone in the Citadel</span>
+                <span className="block truncate font-medium">Cohort chat</span>
+                <span
+                  className={`block text-[10px] tracking-widest ${cohortSelected ? "opacity-80" : "text-muted-foreground"}`}
+                >
+                  Successes · performance · encouragement
+                </span>
               </span>
             </button>
           )}
@@ -224,7 +244,11 @@ function MessagesPage() {
                 <c.icon className="h-4 w-4 shrink-0" />
                 <span className="min-w-0">
                   <span className="block truncate font-medium">{c.name}</span>
-                  <span className={`block text-[10px] tracking-widest ${selected === c.key ? "opacity-80" : "text-muted-foreground"}`}>{c.sub}</span>
+                  <span
+                    className={`block text-[10px] tracking-widest ${selected === c.key ? "opacity-80" : "text-muted-foreground"}`}
+                  >
+                    {c.sub}
+                  </span>
                 </span>
               </button>
             ))}
@@ -243,7 +267,9 @@ function MessagesPage() {
                   className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs"
                 />
                 <div className="max-h-56 overflow-y-auto space-y-1">
-                  {filteredMembers.length === 0 && <p className="text-[11px] text-muted-foreground p-1">No members found.</p>}
+                  {filteredMembers.length === 0 && (
+                    <p className="text-[11px] text-muted-foreground p-1">No members found.</p>
+                  )}
                   {filteredMembers.map((m) => {
                     const already = openIds.has(m.id);
                     const pending = pendingIds.has(m.id);
@@ -255,7 +281,10 @@ function MessagesPage() {
                         ) : pending ? (
                           <span className="text-[10px] text-muted-foreground shrink-0">Pending</span>
                         ) : (
-                          <button onClick={() => startRequest(m.id)} className="shrink-0 rounded-md border border-gold px-2 py-1 text-[10px] font-semibold text-gold-deep hover:bg-gold/10">
+                          <button
+                            onClick={() => startRequest(m.id)}
+                            className="shrink-0 rounded-md border border-gold px-2 py-1 text-[10px] font-semibold text-gold-deep hover:bg-gold/10"
+                          >
                             Request
                           </button>
                         )}
@@ -270,12 +299,8 @@ function MessagesPage() {
 
         {/* THREAD / PANEL */}
         <div className="flex flex-col">
-          {activeContact && user && (
-            <DmThread key={activeContact.key} meId={user.id} counterpart={activeContact} />
-          )}
-          {dbiSelected && (
-            <GroupThread myName={profile?.full_name ?? "Member"} />
-          )}
+          {activeContact && user && <DmThread key={activeContact.key} meId={user.id} counterpart={activeContact} />}
+          {dbiSelected && <GroupThread myName={profile?.full_name ?? "Member"} />}
           {cohortSelected && profile?.cohort_id && (
             <CohortThread cohortId={profile.cohort_id} myName={profile.full_name ?? "Beneficiary"} />
           )}
@@ -293,7 +318,9 @@ function MessagesPage() {
 function Bubble({ mine, name, body, at }: { mine: boolean; name?: string | null; body: string; at: string }) {
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-      <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+      <div
+        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+      >
         {!mine && name && <div className="text-[10px] font-semibold text-gold-deep mb-0.5">{name}</div>}
         {body}
         <div className={`mt-1 text-[9px] ${mine ? "opacity-70" : "text-muted-foreground"}`}>
@@ -304,13 +331,32 @@ function Bubble({ mine, name, body, at }: { mine: boolean; name?: string | null;
   );
 }
 
-function Composer({ value, onChange, onSubmit, sending, placeholder }: {
-  value: string; onChange: (v: string) => void; onSubmit: (e: React.FormEvent); sending: boolean; placeholder: string;
+function Composer({
+  value,
+  onChange,
+  onSubmit,
+  sending,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  sending: boolean;
+  placeholder: string;
 }) {
   return (
     <form onSubmit={onSubmit} className="flex items-center gap-2 border-t border-border p-3">
-      <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm" />
-      <button type="submit" disabled={sending} className="rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm"
+      />
+      <button
+        type="submit"
+        disabled={sending}
+        className="rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+      >
         {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
       </button>
     </form>
@@ -327,10 +373,15 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
     const { data, error } = await supabase
       .from("direct_messages")
       .select("*")
-      .or(`and(sender_id.eq.${meId},recipient_id.eq.${counterpart.id}),and(sender_id.eq.${counterpart.id},recipient_id.eq.${meId})`)
+      .or(
+        `and(sender_id.eq.${meId},recipient_id.eq.${counterpart.id}),and(sender_id.eq.${counterpart.id},recipient_id.eq.${meId})`,
+      )
       .order("created_at", { ascending: true })
       .limit(200);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setMessages(data ?? []);
   };
 
@@ -341,17 +392,24 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
     // eslint-disable-next-line
   }, [counterpart.id]);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length]);
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!body.trim()) return;
     setSending(true);
     const { error } = await supabase.from("direct_messages").insert({
-      sender_id: meId, recipient_id: counterpart.id, body: body.trim(),
+      sender_id: meId,
+      recipient_id: counterpart.id,
+      body: body.trim(),
     });
     setSending(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setBody("");
     load();
   };
@@ -363,13 +421,20 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
           <div className="font-semibold">{counterpart.name}</div>
           <div className="text-[10px] tracking-widest text-muted-foreground">{counterpart.sub}</div>
         </div>
-        <a href={directCallUrl(meId, counterpart.id)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10">
+        <a
+          href={directCallUrl(meId, counterpart.id)}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10"
+        >
           <Video className="h-3.5 w-3.5" /> Video call
         </a>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — say hello.</p>}
-        {messages.map((m) => <Bubble key={m.id} mine={m.sender_id === meId} body={m.body} at={m.created_at} />)}
+        {messages.map((m) => (
+          <Bubble key={m.id} mine={m.sender_id === meId} body={m.body} at={m.created_at} />
+        ))}
         <div ref={bottomRef} />
       </div>
       <Composer value={body} onChange={setBody} onSubmit={send} sending={sending} placeholder="Write a message…" />
@@ -386,8 +451,15 @@ function GroupThread({ myName }: { myName: string }) {
 
   const load = async () => {
     const { data, error } = await supabase
-      .from("group_messages").select("*").eq("room", "dbi").order("created_at", { ascending: true }).limit(200);
-    if (error) { toast.error(error.message); return; }
+      .from("group_messages")
+      .select("*")
+      .eq("room", "dbi")
+      .order("created_at", { ascending: true })
+      .limit(200);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setMessages(data ?? []);
   };
 
@@ -398,17 +470,25 @@ function GroupThread({ myName }: { myName: string }) {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length]);
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!body.trim() || !user) return;
     setSending(true);
     const { error } = await supabase.from("group_messages").insert({
-      room: "dbi", sender_id: user.id, sender_name: myName, body: body.trim(),
+      room: "dbi",
+      sender_id: user.id,
+      sender_name: myName,
+      body: body.trim(),
     });
     setSending(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setBody("");
     load();
   };
@@ -420,13 +500,20 @@ function GroupThread({ myName }: { myName: string }) {
           <div className="font-semibold">DBI General</div>
           <div className="text-[10px] tracking-widest text-muted-foreground">Every member of the incubator</div>
         </div>
-        <a href={cohortCallUrl("dbi-general")} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10">
+        <a
+          href={cohortCallUrl("dbi-general")}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10"
+        >
           <Video className="h-3.5 w-3.5" /> Group call
         </a>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — open the room.</p>}
-        {messages.map((m) => <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} />)}
+        {messages.map((m) => (
+          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} />
+        ))}
         <div ref={bottomRef} />
       </div>
       <Composer value={body} onChange={setBody} onSubmit={send} sending={sending} placeholder="Share with DBI…" />
@@ -443,8 +530,15 @@ function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }
 
   const load = async () => {
     const { data, error } = await supabase
-      .from("cohort_messages").select("*").eq("cohort_id", cohortId).order("created_at", { ascending: true }).limit(200);
-    if (error) { toast.error(error.message); return; }
+      .from("cohort_messages")
+      .select("*")
+      .eq("cohort_id", cohortId)
+      .order("created_at", { ascending: true })
+      .limit(200);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setMessages(data ?? []);
   };
 
@@ -455,17 +549,25 @@ function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }
     // eslint-disable-next-line
   }, [cohortId]);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length]);
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!body.trim() || !user) return;
     setSending(true);
     const { error } = await supabase.from("cohort_messages").insert({
-      cohort_id: cohortId, sender_id: user.id, sender_name: myName, body: body.trim(),
+      cohort_id: cohortId,
+      sender_id: user.id,
+      sender_name: myName,
+      body: body.trim(),
     });
     setSending(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setBody("");
     load();
   };
@@ -477,89 +579,29 @@ function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }
           <div className="font-semibold">Cohort chat</div>
           <div className="text-[10px] tracking-widest text-muted-foreground">Successes · performance · engagement</div>
         </div>
-        <a href={cohortCallUrl(cohortId)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10">
+        <a
+          href={cohortCallUrl(cohortId)}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10"
+        >
           <Video className="h-3.5 w-3.5" /> Group call
         </a>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — share a win.</p>}
-        {messages.map((m) => <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} />)}
+        {messages.map((m) => (
+          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} />
+        ))}
         <div ref={bottomRef} />
       </div>
-      <Composer value={body} onChange={setBody} onSubmit={send} sending={sending} placeholder="Share with the cohort…" />
-    </>
-  );
-}
-
-function GeneralThread({ myName }: { myName: string }) {
-  const { user } = useSession();
-  const [messages, setMessages] = useState<any[]>([]);
-  const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  const load = async () => {
-    const { data, error } = await supabase
-      .from("general_messages").select("*").order("created_at", { ascending: true }).limit(200);
-    if (error) { toast.error(error.message); return; }
-    setMessages(data ?? []);
-  };
-
-  useEffect(() => {
-    load();
-    const interval = setInterval(load, 4000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
-
-  const send = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!body.trim() || !user) return;
-    setSending(true);
-    const { error } = await supabase.from("general_messages").insert({
-      sender_id: user.id, sender_name: myName, body: body.trim(),
-    });
-    setSending(false);
-    if (error) { toast.error(error.message); return; }
-    setBody("");
-    load();
-  };
-
-  return (
-    <>
-      <div className="flex items-center justify-between gap-3 border-b border-border p-4">
-        <div>
-          <div className="font-semibold">General DBI chat</div>
-          <div className="text-[10px] tracking-widest text-muted-foreground">The whole Citadel, in one room</div>
-        </div>
-        <a href={generalCallUrl()} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10">
-          <Video className="h-3.5 w-3.5" /> Group call
-        </a>
-      </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
-        {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — say hello to the Citadel.</p>}
-        {messages.map((m) => {
-          const mine = m.sender_id === user?.id;
-          return (
-            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                {!mine && <div className="text-[10px] font-semibold text-gold-deep mb-0.5">{m.sender_name}</div>}
-                {m.body}
-                <div className={`mt-1 text-[9px] ${mine ? "opacity-70" : "text-muted-foreground"}`}>{new Date(m.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
-              </div>
-            </div>
-          );
-        })}
-        <div ref={bottomRef} />
-      </div>
-      <form onSubmit={send} className="flex items-center gap-2 border-t border-border p-3">
-        <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="Share with the Citadel…" className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm" />
-        <button type="submit" disabled={sending} className="rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
-          {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-        </button>
-      </form>
+      <Composer
+        value={body}
+        onChange={setBody}
+        onSubmit={send}
+        sending={sending}
+        placeholder="Share with the cohort…"
+      />
     </>
   );
 }

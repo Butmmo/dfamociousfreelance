@@ -4,8 +4,19 @@ import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
-import { useEffect, useState } from "react";
-import { LayoutDashboard, BookOpen, LogOut, Crown, CalendarDays, FileBarChart, Compass, ShieldAlert, UserRound, MessageSquare, Users, MoreHorizontal, X, DollarSign } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  LayoutDashboard,
+  BookOpen,
+  LogOut,
+  Crown,
+  Compass,
+  ShieldAlert,
+  UserRound,
+  MessageSquare,
+  Users,
+  ChevronDown,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -24,7 +35,12 @@ function AuthedShell() {
   const { path, needsChoice, msRemaining, loading: pathLoading } = usePath();
   const status = useAccountStatus();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({
+    full_name: null,
+    avatar_url: null,
+  });
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
@@ -109,20 +125,11 @@ function AuthedShell() {
   const tabs = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
-    { to: "/calendar", label: "Calendar", icon: CalendarDays, show: !needsChoice },
-    { to: "/report", label: "Report", icon: FileBarChart, show: !needsChoice },
-    { to: "/dfy", label: "DFY", icon: DollarSign, show: !needsChoice },
     { to: "/messages", label: "Messages", icon: MessageSquare, show: !needsChoice },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
     { to: "/choose-path", label: "Your Path", icon: Compass, show: needsChoice },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
-
-  // The bottom bar shows at most four buttons: three primaries plus "More".
-  const primaryTabs = tabs.slice(0, 3);
-  const secondaryTabs = tabs.slice(3);
-
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -137,7 +144,9 @@ function AuthedShell() {
           </Link>
           <nav className="hidden md:flex items-center gap-1 text-sm">
             {tabs.map((t) => (
-              <NavTab key={t.to} to={t.to} icon={t.icon}>{t.label}</NavTab>
+              <NavTab key={t.to} to={t.to} icon={t.icon}>
+                {t.label}
+              </NavTab>
             ))}
           </nav>
           <ProfileMenu
@@ -171,45 +180,19 @@ function AuthedShell() {
         )}
       </header>
 
-
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-10 pb-28 md:pb-10">
         <Outlet />
       </main>
 
-      {/* Mobile / tablet bottom nav — never more than four buttons; the rest live under "More" */}
-      {moreOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm" onClick={() => setMoreOpen(false)} />
-      )}
-      {moreOpen && (
-        <div className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-1.5rem)] max-w-sm rounded-2xl border border-gold/40 bg-card shadow-regal p-3">
-          <div className="flex items-center justify-between px-1 pb-2">
-            <span className="text-[10px] tracking-widest text-gold-deep">More Of The Citadel</span>
-            <button onClick={() => setMoreOpen(false)} className="p-1 rounded-md hover:bg-muted" aria-label="Close menu">
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {secondaryTabs.map((t) => (
-              <Link
-                key={t.to}
-                to={t.to}
-                onClick={() => setMoreOpen(false)}
-                className="flex flex-col items-center gap-1 rounded-xl border border-border px-2 py-3 text-[10px] font-semibold text-muted-foreground text-center"
-                activeProps={{ className: "bg-gold/15 text-gold-deep border-gold/40" }}
-              >
-                <t.icon className="h-5 w-5" />
-                <span>{t.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-      <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 rounded-2xl border border-gold/40 bg-card/95 backdrop-blur shadow-regal px-2 py-2 flex items-center gap-1">
-        {primaryTabs.map((t) => (
+      {/* Mobile / tablet bottom nav */}
+      <nav
+        className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 rounded-2xl border border-gold/40 bg-card/95 backdrop-blur shadow-regal px-2 py-2 flex items-center gap-1 max-w-[calc(100vw-1.5rem)] overflow-x-auto"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        {tabs.map((t) => (
           <Link
             key={t.to}
             to={t.to}
-            onClick={() => setMoreOpen(false)}
             className="flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-semibold text-muted-foreground shrink-0"
             activeProps={{ className: "bg-gold/15 text-gold-deep" }}
           >
@@ -217,18 +200,6 @@ function AuthedShell() {
             <span>{t.label}</span>
           </Link>
         ))}
-        {secondaryTabs.length > 0 && (
-          <button
-            onClick={() => setMoreOpen((v) => !v)}
-            className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-semibold shrink-0 ${
-              moreOpen ? "bg-gold/15 text-gold-deep" : "text-muted-foreground"
-            }`}
-            aria-expanded={moreOpen}
-          >
-            <MoreHorizontal className="h-5 w-5" />
-            <span>More</span>
-          </button>
-        )}
       </nav>
     </div>
   );
@@ -276,9 +247,7 @@ function ProfileMenu({
           </span>
         )}
         {pathShort && (
-          <span className="text-[10px] font-semibold tracking-widest text-gold-deep hidden xs:inline">
-            {pathShort}
-          </span>
+          <span className="text-[10px] font-semibold tracking-widest text-gold-deep hidden xs:inline">{pathShort}</span>
         )}
         <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
