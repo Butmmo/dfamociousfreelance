@@ -5,8 +5,10 @@ import { useSession } from "@/lib/use-session";
 import {
   listAvailableMentees, requestMentee, respondToMentorshipRequest, endMentorship,
   listMyMentorships, logMentorshipCheckin, listMentorshipCheckins, logMentorshipReview, listMentorshipReviews,
+  listEscalationsForMentorship,
 } from "@/lib/mentorship.functions";
 import { leadershipProgress, currentWeekStart, LEADERSHIP_MENTEE_TARGET, MENTOR_SOFT_CAP } from "@/lib/mentorship";
+import { slaSnapshot } from "@/lib/escalation-sla";
 import { mentorshipCallUrl } from "@/lib/video";
 import { toast } from "sonner";
 import {
@@ -255,9 +257,11 @@ function MentorshipDetail({ mentorship, isMenteeView }: { mentorship: any; isMen
   const logCheckin = useServerFn(logMentorshipCheckin);
   const listReviews = useServerFn(listMentorshipReviews);
   const logReview = useServerFn(logMentorshipReview);
+  const listEscalations = useServerFn(listEscalationsForMentorship);
 
   const [checkins, setCheckins] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [escalations, setEscalations] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
   const [progressNote, setProgressNote] = useState("");
   const [repAssessment, setRepAssessment] = useState("");
@@ -266,11 +270,12 @@ function MentorshipDetail({ mentorship, isMenteeView }: { mentorship: any; isMen
 
   const load = async () => {
     try {
-      const [c, r] = await Promise.all([
+      const [c, r, esc] = await Promise.all([
         listCheckins({ data: { mentorship_id: mentorship.id } }),
         listReviews({ data: { mentorship_id: mentorship.id } }),
+        listEscalations({ data: { mentorship_id: mentorship.id } }),
       ]);
-      setCheckins(c); setReviews(r);
+      setCheckins(c); setReviews(r); setEscalations(esc);
     } catch (e: any) { toast.error(e.message ?? "Failed to load"); }
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [mentorship.id]);
@@ -320,6 +325,33 @@ function MentorshipDetail({ mentorship, isMenteeView }: { mentorship: any; isMen
           </div>
         )}
       </div>
+
+      {escalations.length > 0 && (
+        <div>
+          <div className="text-[10px] tracking-widest text-muted-foreground mb-2">Escalations raised</div>
+          <div className="space-y-2">
+            {escalations.map((e) => {
+              const snap = slaSnapshot(e);
+              const meta: Record<string, string> = {
+                open: "bg-muted text-muted-foreground",
+                due_soon: "bg-amber-500/15 text-amber-600",
+                breached: "bg-crimson/15 text-crimson",
+                acknowledged: "bg-sky-500/15 text-sky-600",
+                resolved: "bg-emerald-500/15 text-emerald-600",
+              };
+              return (
+                <div key={e.id} className="rounded-md border border-border bg-card p-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className={`rounded-full px-2 py-0.5 font-semibold tracking-widest ${meta[snap.status]}`}>{snap.status.replace("_", " ")}</span>
+                    <span className="text-muted-foreground">{new Date(e.raised_at).toLocaleDateString()}</span>
+                  </div>
+                  <p className="mt-1 text-muted-foreground">{e.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {!isMenteeView && (
         <div>

@@ -19,6 +19,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMentorshipRouteImport } from './routes/_authenticated/mentorship'
 import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_authenticated/council-mentorship'
+import { Route as AuthenticatedCouncilEscalationsRouteImport } from './routes/_authenticated/council-escalations'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
@@ -101,6 +102,11 @@ const AuthenticatedMentorshipRoute = AuthenticatedMentorshipRouteImport.update({
 const AuthenticatedCouncilMentorshipRoute = AuthenticatedCouncilMentorshipRouteImport.update({
   id: '/council-mentorship',
   path: '/council-mentorship',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCouncilEscalationsRoute = AuthenticatedCouncilEscalationsRouteImport.update({
+  id: '/council-escalations',
+  path: '/council-escalations',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
+  '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
   '/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -308,6 +315,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
+  '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
   '/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/choose-path': typeof AuthenticatedChoosePathRoute
+  '/_authenticated/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
   '/_authenticated/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
   '/_authenticated/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/calendar'
     | '/choose-path'
+    | '/council-escalations'
     | '/council-mentorship'
     | '/council-reports'
     | '/dashboard'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/calendar'
     | '/choose-path'
+    | '/council-escalations'
     | '/council-mentorship'
     | '/council-reports'
     | '/dashboard'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/calendar'
     | '/_authenticated/choose-path'
+    | '/_authenticated/council-escalations'
     | '/_authenticated/council-mentorship'
     | '/_authenticated/council-reports'
     | '/_authenticated/dashboard'
@@ -600,6 +612,13 @@ declare module '@tanstack/react-router' {
       path: '/council-mentorship'
       fullPath: '/council-mentorship'
       preLoaderRoute: typeof AuthenticatedCouncilMentorshipRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/council-escalations': {
+      id: '/_authenticated/council-escalations'
+      path: '/council-escalations'
+      fullPath: '/council-escalations'
+      preLoaderRoute: typeof AuthenticatedCouncilEscalationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/choose-path': {
@@ -786,6 +805,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChoosePathRoute: typeof AuthenticatedChoosePathRoute
   AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedCouncilMentorshipRoute: typeof AuthenticatedCouncilMentorshipRoute
+  AuthenticatedCouncilEscalationsRoute: typeof AuthenticatedCouncilEscalationsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDfyRoute: typeof AuthenticatedDfyRoute
   AuthenticatedMentorshipRoute: typeof AuthenticatedMentorshipRoute
@@ -823,6 +843,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChoosePathRoute: AuthenticatedChoosePathRoute,
   AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedCouncilMentorshipRoute: AuthenticatedCouncilMentorshipRoute,
+  AuthenticatedCouncilEscalationsRoute: AuthenticatedCouncilEscalationsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDfyRoute: AuthenticatedDfyRoute,
   AuthenticatedMentorshipRoute: AuthenticatedMentorshipRoute,
