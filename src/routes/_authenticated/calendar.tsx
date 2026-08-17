@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { WEEKS } from "./playbooks/plan";
-import { CheckCircle2, Circle, CalendarDays, Flame, Lock, ArrowRight, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { CheckCircle2, Circle, CalendarDays, Flame, Lock, ArrowRight, Clock, ChevronLeft, ChevronRight, Target } from "lucide-react";
 import { ESCALATION_START } from "@/lib/escalation";
 import { toast } from "sonner";
 
@@ -14,6 +14,8 @@ export const Route = createFileRoute("/_authenticated/calendar")({
 
 type DayMeta = { day: number; focus: string; icon: string; taskIds: string[]; note?: string };
 type ProgressRow = { task_id: string; completed: boolean; completed_at: string | null };
+type BpsActivity = { id: string; label: string; sort_order: number };
+type BpsCheck = { activity_id: string; check_date: string; done: boolean };
 
 const DAY_MANUAL_PREFIX = "day-complete-";
 
@@ -25,21 +27,65 @@ function CalendarPage() {
   const [monthCursor, setMonthCursor] = useState<Date>(() => {
     const d = new Date(); d.setDate(1); return d;
   });
+  const [bpsActivities, setBpsActivities] = useState<BpsActivity[]>([]);
+  const [bpsChecks, setBpsChecks] = useState<BpsCheck[]>([]);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       setLoading(true);
-      const [pRes, prRes] = await Promise.all([
+      const [pRes, prRes, actRes] = await Promise.all([
         supabase.from("profiles").select("start_date, created_at").eq("id", user.id).maybeSingle(),
         supabase.from("task_progress").select("task_id, completed, completed_at").eq("user_id", user.id).eq("playbook", "p_45day"),
+        supabase.from("bps_activities").select("id,label,sort_order").eq("user_id", user.id).eq("active", true).order("sort_order", { ascending: true }),
       ]);
       const sd = pRes.data?.start_date ?? pRes.data?.created_at ?? null;
       setStartDate(sd ? new Date(sd) : new Date());
       setProgress((prRes.data as any) ?? []);
+      setBpsActivities((actRes.data as any) ?? []);
       setLoading(false);
     })();
   }, [user]);
+
+  // BPS daily checks for the visible Gregorian month, refetched whenever
+  // the user pages the calendar or toggles today's tracker.
+  const [bpsNonce, setBpsNonce] = useState(0);
+  useEffect(() => {
+    if (!user || bpsActivities.length === 0) { setBpsChecks([]); return; }
+    const from = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 1);
+    const to = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1);
+    supabase
+      .from("bps_daily_checks")
+      .select("activity_id,check_date,done")
+      .eq("user_id", user.id)
+      .gte("check_date", from.toISOString().slice(0, 10))
+      .lt("check_date", to.toISOString().slice(0, 10))
+      .then(({ data, error }: { data: BpsCheck[] | null; error: { message: string } | null }) => {
+        if (error) { toast.error(error.message); return; }
+        setBpsChecks(data ?? []);
+      });
+  }, [user, monthCursor, bpsActivities, bpsNonce]);
+
+  const toggleBpsToday = async (activityId: string) => {
+    if (!user) return;
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const current = bpsChecks.find((c) => c.activity_id === activityId && c.check_date === todayStr)?.done ?? false;
+    const { error } = await supabase.from("bps_daily_checks").upsert(
+      { user_id: user.id, activity_id: activityId, check_date: todayStr, done: !current },
+      { onConflict: "activity_id,check_date" },
+    );
+    if (error) { toast.error(error.message); return; }
+    setBpsNonce((n) => n + 1);
+  };
+
+  const bpsDoneDates = useMemo(() => {
+    if (bpsActivities.length === 0) return new Set<string>();
+    const byDate = new Map<string, number>();
+    for (const c of bpsChecks) if (c.done) byDate.set(c.check_date, (byDate.get(c.check_date) ?? 0) + 1);
+    const out = new Set<string>();
+    for (const [date, n] of byDate) if (n >= bpsActivities.length) out.add(date);
+    return out;
+  }, [bpsChecks, bpsActivities]);
 
   const daysMeta: DayMeta[] = useMemo(() => {
     const out: DayMeta[] = [];
@@ -146,6 +192,44 @@ function CalendarPage() {
         </div>
       </section>
 
+      {/* BPS daily tracker — the same 1/0 binary layer that scores the Belief/Affirmation/Evaluation cycle */}
+      <section className="rounded-2xl border border-gold/40 bg-gold/5 p-5">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
+              <Target className="h-3.5 w-3.5" /> BPS — Today
+            </div>
+            <h2 className="mt-1 font-display text-lg font-bold">Today's daily tracker</h2>
+          </div>
+          <Link to="/bps" className="text-xs font-semibold text-gold-deep hover:underline inline-flex items-center gap-1">
+            Open full BPS <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+        {bpsActivities.length === 0 ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            No tracked activities yet — set up your daily 1/0 tracker in{" "}
+            <Link to="/bps" className="text-primary font-semibold hover:underline">BPS</Link>.
+          </p>
+        ) : (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {bpsActivities.map((a) => {
+              const done = bpsChecks.some((c) => c.activity_id === a.id && c.check_date === new Date().toISOString().slice(0, 10) && c.done);
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => toggleBpsToday(a.id)}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                    done ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-600" : "border-border text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  {done ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Circle className="h-3.5 w-3.5" />} {a.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {/* Monthly Gregorian view */}
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center justify-between mb-4">
@@ -190,11 +274,16 @@ function CalendarPage() {
               ? "bg-background border-border"
               : "bg-muted/20 border-transparent text-muted-foreground";
 
+            const bpsDone = bpsDoneDates.has(cd.toISOString().slice(0, 10));
+
             return (
               <div key={i} className={`aspect-square rounded-md border p-1 flex flex-col text-[10px] ${tone}`}>
                 <div className="flex items-center justify-between">
                   <span className="font-semibold">{cd.getDate()}</span>
-                  {planDay && <span className="text-[8px] opacity-70">D{planDay}</span>}
+                  <span className="flex items-center gap-0.5">
+                    {bpsDone && <span className="h-1.5 w-1.5 rounded-full bg-gold" title="BPS: all activities done" />}
+                    {planDay && <span className="text-[8px] opacity-70">D{planDay}</span>}
+                  </span>
                 </div>
                 {dayObj && (
                   <div className="mt-auto truncate text-[9px]" title={dayObj.focus}>
@@ -207,6 +296,7 @@ function CalendarPage() {
         </div>
         <p className="mt-3 text-[11px] text-muted-foreground">
           The 45-Day plan is anchored to your start date · your program will run for at least a year — new playbooks land here as they release.
+          {bpsActivities.length > 0 && <> A gold dot marks a day where every BPS activity was checked off.</>}
         </p>
       </section>
 
