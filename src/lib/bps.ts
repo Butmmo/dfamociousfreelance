@@ -4,8 +4,6 @@
 // this file and those documents differ, the documents govern — the fixed
 // remark language especially is verbatim, not paraphrased.
 
-export const MAX_DAILY_ACTIVITIES = 4;
-
 export interface GoalItem {
   text: string;
   done: boolean;
@@ -20,9 +18,46 @@ export const BPS_PILLARS = [
 
 export type PillarKey = (typeof BPS_PILLARS)[number]["key"];
 
+/** Starting point when a pillar is first shown — beneficiaries may add or remove items freely from here. */
 export const PILLAR_ITEM_COUNT = 3;
 
 export const MLM_DEFAULT_GOAL = "NIL – Not yet a distributor";
+
+export interface CustomPillar {
+  key: string;
+  label: string;
+  goal: string;
+  items: GoalItem[];
+}
+
+/**
+ * The Finance Goal's NBO-oriented copy ("weeks 1-3 sales and marketing")
+ * only applies to NBC-trained beneficiaries. For everyone else the
+ * finance target is structural instead: leads to contact, messages to
+ * send, new vs. returning client counts, and an expected average sale
+ * price — the revenue target is derived, not typed.
+ */
+export function computeFinanceRevenueTarget(
+  avgPriceUsd: number | null | undefined,
+  newClients: number | null | undefined,
+  returningClients: number | null | undefined,
+): number {
+  const price = avgPriceUsd ?? 0;
+  const clients = (newClients ?? 0) + (returningClients ?? 0);
+  return price * clients;
+}
+
+/** Every non-empty item across the built-in pillars and any custom pillars — the flat set of things worth tracking daily. */
+export function deriveActivityLabels(pillars: {
+  finance_items: GoalItem[]; self_dev_items: GoalItem[]; mlm_items: GoalItem[]; relationship_items: GoalItem[];
+  custom_pillars: CustomPillar[];
+}): string[] {
+  const all = [
+    ...pillars.finance_items, ...pillars.self_dev_items, ...pillars.mlm_items, ...pillars.relationship_items,
+    ...pillars.custom_pillars.flatMap((p) => p.items),
+  ];
+  return all.map((i) => i.text.trim()).filter(Boolean);
+}
 
 /** Belief Goal is submitted ~30 days before the target month begins. */
 export function beliefDueDate(targetMonth: Date): Date {

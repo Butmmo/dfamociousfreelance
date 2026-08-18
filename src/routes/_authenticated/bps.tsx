@@ -7,9 +7,9 @@ import { usePath } from "@/lib/use-path";
 import { PATHS } from "@/lib/paths";
 import { submitBeliefGoal, submitAffirmationGoal, submitEvaluationGoal } from "@/lib/bps.functions";
 import {
-  MAX_DAILY_ACTIVITIES, BPS_PILLARS, PILLAR_ITEM_COUNT, MLM_DEFAULT_GOAL,
+  BPS_PILLARS, PILLAR_ITEM_COUNT, MLM_DEFAULT_GOAL, computeFinanceRevenueTarget,
   beliefDueDate, affirmationDueDate, evaluationDueDate, defaultTargetMonth, monthKey,
-  goalCycleStatus, type GoalItem, type PillarKey,
+  goalCycleStatus, type GoalItem, type PillarKey, type CustomPillar,
 } from "@/lib/bps";
 import {
   CRM_STAGES, priorityFromScore, PRIORITY_META,
@@ -19,7 +19,8 @@ import { toast } from "sonner";
 import {
   Target, Users, CalendarCheck2, Plus, Pencil, Trash2, X, Save, Loader2,
   Phone, Mail, Linkedin, Globe, MapPin, Star, Flame, CheckCircle2, Circle,
-  Send, ClipboardList, TrendingUp, AlertTriangle,
+  Send, ClipboardList, TrendingUp, AlertTriangle, ChevronLeft, ChevronRight,
+  BarChart3, Upload,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/bps")({
@@ -384,66 +385,72 @@ function TextAreaField({ label, value, onChange, rows }: { label: string; value:
   );
 }
 
-/* ═══════════════════════════ DAILY TRACKER (1 / 0) ═══════════════════════════ */
+/* ═══════════════════════════ DAILY TRACKER (1 / 0, auto-derived from the Belief Goal) ═══════════════════════════ */
 
-type Activity = { id: string; label: string; sort_order: number; active: boolean };
+type Activity = { id: string; label: string; sort_order: number; active: boolean; goal_id: string | null };
 type DailyCheck = { activity_id: string; check_date: string; done: boolean };
+type WeeklyReport = { id: string; week_start: string; week_end: string; activities_done: number; activities_total: number; percent: number };
+
+/** Monday of the week containing d. */
+function weekStartOf(d: Date): Date {
+  const out = new Date(d); out.setHours(0, 0, 0, 0);
+  const day = out.getDay();
+  out.setDate(out.getDate() - (day === 0 ? 6 : day - 1));
+  return out;
+}
+function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
 
 function TrackerSection() {
   const { user } = useSession();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [checks, setChecks] = useState<DailyCheck[]>([]);
+  const [weeklyReports, setWeeklyReports] = useState<WeeklyReport[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newLabel, setNewLabel] = useState("");
-  const [days, setDays] = useState(14);
+  const [weekCursor, setWeekCursor] = useState<Date>(() => weekStartOf(new Date()));
 
-  const rangeStart = useMemo(() => {
-    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (days - 1)); return d;
-  }, [days]);
+  const targetKey = useMemo(() => monthKey(defaultTargetMonth()), []);
 
   const load = async () => {
     if (!user) return;
-    const [{ data: acts }, { data: ch }] = await Promise.all([
-      supabase.from("bps_activities").select("*").eq("user_id", user.id).eq("active", true).order("sort_order", { ascending: true }),
-      supabase.from("bps_daily_checks").select("activity_id,check_date,done").eq("user_id", user.id).gte("check_date", rangeStart.toISOString().slice(0, 10)),
+    const { data: goal } = await supabase
+      .from("bps_monthly_goals").select("id").eq("user_id", user.id).eq("target_month", targetKey).maybeSingle();
+    const goalId = (goal as any)?.id ?? null;
+    const [{ data: acts }, { data: wr }] = await Promise.all([
+      goalId
+        ? supabase.from("bps_activities").select("*").eq("goal_id", goalId).eq("active", true).order("sort_order", { ascending: true })
+        : Promise.resolve({ data: [] as any[] }),
+      supabase.from("bps_weekly_reports").select("id,week_start,week_end,activities_done,activities_total,percent").eq("user_id", user.id).order("week_start", { ascending: false }).limit(8),
     ]);
-    setActivities((acts as any) ?? []);
-    setChecks((ch as any) ?? []);
+    const list = (acts as any) ?? [];
+    setActivities(list);
+    setWeeklyReports((wr as any) ?? []);
+    const ids = list.map((a: any) => a.id);
+    if (ids.length) {
+      const { data: ch } = await supabase.from("bps_daily_checks").select("activity_id,check_date,done").in("activity_id", ids);
+      setChecks((ch as any) ?? []);
+    } else {
+      setChecks([]);
+    }
     setLoading(false);
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user, days]);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user]);
 
-  const dateList = useMemo(() => {
+  const weekDates = useMemo(() => {
     const out: string[] = [];
-    for (let i = 0; i < days; i++) {
-      const d = new Date(rangeStart); d.setDate(d.getDate() + i);
-      out.push(d.toISOString().slice(0, 10));
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekCursor); d.setDate(d.getDate() + i);
+      out.push(isoDate(d));
     }
     return out;
-  }, [rangeStart, days]);
+  }, [weekCursor]);
 
   const checkMap = useMemo(() => {
     const m = new Map<string, boolean>();
     for (const c of checks) m.set(`${c.activity_id}:${c.check_date}`, c.done);
     return m;
   }, [checks]);
-
-  const addActivity = async () => {
-    if (!user || !newLabel.trim()) return;
-    if (activities.length >= MAX_DAILY_ACTIVITIES) { toast.error(`Track at most ${MAX_DAILY_ACTIVITIES} activities at a time.`); return; }
-    const { error } = await supabase.from("bps_activities").insert({
-      user_id: user.id, label: newLabel.trim(), sort_order: activities.length,
-    } as any);
-    if (error) { toast.error(error.message); return; }
-    setNewLabel("");
-    load();
-  };
-
-  const retireActivity = async (id: string) => {
-    const { error } = await supabase.from("bps_activities").update({ active: false } as any).eq("id", id);
-    if (error) { toast.error(error.message); return; }
-    load();
-  };
 
   const toggle = async (activityId: string, date: string) => {
     if (!user) return;
@@ -462,57 +469,38 @@ function TrackerSection() {
 
   if (loading) return <div className="text-sm text-muted-foreground">Loading your tracker…</div>;
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = isoDate(new Date());
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="font-display text-lg font-bold">Chosen activities</h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          Up to {MAX_DAILY_ACTIVITIES} activities, scored 1 (done) or 0 (not done) each day. No partial credit — a day either happened or it didn't.
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {activities.map((a) => (
-            <span key={a.id} className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/5 px-3 py-1.5 text-xs font-semibold">
-              {a.label}
-              <button onClick={() => retireActivity(a.id)} title="Retire this activity" className="text-muted-foreground hover:text-crimson"><X className="h-3 w-3" /></button>
-            </span>
-          ))}
-        </div>
-        {activities.length < MAX_DAILY_ACTIVITIES && (
-          <div className="mt-3 flex gap-2">
-            <input value={newLabel} onChange={(e) => setNewLabel(e.target.value)} placeholder="e.g. Outreach 10 DMs"
-              className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm" />
-            <button onClick={addActivity} className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-              <Plus className="h-4 w-4" /> Add
-            </button>
-          </div>
-        )}
+      <div className="rounded-2xl border border-gold/40 bg-gold/5 p-4 text-xs text-muted-foreground">
+        Activities here are deduced automatically from this month's Belief Goal action items — there's nothing to type in.
+        Set or edit your Belief Goal in the Monthly Goals tab and a tracking sheet appears here for the cycle, broken into weeks.
       </div>
 
       {activities.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-          Add your first activity above to start daily binary tracking.
+          No Belief Goal set for this cycle yet — submit one in Monthly Goals and your daily tracker will populate here.
         </div>
       ) : (
         <div className="rounded-2xl border border-border bg-card p-5 overflow-x-auto">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display text-lg font-bold">Daily grid</h2>
-            <div className="flex gap-1 text-xs">
-              {[7, 14, 30].map((n) => (
-                <button key={n} onClick={() => setDays(n)} className={`rounded-full px-3 py-1 font-semibold ${days === n ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground hover:bg-muted"}`}>
-                  {n}d
-                </button>
-              ))}
+          <div className="flex items-center justify-between mb-3 gap-2">
+            <h2 className="font-display text-lg font-bold">
+              Week of {weekCursor.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+            </h2>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setWeekCursor((d) => { const n = new Date(d); n.setDate(n.getDate() - 7); return n; })} className="p-1.5 rounded hover:bg-muted" aria-label="Previous week"><ChevronLeft className="h-4 w-4" /></button>
+              <button onClick={() => setWeekCursor(weekStartOf(new Date()))} className="rounded border border-border px-2 py-1 text-[11px] font-semibold hover:bg-muted">This week</button>
+              <button onClick={() => setWeekCursor((d) => { const n = new Date(d); n.setDate(n.getDate() + 7); return n; })} className="p-1.5 rounded hover:bg-muted" aria-label="Next week"><ChevronRight className="h-4 w-4" /></button>
             </div>
           </div>
-          <table className="text-xs border-collapse">
+          <table className="text-xs border-collapse w-full">
             <thead>
               <tr>
                 <th className="text-left p-2 sticky left-0 bg-card">Activity</th>
-                {dateList.map((d) => (
-                  <th key={d} className={`p-1 font-normal text-center min-w-[28px] ${d === today ? "text-gold-deep font-bold" : "text-muted-foreground"}`}>
-                    {new Date(d).getDate()}
+                {weekDates.map((d) => (
+                  <th key={d} className={`p-1 font-normal text-center min-w-[36px] ${d === today ? "text-gold-deep font-bold" : "text-muted-foreground"}`}>
+                    {new Date(d).toLocaleDateString(undefined, { weekday: "short" })}<br />{new Date(d).getDate()}
                   </th>
                 ))}
               </tr>
@@ -520,14 +508,14 @@ function TrackerSection() {
             <tbody>
               {activities.map((a) => (
                 <tr key={a.id} className="border-t border-border">
-                  <td className="p-2 font-semibold sticky left-0 bg-card whitespace-nowrap">{a.label}</td>
-                  {dateList.map((d) => {
+                  <td className="p-2 font-semibold sticky left-0 bg-card max-w-[180px] truncate" title={a.label}>{a.label}</td>
+                  {weekDates.map((d) => {
                     const done = checkMap.get(`${a.id}:${d}`) ?? false;
                     return (
                       <td key={d} className="p-1 text-center">
                         <button
                           onClick={() => toggle(a.id, d)}
-                          className={`h-6 w-6 rounded-md text-[11px] font-bold transition ${
+                          className={`h-7 w-7 rounded-md text-[11px] font-bold transition ${
                             done ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground hover:bg-muted/70"
                           }`}
                         >
@@ -542,6 +530,25 @@ function TrackerSection() {
           </table>
         </div>
       )}
+
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="flex items-center gap-2 text-[10px] tracking-widest text-gold-deep"><BarChart3 className="h-3.5 w-3.5" /> Weekly reports</div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Every Monday your past week is scored automatically and sent to your mentor and DSE Rep (or the founder if you don't have one yet) — nothing to submit here.
+        </p>
+        {weeklyReports.length === 0 ? (
+          <p className="mt-3 text-xs text-muted-foreground">No weekly report generated yet.</p>
+        ) : (
+          <div className="mt-3 space-y-2">
+            {weeklyReports.map((w) => (
+              <div key={w.id} className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2 text-xs">
+                <span>{new Date(w.week_start).toLocaleDateString(undefined, { month: "short", day: "numeric" })} – {new Date(w.week_end).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+                <span className="font-semibold">{w.activities_done}/{w.activities_total} ({w.percent.toFixed(0)}%)</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -551,9 +558,13 @@ function TrackerSection() {
 type MonthlyGoal = {
   id: string; target_month: string;
   finance_goal: string | null; finance_items: GoalItem[];
+  finance_leads_target: number | null; finance_messages_target: number | null;
+  finance_new_clients_target: number | null; finance_returning_clients_target: number | null;
+  finance_avg_price_usd: number | null;
   self_dev_goal: string | null; self_dev_items: GoalItem[];
   mlm_goal: string; mlm_items: GoalItem[];
   relationship_goal: string | null; relationship_items: GoalItem[];
+  custom_pillars: CustomPillar[];
   belief_submitted_at: string | null;
   affirmation_submitted_at: string | null; affirmation_score: number | null; affirmation_total: number | null; affirmation_percent: number | null; affirmation_remark: string | null;
   evaluation_submitted_at: string | null; evaluation_score: number | null; evaluation_total: number | null; evaluation_percent: number | null; evaluation_remark: string | null;
@@ -561,6 +572,46 @@ type MonthlyGoal = {
 
 function emptyItems(): GoalItem[] {
   return Array.from({ length: PILLAR_ITEM_COUNT }, () => ({ text: "", done: false }));
+}
+
+function ItemsEditor({ items, onChange, placeholder }: { items: GoalItem[]; onChange: (items: GoalItem[]) => void; placeholder: string }) {
+  return (
+    <div className="mt-2 space-y-1.5">
+      {items.map((item, idx) => (
+        <div key={idx} className="flex items-center gap-1.5">
+          <input
+            value={item.text}
+            onChange={(e) => { const next = [...items]; next[idx] = { ...next[idx], text: e.target.value }; onChange(next); }}
+            placeholder={`${placeholder} ${idx + 1}`}
+            className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-xs"
+          />
+          <button type="button" onClick={() => onChange(items.filter((_, i) => i !== idx))} className="shrink-0 text-muted-foreground hover:text-destructive" aria-label="Remove item">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...items, { text: "", done: false }])}
+        className="inline-flex items-center gap-1 text-[11px] font-semibold text-gold-deep hover:underline"
+      >
+        <Plus className="h-3 w-3" /> Add action item
+      </button>
+    </div>
+  );
+}
+
+function NumberField({ label, value, onChange, step }: { label: string; value: string; onChange: (v: string) => void; step?: string }) {
+  return (
+    <label className="text-[11px] text-muted-foreground">
+      {label}
+      <input
+        type="number" min={0} step={step ?? "1"} value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+      />
+    </label>
+  );
 }
 
 function GoalsSection() {
@@ -572,6 +623,7 @@ function GoalsSection() {
   const [goals, setGoals] = useState<MonthlyGoal[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [entryChannel, setEntryChannel] = useState<"nbo" | "direct">("direct");
 
   const targetMonth = useMemo(() => defaultTargetMonth(), []);
   const targetKey = monthKey(targetMonth);
@@ -584,32 +636,76 @@ function GoalsSection() {
     setLoading(false);
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("entry_channel").eq("id", user.id).maybeSingle().then(({ data }: { data: { entry_channel: string } | null }) => {
+      if (data?.entry_channel === "nbo" || data?.entry_channel === "direct") setEntryChannel(data.entry_channel);
+    });
+  }, [user]);
 
   const current = goals.find((g) => g.target_month === targetKey) ?? null;
   const history = goals.filter((g) => g.target_month !== targetKey);
 
-  const [pillars, setPillars] = useState<Record<PillarKey, { goal: string; items: GoalItem[] }>>({
-    finance: { goal: "", items: emptyItems() },
+  const [pillars, setPillars] = useState<Record<Exclude<PillarKey, "finance">, { goal: string; items: GoalItem[] }>>({
     self_dev: { goal: "", items: emptyItems() },
     mlm: { goal: MLM_DEFAULT_GOAL, items: emptyItems() },
     relationship: { goal: "", items: emptyItems() },
   });
+  const [financeGoal, setFinanceGoal] = useState("");
+  const [financeItems, setFinanceItems] = useState<GoalItem[]>(emptyItems());
+  const [financeLeadsTarget, setFinanceLeadsTarget] = useState("");
+  const [financeMessagesTarget, setFinanceMessagesTarget] = useState("");
+  const [financeNewClients, setFinanceNewClients] = useState("");
+  const [financeReturningClients, setFinanceReturningClients] = useState("");
+  const [financeAvgPrice, setFinanceAvgPrice] = useState("");
+  const [customPillars, setCustomPillars] = useState<CustomPillar[]>([]);
+
+  const revenueTarget = computeFinanceRevenueTarget(
+    financeAvgPrice ? Number(financeAvgPrice) : null,
+    financeNewClients ? Number(financeNewClients) : null,
+    financeReturningClients ? Number(financeReturningClients) : null,
+  );
+
+  const addCustomPillar = () => setCustomPillars((prev) => [...prev, { key: `custom_${Date.now()}`, label: "", goal: "", items: [{ text: "", done: false }] }]);
+  const removeCustomPillar = (idx: number) => setCustomPillars((prev) => prev.filter((_, i) => i !== idx));
+  const updateCustomPillar = (idx: number, patch: Partial<CustomPillar>) =>
+    setCustomPillars((prev) => prev.map((p, i) => (i === idx ? { ...p, ...patch } : p)));
 
   const submitBeliefGoalHandler = async () => {
-    for (const p of BPS_PILLARS) {
-      if (p.key === "mlm") continue;
-      if (!pillars[p.key].goal.trim()) { toast.error(`Fill in your ${p.label}.`); return; }
-      if (pillars[p.key].items.some((i) => !i.text.trim())) { toast.error(`Fill all 3 action items for your ${p.label}.`); return; }
+    if (!pillars.self_dev.goal.trim()) { toast.error("Fill in your Self-Development Goal."); return; }
+    if (pillars.self_dev.items.length === 0 || pillars.self_dev.items.some((i) => !i.text.trim())) { toast.error("Fill in your Self-Development action items, or remove blank ones."); return; }
+    if (!pillars.relationship.goal.trim()) { toast.error("Fill in your Relationship Goal."); return; }
+    if (pillars.relationship.items.length === 0 || pillars.relationship.items.some((i) => !i.text.trim())) { toast.error("Fill in your Relationship action items, or remove blank ones."); return; }
+    if (pillars.mlm.items.some((i) => !i.text.trim())) { toast.error("Remove blank Multilevel Marketing action items, or fill them in."); return; }
+
+    if (entryChannel === "nbo") {
+      if (!financeGoal.trim()) { toast.error("Fill in your Finance Goal."); return; }
+      if (financeItems.length === 0 || financeItems.some((i) => !i.text.trim())) { toast.error("Fill in your Finance action items, or remove blank ones."); return; }
+    } else if (!financeLeadsTarget || !financeMessagesTarget || !financeNewClients || !financeReturningClients || !financeAvgPrice) {
+      toast.error("Fill in all five Finance targets — leads, messages, new clients, returning clients, and average sale price.");
+      return;
     }
+    for (const p of customPillars) {
+      if (!p.label.trim()) { toast.error("Every custom goal needs a name."); return; }
+      if (p.items.length === 0 || p.items.some((i) => !i.text.trim())) { toast.error(`Fill in action items for "${p.label || "your custom goal"}", or remove blank ones.`); return; }
+    }
+
     setBusy(true);
     try {
       await submitBelief({
         data: {
           target_month: targetKey,
-          finance_goal: pillars.finance.goal, finance_items: pillars.finance.items,
+          finance_goal: entryChannel === "nbo" ? financeGoal : "",
+          finance_items: entryChannel === "nbo" ? financeItems : [],
+          finance_leads_target: entryChannel === "nbo" ? null : Number(financeLeadsTarget),
+          finance_messages_target: entryChannel === "nbo" ? null : Number(financeMessagesTarget),
+          finance_new_clients_target: entryChannel === "nbo" ? null : Number(financeNewClients),
+          finance_returning_clients_target: entryChannel === "nbo" ? null : Number(financeReturningClients),
+          finance_avg_price_usd: entryChannel === "nbo" ? null : Number(financeAvgPrice),
           self_dev_goal: pillars.self_dev.goal, self_dev_items: pillars.self_dev.items,
           mlm_goal: pillars.mlm.goal || MLM_DEFAULT_GOAL, mlm_items: pillars.mlm.items.filter((i) => i.text.trim()),
           relationship_goal: pillars.relationship.goal, relationship_items: pillars.relationship.items,
+          custom_pillars: customPillars.map((p) => ({ ...p, items: p.items.filter((i) => i.text.trim()) })),
         },
       });
       toast.success("Belief Goal submitted — daily binary tracking is now the evidence for Affirmation and Evaluation.");
@@ -658,37 +754,100 @@ function GoalsSection() {
           <div>
             <h3 className="font-display text-lg font-bold">Set your Belief Goal</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              States intended effort, not results. Four pillars, three specific, observable, trackable action items each.
-              Make sure you have at least one activity running in the Daily Tracker first.
+              States intended effort, not results. Add as many action items to each goal as you need — every one of
+              them becomes a tracked activity in your Daily Tracker automatically once you submit.
             </p>
           </div>
-          {BPS_PILLARS.map((p) => (
-            <div key={p.key} className="rounded-xl border border-border p-4">
-              <div className="font-semibold text-sm">{p.label}</div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{p.hint}</p>
-              <input
-                value={pillars[p.key].goal}
-                onChange={(e) => setPillars((prev) => ({ ...prev, [p.key]: { ...prev[p.key], goal: e.target.value } }))}
-                placeholder={p.key === "mlm" ? MLM_DEFAULT_GOAL : "Your goal statement"}
-                className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              />
-              <div className="mt-2 space-y-1.5">
-                {pillars[p.key].items.map((item, idx) => (
-                  <input
-                    key={idx}
-                    value={item.text}
-                    onChange={(e) => setPillars((prev) => {
-                      const items = [...prev[p.key].items];
-                      items[idx] = { ...items[idx], text: e.target.value };
-                      return { ...prev, [p.key]: { ...prev[p.key], items } };
-                    })}
-                    placeholder={`Action item ${idx + 1}`}
-                    className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-xs"
-                  />
-                ))}
+
+          {BPS_PILLARS.filter((p) => p.key !== "finance").map((p) => {
+            const key = p.key as Exclude<PillarKey, "finance">;
+            return (
+              <div key={p.key} className="rounded-xl border border-border p-4">
+                <div className="font-semibold text-sm">{p.label}</div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{p.hint}</p>
+                <input
+                  value={pillars[key].goal}
+                  onChange={(e) => setPillars((prev) => ({ ...prev, [key]: { ...prev[key], goal: e.target.value } }))}
+                  placeholder={key === "mlm" ? MLM_DEFAULT_GOAL : "Your goal statement"}
+                  className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+                <ItemsEditor items={pillars[key].items} onChange={(items) => setPillars((prev) => ({ ...prev, [key]: { ...prev[key], items } }))} placeholder="Action item" />
               </div>
+            );
+          })}
+
+          <div className="rounded-xl border border-border p-4">
+            <div className="font-semibold text-sm">Finance Goal</div>
+            {entryChannel === "nbo" ? (
+              <>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Income target and source — weeks 1-3 sales and marketing, week 4 skill training.</p>
+                <input
+                  value={financeGoal}
+                  onChange={(e) => setFinanceGoal(e.target.value)}
+                  placeholder="Your goal statement"
+                  className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+                <ItemsEditor items={financeItems} onChange={setFinanceItems} placeholder="Action item" />
+              </>
+            ) : (
+              <>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Structural, not aspirational: leads to contact for the month, outreach messages to send, new and
+                  returning clients you expect to close, and your expected average sale price. Your revenue target
+                  is derived from these automatically.
+                </p>
+                <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <NumberField label="Leads to contact" value={financeLeadsTarget} onChange={setFinanceLeadsTarget} />
+                  <NumberField label="Messages to send" value={financeMessagesTarget} onChange={setFinanceMessagesTarget} />
+                  <NumberField label="New clients" value={financeNewClients} onChange={setFinanceNewClients} />
+                  <NumberField label="Returning clients" value={financeReturningClients} onChange={setFinanceReturningClients} />
+                  <NumberField label="Avg. sale price (USD)" value={financeAvgPrice} onChange={setFinanceAvgPrice} step="0.01" />
+                </div>
+                <div className="mt-2 rounded-md bg-accent/30 px-3 py-2 text-xs">
+                  Revenue target: <strong className="font-display">${revenueTarget.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="rounded-xl border border-dashed border-gold/50 p-4 space-y-4">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div>
+                <div className="font-semibold text-sm">Other goals</div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Add as many custom goal types as you need, each with its own indefinite action items.</p>
+              </div>
+              <button
+                type="button"
+                onClick={addCustomPillar}
+                className="inline-flex items-center gap-1 rounded-md border border-input px-2.5 py-1.5 text-[11px] font-semibold hover:bg-accent"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add custom goal
+              </button>
             </div>
-          ))}
+            {customPillars.map((p, idx) => (
+              <div key={p.key} className="rounded-lg border border-border p-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    value={p.label}
+                    onChange={(e) => updateCustomPillar(idx, { label: e.target.value })}
+                    placeholder="Goal name (e.g. Physical Health)"
+                    className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium"
+                  />
+                  <button type="button" onClick={() => removeCustomPillar(idx)} className="shrink-0 text-muted-foreground hover:text-destructive" aria-label="Remove goal">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <input
+                  value={p.goal}
+                  onChange={(e) => updateCustomPillar(idx, { goal: e.target.value })}
+                  placeholder="Your goal statement"
+                  className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-xs"
+                />
+                <ItemsEditor items={p.items} onChange={(items) => updateCustomPillar(idx, { items })} placeholder="Action item" />
+              </div>
+            ))}
+          </div>
+
           <button
             onClick={submitBeliefGoalHandler}
             disabled={busy}
@@ -728,10 +887,17 @@ function GoalCycleCard({ goal, busy, onAffirmation, onEvaluation, compact }: {
 
       {!compact && (
         <div className="mt-3 grid sm:grid-cols-2 gap-3 text-xs">
-          <PillarSummary label="Finance" goal={goal.finance_goal} items={goal.finance_items} />
+          {goal.finance_avg_price_usd != null ? (
+            <FinanceSummary goal={goal} />
+          ) : (
+            <PillarSummary label="Finance" goal={goal.finance_goal} items={goal.finance_items} />
+          )}
           <PillarSummary label="Self-Development" goal={goal.self_dev_goal} items={goal.self_dev_items} />
           <PillarSummary label="Multilevel Marketing" goal={goal.mlm_goal} items={goal.mlm_items} />
           <PillarSummary label="Relationship (Sponsor)" goal={goal.relationship_goal} items={goal.relationship_items} />
+          {(goal.custom_pillars ?? []).map((p) => (
+            <PillarSummary key={p.key} label={p.label} goal={p.goal} items={p.items} />
+          ))}
         </div>
       )}
 
@@ -779,6 +945,22 @@ function PillarSummary({ label, goal, items }: { label: string; goal: string | n
       <div className="text-[10px] tracking-widest text-gold-deep">{label}</div>
       <div className="mt-1 font-medium">{goal || "—"}</div>
       {items.length > 0 && <div className="mt-1 text-muted-foreground">{done}/{items.length} action items done</div>}
+    </div>
+  );
+}
+
+function FinanceSummary({ goal }: { goal: MonthlyGoal }) {
+  const revenueTarget = computeFinanceRevenueTarget(goal.finance_avg_price_usd, goal.finance_new_clients_target, goal.finance_returning_clients_target);
+  return (
+    <div className="rounded-lg border border-border p-3">
+      <div className="text-[10px] tracking-widest text-gold-deep">Finance</div>
+      <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-muted-foreground">
+        <div>Leads: <span className="text-foreground font-medium">{goal.finance_leads_target ?? "—"}</span></div>
+        <div>Messages: <span className="text-foreground font-medium">{goal.finance_messages_target ?? "—"}</span></div>
+        <div>New clients: <span className="text-foreground font-medium">{goal.finance_new_clients_target ?? "—"}</span></div>
+        <div>Returning: <span className="text-foreground font-medium">{goal.finance_returning_clients_target ?? "—"}</span></div>
+      </div>
+      <div className="mt-1.5 font-medium">Revenue target: ${revenueTarget.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
     </div>
   );
 }
