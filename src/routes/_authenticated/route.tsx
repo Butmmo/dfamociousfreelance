@@ -16,6 +16,11 @@ import {
   MessageSquare,
   Users,
   ChevronDown,
+  CalendarDays,
+  FileText,
+  Activity,
+  DollarSign,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,7 +45,10 @@ function AuthedShell() {
     avatar_url: null,
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const moreSheetRef = useRef<HTMLDivElement>(null);
 
   // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
@@ -74,9 +82,21 @@ function AuthedShell() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [menuOpen]);
 
-  // Close the menu on route change so it never lingers after navigating.
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (moreRef.current?.contains(t) || moreSheetRef.current?.contains(t)) return;
+      setMoreOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [moreOpen]);
+
+  // Close the menus on route change so they never linger after navigating.
   useEffect(() => {
     setMenuOpen(false);
+    setMoreOpen(false);
   }, [pathname]);
 
   const signOut = async () => {
@@ -116,20 +136,22 @@ function AuthedShell() {
     );
   }
 
-  // Dashboard/Playbooks/BPS/Messages/Mentorship only show once a path is
-  // chosen, and "Your Path" only shows during the choice window — the two
-  // sets are mutually exclusive, so the bar never exceeds 5 plus Council
-  // for admins (6, for that one role only — BPS earns the extra slot as a
-  // genuinely daily-use tool, not a regression to the old 8-tab bar).
-  // Calendar, Report and DFY stay one click away from Dashboard instead of
-  // living in the top bar; the founder's cross-path "Paths" browser moved
-  // into the profile dropdown to make room.
+  // Hard cap: never more than 4 items in the nav bar on any viewport.
+  // Three primary destinations plus a "More" group that holds everything
+  // else (Calendar, Report, BPS, DFY, Mentorship, Council for admins).
   const tabs = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
     { to: "/messages", label: "Messages", icon: MessageSquare, show: !needsChoice },
-    { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
     { to: "/choose-path", label: "Your Path", icon: Compass, show: needsChoice },
+  ].filter((t) => t.show);
+
+  const moreLinks = [
+    { to: "/calendar", label: "Calendar", icon: CalendarDays, show: !needsChoice },
+    { to: "/report", label: "Report", icon: FileText, show: !needsChoice },
+    { to: "/bps", label: "BPS", icon: Activity, show: !needsChoice },
+    { to: "/dfy", label: "DFY Tracker", icon: DollarSign, show: !needsChoice },
+    { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
 
@@ -150,6 +172,37 @@ function AuthedShell() {
                 {t.label}
               </NavTab>
             ))}
+            {moreLinks.length > 0 && (
+              <div className="relative" ref={moreRef}>
+                <button
+                  onClick={() => setMoreOpen((v) => !v)}
+                  className="inline-flex items-center gap-2 rounded-md px-3 py-2 hover:bg-muted text-foreground"
+                  aria-expanded={moreOpen}
+                  aria-haspopup="menu"
+                >
+                  <Plus className="h-4 w-4" /> More
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${moreOpen ? "rotate-180" : ""}`} />
+                </button>
+                {moreOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-card shadow-regal py-1.5 z-50"
+                  >
+                    {moreLinks.map((l) => (
+                      <Link
+                        key={l.to}
+                        to={l.to}
+                        onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted"
+                        activeProps={{ className: "bg-muted text-primary font-semibold" }}
+                      >
+                        <l.icon className="h-4 w-4" /> {l.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </nav>
           <ProfileMenu
             open={menuOpen}
@@ -186,10 +239,32 @@ function AuthedShell() {
         <Outlet />
       </main>
 
-      {/* Mobile / tablet bottom nav */}
+      {/* Mobile / tablet bottom nav — max 4 items */}
+      {moreOpen && (
+        <button
+          aria-label="Close menu"
+          onClick={() => setMoreOpen(false)}
+          className="md:hidden fixed inset-0 z-40 bg-ink/40 backdrop-blur-[2px]"
+        />
+      )}
+      {moreOpen && moreLinks.length > 0 && (
+        <div ref={moreSheetRef} className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-1.5rem)] max-w-sm rounded-2xl border border-gold/40 bg-card shadow-regal p-2 grid grid-cols-3 gap-1">
+          {moreLinks.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              onClick={() => setMoreOpen(false)}
+              className="flex flex-col items-center gap-1 rounded-xl px-2 py-3 text-[10px] font-semibold text-muted-foreground hover:bg-muted text-center"
+              activeProps={{ className: "bg-gold/15 text-gold-deep" }}
+            >
+              <l.icon className="h-5 w-5" />
+              <span>{l.label}</span>
+            </Link>
+          ))}
+        </div>
+      )}
       <nav
-        className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 rounded-2xl border border-gold/40 bg-card/95 backdrop-blur shadow-regal px-2 py-2 flex items-center gap-1 max-w-[calc(100vw-1.5rem)] overflow-x-auto"
-        style={{ WebkitOverflowScrolling: "touch" }}
+        className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 rounded-2xl border border-gold/40 bg-card/95 backdrop-blur shadow-regal px-2 py-2 flex items-center gap-1 max-w-[calc(100vw-1.5rem)]"
       >
         {tabs.map((t) => (
           <Link
@@ -202,7 +277,18 @@ function AuthedShell() {
             <span>{t.label}</span>
           </Link>
         ))}
+        {moreLinks.length > 0 && (
+          <button
+            onClick={() => setMoreOpen((v) => !v)}
+            aria-expanded={moreOpen}
+            className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-semibold shrink-0 ${moreOpen ? "bg-gold/15 text-gold-deep" : "text-muted-foreground"}`}
+          >
+            <Plus className="h-5 w-5" />
+            <span>More</span>
+          </button>
+        )}
       </nav>
+
     </div>
   );
 }
