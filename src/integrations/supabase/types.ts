@@ -129,24 +129,30 @@ export type Database = {
       }
       cohorts: {
         Row: {
+          active: boolean
           created_at: string
           description: string | null
           id: string
           name: string
+          seq_number: number | null
           start_date: string
         }
         Insert: {
+          active?: boolean
           created_at?: string
           description?: string | null
           id?: string
           name: string
+          seq_number?: number | null
           start_date?: string
         }
         Update: {
+          active?: boolean
           created_at?: string
           description?: string | null
           id?: string
           name?: string
+          seq_number?: number | null
           start_date?: string
         }
         Relationships: []
@@ -747,6 +753,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_message: { Args: { _a: string; _b: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
