@@ -614,7 +614,8 @@ export const createCohort = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: cohort, error } = await supabaseAdmin
       .from("cohorts")
-      .insert({ description: data.description ?? null })
+      // name/seq_number are filled in by the assign_cohort_name trigger.
+      .insert({ name: "", description: data.description ?? null })
       .select("*")
       .single();
     if (error) throw error;
