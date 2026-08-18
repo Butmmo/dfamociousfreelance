@@ -16,7 +16,7 @@ import {
   MessageSquare,
   Users,
   ChevronDown,
-  Target,
+  Activity,
   CalendarDays,
   FileText,
   DollarSign,
@@ -175,7 +175,7 @@ function AuthedShell() {
   const moreLinks = [
     { to: "/calendar", label: "Calendar", icon: CalendarDays, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/report", label: "Report", icon: FileText, show: !effectiveNeedsChoice && !consumerGated },
-    { to: "/bps", label: "BPS", icon: Target, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/bps", label: "BPS", icon: Activity, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/dfy", label: "DFY Tracker", icon: DollarSign, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
