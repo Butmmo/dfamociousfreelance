@@ -15,7 +15,51 @@ import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
 import { Compass, FileText } from "lucide-react";
-import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users, ShieldAlert } from "lucide-react";
+import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users, ShieldAlert, Search } from "lucide-react";
+
+/** Council tables can grow into the hundreds — search narrows, pagination keeps each list to 5 rows at a time. */
+function usePaged<T>(items: T[], matchText: (item: T) => string, pageSize = 5) {
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((i) => matchText(i).toLowerCase().includes(q));
+  }, [items, query]);
+  useEffect(() => { setPage(0); }, [query]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(page, totalPages - 1);
+  const pageItems = filtered.slice(safePage * pageSize, safePage * pageSize + pageSize);
+  return { query, setQuery, page: safePage, setPage, totalPages, pageItems, filteredCount: filtered.length };
+}
+
+function SearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  return (
+    <div className="relative w-full sm:w-64">
+      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-md border border-input bg-background pl-8 pr-3 py-1.5 text-xs"
+      />
+    </div>
+  );
+}
+
+function Pager({ page, totalPages, onPage, count }: { page: number; totalPages: number; onPage: (p: number) => void; count: number }) {
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between text-xs text-muted-foreground mt-3">
+      <span>{count} result{count === 1 ? "" : "s"}</span>
+      <div className="flex items-center gap-2">
+        <button onClick={() => onPage(page - 1)} disabled={page === 0} className="rounded-md border border-border px-2 py-1 disabled:opacity-40 hover:bg-muted">Prev</button>
+        <span>Page {page + 1} / {totalPages}</span>
+        <button onClick={() => onPage(page + 1)} disabled={page >= totalPages - 1} className="rounded-md border border-border px-2 py-1 disabled:opacity-40 hover:bg-muted">Next</button>
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Council — DBI Admin" }] }),
@@ -125,6 +169,18 @@ function Admin() {
     }
     return m;
   }, [dfyMonths]);
+
+  const benRoll = useMemo(
+    () => bens.filter((b) => (b.email ?? "").toLowerCase() !== "boluwatifefamokunwa@gmail.com" && !admins.some((a) => a.id === b.id)),
+    [bens, admins],
+  );
+  const escPaged = usePaged(escs, (r) => {
+    const b = bens.find((x) => x.id === r.beneficiary_id);
+    return `${b?.full_name ?? ""} ${b?.email ?? ""} ${r.reason ?? ""} ${r.level ?? ""}`;
+  });
+  const adminsPaged = usePaged(admins, (a) => `${a.full_name ?? ""} ${a.email ?? ""}`);
+  const invsPaged = usePaged(invs, (i) => `${i.email ?? ""} ${i.role ?? ""} ${i.status ?? ""}`);
+  const bensPaged = usePaged(benRoll, (b) => `${b.full_name ?? ""} ${b.email ?? ""}`);
 
   const doRemove = async (uid: string, label: string) => {
     if (!confirm(`Remove ${label}? This deletes their account.`)) return;
@@ -312,16 +368,22 @@ function Admin() {
 
       {/* Escalations */}
       <section>
-        <h2 className="font-display text-xl font-bold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-crimson" /> Escalation queue</h2>
-        <p className="text-sm text-muted-foreground mt-1">Open flags on beneficiaries who need intervention. Manual check-ins live in the roll below.</p>
-        <div className="mt-4 rounded-xl border border-border overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-display text-xl font-bold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-crimson" /> Escalation queue</h2>
+            <p className="text-sm text-muted-foreground mt-1">Open flags on beneficiaries who need intervention. Manual check-ins live in the roll below.</p>
+          </div>
+          <SearchBox value={escPaged.query} onChange={escPaged.setQuery} placeholder="Search beneficiary or reason…" />
+        </div>
+        <div className="mt-4 rounded-xl border border-border overflow-x-auto">
+          <table className="w-full text-sm min-w-[560px]">
             <thead className="bg-muted text-xs tracking-widest">
               <tr><th className="text-left p-3">Beneficiary</th><th className="text-left p-3">Level</th><th className="text-left p-3">Reason</th><th className="text-left p-3">Opened</th><th className="p-3"></th></tr>
             </thead>
             <tbody>
               {escs.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">No active escalations. Steady hand.</td></tr>}
-              {escs.map((r) => {
+              {escs.length > 0 && escPaged.pageItems.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">No matches for your search.</td></tr>}
+              {escPaged.pageItems.map((r) => {
                 const b = bens.find((x) => x.id === r.beneficiary_id);
                 return (
                   <tr key={r.id} className="border-t border-border">
@@ -338,13 +400,20 @@ function Admin() {
             </tbody>
           </table>
         </div>
+        <Pager page={escPaged.page} totalPages={escPaged.totalPages} onPage={escPaged.setPage} count={escPaged.filteredCount} />
       </section>
 
       {/* Admins */}
       <section>
-        <h2 className="font-display text-xl font-bold flex items-center gap-2"><Shield className="h-5 w-5" /> Admins</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-bold flex items-center gap-2"><Shield className="h-5 w-5" /> Admins</h2>
+          <SearchBox value={adminsPaged.query} onChange={adminsPaged.setQuery} placeholder="Search admins…" />
+        </div>
+        {admins.length > 0 && adminsPaged.pageItems.length === 0 && (
+          <p className="mt-4 text-sm text-muted-foreground">No matches for your search.</p>
+        )}
         <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {admins.map((a) => (
+          {adminsPaged.pageItems.map((a) => (
             <div key={a.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -385,19 +454,24 @@ function Admin() {
             </div>
           ))}
         </div>
+        <Pager page={adminsPaged.page} totalPages={adminsPaged.totalPages} onPage={adminsPaged.setPage} count={adminsPaged.filteredCount} />
       </section>
 
       {/* Pending invites */}
       <section>
-        <h2 className="font-display text-xl font-bold flex items-center gap-2"><Mail className="h-5 w-5" /> Pending invitations</h2>
-        <div className="mt-4 rounded-xl border border-border overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-bold flex items-center gap-2"><Mail className="h-5 w-5" /> Pending invitations</h2>
+          <SearchBox value={invsPaged.query} onChange={invsPaged.setQuery} placeholder="Search invitations…" />
+        </div>
+        <div className="mt-4 rounded-xl border border-border overflow-x-auto">
+          <table className="w-full text-sm min-w-[520px]">
             <thead className="bg-muted text-xs tracking-widest">
               <tr><th className="text-left p-3">Email</th><th className="text-left p-3">Role</th><th className="text-left p-3">Status</th><th className="text-left p-3">Invited</th></tr>
             </thead>
             <tbody>
               {invs.length === 0 && <tr><td colSpan={4} className="p-6 text-center text-muted-foreground">No invitations yet.</td></tr>}
-              {invs.map((i) => (
+              {invs.length > 0 && invsPaged.pageItems.length === 0 && <tr><td colSpan={4} className="p-6 text-center text-muted-foreground">No matches for your search.</td></tr>}
+              {invsPaged.pageItems.map((i) => (
                 <tr key={i.id} className="border-t border-border">
                   <td className="p-3">{i.email}</td>
                   <td className="p-3 capitalize">{i.role}</td>
@@ -408,14 +482,19 @@ function Admin() {
             </tbody>
           </table>
         </div>
+        <Pager page={invsPaged.page} totalPages={invsPaged.totalPages} onPage={invsPaged.setPage} count={invsPaged.filteredCount} />
       </section>
 
       {/* Beneficiary roll */}
       <section>
-        <h2 className="font-display text-xl font-bold flex items-center gap-2"><Shield className="h-5 w-5" /> Beneficiary roll</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-bold flex items-center gap-2"><Shield className="h-5 w-5" /> Beneficiary roll</h2>
+          <SearchBox value={bensPaged.query} onChange={bensPaged.setQuery} placeholder="Search beneficiaries…" />
+        </div>
         <div className="mt-4 grid md:grid-cols-2 gap-4">
-          {bens.length === 0 && <p className="text-muted-foreground text-sm">No beneficiaries yet.</p>}
-          {bens.filter((b) => (b.email ?? "").toLowerCase() !== "boluwatifefamokunwa@gmail.com" && !admins.some((a) => a.id === b.id)).map((b) => {
+          {benRoll.length === 0 && <p className="text-muted-foreground text-sm">No beneficiaries yet.</p>}
+          {benRoll.length > 0 && bensPaged.pageItems.length === 0 && <p className="text-muted-foreground text-sm">No matches for your search.</p>}
+          {bensPaged.pageItems.map((b) => {
             const assignedAdmin = assignmentByBen.get(b.id) ?? "";
             return (
               <div key={b.id} className="rounded-xl border border-border bg-card p-4">
@@ -493,6 +572,7 @@ function Admin() {
             );
           })}
         </div>
+        <Pager page={bensPaged.page} totalPages={bensPaged.totalPages} onPage={bensPaged.setPage} count={bensPaged.filteredCount} />
       </section>
 
       {/* Check-in modal */}
