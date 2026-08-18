@@ -19,6 +19,8 @@ const inviteSchema = z.object({
   full_name: z.string().trim().min(1).max(120).optional(),
   role: z.enum(["admin", "beneficiary"]).default("beneficiary"),
   cohort_id: z.string().uuid().optional().nullable(),
+  sponsor_name: z.string().trim().min(1).max(160).default("Boluwatife Famokunwa"),
+  entry_channel: z.enum(["nbo", "direct"]).default("direct"),
 });
 
 export const inviteBeneficiary = createServerFn({ method: "POST" })
@@ -35,6 +37,7 @@ export const inviteBeneficiary = createServerFn({ method: "POST" })
     const { error: invErr } = await supabaseAdmin.from("invitations").insert({
       email: data.email, full_name: data.full_name ?? null, role: data.role,
       cohort_id: data.cohort_id ?? null, invited_by: context.userId,
+      sponsor_name: data.sponsor_name, entry_channel: data.entry_channel,
     });
     if (invErr && !invErr.message.includes("duplicate")) throw invErr;
 
@@ -69,10 +72,42 @@ export const listAdmins = createServerFn({ method: "GET" })
     const ids = (roleRows ?? []).map((r: any) => r.user_id);
     if (ids.length === 0) return [];
     const { data: profiles } = await supabaseAdmin
-      .from("profiles").select("id,email,full_name,created_at").in("id", ids);
+      .from("profiles").select("id,email,full_name,created_at,consumer_access_status").in("id", ids);
     return (profiles ?? []).map((p: any) => ({
       ...p, is_super_admin: (p.email ?? "").toLowerCase() === SUPER_ADMIN_EMAIL,
     }));
+  });
+
+/* ── DSE Rep consumer-side access ────────────────────────── */
+// Admins are report-facing by default; the beneficiary-side tabs
+// (Dashboard/Playbooks/BPS/Mentorship/choose-path) are gated client-side
+// on role !== 'admin' OR consumer_access_status === 'granted'. Any admin
+// may request it for themselves; only the super admin grants or revokes.
+
+export const requestConsumerAccess = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles").update({ consumer_access_status: "requested" } as never)
+      .eq("id", context.userId).eq("consumer_access_status", "none");
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const setConsumerAccess = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ user_id: z.string().uuid(), status: z.enum(["none", "granted"]) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireSuperAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles").update({ consumer_access_status: data.status } as never).eq("id", data.user_id);
+    if (error) throw error;
+    return { ok: true };
   });
 
 export const listInvitations = createServerFn({ method: "GET" })

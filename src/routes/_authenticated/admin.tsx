@@ -8,7 +8,7 @@ import {
   listEscalations, openEscalation, logCheckIn, setBeneficiaryPath,
   suspendBeneficiary, reinstateBeneficiary,
   listAllDfyMonths, verifyDfyMonth, certifyVettedDse,
-  createCohort, listCohorts,
+  createCohort, listCohorts, setConsumerAccess,
 } from "@/lib/admin.functions";
 import { PATHS } from "@/lib/paths";
 import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
@@ -45,6 +45,7 @@ function Admin() {
   const verifyDfy = useServerFn(verifyDfyMonth);
   const certifyVdse = useServerFn(certifyVettedDse);
   const createCoh = useServerFn(createCohort);
+  const setConsumerAcc = useServerFn(setConsumerAccess);
   const listCoh = useServerFn(listCohorts);
 
   const [bens, setBens] = useState<any[]>([]);
@@ -60,6 +61,8 @@ function Admin() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [asAdmin, setAsAdmin] = useState(false);
+  const [sponsorName, setSponsorName] = useState("Boluwatife Famokunwa");
+  const [entryChannel, setEntryChannel] = useState<"direct" | "nbo">("direct");
   const [checkinTarget, setCheckinTarget] = useState<string | null>(null);
   const [checkinText, setCheckinText] = useState("");
   const [checkinMood, setCheckinMood] = useState<"green" | "yellow" | "red">("green");
@@ -95,9 +98,14 @@ function Admin() {
   const onInvite = async (ev: React.FormEvent) => {
     ev.preventDefault(); setBusy(true);
     try {
-      await invite({ data: { email: email.trim(), full_name: fullName.trim() || undefined, role: asAdmin ? "admin" : "beneficiary" } });
+      await invite({
+        data: {
+          email: email.trim(), full_name: fullName.trim() || undefined, role: asAdmin ? "admin" : "beneficiary",
+          sponsor_name: sponsorName.trim() || "Boluwatife Famokunwa", entry_channel: entryChannel,
+        },
+      });
       toast.success(`Invitation dispatched to ${email}`);
-      setEmail(""); setFullName(""); setAsAdmin(false); refresh();
+      setEmail(""); setFullName(""); setAsAdmin(false); setSponsorName("Boluwatife Famokunwa"); setEntryChannel("direct"); refresh();
     } catch (e: any) { toast.error(e.message ?? "Invite failed"); }
     finally { setBusy(false); }
   };
@@ -130,6 +138,13 @@ function Admin() {
   const doDemote = async (uid: string) => {
     try { await demote({ data: { user_id: uid } }); toast.success("Demoted."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
+  };
+  const doSetConsumerAccess = async (uid: string, status: "none" | "granted") => {
+    try {
+      await setConsumerAcc({ data: { user_id: uid, status } });
+      toast.success(status === "granted" ? "Consumer access granted." : "Consumer access revoked.");
+      refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
   const doAssign = async (beneficiary_id: string, admin_id: string | null) => {
     try { await assign({ data: { beneficiary_id, admin_id } }); toast.success("Assignment saved."); refresh(); }
@@ -234,7 +249,18 @@ function Admin() {
         <form onSubmit={onInvite} className="mt-6 grid md:grid-cols-3 gap-4">
           <input value={email} onChange={(e) => setEmail(e.target.value)} required type="email" placeholder="beneficiary@email.com" className="md:col-span-1 rounded-md border border-input bg-background px-3 py-2 text-sm" />
           <input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Full name (optional)" className="md:col-span-1 rounded-md border border-input bg-background px-3 py-2 text-sm" />
-          <div className="md:col-span-1 flex items-center gap-3">
+          <label className="md:col-span-1 block">
+            <span className="text-[10px] tracking-widest text-muted-foreground">Sponsor</span>
+            <input value={sponsorName} onChange={(e) => setSponsorName(e.target.value)} placeholder="Sponsor's name" className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          </label>
+          <label className="md:col-span-1 block">
+            <span className="text-[10px] tracking-widest text-muted-foreground">Entry channel</span>
+            <select value={entryChannel} onChange={(e) => setEntryChannel(e.target.value as "direct" | "nbo")} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+              <option value="direct">Direct</option>
+              <option value="nbo">NBO</option>
+            </select>
+          </label>
+          <div className="md:col-span-2 flex items-center gap-3">
             {isSuperAdmin && (
               <label className="inline-flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={asAdmin} onChange={(e) => setAsAdmin(e.target.checked)} />
@@ -335,6 +361,27 @@ function Admin() {
                   </div>
                 )}
               </div>
+              {!a.is_super_admin && (
+                <div className="mt-3 pt-3 border-t border-border flex items-center justify-between gap-2 text-xs">
+                  <span className="text-muted-foreground">
+                    Consumer access:{" "}
+                    <span className={
+                      a.consumer_access_status === "granted" ? "text-emerald-600 font-semibold"
+                        : a.consumer_access_status === "requested" ? "text-gold-deep font-semibold"
+                        : "text-muted-foreground"
+                    }>
+                      {a.consumer_access_status ?? "none"}
+                    </span>
+                  </span>
+                  {isSuperAdmin && (
+                    a.consumer_access_status === "granted" ? (
+                      <button onClick={() => doSetConsumerAccess(a.id, "none")} className="rounded-md border border-border px-2 py-1 font-semibold hover:bg-muted">Revoke</button>
+                    ) : (
+                      <button onClick={() => doSetConsumerAccess(a.id, "granted")} className="rounded-md border border-gold px-2 py-1 font-semibold text-gold-deep hover:bg-gold/10">Grant</button>
+                    )
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
