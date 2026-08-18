@@ -9,7 +9,7 @@ import { PATH_PLAYBOOKS } from "@/lib/path-playbooks";
 import { computeEscalation, forecastFirstClose, type ProgressRow } from "@/lib/escalation";
 import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, BookOpen, Sparkles, Globe, ArrowRight,
-  Gauge, AlertTriangle, ChevronLeft, ChevronRight, CheckCircle2,
+  Gauge, AlertTriangle, DollarSign, ChevronLeft, ChevronRight, CheckCircle2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -333,12 +333,18 @@ function Dashboard() {
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
+                      <div>
             <div className="text-[10px] tracking-widest text-gold-deep">Weekly cadence</div>
             <h2 className="mt-1 font-display text-2xl font-bold">Your latest report</h2>
           </div>
-          <Link to="/weekly-report" className="text-sm font-semibold text-primary hover:underline">
-            File this week's report →
-          </Link>
+          <div className="flex flex-col items-end gap-1">
+            <Link to="/weekly-report" className="text-sm font-semibold text-primary hover:underline">
+              File this week's report →
+            </Link>
+            <Link to="/dfy" className="text-xs font-semibold text-gold-deep hover:underline inline-flex items-center gap-1">
+              <DollarSign className="h-3 w-3" /> DFY tracker →
+            </Link>
+          </div>
         </div>
         {latestReport ? (
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
