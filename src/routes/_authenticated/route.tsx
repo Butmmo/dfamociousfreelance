@@ -84,7 +84,9 @@ function AuthedShell() {
   useEffect(() => {
     if (!moreOpen) return;
     const onClick = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+      const t = e.target as Node;
+      if (moreRef.current?.contains(t) || moreSheetRef.current?.contains(t)) return;
+      setMoreOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
