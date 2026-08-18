@@ -45,7 +45,9 @@ function AuthedShell() {
     avatar_url: null,
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
