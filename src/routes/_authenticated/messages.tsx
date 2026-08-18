@@ -9,7 +9,7 @@ import { directCallUrl, cohortCallUrl } from "@/lib/video";
 import { toast } from "sonner";
 import {
   MessageSquare, Send, Video, Loader2, Shield, Users, User, Plus, Check, X, Globe,
-  Paperclip, Camera, Smile, Sticker as StickerIcon, FileText,
+  Paperclip, Camera, Smile, Sticker as StickerIcon, FileText, ArrowLeft,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/messages")({
@@ -47,6 +47,15 @@ function MessagesPage() {
   const [selected, setSelected] = useState<string | null>("dbi");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState("");
+  // WhatsApp/Messenger pattern on mobile: the conversation list and the
+  // open thread are two separate full-width screens, not a cramped
+  // side-by-side split. Desktop keeps the classic split view regardless
+  // of this flag (see the md:flex overrides below).
+  const [mobileShowList, setMobileShowList] = useState(true);
+  const openThread = (key: string) => {
+    setSelected(key);
+    setMobileShowList(false);
+  };
 
   const refreshRequests = async () => {
     const r = await fetchRequests({ data: undefined as never }).catch(() => []);
@@ -177,7 +186,8 @@ function MessagesPage() {
 
   return (
     <div className="space-y-6">
-      <header>
+      {/* Once a thread is open on mobile, the page chrome steps aside so the chat behaves like its own full screen. */}
+      <header className={mobileShowList ? "" : "hidden md:block"}>
         <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-2">
           <MessageSquare className="h-3.5 w-3.5" /> Messages
         </div>
@@ -185,7 +195,7 @@ function MessagesPage() {
       </header>
 
       {incoming.length > 0 && (
-        <div className="rounded-2xl border border-gold/40 bg-gold/5 p-4">
+        <div className={`rounded-2xl border border-gold/40 bg-gold/5 p-4 ${mobileShowList ? "" : "hidden md:block"}`}>
           <div className="text-[10px] tracking-widest text-gold-deep">Message Requests</div>
           <ul className="mt-2 space-y-2">
             {incoming.map((r) => (
@@ -214,11 +224,11 @@ function MessagesPage() {
         </div>
       )}
 
-      <div className="grid md:grid-cols-[240px_1fr] gap-4 rounded-2xl border border-border bg-card overflow-hidden min-h-[520px]">
-        {/* CONTACT LIST */}
-        <div className="border-b md:border-b-0 md:border-r border-border p-3 space-y-1">
+      <div className="md:grid md:grid-cols-[280px_1fr] md:gap-4 rounded-2xl border border-border bg-card overflow-hidden min-h-[70vh] md:min-h-[520px]">
+        {/* CONTACT LIST — its own full screen on mobile, the left rail on desktop */}
+        <div className={`${mobileShowList ? "flex" : "hidden"} md:flex flex-col border-b md:border-b-0 md:border-r border-border p-3 space-y-1 overflow-y-auto`}>
           <button
-            onClick={() => setSelected("dbi")}
+            onClick={() => openThread("dbi")}
             className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${dbiSelected ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
           >
             <Globe className="h-4 w-4 shrink-0" />
@@ -234,7 +244,7 @@ function MessagesPage() {
 
           {profile?.cohort_id && (
             <button
-              onClick={() => setSelected("cohort")}
+              onClick={() => openThread("cohort")}
               className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${cohortSelected ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
             >
               <Users className="h-4 w-4 shrink-0" />
@@ -256,7 +266,7 @@ function MessagesPage() {
             {contacts.map((c) => (
               <button
                 key={c.key}
-                onClick={() => setSelected(c.key)}
+                onClick={() => openThread(c.key)}
                 className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${selected === c.key ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
                 <Avatar url={c.avatarUrl} icon={c.icon} size="h-7 w-7" />
@@ -315,16 +325,23 @@ function MessagesPage() {
           </div>
         </div>
 
-        {/* THREAD / PANEL */}
-        <div className="flex flex-col">
-          {activeContact && user && <DmThread key={activeContact.key} meId={user.id} counterpart={activeContact} />}
-          {dbiSelected && <GroupThread myName={profile?.full_name ?? "Member"} avatarById={avatarById} />}
+        {/* THREAD / PANEL — its own full screen on mobile, the right pane on desktop */}
+        <div className={`${mobileShowList ? "hidden" : "flex"} md:flex flex-col`}>
+          {activeContact && user && (
+            <DmThread key={activeContact.key} meId={user.id} counterpart={activeContact} onBack={() => setMobileShowList(true)} />
+          )}
+          {dbiSelected && <GroupThread myName={profile?.full_name ?? "Member"} avatarById={avatarById} onBack={() => setMobileShowList(true)} />}
           {cohortSelected && profile?.cohort_id && (
-            <CohortThread cohortId={profile.cohort_id} myName={profile.full_name ?? "Beneficiary"} avatarById={avatarById} />
+            <CohortThread cohortId={profile.cohort_id} myName={profile.full_name ?? "Beneficiary"} avatarById={avatarById} onBack={() => setMobileShowList(true)} />
           )}
           {!activeContact && !cohortSelected && !dbiSelected && (
-            <div className="flex-1 grid place-items-center text-sm text-muted-foreground p-6 text-center">
-              Pick a conversation on the left.
+            <div className="flex-1 flex flex-col">
+              <div className="md:hidden border-b border-border p-4">
+                <BackButton onBack={() => setMobileShowList(true)} />
+              </div>
+              <div className="flex-1 grid place-items-center text-sm text-muted-foreground p-6 text-center">
+                Pick a conversation on the left.
+              </div>
             </div>
           )}
         </div>
@@ -402,6 +419,19 @@ function Avatar({ url, icon: Icon, size = "h-6 w-6" }: { url?: string | null; ic
     <span className={`${size} shrink-0 rounded-full bg-muted grid place-items-center border border-gold/40`}>
       <FallbackIcon className="h-3.5 w-3.5" />
     </span>
+  );
+}
+
+/** WhatsApp/Messenger-style "‹ back to the list" button — visible only on mobile, since desktop always shows both panes. */
+function BackButton({ onBack }: { onBack: () => void }) {
+  return (
+    <button
+      onClick={onBack}
+      aria-label="Back to conversations"
+      className="md:hidden shrink-0 rounded-full p-1.5 -ml-1.5 hover:bg-muted"
+    >
+      <ArrowLeft className="h-5 w-5" />
+    </button>
   );
 }
 
@@ -613,7 +643,7 @@ function Composer({
   );
 }
 
-function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact }) {
+function DmThread({ meId, counterpart, onBack }: { meId: string; counterpart: Contact; onBack: () => void }) {
   const [messages, setMessages] = useState<any[]>([]);
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -666,6 +696,7 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
     <>
       <div className="flex items-center justify-between gap-3 border-b border-border p-4">
         <div className="flex items-center gap-2">
+          <BackButton onBack={onBack} />
           <Avatar url={counterpart.avatarUrl} icon={counterpart.icon} size="h-8 w-8" />
           <div>
             <div className="font-semibold">{counterpart.name}</div>
@@ -681,7 +712,7 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
           <Video className="h-3.5 w-3.5" /> Video call
         </a>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-none md:max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — say hello.</p>}
         {messages.map((m) => (
           <Bubble key={m.id} mine={m.sender_id === meId} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} avatarUrl={counterpart.avatarUrl} />
@@ -693,7 +724,7 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
   );
 }
 
-function GroupThread({ myName, avatarById }: { myName: string; avatarById: Map<string, string | null> }) {
+function GroupThread({ myName, avatarById, onBack }: { myName: string; avatarById: Map<string, string | null>; onBack: () => void }) {
   const { user } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
   const [sending, setSending] = useState(false);
@@ -746,9 +777,12 @@ function GroupThread({ myName, avatarById }: { myName: string; avatarById: Map<s
   return (
     <>
       <div className="flex items-center justify-between gap-3 border-b border-border p-4">
-        <div>
-          <div className="font-semibold">DBI General</div>
-          <div className="text-[10px] tracking-widest text-muted-foreground">Every member of the incubator</div>
+        <div className="flex items-center gap-2">
+          <BackButton onBack={onBack} />
+          <div>
+            <div className="font-semibold">DBI General</div>
+            <div className="text-[10px] tracking-widest text-muted-foreground">Every member of the incubator</div>
+          </div>
         </div>
         <a
           href={cohortCallUrl("dbi-general")}
@@ -759,7 +793,7 @@ function GroupThread({ myName, avatarById }: { myName: string; avatarById: Map<s
           <Video className="h-3.5 w-3.5" /> Group call
         </a>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-none md:max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — open the room.</p>}
         {messages.map((m) => (
           <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} avatarUrl={avatarById.get(m.sender_id)} />
@@ -771,7 +805,7 @@ function GroupThread({ myName, avatarById }: { myName: string; avatarById: Map<s
   );
 }
 
-function CohortThread({ cohortId, myName, avatarById }: { cohortId: string; myName: string; avatarById: Map<string, string | null> }) {
+function CohortThread({ cohortId, myName, avatarById, onBack }: { cohortId: string; myName: string; avatarById: Map<string, string | null>; onBack: () => void }) {
   const { user } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
   const [sending, setSending] = useState(false);
@@ -824,9 +858,12 @@ function CohortThread({ cohortId, myName, avatarById }: { cohortId: string; myNa
   return (
     <>
       <div className="flex items-center justify-between gap-3 border-b border-border p-4">
-        <div>
-          <div className="font-semibold">Cohort chat</div>
-          <div className="text-[10px] tracking-widest text-muted-foreground">Successes · performance · engagement</div>
+        <div className="flex items-center gap-2">
+          <BackButton onBack={onBack} />
+          <div>
+            <div className="font-semibold">Cohort chat</div>
+            <div className="text-[10px] tracking-widest text-muted-foreground">Successes · performance · engagement</div>
+          </div>
         </div>
         <a
           href={cohortCallUrl(cohortId)}
@@ -837,7 +874,7 @@ function CohortThread({ cohortId, myName, avatarById }: { cohortId: string; myNa
           <Video className="h-3.5 w-3.5" /> Group call
         </a>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-none md:max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — share a win.</p>}
         {messages.map((m) => (
           <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} avatarUrl={avatarById.get(m.sender_id)} />
