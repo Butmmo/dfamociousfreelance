@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { usePath } from "@/lib/use-path";
@@ -14,6 +14,7 @@ import {
 import {
   CRM_STAGES, priorityFromScore, PRIORITY_META,
   viewAllLeads, viewHotLeads, viewActiveOutreach, viewThisWeek, viewClosedWon,
+  mapCsvToClients,
 } from "@/lib/crm";
 import { toast } from "sonner";
 import {
@@ -101,6 +102,8 @@ function CrmSection() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<CrmView>("all");
   const [editing, setEditing] = useState<Client | "new" | null>(null);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     if (!user) return;
@@ -157,6 +160,30 @@ function CrmSection() {
     load();
   };
 
+  const importCsv = async (file: File) => {
+    if (!user) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const { rows, skipped } = mapCsvToClients(text);
+      if (rows.length === 0) { toast.error("No rows with a recognizable name column found in that CSV."); return; }
+      const withOwner = rows.map((r) => ({
+        ...r, user_id: user.id, path_key: pathKey ?? null, priority: priorityFromScore(r.lead_score ?? null),
+      }));
+      const CHUNK = 200;
+      let inserted = 0;
+      for (let i = 0; i < withOwner.length; i += CHUNK) {
+        const { error } = await supabase.from("crm_clients").insert(withOwner.slice(i, i + CHUNK) as any);
+        if (error) { toast.error(`Import stopped: ${error.message}`); break; }
+        inserted += Math.min(CHUNK, withOwner.length - i);
+      }
+      toast.success(`Imported ${inserted} client${inserted === 1 ? "" : "s"}.${skipped > 0 ? ` Skipped ${skipped} row(s) without a name.` : ""}`);
+      load();
+    } finally {
+      setImporting(false);
+    }
+  };
+
   if (loading) return <div className="text-sm text-muted-foreground">Loading your pipeline…</div>;
 
   return (
@@ -175,12 +202,28 @@ function CrmSection() {
             </button>
           ))}
         </div>
-        <button
-          onClick={() => setEditing("new")}
-          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-        >
-          <Plus className="h-4 w-4" /> Add client
-        </button>
+        <div className="flex items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="hidden"
+            onChange={(e) => { const file = e.target.files?.[0]; if (file) importCsv(file); e.target.value = ""; }}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importing}
+            className="inline-flex items-center gap-1.5 rounded-md border border-input px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
+          >
+            {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Import CSV
+          </button>
+          <button
+            onClick={() => setEditing("new")}
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4" /> Add client
+          </button>
+        </div>
       </div>
 
       {filtered.length === 0 && (
