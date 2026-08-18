@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Users,
   ChevronDown,
+  Target,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,12 +43,34 @@ function AuthedShell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Admins/DSE Reps never go through path selection — "the paths" (the
+  // 5-path playbook curriculum) belong to beneficiaries. The founder still
+  // inspects any path via the profile dropdown, so only ordinary admins
+  // are excluded here.
+  const isOrdinaryAdmin = role === "admin" && !isSuperAdmin;
+  const effectiveNeedsChoice = needsChoice && !isOrdinaryAdmin;
+
   // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
-    if (pathLoading || !needsChoice || status.suspended) return;
+    if (pathLoading || !effectiveNeedsChoice || status.suspended) return;
     if (pathname.startsWith("/choose-path")) return;
     navigate({ to: "/choose-path", replace: true });
-  }, [pathLoading, needsChoice, pathname, navigate, status.suspended]);
+  }, [pathLoading, effectiveNeedsChoice, pathname, navigate, status.suspended]);
+
+  // DSE Reps are report-facing by default — the beneficiary/consumer side
+  // (Dashboard, Calendar, BPS, DFY, Messages, Mentorship, Report) is
+  // off-limits until the super admin grants consumer access, and Playbooks
+  // + choose-path stay off-limits regardless since those are "the paths."
+  // The founder is always exempt from both.
+  const consumerGated = isOrdinaryAdmin && !status.loading && status.consumerAccessStatus !== "granted";
+  const repAllowedPrefixes = ["/admin", "/council-reports", "/council-mentorship", "/council-escalations", "/profile"];
+  useEffect(() => {
+    if (!isOrdinaryAdmin) return;
+    const blockedByPaths = pathname.startsWith("/playbooks") || pathname.startsWith("/choose-path");
+    const blockedByConsumerGate = consumerGated && !repAllowedPrefixes.some((p) => pathname.startsWith(p));
+    if (blockedByPaths || blockedByConsumerGate) navigate({ to: "/admin", replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOrdinaryAdmin, consumerGated, pathname, navigate]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -119,17 +142,19 @@ function AuthedShell() {
   // Dashboard/Playbooks/BPS/Messages/Mentorship only show once a path is
   // chosen, and "Your Path" only shows during the choice window — the two
   // sets are mutually exclusive, so the bar never exceeds 5 plus Council
-  // for admins (6, for that one role only — BPS earns the extra slot as a
-  // genuinely daily-use tool, not a regression to the old 8-tab bar).
-  // Calendar, Report and DFY stay one click away from Dashboard instead of
-  // living in the top bar; the founder's cross-path "Paths" browser moved
-  // into the profile dropdown to make room.
+  // for admins (6, for that one role only). Calendar, Report and DFY stay
+  // one click away from Dashboard instead of living in the top bar; the
+  // founder's cross-path "Paths" browser moved into the profile dropdown
+  // to make room. For an ordinary admin, Playbooks/choose-path never
+  // show (the paths curriculum), and Dashboard/BPS/Messages/Mentorship
+  // only show once consumer access is granted.
   const tabs = [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !needsChoice },
-    { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !needsChoice },
-    { to: "/messages", label: "Messages", icon: MessageSquare, show: !needsChoice },
-    { to: "/mentorship", label: "Mentorship", icon: Users, show: !needsChoice },
-    { to: "/choose-path", label: "Your Path", icon: Compass, show: needsChoice },
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !effectiveNeedsChoice && !isOrdinaryAdmin },
+    { to: "/bps", label: "BPS", icon: Target, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/messages", label: "Messages", icon: MessageSquare, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/mentorship", label: "Mentorship", icon: Users, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/choose-path", label: "Your Path", icon: Compass, show: effectiveNeedsChoice && !isOrdinaryAdmin },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
 
@@ -165,7 +190,7 @@ function AuthedShell() {
           />
         </div>
 
-        {needsChoice && (
+        {effectiveNeedsChoice && (
           <div className="border-t border-crimson/30 bg-crimson/5">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 py-2 text-[11px] text-crimson flex flex-wrap items-center gap-2">
               <strong>Choose your path.</strong>

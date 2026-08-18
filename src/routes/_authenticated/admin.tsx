@@ -8,7 +8,7 @@ import {
   listEscalations, openEscalation, logCheckIn, setBeneficiaryPath,
   suspendBeneficiary, reinstateBeneficiary,
   listAllDfyMonths, verifyDfyMonth, certifyVettedDse,
-  createCohort, listCohorts, setConsumerAccess,
+  createCohort, listCohorts, setConsumerAccess, requestConsumerAccess,
 } from "@/lib/admin.functions";
 import { PATHS } from "@/lib/paths";
 import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
@@ -90,6 +90,7 @@ function Admin() {
   const certifyVdse = useServerFn(certifyVettedDse);
   const createCoh = useServerFn(createCohort);
   const setConsumerAcc = useServerFn(setConsumerAccess);
+  const requestConsumerAcc = useServerFn(requestConsumerAccess);
   const listCoh = useServerFn(listCohorts);
 
   const [bens, setBens] = useState<any[]>([]);
@@ -195,6 +196,17 @@ function Admin() {
     try { await demote({ data: { user_id: uid } }); toast.success("Demoted."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
+  const myAdminRow = useMemo(() => admins.find((a) => a.id === user?.id), [admins, user?.id]);
+  const [requestingAccess, setRequestingAccess] = useState(false);
+  const doRequestConsumerAccess = async () => {
+    setRequestingAccess(true);
+    try {
+      await requestConsumerAcc({ data: undefined as never });
+      toast.success("Access requested — the super admin has been notified.");
+      refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed"); }
+    finally { setRequestingAccess(false); }
+  };
   const doSetConsumerAccess = async (uid: string, status: "none" | "granted") => {
     try {
       await setConsumerAcc({ data: { user_id: uid, status } });
@@ -294,6 +306,29 @@ function Admin() {
           </Link>
         </div>
       </div>
+
+      {!isSuperAdmin && myAdminRow && myAdminRow.consumer_access_status !== "granted" && (
+        <div className="rounded-2xl border border-gold/40 bg-accent/20 p-5 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="text-[10px] tracking-widest text-gold-deep">Report-facing access only</div>
+            <p className="mt-1 text-sm">
+              As a DSE Rep, you see the Council and reports — Dashboard, Playbooks, BPS, Messages and Mentorship stay
+              hidden until the super admin grants you consumer-side access.
+            </p>
+          </div>
+          {myAdminRow.consumer_access_status === "requested" ? (
+            <span className="shrink-0 rounded-full bg-gold/20 px-3 py-1.5 text-xs font-semibold text-gold-deep">Access requested — awaiting approval</span>
+          ) : (
+            <button
+              onClick={doRequestConsumerAccess}
+              disabled={requestingAccess}
+              className="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+            >
+              {requestingAccess && <Loader2 className="h-4 w-4 animate-spin" />} Request consumer-side access
+            </button>
+          )}
+        </div>
+      )}
 
 
       {/* Invite */}
