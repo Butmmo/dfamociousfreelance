@@ -20,11 +20,12 @@ import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMentorshipRouteImport } from './routes/_authenticated/mentorship'
 import { Route as AuthenticatedDfyRouteImport } from './routes/_authenticated/dfy'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedBpsRouteImport } from './routes/_authenticated/bps'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
 import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_authenticated/council-mentorship'
+import { Route as AuthenticatedCouncilEscalationsRouteImport } from './routes/_authenticated/council-escalations'
 import { Route as AuthenticatedChoosePathRouteImport } from './routes/_authenticated/choose-path'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
+import { Route as AuthenticatedBpsRouteImport } from './routes/_authenticated/bps'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
 import { Route as AuthenticatedPlaybooksSmbCalculatorRouteImport } from './routes/_authenticated/playbooks/smb-calculator'
@@ -99,11 +100,6 @@ const AuthenticatedDfyRoute = AuthenticatedDfyRouteImport.update({
   path: '/dfy',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedCouncilEscalationsRoute = AuthenticatedCouncilEscalationsRouteImport.update({
-  id: '/council-escalations',
-  path: '/council-escalations',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -121,6 +117,12 @@ const AuthenticatedCouncilMentorshipRoute =
     path: '/council-mentorship',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCouncilEscalationsRoute =
+  AuthenticatedCouncilEscalationsRouteImport.update({
+    id: '/council-escalations',
+    path: '/council-escalations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChoosePathRoute = AuthenticatedChoosePathRouteImport.update({
   id: '/choose-path',
   path: '/choose-path',
@@ -131,14 +133,14 @@ const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedBpsRoute = AuthenticatedBpsRouteImport.update({
   id: '/bps',
   path: '/bps',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPlaybooksIndexRoute =
@@ -647,18 +649,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCalendarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/bps': {
       id: '/_authenticated/bps'
       path: '/bps'
       fullPath: '/bps'
       preLoaderRoute: typeof AuthenticatedBpsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/playbooks/': {
@@ -823,6 +825,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBpsRoute: typeof AuthenticatedBpsRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedChoosePathRoute: typeof AuthenticatedChoosePathRoute
+  AuthenticatedCouncilEscalationsRoute: typeof AuthenticatedCouncilEscalationsRoute
   AuthenticatedCouncilMentorshipRoute: typeof AuthenticatedCouncilMentorshipRoute
   AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -861,6 +864,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBpsRoute: AuthenticatedBpsRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedChoosePathRoute: AuthenticatedChoosePathRoute,
+  AuthenticatedCouncilEscalationsRoute: AuthenticatedCouncilEscalationsRoute,
   AuthenticatedCouncilMentorshipRoute: AuthenticatedCouncilMentorshipRoute,
   AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
