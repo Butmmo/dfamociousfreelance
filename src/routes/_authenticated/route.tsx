@@ -81,9 +81,19 @@ function AuthedShell() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [menuOpen]);
 
-  // Close the menu on route change so it never lingers after navigating.
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [moreOpen]);
+
+  // Close the menus on route change so they never linger after navigating.
   useEffect(() => {
     setMenuOpen(false);
+    setMoreOpen(false);
   }, [pathname]);
 
   const signOut = async () => {
