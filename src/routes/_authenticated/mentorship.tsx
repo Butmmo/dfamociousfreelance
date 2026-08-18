@@ -12,8 +12,18 @@ import { slaSnapshot } from "@/lib/escalation-sla";
 import { mentorshipCallUrl } from "@/lib/video";
 import { toast } from "sonner";
 import {
-  Users, UserPlus, Loader2, Check, X, Video, Award, ChevronDown, ChevronUp, Flag, Search,
+  Users, UserPlus, Loader2, Check, X, Video, Award, ChevronDown, ChevronUp, Flag, Search, UserRound,
 } from "lucide-react";
+
+function MiniAvatar({ url, size = "h-9 w-9" }: { url?: string | null; size?: string }) {
+  return url ? (
+    <img src={url} alt="" className={`${size} shrink-0 rounded-full object-cover border border-gold/40`} />
+  ) : (
+    <span className={`${size} shrink-0 rounded-full bg-muted grid place-items-center border border-gold/40`}>
+      <UserRound className="h-4 w-4 text-muted-foreground" />
+    </span>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/mentorship")({
   head: () => ({ meta: [{ title: "Leadership by Influence — DBI Citadel" }] }),
@@ -179,9 +189,12 @@ function MentorshipPage() {
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
               {filteredAvailable.map((a) => (
                 <div key={a.id} className="rounded-xl border border-border bg-background p-4 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="font-semibold truncate">{a.full_name ?? "Unnamed"}</div>
-                    <div className="text-xs text-muted-foreground">{a.rank ?? "recruit"} · {a.xp ?? 0} XP</div>
+                  <div className="min-w-0 flex items-center gap-2.5">
+                    <MiniAvatar url={a.avatar_url} />
+                    <div className="min-w-0">
+                      <div className="font-semibold truncate">{a.full_name ?? "Unnamed"}</div>
+                      <div className="text-xs text-muted-foreground">{a.rank ?? "recruit"} · {a.xp ?? 0} XP</div>
+                    </div>
                   </div>
                   <button onClick={() => doRequest(a.id, a.full_name ?? "this beneficiary")} className="shrink-0 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10">
                     Request
@@ -206,13 +219,16 @@ function MentorshipCard({
   return (
     <div className="rounded-xl border border-border bg-background overflow-hidden">
       <div className="p-4 flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <div className="font-semibold">{partnerName} <span className="text-xs font-normal text-muted-foreground">({label})</span></div>
-          <div className="mt-1 flex items-center gap-2 text-xs">
-            <StatusBadge status={mentorship.status} />
-            {mentorship.menteeDfyComplete && (
-              <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold"><Award className="h-3 w-3" /> DFY complete</span>
-            )}
+        <div className="flex items-center gap-2.5">
+          <MiniAvatar url={mentorship.partner?.avatar_url} />
+          <div>
+            <div className="font-semibold">{partnerName} <span className="text-xs font-normal text-muted-foreground">({label})</span></div>
+            <div className="mt-1 flex items-center gap-2 text-xs">
+              <StatusBadge status={mentorship.status} />
+              {mentorship.menteeDfyComplete && (
+                <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold"><Award className="h-3 w-3" /> DFY complete</span>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -55,7 +55,7 @@ export const listBeneficiaries = createServerFn({ method: "GET" })
     await requireAdmin(context);
     const { data, error } = await context.supabase
       .from("profiles")
-      .select("id,email,full_name,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned,suspended,suspended_at,suspension_reason,reinstatement_fee_usd,start_date,vetted_dse_certified_at")
+      .select("id,email,full_name,avatar_url,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned,suspended,suspended_at,suspension_reason,reinstatement_fee_usd,start_date,vetted_dse_certified_at")
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
@@ -72,7 +72,7 @@ export const listAdmins = createServerFn({ method: "GET" })
     const ids = (roleRows ?? []).map((r: any) => r.user_id);
     if (ids.length === 0) return [];
     const { data: profiles } = await supabaseAdmin
-      .from("profiles").select("id,email,full_name,created_at,consumer_access_status").in("id", ids);
+      .from("profiles").select("id,email,full_name,avatar_url,created_at,consumer_access_status").in("id", ids);
     return (profiles ?? []).map((p: any) => ({
       ...p, is_super_admin: (p.email ?? "").toLowerCase() === SUPER_ADMIN_EMAIL,
     }));

@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/messages")({
   component: MessagesPage,
 });
 
-type Contact = { key: string; id: string; name: string; sub: string; icon: any };
+type Contact = { key: string; id: string; name: string; sub: string; icon: any; avatarUrl?: string | null };
 type Member = { id: string; full_name: string | null; avatar_url: string | null; email?: string | null };
 
 function MessagesPage() {
@@ -88,6 +88,7 @@ function MessagesPage() {
         name: rep.full_name ?? rep.email ?? "Your DSE Rep",
         sub: "DSE Rep",
         icon: Shield,
+        avatarUrl: rep.avatar_url,
       });
     const mentor = mentorships.find((m) => m.role === "mentee" && m.status === "active");
     if (mentor?.partner?.id)
@@ -97,6 +98,7 @@ function MessagesPage() {
         name: mentor.partner.full_name ?? "Your mentor",
         sub: "Mentor",
         icon: User,
+        avatarUrl: mentor.partner.avatar_url,
       });
     for (const m of mentorships.filter((x) => x.role === "mentor" && x.status === "active")) {
       if (m.partner?.id)
@@ -106,6 +108,7 @@ function MessagesPage() {
           name: m.partner.full_name ?? "Mentee",
           sub: "Mentee",
           icon: User,
+          avatarUrl: m.partner.avatar_url,
         });
     }
     // Accepted message requests open a conversation immediately, both ways.
@@ -117,10 +120,22 @@ function MessagesPage() {
           name: r.partner.full_name ?? r.partner.email ?? "Member",
           sub: "Private",
           icon: MessageSquare,
+          avatarUrl: r.partner.avatar_url,
         });
     }
     return list;
   }, [rep, mentorships, requests]);
+
+  // Every user's avatar this page knows about, keyed by id — sourced from
+  // the member directory plus contacts (rep/mentors/mentees/requests),
+  // so group and cohort bubbles can show a sender's photo without an
+  // extra fetch per message.
+  const avatarById = useMemo(() => {
+    const m = new Map<string, string | null>();
+    for (const mem of members) m.set(mem.id, mem.avatar_url);
+    for (const c of contacts) m.set(c.id, c.avatarUrl ?? null);
+    return m;
+  }, [members, contacts]);
 
   if (loading) return <div className="text-sm text-muted-foreground">Loading messages…</div>;
 
@@ -244,7 +259,7 @@ function MessagesPage() {
                 onClick={() => setSelected(c.key)}
                 className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${selected === c.key ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
-                <c.icon className="h-4 w-4 shrink-0" />
+                <Avatar url={c.avatarUrl} icon={c.icon} size="h-7 w-7" />
                 <span className="min-w-0">
                   <span className="block truncate font-medium">{c.name}</span>
                   <span
@@ -303,9 +318,9 @@ function MessagesPage() {
         {/* THREAD / PANEL */}
         <div className="flex flex-col">
           {activeContact && user && <DmThread key={activeContact.key} meId={user.id} counterpart={activeContact} />}
-          {dbiSelected && <GroupThread myName={profile?.full_name ?? "Member"} />}
+          {dbiSelected && <GroupThread myName={profile?.full_name ?? "Member"} avatarById={avatarById} />}
           {cohortSelected && profile?.cohort_id && (
-            <CohortThread cohortId={profile.cohort_id} myName={profile.full_name ?? "Beneficiary"} />
+            <CohortThread cohortId={profile.cohort_id} myName={profile.full_name ?? "Beneficiary"} avatarById={avatarById} />
           )}
           {!activeContact && !cohortSelected && !dbiSelected && (
             <div className="flex-1 grid place-items-center text-sm text-muted-foreground p-6 text-center">
@@ -377,15 +392,29 @@ function isStickerBody(body: string): boolean {
   return /\p{Extended_Pictographic}/u.test(trimmed) && !/[a-zA-Z0-9]/.test(trimmed);
 }
 
+/** Profile photo everywhere someone shows up in Messages — falls back to a generic icon when there's no avatar_url. */
+function Avatar({ url, icon: Icon, size = "h-6 w-6" }: { url?: string | null; icon?: any; size?: string }) {
+  if (url) {
+    return <img src={url} alt="" className={`${size} shrink-0 rounded-full object-cover border border-gold/40`} />;
+  }
+  const FallbackIcon = Icon ?? User;
+  return (
+    <span className={`${size} shrink-0 rounded-full bg-muted grid place-items-center border border-gold/40`}>
+      <FallbackIcon className="h-3.5 w-3.5" />
+    </span>
+  );
+}
+
 function Bubble({
-  mine, name, body, at, attachmentPath, attachmentType,
+  mine, name, body, at, attachmentPath, attachmentType, avatarUrl,
 }: {
   mine: boolean; name?: string | null; body: string; at: string;
-  attachmentPath?: string | null; attachmentType?: string | null;
+  attachmentPath?: string | null; attachmentType?: string | null; avatarUrl?: string | null;
 }) {
   const sticker = !attachmentPath && isStickerBody(body);
   return (
-    <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+    <div className={`flex items-end gap-1.5 ${mine ? "justify-end" : "justify-start"}`}>
+      {!mine && !sticker && <Avatar url={avatarUrl} size="h-6 w-6" />}
       <div
         className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
           sticker ? "bg-transparent px-1" : mine ? "bg-primary text-primary-foreground" : "bg-muted"
@@ -636,9 +665,12 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
   return (
     <>
       <div className="flex items-center justify-between gap-3 border-b border-border p-4">
-        <div>
-          <div className="font-semibold">{counterpart.name}</div>
-          <div className="text-[10px] tracking-widest text-muted-foreground">{counterpart.sub}</div>
+        <div className="flex items-center gap-2">
+          <Avatar url={counterpart.avatarUrl} icon={counterpart.icon} size="h-8 w-8" />
+          <div>
+            <div className="font-semibold">{counterpart.name}</div>
+            <div className="text-[10px] tracking-widest text-muted-foreground">{counterpart.sub}</div>
+          </div>
         </div>
         <a
           href={directCallUrl(meId, counterpart.id)}
@@ -652,7 +684,7 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — say hello.</p>}
         {messages.map((m) => (
-          <Bubble key={m.id} mine={m.sender_id === meId} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} />
+          <Bubble key={m.id} mine={m.sender_id === meId} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} avatarUrl={counterpart.avatarUrl} />
         ))}
         <div ref={bottomRef} />
       </div>
@@ -661,7 +693,7 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
   );
 }
 
-function GroupThread({ myName }: { myName: string }) {
+function GroupThread({ myName, avatarById }: { myName: string; avatarById: Map<string, string | null> }) {
   const { user } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
   const [sending, setSending] = useState(false);
@@ -730,7 +762,7 @@ function GroupThread({ myName }: { myName: string }) {
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — open the room.</p>}
         {messages.map((m) => (
-          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} />
+          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} avatarUrl={avatarById.get(m.sender_id)} />
         ))}
         <div ref={bottomRef} />
       </div>
@@ -739,7 +771,7 @@ function GroupThread({ myName }: { myName: string }) {
   );
 }
 
-function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }) {
+function CohortThread({ cohortId, myName, avatarById }: { cohortId: string; myName: string; avatarById: Map<string, string | null> }) {
   const { user } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
   const [sending, setSending] = useState(false);
@@ -808,7 +840,7 @@ function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — share a win.</p>}
         {messages.map((m) => (
-          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} />
+          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} avatarUrl={avatarById.get(m.sender_id)} />
         ))}
         <div ref={bottomRef} />
       </div>

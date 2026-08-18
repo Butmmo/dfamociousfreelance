@@ -15,7 +15,17 @@ import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
 import { Compass, FileText } from "lucide-react";
-import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users, ShieldAlert, Search } from "lucide-react";
+import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users, ShieldAlert, Search, UserRound } from "lucide-react";
+
+function RosterAvatar({ url, size = "h-9 w-9" }: { url?: string | null; size?: string }) {
+  return url ? (
+    <img src={url} alt="" className={`${size} shrink-0 rounded-full object-cover border border-gold/40`} />
+  ) : (
+    <span className={`${size} shrink-0 rounded-full bg-muted grid place-items-center border border-gold/40`}>
+      <UserRound className="h-4 w-4 text-muted-foreground" />
+    </span>
+  );
+}
 
 /** Council tables can grow into the hundreds — search narrows, pagination keeps each list to 5 rows at a time. */
 function usePaged<T>(items: T[], matchText: (item: T) => string, pageSize = 5) {
@@ -451,12 +461,15 @@ function Admin() {
           {adminsPaged.pageItems.map((a) => (
             <div key={a.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-display font-semibold flex items-center gap-2">
-                    {a.full_name ?? "Unnamed"}
-                    {a.is_super_admin && <Crown className="h-4 w-4 text-gold" />}
+                <div className="flex items-center gap-2.5">
+                  <RosterAvatar url={a.avatar_url} />
+                  <div>
+                    <div className="font-display font-semibold flex items-center gap-2">
+                      {a.full_name ?? "Unnamed"}
+                      {a.is_super_admin && <Crown className="h-4 w-4 text-gold" />}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{a.email}</div>
                   </div>
-                  <div className="text-xs text-muted-foreground">{a.email}</div>
                 </div>
                 {isSuperAdmin && !a.is_super_admin && a.id !== user?.id && (
                   <div className="flex gap-2">
@@ -534,13 +547,16 @@ function Admin() {
             return (
               <div key={b.id} className="rounded-xl border border-border bg-card p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="font-display font-semibold">{b.full_name ?? "Unnamed"}</div>
-                    <div className="text-xs text-muted-foreground">{b.email}</div>
-                    <div className="mt-2 flex items-center gap-3 text-xs">
-                      <span className="tracking-widest text-gold-deep">{b.rank}</span>
-                      <span className="text-muted-foreground">{b.xp} XP</span>
-                      {b.suspended && <span className="rounded-full bg-crimson px-2 py-0.5 text-[10px] font-bold text-white">SUSPENDED</span>}
+                  <div className="flex items-start gap-2.5">
+                    <RosterAvatar url={b.avatar_url} />
+                    <div>
+                      <div className="font-display font-semibold">{b.full_name ?? "Unnamed"}</div>
+                      <div className="text-xs text-muted-foreground">{b.email}</div>
+                      <div className="mt-2 flex items-center gap-3 text-xs">
+                        <span className="tracking-widest text-gold-deep">{b.rank}</span>
+                        <span className="text-muted-foreground">{b.xp} XP</span>
+                        {b.suspended && <span className="rounded-full bg-crimson px-2 py-0.5 text-[10px] font-bold text-white">SUSPENDED</span>}
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
