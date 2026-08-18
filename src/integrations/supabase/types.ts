@@ -59,6 +59,149 @@ export type Database = {
         }
         Relationships: []
       }
+      bps_activities: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          label: string
+          sort_order: number
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label: string
+          sort_order?: number
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label?: string
+          sort_order?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bps_daily_checks: {
+        Row: {
+          activity_id: string
+          check_date: string
+          created_at: string
+          done: boolean
+          id: string
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          check_date: string
+          created_at?: string
+          done?: boolean
+          id?: string
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          check_date?: string
+          created_at?: string
+          done?: boolean
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bps_daily_checks_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "bps_activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bps_monthly_goals: {
+        Row: {
+          affirmation_percent: number | null
+          affirmation_remark: string | null
+          affirmation_score: number | null
+          affirmation_submitted_at: string | null
+          affirmation_total: number | null
+          belief_submitted_at: string | null
+          created_at: string
+          evaluation_percent: number | null
+          evaluation_remark: string | null
+          evaluation_score: number | null
+          evaluation_submitted_at: string | null
+          evaluation_total: number | null
+          finance_goal: string | null
+          finance_items: Json
+          id: string
+          mlm_goal: string
+          mlm_items: Json
+          relationship_goal: string | null
+          relationship_items: Json
+          self_dev_goal: string | null
+          self_dev_items: Json
+          target_month: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          affirmation_percent?: number | null
+          affirmation_remark?: string | null
+          affirmation_score?: number | null
+          affirmation_submitted_at?: string | null
+          affirmation_total?: number | null
+          belief_submitted_at?: string | null
+          created_at?: string
+          evaluation_percent?: number | null
+          evaluation_remark?: string | null
+          evaluation_score?: number | null
+          evaluation_submitted_at?: string | null
+          evaluation_total?: number | null
+          finance_goal?: string | null
+          finance_items?: Json
+          id?: string
+          mlm_goal?: string
+          mlm_items?: Json
+          relationship_goal?: string | null
+          relationship_items?: Json
+          self_dev_goal?: string | null
+          self_dev_items?: Json
+          target_month: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          affirmation_percent?: number | null
+          affirmation_remark?: string | null
+          affirmation_score?: number | null
+          affirmation_submitted_at?: string | null
+          affirmation_total?: number | null
+          belief_submitted_at?: string | null
+          created_at?: string
+          evaluation_percent?: number | null
+          evaluation_remark?: string | null
+          evaluation_score?: number | null
+          evaluation_submitted_at?: string | null
+          evaluation_total?: number | null
+          finance_goal?: string | null
+          finance_items?: Json
+          id?: string
+          mlm_goal?: string
+          mlm_items?: Json
+          relationship_goal?: string | null
+          relationship_items?: Json
+          self_dev_goal?: string | null
+          self_dev_items?: Json
+          target_month?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       check_ins: {
         Row: {
           admin_id: string
@@ -154,6 +297,99 @@ export type Database = {
           name?: string
           seq_number?: number | null
           start_date?: string
+        }
+        Relationships: []
+      }
+      crm_clients: {
+        Row: {
+          city: string | null
+          contact_email: string | null
+          contact_linkedin: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string
+          email_1_sent: boolean
+          email_2_sent: boolean
+          email_3_sent: boolean
+          google_reviews_count: number | null
+          id: string
+          last_contacted_at: string | null
+          lead_score: number | null
+          linkedin_connected: boolean
+          linkedin_dm_sent: boolean
+          name: string
+          niche: string | null
+          notes: string | null
+          path_key: string | null
+          priority: string | null
+          stage: string
+          the_gap: string | null
+          the_leak: string | null
+          the_lift: string | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          city?: string | null
+          contact_email?: string | null
+          contact_linkedin?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          email_1_sent?: boolean
+          email_2_sent?: boolean
+          email_3_sent?: boolean
+          google_reviews_count?: number | null
+          id?: string
+          last_contacted_at?: string | null
+          lead_score?: number | null
+          linkedin_connected?: boolean
+          linkedin_dm_sent?: boolean
+          name: string
+          niche?: string | null
+          notes?: string | null
+          path_key?: string | null
+          priority?: string | null
+          stage?: string
+          the_gap?: string | null
+          the_leak?: string | null
+          the_lift?: string | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          city?: string | null
+          contact_email?: string | null
+          contact_linkedin?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          email_1_sent?: boolean
+          email_2_sent?: boolean
+          email_3_sent?: boolean
+          google_reviews_count?: number | null
+          id?: string
+          last_contacted_at?: string | null
+          lead_score?: number | null
+          linkedin_connected?: boolean
+          linkedin_dm_sent?: boolean
+          name?: string
+          niche?: string | null
+          notes?: string | null
+          path_key?: string | null
+          priority?: string | null
+          stage?: string
+          the_gap?: string | null
+          the_leak?: string | null
+          the_lift?: string | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -379,6 +615,84 @@ export type Database = {
             columns: ["mentorship_id"]
             isOneToOne: false
             referencedRelation: "mentorships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentorship_escalations: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          breach_72h_sent_at: string | null
+          classification: string | null
+          classification_note: string | null
+          created_at: string
+          description: string
+          id: string
+          mentorship_id: string
+          raised_at: string
+          raised_by: string
+          reassigned: boolean
+          reminder_48h_sent_at: string | null
+          resolution_note: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          review_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          breach_72h_sent_at?: string | null
+          classification?: string | null
+          classification_note?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          mentorship_id: string
+          raised_at?: string
+          raised_by: string
+          reassigned?: boolean
+          reminder_48h_sent_at?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          review_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          breach_72h_sent_at?: string | null
+          classification?: string | null
+          classification_note?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          mentorship_id?: string
+          raised_at?: string
+          raised_by?: string
+          reassigned?: boolean
+          reminder_48h_sent_at?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          review_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentorship_escalations_mentorship_id_fkey"
+            columns: ["mentorship_id"]
+            isOneToOne: false
+            referencedRelation: "mentorships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mentorship_escalations_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "mentorship_reviews"
             referencedColumns: ["id"]
           },
         ]
