@@ -48,6 +48,7 @@ function AuthedShell() {
   const [moreOpen, setMoreOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
+  const moreSheetRef = useRef<HTMLDivElement>(null);
 
   // A beneficiary without a sealed path is funnelled to the briefing room.
   useEffect(() => {
