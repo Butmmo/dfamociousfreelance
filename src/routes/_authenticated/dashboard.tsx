@@ -333,7 +333,6 @@ function Dashboard() {
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-                      <div>
             <div className="text-[10px] tracking-widest text-gold-deep">Weekly cadence</div>
             <h2 className="mt-1 font-display text-2xl font-bold">Your latest report</h2>
           </div>
