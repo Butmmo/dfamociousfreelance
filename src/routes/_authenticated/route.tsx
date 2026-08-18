@@ -16,6 +16,11 @@ import {
   MessageSquare,
   Users,
   ChevronDown,
+  CalendarDays,
+  FileText,
+  Activity,
+  DollarSign,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 
