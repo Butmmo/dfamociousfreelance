@@ -7,7 +7,10 @@ import { getMyRep, listMyMentorships } from "@/lib/mentorship.functions";
 import { listMembers, listMessageRequests, sendMessageRequest, respondToMessageRequest } from "@/lib/social.functions";
 import { directCallUrl, cohortCallUrl } from "@/lib/video";
 import { toast } from "sonner";
-import { MessageSquare, Send, Video, Loader2, Shield, Users, User, Plus, Check, X, Globe } from "lucide-react";
+import {
+  MessageSquare, Send, Video, Loader2, Shield, Users, User, Plus, Check, X, Globe,
+  Paperclip, Camera, Smile, Sticker as StickerIcon, FileText,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/messages")({
   head: () => ({
@@ -315,15 +318,83 @@ function MessagesPage() {
   );
 }
 
-function Bubble({ mine, name, body, at }: { mine: boolean; name?: string | null; body: string; at: string }) {
+const MESSAGE_ATTACHMENTS_BUCKET = "message-attachments";
+const MAX_ATTACHMENT_BYTES = 20 * 1024 * 1024;
+
+/** Bucket is private — attachment_url stores the object's storage path, not a fetchable URL. Sign it on read. */
+async function uploadMessageAttachment(file: File, userId: string): Promise<{ path: string; type: string }> {
+  if (file.size > MAX_ATTACHMENT_BYTES) throw new Error("Files must be under 20MB.");
+  const ext = file.name.includes(".") ? file.name.slice(file.name.lastIndexOf(".")) : "";
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+  const { error } = await supabase.storage.from(MESSAGE_ATTACHMENTS_BUCKET).upload(path, file, {
+    contentType: file.type || undefined,
+  });
+  if (error) throw error;
+  return { path, type: file.type || "application/octet-stream" };
+}
+
+function AttachmentPreview({ path, type }: { path: string; type: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    supabase.storage.from(MESSAGE_ATTACHMENTS_BUCKET).createSignedUrl(path, 3600).then(({ data }: { data: { signedUrl: string } | null }) => {
+      if (alive && data?.signedUrl) setUrl(data.signedUrl);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [path]);
+
+  const filename = path.split("/").pop() ?? "attachment";
+
+  if (!url) return <div className="mt-1.5 text-[10px] italic opacity-70">Loading attachment…</div>;
+
+  if (type.startsWith("image/")) {
+    return (
+      <a href={url} target="_blank" rel="noreferrer">
+        <img src={url} alt="Attachment" className="mt-1.5 max-h-48 w-auto rounded-lg border border-border/50 object-cover" />
+      </a>
+    );
+  }
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="mt-1.5 flex items-center gap-1.5 rounded-md border border-border/50 bg-background/40 px-2 py-1.5 text-xs underline"
+    >
+      <FileText className="h-3.5 w-3.5 shrink-0" /> <span className="truncate max-w-[180px]">{filename}</span>
+    </a>
+  );
+}
+
+/** A message body is treated as a "sticker" — rendered oversized, no bubble chrome — when it's a short run of emoji with no attachment and no ordinary text. */
+function isStickerBody(body: string): boolean {
+  const trimmed = body.trim();
+  if (!trimmed || trimmed.length > 8) return false;
+  return /\p{Extended_Pictographic}/u.test(trimmed) && !/[a-zA-Z0-9]/.test(trimmed);
+}
+
+function Bubble({
+  mine, name, body, at, attachmentPath, attachmentType,
+}: {
+  mine: boolean; name?: string | null; body: string; at: string;
+  attachmentPath?: string | null; attachmentType?: string | null;
+}) {
+  const sticker = !attachmentPath && isStickerBody(body);
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+        className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
+          sticker ? "bg-transparent px-1" : mine ? "bg-primary text-primary-foreground" : "bg-muted"
+        }`}
       >
         {!mine && name && <div className="text-[10px] font-semibold text-gold-deep mb-0.5">{name}</div>}
-        {body}
-        <div className={`mt-1 text-[9px] ${mine ? "opacity-70" : "text-muted-foreground"}`}>
+        {attachmentPath && <AttachmentPreview path={attachmentPath} type={attachmentType ?? "application/octet-stream"} />}
+        {body && (sticker ? <div className="text-4xl leading-none">{body}</div> : <div className="whitespace-pre-wrap break-words">{body}</div>)}
+        <div className={`mt-1 text-[9px] ${sticker ? "text-muted-foreground" : mine ? "opacity-70" : "text-muted-foreground"}`}>
           {new Date(at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
       </div>
@@ -331,41 +402,190 @@ function Bubble({ mine, name, body, at }: { mine: boolean; name?: string | null;
   );
 }
 
+const EMOJIS = [
+  "😀", "😂", "😅", "😊", "😍", "🤔", "😎", "🙌", "👍", "👏",
+  "🙏", "💪", "🔥", "🎉", "✅", "❤️", "💯", "🚀", "😢", "😮",
+  "🤝", "👀", "🫡", "😴", "🥳", "🤯", "😤", "🙈", "✨", "⚡",
+];
+const STICKERS = ["🎉", "🔥", "👏", "💪", "🚀", "🏆", "❤️", "😂", "🙌", "✅", "💯", "🎯"];
+
+function EmojiPopover({ emojis, onPick, big }: { emojis: string[]; onPick: (e: string) => void; big?: boolean }) {
+  return (
+    <div className="absolute bottom-full left-0 mb-2 z-20 grid grid-cols-6 gap-1 rounded-xl border border-border bg-card p-2 shadow-regal w-56">
+      {emojis.map((e, i) => (
+        <button
+          key={`${e}-${i}`}
+          type="button"
+          onClick={() => onPick(e)}
+          className={`rounded-md p-1 hover:bg-muted ${big ? "text-2xl" : "text-lg"}`}
+        >
+          {e}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+type PendingAttachment = { path: string; type: string; name: string };
+
 function Composer({
-  value,
-  onChange,
-  onSubmit,
+  userId,
+  onSend,
   sending,
   placeholder,
 }: {
-  value: string;
-  onChange: (v: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  userId: string;
+  onSend: (body: string, attachment: { path: string; type: string } | null) => Promise<void> | void;
   sending: boolean;
   placeholder: string;
 }) {
+  const [value, setValue] = useState("");
+  const [attachment, setAttachment] = useState<PendingAttachment | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [stickerOpen, setStickerOpen] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!emojiOpen && !stickerOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setEmojiOpen(false);
+        setStickerOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [emojiOpen, stickerOpen]);
+
+  const handleFile = async (file: File) => {
+    setUploading(true);
+    try {
+      const { path, type } = await uploadMessageAttachment(file, userId);
+      setAttachment({ path, type, name: file.name });
+    } catch (e: any) {
+      toast.error(e?.message ?? "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!value.trim() && !attachment) return;
+    await onSend(value.trim(), attachment ? { path: attachment.path, type: attachment.type } : null);
+    setValue("");
+    setAttachment(null);
+  };
+
+  const sendSticker = async (emoji: string) => {
+    setStickerOpen(false);
+    await onSend(emoji, null);
+  };
+
+  const busy = sending || uploading;
+
   return (
-    <form onSubmit={onSubmit} className="flex items-center gap-2 border-t border-border p-3">
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm"
-      />
-      <button
-        type="submit"
-        disabled={sending}
-        className="rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
-      >
-        {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-      </button>
-    </form>
+    <div ref={wrapRef} className="border-t border-border">
+      {attachment && (
+        <div className="flex items-center justify-between gap-2 px-3 pt-2 text-xs text-muted-foreground">
+          <span className="truncate inline-flex items-center gap-1">
+            <Paperclip className="h-3 w-3 shrink-0" /> {attachment.name}
+          </span>
+          <button type="button" onClick={() => setAttachment(null)} className="shrink-0 hover:text-crimson" aria-label="Remove attachment">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+      <form onSubmit={submit} className="flex items-center gap-1 p-3">
+        <input
+          ref={fileRef}
+          type="file"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleFile(f);
+            e.target.value = "";
+          }}
+        />
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleFile(f);
+            e.target.value = "";
+          }}
+        />
+
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={busy}
+          title="Attach a file"
+          className="shrink-0 rounded-full p-2 text-muted-foreground hover:bg-muted disabled:opacity-50"
+        >
+          <Paperclip className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => cameraRef.current?.click()}
+          disabled={busy}
+          title="Camera"
+          className="shrink-0 rounded-full p-2 text-muted-foreground hover:bg-muted disabled:opacity-50"
+        >
+          <Camera className="h-4 w-4" />
+        </button>
+
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => { setEmojiOpen((v) => !v); setStickerOpen(false); }}
+            title="Emoji"
+            className="rounded-full p-2 text-muted-foreground hover:bg-muted"
+          >
+            <Smile className="h-4 w-4" />
+          </button>
+          {emojiOpen && <EmojiPopover emojis={EMOJIS} onPick={(e) => setValue((v) => v + e)} />}
+        </div>
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => { setStickerOpen((v) => !v); setEmojiOpen(false); }}
+            title="Stickers"
+            className="rounded-full p-2 text-muted-foreground hover:bg-muted"
+          >
+            <StickerIcon className="h-4 w-4" />
+          </button>
+          {stickerOpen && <EmojiPopover emojis={STICKERS} big onPick={sendSticker} />}
+        </div>
+
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={uploading ? "Uploading…" : placeholder}
+          disabled={uploading}
+          className="flex-1 min-w-0 rounded-full border border-input bg-background px-4 py-2 text-sm disabled:opacity-60"
+        />
+        <button
+          type="submit"
+          disabled={busy || (!value.trim() && !attachment)}
+          className="shrink-0 rounded-full bg-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+        >
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+        </button>
+      </form>
+    </div>
   );
 }
 
 function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact }) {
   const [messages, setMessages] = useState<any[]>([]);
-  const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -396,21 +616,20 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
-  const send = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!body.trim()) return;
+  const send = async (bodyText: string, attachment: { path: string; type: string } | null) => {
     setSending(true);
     const { error } = await supabase.from("direct_messages").insert({
       sender_id: meId,
       recipient_id: counterpart.id,
-      body: body.trim(),
+      body: bodyText,
+      attachment_url: attachment?.path ?? null,
+      attachment_type: attachment?.type ?? null,
     });
     setSending(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    setBody("");
     load();
   };
 
@@ -433,11 +652,11 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — say hello.</p>}
         {messages.map((m) => (
-          <Bubble key={m.id} mine={m.sender_id === meId} body={m.body} at={m.created_at} />
+          <Bubble key={m.id} mine={m.sender_id === meId} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} />
         ))}
         <div ref={bottomRef} />
       </div>
-      <Composer value={body} onChange={setBody} onSubmit={send} sending={sending} placeholder="Write a message…" />
+      <Composer userId={meId} onSend={send} sending={sending} placeholder="Write a message…" />
     </>
   );
 }
@@ -445,7 +664,6 @@ function DmThread({ meId, counterpart }: { meId: string; counterpart: Contact })
 function GroupThread({ myName }: { myName: string }) {
   const { user } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
-  const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -474,22 +692,22 @@ function GroupThread({ myName }: { myName: string }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
-  const send = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!body.trim() || !user) return;
+  const send = async (bodyText: string, attachment: { path: string; type: string } | null) => {
+    if (!user) return;
     setSending(true);
     const { error } = await supabase.from("group_messages").insert({
       room: "dbi",
       sender_id: user.id,
       sender_name: myName,
-      body: body.trim(),
+      body: bodyText,
+      attachment_url: attachment?.path ?? null,
+      attachment_type: attachment?.type ?? null,
     });
     setSending(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    setBody("");
     load();
   };
 
@@ -512,11 +730,11 @@ function GroupThread({ myName }: { myName: string }) {
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — open the room.</p>}
         {messages.map((m) => (
-          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} />
+          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} />
         ))}
         <div ref={bottomRef} />
       </div>
-      <Composer value={body} onChange={setBody} onSubmit={send} sending={sending} placeholder="Share with DBI…" />
+      {user && <Composer userId={user.id} onSend={send} sending={sending} placeholder="Share with DBI…" />}
     </>
   );
 }
@@ -524,7 +742,6 @@ function GroupThread({ myName }: { myName: string }) {
 function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }) {
   const { user } = useSession();
   const [messages, setMessages] = useState<any[]>([]);
-  const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -553,22 +770,22 @@ function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
-  const send = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!body.trim() || !user) return;
+  const send = async (bodyText: string, attachment: { path: string; type: string } | null) => {
+    if (!user) return;
     setSending(true);
     const { error } = await supabase.from("cohort_messages").insert({
       cohort_id: cohortId,
       sender_id: user.id,
       sender_name: myName,
-      body: body.trim(),
+      body: bodyText,
+      attachment_url: attachment?.path ?? null,
+      attachment_type: attachment?.type ?? null,
     });
     setSending(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    setBody("");
     load();
   };
 
@@ -591,17 +808,11 @@ function CohortThread({ cohortId, myName }: { cohortId: string; myName: string }
       <div className="flex-1 overflow-y-auto p-4 space-y-2 max-h-[420px]">
         {messages.length === 0 && <p className="text-xs text-muted-foreground">No messages yet — share a win.</p>}
         {messages.map((m) => (
-          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} />
+          <Bubble key={m.id} mine={m.sender_id === user?.id} name={m.sender_name} body={m.body} at={m.created_at} attachmentPath={m.attachment_url} attachmentType={m.attachment_type} />
         ))}
         <div ref={bottomRef} />
       </div>
-      <Composer
-        value={body}
-        onChange={setBody}
-        onSubmit={send}
-        sending={sending}
-        placeholder="Share with the cohort…"
-      />
+      {user && <Composer userId={user.id} onSend={send} sending={sending} placeholder="Share with the cohort…" />}
     </>
   );
 }
