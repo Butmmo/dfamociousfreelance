@@ -63,6 +63,7 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          goal_id: string | null
           id: string
           label: string
           sort_order: number
@@ -71,6 +72,7 @@ export type Database = {
         Insert: {
           active?: boolean
           created_at?: string
+          goal_id?: string | null
           id?: string
           label: string
           sort_order?: number
@@ -79,12 +81,21 @@ export type Database = {
         Update: {
           active?: boolean
           created_at?: string
+          goal_id?: string | null
           id?: string
           label?: string
           sort_order?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bps_activities_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "bps_monthly_goals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bps_daily_checks: {
         Row: {
@@ -130,13 +141,19 @@ export type Database = {
           affirmation_total: number | null
           belief_submitted_at: string | null
           created_at: string
+          custom_pillars: Json
           evaluation_percent: number | null
           evaluation_remark: string | null
           evaluation_score: number | null
           evaluation_submitted_at: string | null
           evaluation_total: number | null
+          finance_avg_price_usd: number | null
           finance_goal: string | null
           finance_items: Json
+          finance_leads_target: number | null
+          finance_messages_target: number | null
+          finance_new_clients_target: number | null
+          finance_returning_clients_target: number | null
           id: string
           mlm_goal: string
           mlm_items: Json
@@ -156,13 +173,19 @@ export type Database = {
           affirmation_total?: number | null
           belief_submitted_at?: string | null
           created_at?: string
+          custom_pillars?: Json
           evaluation_percent?: number | null
           evaluation_remark?: string | null
           evaluation_score?: number | null
           evaluation_submitted_at?: string | null
           evaluation_total?: number | null
+          finance_avg_price_usd?: number | null
           finance_goal?: string | null
           finance_items?: Json
+          finance_leads_target?: number | null
+          finance_messages_target?: number | null
+          finance_new_clients_target?: number | null
+          finance_returning_clients_target?: number | null
           id?: string
           mlm_goal?: string
           mlm_items?: Json
@@ -182,13 +205,19 @@ export type Database = {
           affirmation_total?: number | null
           belief_submitted_at?: string | null
           created_at?: string
+          custom_pillars?: Json
           evaluation_percent?: number | null
           evaluation_remark?: string | null
           evaluation_score?: number | null
           evaluation_submitted_at?: string | null
           evaluation_total?: number | null
+          finance_avg_price_usd?: number | null
           finance_goal?: string | null
           finance_items?: Json
+          finance_leads_target?: number | null
+          finance_messages_target?: number | null
+          finance_new_clients_target?: number | null
+          finance_returning_clients_target?: number | null
           id?: string
           mlm_goal?: string
           mlm_items?: Json
@@ -201,6 +230,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      bps_weekly_reports: {
+        Row: {
+          activities_done: number
+          activities_total: number
+          created_at: string
+          goal_id: string | null
+          id: string
+          notified_mentor: boolean
+          notified_rep: boolean
+          percent: number
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          activities_done?: number
+          activities_total?: number
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          notified_mentor?: boolean
+          notified_rep?: boolean
+          percent?: number
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          activities_done?: number
+          activities_total?: number
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          notified_mentor?: boolean
+          notified_rep?: boolean
+          percent?: number
+          user_id?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bps_weekly_reports_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "bps_monthly_goals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       check_ins: {
         Row: {
@@ -237,6 +316,8 @@ export type Database = {
       }
       cohort_messages: {
         Row: {
+          attachment_type: string | null
+          attachment_url: string | null
           body: string
           cohort_id: string
           created_at: string
@@ -245,6 +326,8 @@ export type Database = {
           sender_name: string
         }
         Insert: {
+          attachment_type?: string | null
+          attachment_url?: string | null
           body: string
           cohort_id: string
           created_at?: string
@@ -253,6 +336,8 @@ export type Database = {
           sender_name: string
         }
         Update: {
+          attachment_type?: string | null
+          attachment_url?: string | null
           body?: string
           cohort_id?: string
           created_at?: string
@@ -446,6 +531,8 @@ export type Database = {
       }
       direct_messages: {
         Row: {
+          attachment_type: string | null
+          attachment_url: string | null
           body: string
           created_at: string
           id: string
@@ -454,6 +541,8 @@ export type Database = {
           sender_id: string
         }
         Insert: {
+          attachment_type?: string | null
+          attachment_url?: string | null
           body: string
           created_at?: string
           id?: string
@@ -462,6 +551,8 @@ export type Database = {
           sender_id: string
         }
         Update: {
+          attachment_type?: string | null
+          attachment_url?: string | null
           body?: string
           created_at?: string
           id?: string
@@ -509,6 +600,8 @@ export type Database = {
       }
       group_messages: {
         Row: {
+          attachment_type: string | null
+          attachment_url: string | null
           body: string
           created_at: string
           id: string
@@ -517,6 +610,8 @@ export type Database = {
           sender_name: string
         }
         Insert: {
+          attachment_type?: string | null
+          attachment_url?: string | null
           body: string
           created_at?: string
           id?: string
@@ -525,6 +620,8 @@ export type Database = {
           sender_name: string
         }
         Update: {
+          attachment_type?: string | null
+          attachment_url?: string | null
           body?: string
           created_at?: string
           id?: string
@@ -540,11 +637,13 @@ export type Database = {
           cohort_id: string | null
           created_at: string
           email: string
+          entry_channel: string
           expires_at: string
           full_name: string | null
           id: string
           invited_by: string | null
           role: Database["public"]["Enums"]["app_role"]
+          sponsor_name: string | null
           status: Database["public"]["Enums"]["invitation_status"]
         }
         Insert: {
@@ -552,11 +651,13 @@ export type Database = {
           cohort_id?: string | null
           created_at?: string
           email: string
+          entry_channel?: string
           expires_at?: string
           full_name?: string | null
           id?: string
           invited_by?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          sponsor_name?: string | null
           status?: Database["public"]["Enums"]["invitation_status"]
         }
         Update: {
@@ -564,11 +665,13 @@ export type Database = {
           cohort_id?: string | null
           created_at?: string
           email?: string
+          entry_channel?: string
           expires_at?: string
           full_name?: string | null
           id?: string
           invited_by?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          sponsor_name?: string | null
           status?: Database["public"]["Enums"]["invitation_status"]
         }
         Relationships: [
@@ -846,9 +949,11 @@ export type Database = {
           bio: string | null
           city: string | null
           cohort_id: string | null
+          consumer_access_status: string
           country: string | null
           created_at: string
           email: string
+          entry_channel: string
           full_name: string | null
           google_calendar_connected: boolean
           google_refresh_token: string | null
@@ -861,6 +966,7 @@ export type Database = {
           positioning_statement: string | null
           rank: Database["public"]["Enums"]["rank_tier"]
           reinstatement_fee_usd: number
+          sponsor_name: string | null
           start_date: string | null
           suspended: boolean
           suspended_at: string | null
@@ -876,9 +982,11 @@ export type Database = {
           bio?: string | null
           city?: string | null
           cohort_id?: string | null
+          consumer_access_status?: string
           country?: string | null
           created_at?: string
           email: string
+          entry_channel?: string
           full_name?: string | null
           google_calendar_connected?: boolean
           google_refresh_token?: string | null
@@ -891,6 +999,7 @@ export type Database = {
           positioning_statement?: string | null
           rank?: Database["public"]["Enums"]["rank_tier"]
           reinstatement_fee_usd?: number
+          sponsor_name?: string | null
           start_date?: string | null
           suspended?: boolean
           suspended_at?: string | null
@@ -906,9 +1015,11 @@ export type Database = {
           bio?: string | null
           city?: string | null
           cohort_id?: string | null
+          consumer_access_status?: string
           country?: string | null
           created_at?: string
           email?: string
+          entry_channel?: string
           full_name?: string | null
           google_calendar_connected?: boolean
           google_refresh_token?: string | null
@@ -921,6 +1032,7 @@ export type Database = {
           positioning_statement?: string | null
           rank?: Database["public"]["Enums"]["rank_tier"]
           reinstatement_fee_usd?: number
+          sponsor_name?: string | null
           start_date?: string | null
           suspended?: boolean
           suspended_at?: string | null
