@@ -5,7 +5,7 @@ import { useSession } from "@/lib/use-session";
 import { computeEscalation, forecastFirstClose, advice, type ProgressRow } from "@/lib/escalation";
 import {
   TrendingUp, Flame, AlertTriangle, ShieldAlert, Sparkles, Calendar as CalIcon,
-  Target, Gauge, BookOpen, ArrowRight, DollarSign, ShieldCheck,
+  Target, Gauge, BookOpen, ArrowRight, DollarSign, ShieldCheck, CalendarCheck2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/report")({
@@ -37,22 +37,25 @@ function ReportPage() {
   const [rows, setRows] = useState<ProgressRow[]>([]);
   const [latestEscalation, setLatestEscalation] = useState<any>(null);
   const [checkIns, setCheckIns] = useState<any[]>([]);
+  const [bpsWeeks, setBpsWeeks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       setLoading(true);
-      const [pRes, tRes, eRes, cRes] = await Promise.all([
+      const [pRes, tRes, eRes, cRes, bRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("task_progress").select("playbook, task_id, completed, completed_at").eq("user_id", user.id),
         supabase.from("escalations").select("*").eq("beneficiary_id", user.id).is("resolved_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
         supabase.from("check_ins").select("*").eq("beneficiary_id", user.id).order("created_at", { ascending: false }).limit(5),
+        supabase.from("bps_weekly_reports").select("*").eq("user_id", user.id).order("week_start", { ascending: false }).limit(4),
       ]);
       setProfile(pRes.data);
       setRows((tRes.data as any) ?? []);
       setLatestEscalation(eRes.data ?? null);
       setCheckIns((cRes.data as any) ?? []);
+      setBpsWeeks((bRes.data as any) ?? []);
       setLoading(false);
     })();
   }, [user]);
@@ -233,6 +236,39 @@ function ReportPage() {
             <DollarSign className="h-4 w-4" /> Open DFY Tracker
           </Link>
         </div>
+      </section>
+
+      {/* BPS WEEKLY CADENCE */}
+      <section className="rounded-2xl border border-gold/40 bg-gold/5 p-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] tracking-widest text-gold-deep"><CalendarCheck2 className="h-3.5 w-3.5" /> Belief Goal cadence</div>
+            <h2 className="mt-1 font-display text-2xl font-bold">BPS weekly report</h2>
+            <p className="mt-1 text-sm text-muted-foreground max-w-xl">
+              Posted automatically every Monday by scoring last week's tracked activities — nothing here is filed by hand.
+            </p>
+          </div>
+          <Link to="/bps" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2 transition-all whitespace-nowrap">
+            Open BPS <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        {bpsWeeks.length === 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">No weekly cadence report yet — one posts here the first Monday after your Belief Goal is submitted.</p>
+        ) : (
+          <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {bpsWeeks.map((w) => (
+              <div key={w.id} className="rounded-lg border border-border bg-background p-3">
+                <div className="text-[10px] tracking-widest text-muted-foreground">
+                  {new Date(w.week_start).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                  {" – "}
+                  {new Date(w.week_end).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                </div>
+                <div className="mt-1 font-display text-xl font-bold">{w.activities_done}/{w.activities_total}</div>
+                <div className="text-xs text-muted-foreground">{Number(w.percent).toFixed(1)}% cadence</div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* PLAYBOOK BREAKDOWN */}
