@@ -248,7 +248,7 @@ function AuthedShell() {
         />
       )}
       {moreOpen && moreLinks.length > 0 && (
-        <div className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-1.5rem)] max-w-sm rounded-2xl border border-gold/40 bg-card shadow-regal p-2 grid grid-cols-3 gap-1">
+        <div ref={moreSheetRef} className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-1.5rem)] max-w-sm rounded-2xl border border-gold/40 bg-card shadow-regal p-2 grid grid-cols-3 gap-1">
           {moreLinks.map((l) => (
             <Link
               key={l.to}
