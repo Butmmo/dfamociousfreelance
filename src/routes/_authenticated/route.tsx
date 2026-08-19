@@ -21,6 +21,7 @@ import {
   FileText,
   DollarSign,
   Plus,
+  Headphones,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -178,6 +179,7 @@ function AuthedShell() {
     { to: "/bps", label: "BPS", icon: Activity, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/dfy", label: "DFY Tracker", icon: DollarSign, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/tpe", label: "TPE", icon: Headphones, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
 

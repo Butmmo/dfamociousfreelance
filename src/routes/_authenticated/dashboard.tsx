@@ -7,9 +7,10 @@ import { WEEKS } from "./playbooks/plan";
 import { usePath } from "@/lib/use-path";
 import { PATH_PLAYBOOKS } from "@/lib/path-playbooks";
 import { computeEscalation, forecastFirstClose, type ProgressRow } from "@/lib/escalation";
+import { TPE_TOPICS } from "@/lib/tpe";
 import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, BookOpen, Sparkles, Globe, ArrowRight,
-  Gauge, AlertTriangle, DollarSign, ChevronLeft, ChevronRight, CheckCircle2,
+  Gauge, AlertTriangle, DollarSign, ChevronLeft, ChevronRight, CheckCircle2, Headphones,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -112,6 +113,7 @@ function Dashboard() {
     completedRows.forEach((r) => { map[r.playbook] = (map[r.playbook] ?? 0) + 1; });
     return map;
   }, [completedRows]);
+  const tpeListened = perPlaybook["tpe"] ?? 0;
 
   const snapshot = useMemo(() => computeEscalation(completedRows), [completedRows]);
   const startDate = profile?.start_date ? new Date(profile.start_date)
@@ -294,6 +296,30 @@ function Dashboard() {
           <div className="rounded-lg border border-border bg-background p-3 text-center">
             <div className="font-display text-2xl font-bold">{bpsSnapshot.doneToday}/{bpsSnapshot.activityCount}</div>
             <div className="text-[10px] tracking-widest text-muted-foreground mt-1">Sealed today</div>
+          </div>
+        </div>
+      </section>
+
+      {/* TPE snapshot */}
+      <section className="rounded-2xl border border-gold/40 bg-gold/5 p-5">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
+              <Headphones className="h-3.5 w-3.5" /> Twelve sessions
+            </div>
+            <h2 className="mt-1 font-display text-xl font-bold">TPE — running an enterprise</h2>
+          </div>
+          <Link to="/tpe" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2 transition-all">
+            Open TPE <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+            <span>{tpeListened}/{TPE_TOPICS.length} sessions listened</span>
+            <span>{Math.round((tpeListened / TPE_TOPICS.length) * 100)}%</span>
+          </div>
+          <div className="h-2 rounded-full bg-muted overflow-hidden">
+            <div className="h-full bg-gradient-gold transition-all" style={{ width: `${(tpeListened / TPE_TOPICS.length) * 100}%` }} />
           </div>
         </div>
       </section>
