@@ -14,6 +14,7 @@ import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authenticated/weekly-report'
+import { Route as AuthenticatedTpeRouteImport } from './routes/_authenticated/tpe'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
@@ -25,7 +26,6 @@ import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_au
 import { Route as AuthenticatedCouncilEscalationsRouteImport } from './routes/_authenticated/council-escalations'
 import { Route as AuthenticatedChoosePathRouteImport } from './routes/_authenticated/choose-path'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
-import { Route as AuthenticatedTpeRouteImport } from './routes/_authenticated/tpe'
 import { Route as AuthenticatedBpsRouteImport } from './routes/_authenticated/bps'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPlaybooksIndexRouteImport } from './routes/_authenticated/playbooks/index'
@@ -76,6 +76,11 @@ const AuthenticatedWeeklyReportRoute =
     path: '/weekly-report',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTpeRoute = AuthenticatedTpeRouteImport.update({
+  id: '/tpe',
+  path: '/tpe',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedReportRoute = AuthenticatedReportRouteImport.update({
   id: '/report',
   path: '/report',
@@ -132,11 +137,6 @@ const AuthenticatedChoosePathRoute = AuthenticatedChoosePathRouteImport.update({
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedTpeRoute = AuthenticatedTpeRouteImport.update({
-  id: '/tpe',
-  path: '/tpe',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBpsRoute = AuthenticatedBpsRouteImport.update({
@@ -288,7 +288,6 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bps': typeof AuthenticatedBpsRoute
-  '/tpe': typeof AuthenticatedTpeRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
@@ -300,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof AuthenticatedMessagesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
+  '/tpe': typeof AuthenticatedTpeRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
   '/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
   '/playbooks/ascent-machine': typeof AuthenticatedPlaybooksAscentMachineRoute
@@ -330,7 +330,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bps': typeof AuthenticatedBpsRoute
-  '/tpe': typeof AuthenticatedTpeRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
@@ -342,6 +341,7 @@ export interface FileRoutesByTo {
   '/messages': typeof AuthenticatedMessagesRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
+  '/tpe': typeof AuthenticatedTpeRoute
   '/weekly-report': typeof AuthenticatedWeeklyReportRoute
   '/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
   '/playbooks/ascent-machine': typeof AuthenticatedPlaybooksAscentMachineRoute
@@ -374,7 +374,6 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bps': typeof AuthenticatedBpsRoute
-  '/_authenticated/tpe': typeof AuthenticatedTpeRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/choose-path': typeof AuthenticatedChoosePathRoute
   '/_authenticated/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
@@ -386,6 +385,7 @@ export interface FileRoutesById {
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
+  '/_authenticated/tpe': typeof AuthenticatedTpeRoute
   '/_authenticated/weekly-report': typeof AuthenticatedWeeklyReportRoute
   '/_authenticated/playbooks/ascent-calculator': typeof AuthenticatedPlaybooksAscentCalculatorRoute
   '/_authenticated/playbooks/ascent-machine': typeof AuthenticatedPlaybooksAscentMachineRoute
@@ -418,7 +418,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/bps'
-    | '/tpe'
     | '/calendar'
     | '/choose-path'
     | '/council-escalations'
@@ -430,6 +429,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/profile'
     | '/report'
+    | '/tpe'
     | '/weekly-report'
     | '/playbooks/ascent-calculator'
     | '/playbooks/ascent-machine'
@@ -460,7 +460,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/bps'
-    | '/tpe'
     | '/calendar'
     | '/choose-path'
     | '/council-escalations'
@@ -472,6 +471,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/profile'
     | '/report'
+    | '/tpe'
     | '/weekly-report'
     | '/playbooks/ascent-calculator'
     | '/playbooks/ascent-machine'
@@ -503,7 +503,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/_authenticated/bps'
-    | '/_authenticated/tpe'
     | '/_authenticated/calendar'
     | '/_authenticated/choose-path'
     | '/_authenticated/council-escalations'
@@ -515,6 +514,7 @@ export interface FileRouteTypes {
     | '/_authenticated/messages'
     | '/_authenticated/profile'
     | '/_authenticated/report'
+    | '/_authenticated/tpe'
     | '/_authenticated/weekly-report'
     | '/_authenticated/playbooks/ascent-calculator'
     | '/_authenticated/playbooks/ascent-machine'
@@ -582,6 +582,13 @@ declare module '@tanstack/react-router' {
       path: '/weekly-report'
       fullPath: '/weekly-report'
       preLoaderRoute: typeof AuthenticatedWeeklyReportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tpe': {
+      id: '/_authenticated/tpe'
+      path: '/tpe'
+      fullPath: '/tpe'
+      preLoaderRoute: typeof AuthenticatedTpeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/report': {
@@ -659,13 +666,6 @@ declare module '@tanstack/react-router' {
       path: '/calendar'
       fullPath: '/calendar'
       preLoaderRoute: typeof AuthenticatedCalendarRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/tpe': {
-      id: '/_authenticated/tpe'
-      path: '/tpe'
-      fullPath: '/tpe'
-      preLoaderRoute: typeof AuthenticatedTpeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/bps': {
@@ -853,8 +853,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
-  AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
   AuthenticatedTpeRoute: typeof AuthenticatedTpeRoute
+  AuthenticatedWeeklyReportRoute: typeof AuthenticatedWeeklyReportRoute
   AuthenticatedPlaybooksAscentCalculatorRoute: typeof AuthenticatedPlaybooksAscentCalculatorRoute
   AuthenticatedPlaybooksAscentMachineRoute: typeof AuthenticatedPlaybooksAscentMachineRoute
   AuthenticatedPlaybooksAscentTargetingRoute: typeof AuthenticatedPlaybooksAscentTargetingRoute
@@ -893,8 +893,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
-  AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
   AuthenticatedTpeRoute: AuthenticatedTpeRoute,
+  AuthenticatedWeeklyReportRoute: AuthenticatedWeeklyReportRoute,
   AuthenticatedPlaybooksAscentCalculatorRoute:
     AuthenticatedPlaybooksAscentCalculatorRoute,
   AuthenticatedPlaybooksAscentMachineRoute:

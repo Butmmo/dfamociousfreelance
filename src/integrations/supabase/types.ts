@@ -964,6 +964,7 @@ export type Database = {
           path_deadline: string | null
           path_key: string | null
           positioning_statement: string | null
+          push_messages_enabled: boolean
           rank: Database["public"]["Enums"]["rank_tier"]
           reinstatement_fee_usd: number
           sponsor_name: string | null
@@ -997,6 +998,7 @@ export type Database = {
           path_deadline?: string | null
           path_key?: string | null
           positioning_statement?: string | null
+          push_messages_enabled?: boolean
           rank?: Database["public"]["Enums"]["rank_tier"]
           reinstatement_fee_usd?: number
           sponsor_name?: string | null
@@ -1030,6 +1032,7 @@ export type Database = {
           path_deadline?: string | null
           path_key?: string | null
           positioning_statement?: string | null
+          push_messages_enabled?: boolean
           rank?: Database["public"]["Enums"]["rank_tier"]
           reinstatement_fee_usd?: number
           sponsor_name?: string | null
@@ -1059,6 +1062,36 @@ export type Database = {
             referencedColumns: ["key"]
           },
         ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       task_progress: {
         Row: {
@@ -1094,6 +1127,30 @@ export type Database = {
           notes?: string | null
           playbook?: string
           task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tpe_reflections: {
+        Row: {
+          id: string
+          note: string
+          topic_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          note?: string
+          topic_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          note?: string
+          topic_key?: string
           updated_at?: string
           user_id?: string
         }
@@ -1188,6 +1245,16 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      trigger_push: {
+        Args: {
+          body: string
+          category: string
+          title: string
+          url: string
+          user_ids: string[]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "beneficiary"
