@@ -159,10 +159,11 @@ function AuthedShell() {
     );
   }
 
-  // Hard cap: never more than 4 items in the nav bar on any viewport.
-  // Three primary destinations plus a "More" group that holds everything
-  // else (Calendar, Report, BPS, DFY, Mentorship, Council for admins). For
-  // an ordinary admin, Playbooks/choose-path never show (the paths
+  // Mobile keeps a hard cap of 4 items on the bottom bar (tabs, below) plus
+  // a "More" sheet for everything else. Desktop has room to spare, so BPS
+  // and Report get promoted onto the bar itself (desktopTabs/
+  // desktopMoreLinks, below) — six items total instead of four. For an
+  // ordinary admin, Playbooks/choose-path never show (the paths
   // curriculum), and every consumer-side item only shows once consumer
   // access is granted. The founder's cross-path "Paths" browser lives in
   // the profile dropdown.
@@ -183,6 +184,14 @@ function AuthedShell() {
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
   ].filter((t) => t.show);
 
+  // Desktop has room for 6 top-level items before "More" feels necessary —
+  // BPS and Report get promoted out of the dropdown there. Mobile keeps
+  // its original 4-icon cap (tabs/moreLinks above, untouched) since screen
+  // width doesn't have the same slack.
+  const desktopPromoted = moreLinks.filter((l) => l.to === "/bps" || l.to === "/report");
+  const desktopTabs = [...tabs, ...desktopPromoted];
+  const desktopMoreLinks = moreLinks.filter((l) => l.to !== "/bps" && l.to !== "/report");
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-30">
@@ -195,12 +204,12 @@ function AuthedShell() {
             </div>
           </Link>
           <nav className="hidden md:flex items-center gap-1 text-sm">
-            {tabs.map((t) => (
+            {desktopTabs.map((t) => (
               <NavTab key={t.to} to={t.to} icon={t.icon}>
                 {t.label}
               </NavTab>
             ))}
-            {moreLinks.length > 0 && (
+            {desktopMoreLinks.length > 0 && (
               <div className="relative" ref={moreRef}>
                 <button
                   onClick={() => setMoreOpen((v) => !v)}
@@ -216,7 +225,7 @@ function AuthedShell() {
                     role="menu"
                     className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-card shadow-regal py-1.5 z-50"
                   >
-                    {moreLinks.map((l) => (
+                    {desktopMoreLinks.map((l) => (
                       <Link
                         key={l.to}
                         to={l.to}
@@ -267,7 +276,7 @@ function AuthedShell() {
         <Outlet />
       </main>
 
-      {/* Mobile / tablet bottom nav — max 4 items */}
+      {/* Mobile / tablet bottom nav — max 4 items (unaffected by the desktop BPS/Report promotion above) */}
       {moreOpen && (
         <button
           aria-label="Close menu"
