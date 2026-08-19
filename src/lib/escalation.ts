@@ -1,8 +1,17 @@
 // Shared escalation & velocity logic used by Report page, dashboard, and admin surfaces.
-// Rules match the DBI homepage's stated escalation policy (routes/index.tsx):
-//   • <10 active days in last 14 days → score < 20%, $10 fine + 2-week suspension
-//   • <6 active days in last 7 days   → score < 40%, $5 fine
-// Fine amounts and thresholds are USD/day-counts, matching the homepage exactly.
+// Cadence thresholds:
+//   • <10 active days in last 14 days → score capped below 20%
+//   • <6 active days in last 7 days   → score capped below 40%
+// No dollar fine or automatic suspension attaches to either threshold — BEF's
+// own discipline framework (identity-and-framework.md) requires a good-faith
+// classification pass (Acceptable / Correctable / Disciplinary failure)
+// before any sanction is even considered, and a missed cadence day is
+// presumptively the first or second category, not the third. An algorithm
+// charging a fine the instant a threshold is crossed skips that gate
+// entirely, so it was removed; the underlying measurement it was reading —
+// active days, task volume, streaks, score, band — stays exactly as before,
+// since that's the beneficiary-and-mentor-facing signal the classification
+// itself should be based on.
 // GRACE PERIOD: Escalation tracking begins on ESCALATION_START (2026-08-10).
 // Nothing before that date counts against a beneficiary. The 14-/7-day windows
 // clamp to `max(windowStart, ESCALATION_START)` so people are not punished for
@@ -26,8 +35,6 @@ export interface EscalationSnapshot {
   longestStreak: number;
   tasksLast7: number;
   tasksLast14: number;
-  fineUSD: number;
-  suspensionWeeks: number;
   daysSinceLastActivity: number | null;
   reasons: string[];
   gracePeriodActive: boolean;      // true when part of the tracking window is before ESCALATION_START
@@ -153,20 +160,17 @@ export function computeEscalation(
 
   let score = cadence14 + cadence7 + volume + streakBonus;
 
-  // ── Hard-rule enforcement — ONLY when the full 14-day window is past the cutoff.
-  let fineUSD = 0;
-  let suspensionWeeks = 0;
-
+  // ── Cadence severity caps — ONLY when the full 14-day window is past the
+  // cutoff. These cap the score (feeding the band below) so a serious
+  // cadence gap still reads as "at_risk"/"critical" — but nothing here
+  // levies a fine or suspension automatically. See the file header.
   if (!gracePeriodActive) {
     if (activeDaysLast14 < 10) {
       score = Math.min(score, 19);
-      fineUSD = 10;
-      suspensionWeeks = 2;
-      reasons.unshift("Below 10 days work in last 14 → suspension + $10 fine");
+      reasons.unshift("Below 10 days work in last 14 — cadence at risk");
     } else if (activeDaysLast7 < 6) {
       score = Math.min(score, 40);
-      if (fineUSD < 5) fineUSD = 5;
-      reasons.unshift("Below 6 days work in last 7 → $5 fine");
+      reasons.unshift("Below 6 days work in last 7 — cadence drifting");
     }
   }
 
@@ -183,7 +187,6 @@ export function computeEscalation(
     activeDaysLast7, activeDaysLast14,
     currentStreak, longestStreak,
     tasksLast7, tasksLast14,
-    fineUSD, suspensionWeeks,
     daysSinceLastActivity, reasons,
     gracePeriodActive, daysInGrace,
   };

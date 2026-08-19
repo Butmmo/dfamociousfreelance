@@ -86,8 +86,8 @@ function WeeklyReportPage() {
           Every Sunday. Even zero counts. The council reads cadence, not perfection — a filed report of nothing beats a missed one.
           Your <Link to="/report" className="text-primary font-semibold hover:underline">Field Report</Link> aggregates these into your escalation score.
         </p>
-        <div className="mt-3 rounded-lg border border-crimson/40 bg-crimson/5 px-4 py-2.5 text-xs text-crimson max-w-2xl">
-          <strong>Missed filing = $5 fine</strong> and a hit to your escalation rating. File it — even if every count is zero.
+        <div className="mt-3 rounded-lg border border-gold/40 bg-gold/5 px-4 py-2.5 text-xs text-gold-deep max-w-2xl">
+          <strong>Missed filing</strong> shows up as a gap in your escalation cadence — no fine, just a signal your mentor and DSE Rep can see. File it — even if every count is zero.
         </div>
       </header>
 

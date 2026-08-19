@@ -134,20 +134,19 @@ function ReportPage() {
           <Stat icon={Target} label="Tasks (last 14d)" value={`${snapshot.tasksLast14}`} />
         </div>
 
-        {(snapshot.fineUSD > 0 || snapshot.suspensionWeeks > 0) && (
+        {(snapshot.band === "at_risk" || snapshot.band === "critical") && !snapshot.gracePeriodActive && (
           <div className="mt-6 rounded-xl border border-crimson bg-crimson/10 p-4 flex items-start gap-3">
             <ShieldAlert className="h-5 w-5 text-crimson flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <div className="font-display font-bold text-crimson">
-                {snapshot.suspensionWeeks > 0
-                  ? `Escalation: ${snapshot.suspensionWeeks}-week suspension + $${snapshot.fineUSD.toLocaleString()} fine`
-                  : `Warning: $${snapshot.fineUSD.toLocaleString()} fine active`}
+                {snapshot.band === "critical" ? "Cadence critical" : "Cadence at risk"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Your council admin and the super admin have been notified. Reverse this by hitting your cadence targets this week.
+                Your mentor and DSE Rep can see this too — no fine, no automatic suspension, just a signal that it's
+                time for a conversation about what's actually in the way. Hitting your cadence targets this week
+                clears it.
               </p>
             </div>
-            <DollarSign className="h-5 w-5 text-crimson flex-shrink-0" />
           </div>
         )}
 

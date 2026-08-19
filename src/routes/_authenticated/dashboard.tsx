@@ -208,10 +208,9 @@ function Dashboard() {
               Grace period active — tracking started 6 Jul 2026.
             </div>
           )}
-          {snapshot.fineUSD > 0 && (
+          {(snapshot.band === "at_risk" || snapshot.band === "critical") && !snapshot.gracePeriodActive && (
             <div className="mt-3 text-[10px] rounded border border-crimson bg-crimson/10 px-2 py-1 text-crimson">
-              ⚠ ${snapshot.fineUSD.toLocaleString()} fine active
-              {snapshot.suspensionWeeks > 0 ? ` · ${snapshot.suspensionWeeks}w suspension notice` : ""}
+              ⚠ Cadence {snapshot.band === "critical" ? "critical" : "at risk"} — talk to your mentor or DSE Rep
             </div>
           )}
         </section>
