@@ -12,6 +12,7 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendWebPush } from "../_shared/push.ts";
 
 const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
 const corsHeaders = {
@@ -117,28 +118,34 @@ Deno.serve(async (req) => {
       .from("profiles").select("id,full_name,email,sponsor_name").eq("id", userId).maybeSingle();
 
     const recipientEmails = new Set<string>();
+    const recipientIds = new Set<string>();
 
     const { data: mentorship } = await supa
       .from("mentorships").select("mentor_id").eq("mentee_id", userId).eq("status", "active").maybeSingle();
     if (mentorship?.mentor_id) {
-      const { data: mentor } = await supa.from("profiles").select("email").eq("id", mentorship.mentor_id).maybeSingle();
+      const { data: mentor } = await supa.from("profiles").select("id,email").eq("id", mentorship.mentor_id).maybeSingle();
       if (mentor?.email) recipientEmails.add(mentor.email);
+      if (mentor?.id) recipientIds.add(mentor.id);
     }
 
     if (beneficiary?.sponsor_name) {
       const { data: sponsorMatch } = await supa
-        .from("profiles").select("email").ilike("full_name", beneficiary.sponsor_name).maybeSingle();
+        .from("profiles").select("id,email").ilike("full_name", beneficiary.sponsor_name).maybeSingle();
       if (sponsorMatch?.email) recipientEmails.add(sponsorMatch.email);
+      if (sponsorMatch?.id) recipientIds.add(sponsorMatch.id);
     }
 
     let notifiedRep = false;
     const { data: assignment } = await supa
       .from("admin_assignments").select("admin_id").eq("beneficiary_id", userId).maybeSingle();
     if (assignment?.admin_id) {
-      const { data: rep } = await supa.from("profiles").select("email").eq("id", assignment.admin_id).maybeSingle();
+      const { data: rep } = await supa.from("profiles").select("id,email").eq("id", assignment.admin_id).maybeSingle();
       if (rep?.email) { recipientEmails.add(rep.email); notifiedRep = true; }
+      if (rep?.id) recipientIds.add(rep.id);
     } else {
       recipientEmails.add(SUPER_ADMIN_EMAIL);
+      const { data: superAdmin } = await supa.from("profiles").select("id").eq("email", SUPER_ADMIN_EMAIL).maybeSingle();
+      if (superAdmin?.id) recipientIds.add(superAdmin.id);
       notifiedRep = true;
     }
 
@@ -150,6 +157,14 @@ Deno.serve(async (req) => {
        <p>Full detail is on their BPS tracker page — nothing to file, this posted itself.</p>`,
     );
     const emailResult = await sendEmail(Array.from(recipientEmails), `BPS weekly cadence — ${beneficiary?.full_name ?? "beneficiary"} (${percent.toFixed(0)}%)`, html);
+    recipientIds.add(userId);
+    const pushResult = await sendWebPush(supa, {
+      user_ids: Array.from(recipientIds),
+      category: "bps",
+      title: `Weekly cadence: ${percent.toFixed(0)}%`,
+      body: `${beneficiary?.full_name ?? "Beneficiary"} — ${activitiesDone}/${activitiesTotal} for ${weekStart} to ${weekEnd}.`,
+      url: "/bps",
+    });
 
     const { error: insertError } = await supa.from("bps_weekly_reports").insert({
       user_id: userId,
@@ -164,7 +179,7 @@ Deno.serve(async (req) => {
     });
     if (insertError) { results.push({ userId, error: insertError.message }); continue; }
 
-    results.push({ userId, activitiesDone, activitiesTotal, percent, email: emailResult });
+    results.push({ userId, activitiesDone, activitiesTotal, percent, email: emailResult, push: pushResult });
   }
 
   return new Response(JSON.stringify({ weekStart, weekEnd, count: userIds.length, results }), {

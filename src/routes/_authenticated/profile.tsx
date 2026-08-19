@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { PATH_MAP } from "@/lib/paths";
 import { toast } from "sonner";
+import { usePushSubscription } from "@/lib/push";
 import {
-  User, Camera, Loader2, Save, Mail, Lock, Award, Calendar as CalIcon, Compass,
+  User, Camera, Loader2, Save, Mail, Lock, Award, Calendar as CalIcon, Compass, Bell, BellOff,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -34,6 +35,9 @@ function ProfilePage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
+
+  const push = usePushSubscription();
+  const [savingMessagePush, setSavingMessagePush] = useState(false);
 
   const load = async () => {
     if (!user) return;
@@ -100,6 +104,16 @@ function ProfilePage() {
     setSavingEmail(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Confirmation link sent to your new email. Your login updates once you confirm it.");
+  };
+
+  const toggleMessagePush = async (enabled: boolean) => {
+    if (!user) return;
+    setSavingMessagePush(true);
+    const { error } = await supabase.from("profiles").update({ push_messages_enabled: enabled } as never).eq("id", user.id);
+    setSavingMessagePush(false);
+    if (error) { toast.error(error.message); return; }
+    setProfile((p: any) => ({ ...p, push_messages_enabled: enabled }));
+    toast.success(enabled ? "Message notifications enabled." : "Message notifications silenced.");
   };
 
   const savePassword = async (e: React.FormEvent) => {
@@ -191,6 +205,61 @@ function ProfilePage() {
             </button>
           </div>
         </form>
+      </section>
+
+      {/* NOTIFICATIONS */}
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <h2 className="font-display text-xl font-bold flex items-center gap-2"><Bell className="h-5 w-5" /> Notifications</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Push access is required to use the Citadel — escalations, mentorship, BPS, DFY and council updates
+          always reach every subscribed device. Messages are the one exception: silence them here without
+          losing the underlying subscription.
+        </p>
+
+        {push.supported && !push.subscribed && (
+          <div className="mt-4 rounded-lg border border-gold/40 bg-gold/5 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+            <span className="text-sm text-gold-deep">
+              {push.permission === "denied"
+                ? "Notifications are blocked in your browser's site settings — enable them there, then reload."
+                : "This device isn't subscribed yet."}
+            </span>
+            {push.permission !== "denied" && (
+              <button
+                onClick={push.subscribe}
+                disabled={push.loading}
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+              >
+                {push.loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bell className="h-3.5 w-3.5" />} Enable on this device
+              </button>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3">
+          <div>
+            <div className="text-sm font-semibold">Message notifications</div>
+            <div className="text-xs text-muted-foreground">Direct, cohort and group chat pings — the one category you can silence.</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => toggleMessagePush(!(profile?.push_messages_enabled ?? true))}
+            disabled={savingMessagePush}
+            className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60 ${
+              (profile?.push_messages_enabled ?? true)
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground"
+            }`}
+          >
+            {savingMessagePush ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (profile?.push_messages_enabled ?? true) ? (
+              <Bell className="h-3.5 w-3.5" />
+            ) : (
+              <BellOff className="h-3.5 w-3.5" />
+            )}
+            {(profile?.push_messages_enabled ?? true) ? "On" : "Off"}
+          </button>
+        </div>
       </section>
 
       {/* EMAIL */}

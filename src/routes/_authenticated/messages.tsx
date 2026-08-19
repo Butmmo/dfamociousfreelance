@@ -29,6 +29,25 @@ export const Route = createFileRoute("/_authenticated/messages")({
 type Contact = { key: string; id: string; name: string; sub: string; icon: any; avatarUrl?: string | null };
 type Member = { id: string; full_name: string | null; avatar_url: string | null; email?: string | null };
 
+// Fire-and-forget — the send-push edge function itself filters out anyone
+// with push_messages_enabled=false, so this never needs to know who opted
+// out. A failure here should never block the message from having sent.
+function notifyMessagePush(recipientIds: string[], senderId: string, preview: string) {
+  const ids = recipientIds.filter((id) => id && id !== senderId);
+  if (ids.length === 0) return;
+  supabase.functions
+    .invoke("send-push", {
+      body: {
+        user_ids: ids,
+        category: "message",
+        title: "New message",
+        body: preview.trim() ? preview.slice(0, 120) : "Sent an attachment",
+        url: "/messages",
+      },
+    })
+    .catch(() => {});
+}
+
 function MessagesPage() {
   const { user } = useSession();
   const getRep = useServerFn(getMyRep);
@@ -689,6 +708,7 @@ function DmThread({ meId, counterpart, onBack }: { meId: string; counterpart: Co
       toast.error(error.message);
       return;
     }
+    notifyMessagePush([counterpart.id], meId, bodyText);
     load();
   };
 
@@ -771,6 +791,8 @@ function GroupThread({ myName, avatarById, onBack }: { myName: string; avatarByI
       toast.error(error.message);
       return;
     }
+    const { data: everyone } = await supabase.from("profiles").select("id");
+    notifyMessagePush((everyone ?? []).map((p: any) => p.id), user.id, bodyText);
     load();
   };
 
@@ -852,6 +874,8 @@ function CohortThread({ cohortId, myName, avatarById, onBack }: { cohortId: stri
       toast.error(error.message);
       return;
     }
+    const { data: cohortMates } = await supabase.from("profiles").select("id").eq("cohort_id", cohortId);
+    notifyMessagePush((cohortMates ?? []).map((p: any) => p.id), user.id, bodyText);
     load();
   };
 

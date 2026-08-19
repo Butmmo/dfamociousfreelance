@@ -11,6 +11,7 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendWebPush } from "../_shared/push.ts";
 
 const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
 const SLA_REMINDER_HOURS = 48;
@@ -62,6 +63,14 @@ Deno.serve(async (req) => {
     return Array.from(emails);
   };
 
+  const getAdminIds = async () => {
+    const { data: adminRoles } = await supa.from("user_roles").select("user_id").eq("role", "admin");
+    const ids = new Set((adminRoles ?? []).map((r: any) => r.user_id).filter(Boolean));
+    const { data: superAdmin } = await supa.from("profiles").select("id").eq("email", SUPER_ADMIN_EMAIL).maybeSingle();
+    if (superAdmin?.id) ids.add(superAdmin.id);
+    return Array.from(ids);
+  };
+
   const describeEscalation = async (esc: any) => {
     const { data: mentorship } = await supa
       .from("mentorships").select("mentor_id,mentee_id").eq("id", esc.mentorship_id).maybeSingle();
@@ -86,6 +95,7 @@ Deno.serve(async (req) => {
     if (esc) {
       const { mentor, mentee, reporter } = await describeEscalation(esc);
       const admins = await getAdminEmails();
+      const adminIds = await getAdminIds();
       const html = wrap("New Escalation Raised", "#B8860B", `
         <p><b>${reporter?.full_name ?? "A mentor"}</b> flagged a support-chain problem for the mentorship between
         <b>${mentor?.full_name ?? "mentor"}</b> and <b>${mentee?.full_name ?? "mentee"}</b>.</p>
@@ -96,11 +106,19 @@ Deno.serve(async (req) => {
         <p>Open the Council's Mentorship console to acknowledge this now.</p>
       `);
       results.push(await sendEmail(admins, "New mentorship escalation raised", html));
+      results.push(await sendWebPush(supa, {
+        user_ids: adminIds,
+        category: "escalation",
+        title: "New escalation raised",
+        body: `${reporter?.full_name ?? "A mentor"} flagged an issue between ${mentor?.full_name ?? "mentor"} and ${mentee?.full_name ?? "mentee"}.`,
+        url: "/council-escalations",
+      }));
     }
   } else {
     const cutoffReminder = new Date(Date.now() - SLA_REMINDER_HOURS * 3_600_000).toISOString();
     const cutoffBreach = new Date(Date.now() - SLA_BREACH_HOURS * 3_600_000).toISOString();
     const admins = await getAdminEmails();
+    const adminIds = await getAdminIds();
 
     const { data: dueReminder } = await supa
       .from("mentorship_escalations").select("*")
@@ -114,6 +132,13 @@ Deno.serve(async (req) => {
         <p>Please acknowledge and classify it in the Council's Mentorship console — ${SLA_BREACH_HOURS - SLA_REMINDER_HOURS} hours remain before this breaches SLA.</p>
       `);
       results.push(await sendEmail(admins, "Reminder: escalation awaiting acknowledgment", html));
+      results.push(await sendWebPush(supa, {
+        user_ids: adminIds,
+        category: "escalation",
+        title: "Escalation awaiting acknowledgment",
+        body: `Between ${mentor?.full_name ?? "mentor"} and ${mentee?.full_name ?? "mentee"} — ${SLA_REMINDER_HOURS}h unacknowledged.`,
+        url: "/council-escalations",
+      }));
       await supa.from("mentorship_escalations").update({ reminder_48h_sent_at: new Date().toISOString() }).eq("id", esc.id);
     }
 
@@ -129,6 +154,13 @@ Deno.serve(async (req) => {
         <p>This needs immediate attention in the Council's Mentorship console.</p>
       `);
       results.push(await sendEmail(admins, "SLA BREACHED — mentorship escalation unacknowledged", html));
+      results.push(await sendWebPush(supa, {
+        user_ids: adminIds,
+        category: "escalation",
+        title: "SLA BREACHED — escalation unacknowledged",
+        body: `Between ${mentor?.full_name ?? "mentor"} and ${mentee?.full_name ?? "mentee"} — ${SLA_BREACH_HOURS}h unacknowledged. Needs immediate attention.`,
+        url: "/council-escalations",
+      }));
       await supa.from("mentorship_escalations").update({ breach_72h_sent_at: new Date().toISOString() }).eq("id", esc.id);
     }
   }

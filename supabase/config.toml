@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.mentorship-escalation-notify]
 verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false

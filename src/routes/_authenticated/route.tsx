@@ -4,6 +4,7 @@ import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
+import { usePushSubscription } from "@/lib/push";
 import { useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard,
@@ -22,6 +23,7 @@ import {
   DollarSign,
   Plus,
   Headphones,
+  Bell,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,6 +42,7 @@ function AuthedShell() {
   const navigate = useNavigate();
   const { path, needsChoice, msRemaining, loading: pathLoading } = usePath();
   const status = useAccountStatus();
+  const push = usePushSubscription();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({
     full_name: null,
@@ -154,6 +157,42 @@ function AuthedShell() {
           >
             <LogOut className="h-4 w-4" /> Sign out
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Push access is a prerequisite to using the Citadel — every category
+  // except messages fires unconditionally once subscribed (profile.tsx
+  // carries the one messaging-only opt-out). Browsers/devices that simply
+  // don't implement the Push API (push.supported === false) are let
+  // through rather than locked out entirely, since there is nothing for
+  // them to grant.
+  if (!status.loading && !status.suspended && push.supported && !push.loading && !push.subscribed) {
+    return (
+      <div className="min-h-screen bg-background grid place-items-center px-4 py-16">
+        <div className="w-full max-w-lg rounded-2xl border border-gold/40 bg-card p-8 text-center shadow-regal">
+          <Bell className="mx-auto h-12 w-12 text-gold-deep" />
+          <h1 className="mt-4 font-display text-2xl font-bold">Enable notifications to continue</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            The Citadel runs on push notifications — escalations, mentorship, BPS cadence, DFY and council
+            updates all reach you this way. It's a prerequisite to using the app, the same way a suspended
+            account or an unsealed path gates access. The one exception is messaging, which you can silence
+            later from your profile without losing this subscription.
+          </p>
+          {push.permission === "denied" ? (
+            <p className="mt-4 rounded-lg border border-crimson/40 bg-crimson/10 p-3 text-sm text-crimson">
+              Notifications are blocked for this site in your browser. Enable them from your browser's site
+              settings, then reload this page.
+            </p>
+          ) : (
+            <button
+              onClick={push.subscribe}
+              className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              <Bell className="h-4 w-4" /> Enable notifications
+            </button>
+          )}
         </div>
       </div>
     );
