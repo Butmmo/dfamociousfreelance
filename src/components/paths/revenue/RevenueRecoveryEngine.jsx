@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
 import { NICHES } from "./EcommerceProspecting";
-
-const STORAGE_KEY = "revenue-progress-v1";
+import { useSyncedTaskMap } from "@/lib/playbook-progress";
 
 const RANKS = [
   { name:"Revenue Recruit", threshold:0, blurb:"Day 1. Klaviyo and dummy store live, zero spent." },
@@ -1107,6 +1106,45 @@ function SLabel({text,color}) {
   );
 }
 
+function formatSavedAt(date) {
+  if (!date) return "";
+  const secs = Math.round((Date.now()-date.getTime())/1000);
+  if (secs<60) return "just now";
+  return `at ${date.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
+}
+
+function SaveStatusBar({syncMeta}) {
+  const {status,lastSavedAt,pendingCount,saveNow} = syncMeta;
+  const saving = status==="saving";
+  const color = saving?"#C99A3B":status==="error"?"#8B2E1F":status==="saved"?"#0D7A5F":"#6E6459";
+  const text = saving?"Saving…"
+    :status==="error"?"Save failed — check your connection"
+    :status==="saved"?`Saved ${formatSavedAt(lastSavedAt)}`
+    :"Progress saves automatically as you go";
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",
+      background:"#F8F5EE",border:`1px solid ${color}30`,borderRadius:10,
+      padding:"9px 13px",marginBottom:14}}>
+      <span style={{width:7,height:7,borderRadius:"50%",background:color,flexShrink:0,
+        boxShadow:saving?`0 0 6px ${color}`:"none",transition:"all .15s"}}/>
+      <span style={{fontSize:12,color,fontWeight:600,flex:1,minWidth:0}}>{text}</span>
+      {pendingCount>0&&(
+        <span style={{fontSize:10.5,color:"#6E6459",background:"#FBF8F1",
+          borderRadius:5,padding:"1px 7px",flexShrink:0}}>
+          {pendingCount} unsaved change{pendingCount===1?"":"s"}
+        </span>
+      )}
+      <button onClick={saveNow} disabled={saving} style={{
+        background:saving?"#D9CFBB":"#0D7A5F",border:"none",borderRadius:7,
+        padding:"6px 13px",fontSize:12,fontWeight:700,color:"#F5F0E4",
+        cursor:saving?"default":"pointer",fontFamily:"inherit",flexShrink:0,
+        transition:"background .15s"}}>
+        {saving?"Saving…":"Save progress"}
+      </button>
+    </div>
+  );
+}
+
 export default function RevenueRecoveryEngine() {
   const [tab,setTab]             = useState("plan");
   const [openWeek,setOpenWeek]   = useState(0);
@@ -1114,29 +1152,13 @@ export default function RevenueRecoveryEngine() {
   const [openSvc,setOpenSvc]     = useState(null);
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
-  const [done,setDone]           = useState({});
-  const [loaded,setLoaded]       = useState(false);
+  const [done,setDone,syncMeta]  = useSyncedTaskMap("p_revenue");
   const [confirmingReset,setConfirmingReset] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await window.storage.get(STORAGE_KEY, false);
-        if (res && res.value) setDone(JSON.parse(res.value).done || {});
-      } catch (e) { /* no saved progress yet */ }
-      finally { setLoaded(true); }
-    })();
-  }, []);
-
-  const persist = useCallback(async (next) => {
-    try { await window.storage.set(STORAGE_KEY, JSON.stringify({ done: next, savedAt: Date.now() }), false); }
-    catch (e) { /* best effort */ }
-  }, []);
-
-  const toggle = id=>setDone(p=>{ const next={...p,[id]:!p[id]}; persist(next); return next; });
+  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const handleReset = () => {
     if (!confirmingReset) { setConfirmingReset(true); return; }
-    setDone({}); persist({}); setConfirmingReset(false);
+    setDone({}); setConfirmingReset(false);
   };
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
@@ -1154,8 +1176,6 @@ export default function RevenueRecoveryEngine() {
   const currentRank = useMemo(()=>{ let r=RANKS[0]; for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; } return r; },[pct]);
   const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
   const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
-
-  if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
     {id:"start",   label:"🧭 Start Here"},
@@ -1323,6 +1343,7 @@ export default function RevenueRecoveryEngine() {
             <p style={{fontSize:12.5,color:"#6E6459",margin:"0 0 14px"}}>
               Tap a week → tap a day → tick tasks as you complete them. Days marked ★ carry a BPS checkpoint.
             </p>
+            <SaveStatusBar syncMeta={syncMeta}/>
             <div style={{marginBottom:18}}>
               <div style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",marginBottom:8}}>
                 BPS Checkpoints Inside the 45 Days
