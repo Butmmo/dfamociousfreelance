@@ -132,6 +132,56 @@ export type Database = {
           },
         ]
       }
+      bps_finance_daily_entries: {
+        Row: {
+          created_at: string
+          entry_date: string
+          goal_id: string
+          id: string
+          leads_contacted: number
+          messages_sent: number
+          new_clients_closed: number
+          returning_clients_closed: number
+          revenue_usd: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date: string
+          goal_id: string
+          id?: string
+          leads_contacted?: number
+          messages_sent?: number
+          new_clients_closed?: number
+          returning_clients_closed?: number
+          revenue_usd?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          goal_id?: string
+          id?: string
+          leads_contacted?: number
+          messages_sent?: number
+          new_clients_closed?: number
+          returning_clients_closed?: number
+          revenue_usd?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bps_finance_daily_entries_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "bps_monthly_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bps_monthly_goals: {
         Row: {
           affirmation_percent: number | null
@@ -148,12 +198,23 @@ export type Database = {
           evaluation_submitted_at: string | null
           evaluation_total: number | null
           finance_avg_price_usd: number | null
+          finance_checkpoint_leads_actual: number | null
+          finance_checkpoint_messages_actual: number | null
+          finance_checkpoint_new_clients_actual: number | null
+          finance_checkpoint_returning_clients_actual: number | null
+          finance_checkpoint_revenue_actual: number | null
+          finance_final_leads_actual: number | null
+          finance_final_messages_actual: number | null
+          finance_final_new_clients_actual: number | null
+          finance_final_returning_clients_actual: number | null
+          finance_final_revenue_actual: number | null
           finance_goal: string | null
           finance_items: Json
           finance_leads_target: number | null
           finance_messages_target: number | null
           finance_new_clients_target: number | null
           finance_returning_clients_target: number | null
+          hidden_pillars: string[]
           id: string
           mlm_goal: string
           mlm_items: Json
@@ -180,12 +241,23 @@ export type Database = {
           evaluation_submitted_at?: string | null
           evaluation_total?: number | null
           finance_avg_price_usd?: number | null
+          finance_checkpoint_leads_actual?: number | null
+          finance_checkpoint_messages_actual?: number | null
+          finance_checkpoint_new_clients_actual?: number | null
+          finance_checkpoint_returning_clients_actual?: number | null
+          finance_checkpoint_revenue_actual?: number | null
+          finance_final_leads_actual?: number | null
+          finance_final_messages_actual?: number | null
+          finance_final_new_clients_actual?: number | null
+          finance_final_returning_clients_actual?: number | null
+          finance_final_revenue_actual?: number | null
           finance_goal?: string | null
           finance_items?: Json
           finance_leads_target?: number | null
           finance_messages_target?: number | null
           finance_new_clients_target?: number | null
           finance_returning_clients_target?: number | null
+          hidden_pillars?: string[]
           id?: string
           mlm_goal?: string
           mlm_items?: Json
@@ -212,12 +284,23 @@ export type Database = {
           evaluation_submitted_at?: string | null
           evaluation_total?: number | null
           finance_avg_price_usd?: number | null
+          finance_checkpoint_leads_actual?: number | null
+          finance_checkpoint_messages_actual?: number | null
+          finance_checkpoint_new_clients_actual?: number | null
+          finance_checkpoint_returning_clients_actual?: number | null
+          finance_checkpoint_revenue_actual?: number | null
+          finance_final_leads_actual?: number | null
+          finance_final_messages_actual?: number | null
+          finance_final_new_clients_actual?: number | null
+          finance_final_returning_clients_actual?: number | null
+          finance_final_revenue_actual?: number | null
           finance_goal?: string | null
           finance_items?: Json
           finance_leads_target?: number | null
           finance_messages_target?: number | null
           finance_new_clients_target?: number | null
           finance_returning_clients_target?: number | null
+          hidden_pillars?: string[]
           id?: string
           mlm_goal?: string
           mlm_items?: Json
@@ -684,6 +767,33 @@ export type Database = {
           },
         ]
       }
+      mentee_activity_feed: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          mentee_id: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          kind: string
+          mentee_id: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          mentee_id?: string
+          title?: string
+        }
+        Relationships: []
+      }
       mentorship_checkins: {
         Row: {
           created_at: string
@@ -916,6 +1026,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string
+          category: string
+          created_at: string
+          id: string
+          read_at: string | null
+          title: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          category: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       paths: {
         Row: {
           active: boolean
@@ -973,6 +1116,8 @@ export type Database = {
           suspended_at: string | null
           suspended_by: string | null
           suspension_reason: string | null
+          tpe_defaulting_since: string | null
+          tpe_defaulting_until: string | null
           updated_at: string
           vetted_dse_certified_at: string | null
           vetted_dse_certified_by: string | null
@@ -1007,6 +1152,8 @@ export type Database = {
           suspended_at?: string | null
           suspended_by?: string | null
           suspension_reason?: string | null
+          tpe_defaulting_since?: string | null
+          tpe_defaulting_until?: string | null
           updated_at?: string
           vetted_dse_certified_at?: string | null
           vetted_dse_certified_by?: string | null
@@ -1041,6 +1188,8 @@ export type Database = {
           suspended_at?: string | null
           suspended_by?: string | null
           suspension_reason?: string | null
+          tpe_defaulting_since?: string | null
+          tpe_defaulting_until?: string | null
           updated_at?: string
           vetted_dse_certified_at?: string | null
           vetted_dse_certified_by?: string | null
