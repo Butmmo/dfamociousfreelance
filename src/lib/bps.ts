@@ -47,6 +47,96 @@ export function computeFinanceRevenueTarget(
   return price * clients;
 }
 
+export interface FinanceMetrics {
+  leads: number;
+  messages: number;
+  newClients: number;
+  returningClients: number;
+  revenueUsd: number;
+}
+
+/** A monthly Financial Goal's cycle length: day 14 is the Affirmation checkpoint, day 40 is the full Evaluation cycle. */
+export const FINANCE_CYCLE_DAYS = 40;
+export const FINANCE_CYCLE_WEEKS = 6;
+export const FINANCE_CHECKPOINT_DAYS = 14;
+
+const emptyFinanceMetrics: FinanceMetrics = { leads: 0, messages: 0, newClients: 0, returningClients: 0, revenueUsd: 0 };
+
+function divideFinanceMetrics(m: FinanceMetrics, n: number): FinanceMetrics {
+  return {
+    leads: m.leads / n,
+    messages: m.messages / n,
+    newClients: m.newClients / n,
+    returningClients: m.returningClients / n,
+    revenueUsd: m.revenueUsd / n,
+  };
+}
+
+function scaleFinanceMetrics(m: FinanceMetrics, n: number): FinanceMetrics {
+  return {
+    leads: m.leads * n,
+    messages: m.messages * n,
+    newClients: m.newClients * n,
+    returningClients: m.returningClients * n,
+    revenueUsd: m.revenueUsd * n,
+  };
+}
+
+export interface FinanceCycleTargets {
+  monthly: FinanceMetrics;
+  weekly: FinanceMetrics;
+  daily: FinanceMetrics;
+}
+
+/**
+ * Whatever a beneficiary sets as their monthly Financial Goal (leads,
+ * messages, new/returning clients, and the revenue those imply) gets
+ * broken into weekly and daily standards so it can actually be measured
+ * day to day — not just set once and checked at the end. The cycle is 40
+ * working days (the same window the Evaluation Goal already uses), so
+ * weekly = monthly / 6 and daily = monthly / 40.
+ */
+export function computeFinanceCycleTargets(goal: {
+  finance_leads_target: number | null | undefined;
+  finance_messages_target: number | null | undefined;
+  finance_new_clients_target: number | null | undefined;
+  finance_returning_clients_target: number | null | undefined;
+  finance_avg_price_usd: number | null | undefined;
+}): FinanceCycleTargets {
+  const monthly: FinanceMetrics = {
+    leads: goal.finance_leads_target ?? 0,
+    messages: goal.finance_messages_target ?? 0,
+    newClients: goal.finance_new_clients_target ?? 0,
+    returningClients: goal.finance_returning_clients_target ?? 0,
+    revenueUsd: computeFinanceRevenueTarget(
+      goal.finance_avg_price_usd, goal.finance_new_clients_target, goal.finance_returning_clients_target,
+    ),
+  };
+  return {
+    monthly,
+    weekly: divideFinanceMetrics(monthly, FINANCE_CYCLE_WEEKS),
+    daily: divideFinanceMetrics(monthly, FINANCE_CYCLE_DAYS),
+  };
+}
+
+/** The pro-rated expectation for a given number of days into the 40-day cycle — the day-14 checkpoint target, for instance. */
+export function financeExpectationForDays(targets: FinanceCycleTargets, days: number): FinanceMetrics {
+  return scaleFinanceMetrics(targets.daily, days);
+}
+
+export function sumFinanceEntries(entries: {
+  leads_contacted: number; messages_sent: number; new_clients_closed: number;
+  returning_clients_closed: number; revenue_usd: number;
+}[]): FinanceMetrics {
+  return entries.reduce((acc, e) => ({
+    leads: acc.leads + e.leads_contacted,
+    messages: acc.messages + e.messages_sent,
+    newClients: acc.newClients + e.new_clients_closed,
+    returningClients: acc.returningClients + e.returning_clients_closed,
+    revenueUsd: acc.revenueUsd + Number(e.revenue_usd),
+  }), { ...emptyFinanceMetrics });
+}
+
 /** Every non-empty item across the built-in pillars and any custom pillars — the flat set of things worth tracking daily. */
 export function deriveActivityLabels(pillars: {
   finance_items: GoalItem[]; self_dev_items: GoalItem[]; mlm_items: GoalItem[]; relationship_items: GoalItem[];

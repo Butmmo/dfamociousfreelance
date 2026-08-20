@@ -12,8 +12,93 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import {
   affirmationRemark, evaluationRemark, computeEffortScore, deriveActivityLabels,
-  MLM_DEFAULT_GOAL,
+  MLM_DEFAULT_GOAL, computeFinanceCycleTargets, financeExpectationForDays, sumFinanceEntries,
+  type FinanceMetrics,
 } from "@/lib/bps";
+
+const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
+
+/** Mentor (active mentorship), sponsor (fuzzy name match), and DSE Rep (assignment or founder fallback) — same resolution bps-weekly-report uses. */
+async function resolveReportRecipients(supabaseAdmin: any, userId: string, sponsorName: string | null) {
+  const ids = new Set<string>();
+
+  const { data: mentorship } = await supabaseAdmin
+    .from("mentorships").select("mentor_id").eq("mentee_id", userId).eq("status", "active").maybeSingle();
+  if (mentorship?.mentor_id) ids.add(mentorship.mentor_id);
+
+  if (sponsorName) {
+    const { data: sponsorMatch } = await supabaseAdmin
+      .from("profiles").select("id").ilike("full_name", sponsorName).maybeSingle();
+    if (sponsorMatch?.id) ids.add(sponsorMatch.id);
+  }
+
+  const { data: assignment } = await supabaseAdmin
+    .from("admin_assignments").select("admin_id").eq("beneficiary_id", userId).maybeSingle();
+  if (assignment?.admin_id) {
+    ids.add(assignment.admin_id);
+  } else {
+    const { data: superAdmin } = await supabaseAdmin.from("profiles").select("id").eq("email", SUPER_ADMIN_EMAIL).maybeSingle();
+    if (superAdmin?.id) ids.add(superAdmin.id);
+  }
+
+  ids.delete(userId);
+  return Array.from(ids);
+}
+
+function formatFinanceLine(m: FinanceMetrics, decimals = 0): string {
+  const f = (n: number) => n.toFixed(decimals);
+  return `${f(m.leads)} leads, ${f(m.messages)} messages, ${f(m.newClients)} new clients, ${f(m.returningClients)} returning clients, $${m.revenueUsd.toFixed(2)} revenue`;
+}
+
+/**
+ * Posts the checkpoint report through the first two of the three required
+ * channels — a self-generated chat message to each recipient, then a
+ * descriptive entry in the mentee's activity feed — and fires the
+ * bps-checkpoint-notify edge function for the third (email) plus push.
+ * Never email-only.
+ */
+async function postFinanceCheckpointReport(
+  supabaseAdmin: any,
+  userId: string,
+  beneficiaryName: string,
+  checkpoint: "14-day (Affirmation)" | "40-day (Evaluation)",
+  actual: FinanceMetrics,
+  expected: FinanceMetrics,
+  recipientIds: string[],
+) {
+  const title = `Financial Goal — ${checkpoint} checkpoint`;
+  const body =
+    `${beneficiaryName}'s ${checkpoint} financial goal checkpoint.\n\n` +
+    `Actual: ${formatFinanceLine(actual)}\n` +
+    `Expected by now: ${formatFinanceLine(expected, 1)}`;
+
+  if (recipientIds.length > 0) {
+    const messages = recipientIds.map((recipientId) => ({
+      sender_id: userId,
+      recipient_id: recipientId,
+      body: `📊 ${title}\n\n${body}`,
+    }));
+    await supabaseAdmin.from("direct_messages").insert(messages);
+  }
+
+  await supabaseAdmin.from("mentee_activity_feed").insert({
+    mentee_id: userId,
+    kind: "bps_finance_checkpoint",
+    title,
+    body,
+  });
+
+  if (recipientIds.length > 0) {
+    const base = process.env.SUPABASE_URL;
+    if (base) {
+      fetch(`${base}/functions/v1/bps-checkpoint-notify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, checkpoint, title, body, recipient_ids: recipientIds }),
+      }).catch(() => {});
+    }
+  }
+}
 
 const goalItemSchema = z.object({ text: z.string().trim().min(1).max(300), done: z.boolean().default(false) });
 const customPillarSchema = z.object({
@@ -36,9 +121,10 @@ const beliefSchema = z.object({
   self_dev_items: z.array(goalItemSchema).min(1),
   mlm_goal: z.string().trim().max(500).default(MLM_DEFAULT_GOAL),
   mlm_items: z.array(goalItemSchema).default([]),
-  relationship_goal: z.string().trim().min(1).max(500),
-  relationship_items: z.array(goalItemSchema).min(1),
+  relationship_goal: z.string().trim().max(500).default(""),
+  relationship_items: z.array(goalItemSchema).default([]),
   custom_pillars: z.array(customPillarSchema).default([]),
+  hidden_pillars: z.array(z.string().max(60)).default([]),
 });
 
 /** Replaces this goal's tracked activities with one per non-empty action item — never a manually-typed activity. */
@@ -76,6 +162,7 @@ export const submitBeliefGoal = createServerFn({ method: "POST" })
           relationship_goal: data.relationship_goal,
           relationship_items: data.relationship_items,
           custom_pillars: data.custom_pillars,
+          hidden_pillars: data.hidden_pillars,
           belief_submitted_at: new Date().toISOString(),
         },
         { onConflict: "user_id,target_month" },
@@ -110,6 +197,55 @@ async function computeEffortForWindow(supabaseAdmin: any, goalId: string, from: 
   return computeEffortScore((checks ?? []) as { done: boolean }[], activityIds.length, windowDays);
 }
 
+/** Sums the window's daily finance entries against the pro-rated target, persists the snapshot, and reports it — unless the beneficiary hid the finance pillar. */
+async function computeAndReportFinanceCheckpoint(
+  supabaseAdmin: any,
+  goalId: string,
+  userId: string,
+  beliefSubmittedAt: string,
+  windowDays: number,
+  columnPrefix: "finance_checkpoint" | "finance_final",
+  checkpointLabel: "14-day (Affirmation)" | "40-day (Evaluation)",
+) {
+  const { data: goal } = await supabaseAdmin
+    .from("bps_monthly_goals")
+    .select("finance_leads_target,finance_messages_target,finance_new_clients_target,finance_returning_clients_target,finance_avg_price_usd,hidden_pillars")
+    .eq("id", goalId).maybeSingle();
+  if (!goal) return;
+
+  const from = new Date(beliefSubmittedAt);
+  const to = new Date(from);
+  to.setDate(to.getDate() + windowDays);
+  const { data: entries } = await supabaseAdmin
+    .from("bps_finance_daily_entries")
+    .select("leads_contacted,messages_sent,new_clients_closed,returning_clients_closed,revenue_usd")
+    .eq("goal_id", goalId)
+    .gte("entry_date", from.toISOString().slice(0, 10))
+    .lt("entry_date", to.toISOString().slice(0, 10));
+
+  const actual = sumFinanceEntries((entries ?? []) as any[]);
+  const targets = computeFinanceCycleTargets(goal);
+  const expected = financeExpectationForDays(targets, windowDays);
+
+  await supabaseAdmin.from("bps_monthly_goals").update({
+    [`${columnPrefix}_leads_actual`]: Math.round(actual.leads),
+    [`${columnPrefix}_messages_actual`]: Math.round(actual.messages),
+    [`${columnPrefix}_new_clients_actual`]: Math.round(actual.newClients),
+    [`${columnPrefix}_returning_clients_actual`]: Math.round(actual.returningClients),
+    [`${columnPrefix}_revenue_actual`]: Math.round(actual.revenueUsd * 100) / 100,
+  }).eq("id", goalId);
+
+  const hiddenPillars: string[] = goal.hidden_pillars ?? [];
+  if (hiddenPillars.includes("finance")) return;
+
+  const { data: beneficiary } = await supabaseAdmin
+    .from("profiles").select("full_name,sponsor_name").eq("id", userId).maybeSingle();
+  const recipientIds = await resolveReportRecipients(supabaseAdmin, userId, beneficiary?.sponsor_name ?? null);
+  await postFinanceCheckpointReport(
+    supabaseAdmin, userId, beneficiary?.full_name ?? "A beneficiary", checkpointLabel, actual, expected, recipientIds,
+  );
+}
+
 const cycleIdSchema = z.object({ goal_id: z.string().uuid() });
 
 export const submitAffirmationGoal = createServerFn({ method: "POST" })
@@ -134,6 +270,13 @@ export const submitAffirmationGoal = createServerFn({ method: "POST" })
       affirmation_score: score, affirmation_total: total, affirmation_percent: percent, affirmation_remark: remark,
     }).eq("id", data.goal_id);
     if (error) throw error;
+
+    try {
+      await computeAndReportFinanceCheckpoint(
+        supabaseAdmin, data.goal_id, context.userId, goal.belief_submitted_at, 14, "finance_checkpoint", "14-day (Affirmation)",
+      );
+    } catch { /* the affirmation submission itself already succeeded — never fail it over the finance report */ }
+
     return { ok: true, score, total, percent, remark };
   });
 
@@ -159,6 +302,13 @@ export const submitEvaluationGoal = createServerFn({ method: "POST" })
       evaluation_score: score, evaluation_total: total, evaluation_percent: percent, evaluation_remark: remark,
     }).eq("id", data.goal_id);
     if (error) throw error;
+
+    try {
+      await computeAndReportFinanceCheckpoint(
+        supabaseAdmin, data.goal_id, context.userId, goal.belief_submitted_at, 40, "finance_final", "40-day (Evaluation)",
+      );
+    } catch { /* the evaluation submission itself already succeeded — never fail it over the finance report */ }
+
     return { ok: true, score, total, percent, remark };
   });
 

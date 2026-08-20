@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.send-push]
 verify_jwt = false
+
+[functions.bps-checkpoint-notify]
+verify_jwt = false
+
+[functions.tpe-weekly-compliance]
+verify_jwt = false

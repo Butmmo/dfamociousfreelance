@@ -149,6 +149,22 @@ Deno.serve(async (req) => {
       notifiedRep = true;
     }
 
+    // Report channel order: self-generated chat message first, then the
+    // mentee's activity feed, then email last — never email-only.
+    const reportTitle = `Weekly BPS cadence — ${percent.toFixed(0)}%`;
+    const reportBody = `${beneficiary?.full_name ?? "This beneficiary"}'s week (${weekStart} to ${weekEnd}): ${activitiesDone}/${activitiesTotal} activities (${percent.toFixed(1)}%).\n${cadenceNote(percent)}`;
+    const chatRecipientIds = Array.from(recipientIds);
+    if (chatRecipientIds.length > 0) {
+      await supa.from("direct_messages").insert(
+        chatRecipientIds.map((recipient_id: string) => ({
+          sender_id: userId, recipient_id, body: `📊 ${reportTitle}\n\n${reportBody}`,
+        })),
+      );
+    }
+    await supa.from("mentee_activity_feed").insert({
+      mentee_id: userId, kind: "bps_weekly_report", title: reportTitle, body: reportBody,
+    });
+
     const html = wrap(
       `${beneficiary?.full_name ?? "A beneficiary"}'s week: ${activitiesDone}/${activitiesTotal} (${percent.toFixed(1)}%)`,
       "#B8860B",

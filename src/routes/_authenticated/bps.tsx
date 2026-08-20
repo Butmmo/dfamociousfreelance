@@ -9,7 +9,8 @@ import { submitBeliefGoal, submitAffirmationGoal, submitEvaluationGoal } from "@
 import {
   BPS_PILLARS, PILLAR_ITEM_COUNT, MLM_DEFAULT_GOAL, computeFinanceRevenueTarget,
   beliefDueDate, affirmationDueDate, evaluationDueDate, defaultTargetMonth, monthKey,
-  goalCycleStatus, type GoalItem, type PillarKey, type CustomPillar,
+  goalCycleStatus, computeFinanceCycleTargets, financeExpectationForDays, sumFinanceEntries,
+  FINANCE_CYCLE_DAYS, type GoalItem, type PillarKey, type CustomPillar, type FinanceMetrics,
 } from "@/lib/bps";
 import {
   CRM_STAGES, priorityFromScore, PRIORITY_META,
@@ -21,7 +22,7 @@ import {
   Target, Users, CalendarCheck2, Plus, Pencil, Trash2, X, Save, Loader2,
   Phone, Mail, Linkedin, Globe, MapPin, Star, Flame, CheckCircle2, Circle,
   Send, ClipboardList, TrendingUp, AlertTriangle, ChevronLeft, ChevronRight,
-  BarChart3, Upload,
+  BarChart3, Upload, Eye, EyeOff,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/bps")({
@@ -574,6 +575,8 @@ function TrackerSection() {
         </div>
       )}
 
+      <FinanceDailyTracker />
+
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center gap-2 text-[10px] tracking-widest text-gold-deep"><BarChart3 className="h-3.5 w-3.5" /> Weekly reports</div>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -591,6 +594,157 @@ function TrackerSection() {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+type FinanceGoalRow = {
+  id: string;
+  finance_leads_target: number | null; finance_messages_target: number | null;
+  finance_new_clients_target: number | null; finance_returning_clients_target: number | null;
+  finance_avg_price_usd: number | null;
+  belief_submitted_at: string | null;
+};
+type FinanceEntry = {
+  entry_date: string; leads_contacted: number; messages_sent: number;
+  new_clients_closed: number; returning_clients_closed: number; revenue_usd: number;
+};
+
+function fmtMetric(m: FinanceMetrics, decimals = 0) {
+  const f = (n: number) => n.toFixed(decimals);
+  return { leads: f(m.leads), messages: f(m.messages), newClients: f(m.newClients), returningClients: f(m.returningClients), revenue: m.revenueUsd.toFixed(0) };
+}
+
+/**
+ * The Financial Goal's daily numeric tracker — separate from the binary
+ * activity grid above. Any number a beneficiary sets on their Finance
+ * pillar breaks into daily/weekly/monthly standards (weekly = monthly/6,
+ * daily = monthly/40, matching the 40-day Evaluation cycle) so it's
+ * actually measured day to day, not just checked at the end. A day not
+ * marked can never be marked afterward — enforced server-side, not just
+ * here.
+ */
+function FinanceDailyTracker() {
+  const { user } = useSession();
+  const [goal, setGoal] = useState<FinanceGoalRow | null>(null);
+  const [entries, setEntries] = useState<FinanceEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ leads: "", messages: "", newClients: "", returningClients: "", revenue: "" });
+
+  const targetKey = useMemo(() => monthKey(defaultTargetMonth()), []);
+  const today = isoDate(new Date());
+
+  const load = async () => {
+    if (!user) return;
+    const { data: g } = await supabase
+      .from("bps_monthly_goals")
+      .select("id,finance_leads_target,finance_messages_target,finance_new_clients_target,finance_returning_clients_target,finance_avg_price_usd,belief_submitted_at")
+      .eq("user_id", user.id).eq("target_month", targetKey).maybeSingle();
+    const row = (g as any) ?? null;
+    setGoal(row);
+    if (row?.id) {
+      const { data: e } = await supabase
+        .from("bps_finance_daily_entries")
+        .select("entry_date,leads_contacted,messages_sent,new_clients_closed,returning_clients_closed,revenue_usd")
+        .eq("goal_id", row.id);
+      setEntries((e as any) ?? []);
+    } else {
+      setEntries([]);
+    }
+    setLoading(false);
+  };
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user, targetKey]);
+
+  if (loading || !goal || goal.finance_leads_target == null || !goal.belief_submitted_at) return null;
+
+  const targets = computeFinanceCycleTargets(goal);
+  const todaysEntry = entries.find((e) => e.entry_date === today) ?? null;
+
+  const daysSinceStart = Math.min(
+    FINANCE_CYCLE_DAYS,
+    Math.max(1, Math.round((Date.now() - new Date(goal.belief_submitted_at).getTime()) / 86_400_000) + 1),
+  );
+  const cycleActual = sumFinanceEntries(entries);
+  const cycleExpected = financeExpectationForDays(targets, daysSinceStart);
+
+  const weekNumber = Math.min(6, Math.ceil(daysSinceStart / 7));
+  const weekStartDay = (weekNumber - 1) * 7 + 1;
+  const weekEntries = entries.filter((e) => {
+    const d = Math.round((new Date(e.entry_date).getTime() - new Date(goal.belief_submitted_at!).getTime()) / 86_400_000) + 1;
+    return d >= weekStartDay && d <= daysSinceStart;
+  });
+  const weekActual = sumFinanceEntries(weekEntries);
+  const daysIntoWeek = daysSinceStart - weekStartDay + 1;
+  const weekExpected = financeExpectationForDays(targets, daysIntoWeek);
+
+  const submit = async () => {
+    if (!user || !goal) return;
+    setSaving(true);
+    const { error } = await supabase.from("bps_finance_daily_entries").insert({
+      user_id: user.id,
+      goal_id: goal.id,
+      entry_date: today,
+      leads_contacted: Number(form.leads || 0),
+      messages_sent: Number(form.messages || 0),
+      new_clients_closed: Number(form.newClients || 0),
+      returning_clients_closed: Number(form.returningClients || 0),
+      revenue_usd: Number(form.revenue || 0),
+    });
+    setSaving(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Today's financial tracker marked. Locked in — see you tomorrow.");
+    load();
+  };
+
+  const t = fmtMetric(targets.daily, 1);
+  const wt = fmtMetric(weekExpected, 1);
+  const mt = fmtMetric(cycleExpected, 1);
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+      <div className="flex items-center gap-2 text-[10px] tracking-widest text-gold-deep"><TrendingUp className="h-3.5 w-3.5" /> Financial Goal — daily tracker</div>
+      <p className="text-xs text-muted-foreground">
+        Your monthly Finance targets, broken down: <strong className="text-foreground">{t.leads}</strong> leads,{" "}
+        <strong className="text-foreground">{t.messages}</strong> messages, <strong className="text-foreground">{t.newClients}</strong> new
+        clients, <strong className="text-foreground">{t.returningClients}</strong> returning clients and{" "}
+        <strong className="text-foreground">${t.revenue}</strong> revenue expected <em>per day</em> — this is that.
+      </p>
+
+      {todaysEntry ? (
+        <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs">
+          <div className="font-semibold text-emerald-700 dark:text-emerald-400">Today marked — {todaysEntry.leads_contacted} leads, {todaysEntry.messages_sent} messages, {todaysEntry.new_clients_closed} new, {todaysEntry.returning_clients_closed} returning, ${Number(todaysEntry.revenue_usd).toFixed(2)} revenue.</div>
+          <div className="mt-1 text-muted-foreground">Locked for today — come back tomorrow. A day not marked can never be marked afterward.</div>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-gold/50 p-3">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            <NumberField label="Leads contacted" value={form.leads} onChange={(v) => setForm((f) => ({ ...f, leads: v }))} />
+            <NumberField label="Messages sent" value={form.messages} onChange={(v) => setForm((f) => ({ ...f, messages: v }))} />
+            <NumberField label="New clients closed" value={form.newClients} onChange={(v) => setForm((f) => ({ ...f, newClients: v }))} />
+            <NumberField label="Returning clients closed" value={form.returningClients} onChange={(v) => setForm((f) => ({ ...f, returningClients: v }))} />
+            <NumberField label="Revenue today (USD)" value={form.revenue} onChange={(v) => setForm((f) => ({ ...f, revenue: v }))} step="0.01" />
+          </div>
+          <button
+            onClick={submit}
+            disabled={saving}
+            className="mt-3 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+          >
+            {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Mark today
+          </button>
+        </div>
+      )}
+
+      <div className="grid sm:grid-cols-2 gap-3 text-xs">
+        <div className="rounded-lg bg-accent/30 p-3">
+          <div className="text-[10px] tracking-widest text-muted-foreground">This week so far (expect {wt.leads}L / {wt.messages}M / {wt.newClients}NC / {wt.returningClients}RC / ${wt.revenue})</div>
+          <div className="mt-1 font-semibold">{weekActual.leads}L · {weekActual.messages}M · {weekActual.newClients}NC · {weekActual.returningClients}RC · ${weekActual.revenueUsd.toFixed(0)}</div>
+        </div>
+        <div className="rounded-lg bg-accent/30 p-3">
+          <div className="text-[10px] tracking-widest text-muted-foreground">This cycle so far (expect {mt.leads}L / {mt.messages}M / {mt.newClients}NC / {mt.returningClients}RC / ${mt.revenue})</div>
+          <div className="mt-1 font-semibold">{cycleActual.leads}L · {cycleActual.messages}M · {cycleActual.newClients}NC · {cycleActual.returningClients}RC · ${cycleActual.revenueUsd.toFixed(0)}</div>
+        </div>
       </div>
     </div>
   );
@@ -644,6 +798,22 @@ function ItemsEditor({ items, onChange, placeholder }: { items: GoalItem[]; onCh
   );
 }
 
+function PrivacyToggle({ hidden, onToggle }: { hidden: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      title={hidden ? "Hidden from sponsor, mentor and DSE Rep — click to make visible" : "Visible to sponsor, mentor and DSE Rep — click to hide"}
+      className={`shrink-0 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold border transition ${
+        hidden ? "border-crimson/40 bg-crimson/10 text-crimson" : "border-border text-muted-foreground hover:bg-muted"
+      }`}
+    >
+      {hidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+      {hidden ? "Hidden" : "Visible"}
+    </button>
+  );
+}
+
 function NumberField({ label, value, onChange, step }: { label: string; value: string; onChange: (v: string) => void; step?: string }) {
   return (
     <label className="text-[11px] text-muted-foreground">
@@ -658,7 +828,7 @@ function NumberField({ label, value, onChange, step }: { label: string; value: s
 }
 
 function GoalsSection() {
-  const { user } = useSession();
+  const { user, isSuperAdmin } = useSession();
   const submitBelief = useServerFn(submitBeliefGoal);
   const submitAffirmation = useServerFn(submitAffirmationGoal);
   const submitEvaluation = useServerFn(submitEvaluationGoal);
@@ -702,6 +872,9 @@ function GoalsSection() {
   const [financeReturningClients, setFinanceReturningClients] = useState("");
   const [financeAvgPrice, setFinanceAvgPrice] = useState("");
   const [customPillars, setCustomPillars] = useState<CustomPillar[]>([]);
+  const [hiddenPillars, setHiddenPillars] = useState<string[]>([]);
+  const togglePillarPrivacy = (key: string) =>
+    setHiddenPillars((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
 
   const revenueTarget = computeFinanceRevenueTarget(
     financeAvgPrice ? Number(financeAvgPrice) : null,
@@ -717,8 +890,10 @@ function GoalsSection() {
   const submitBeliefGoalHandler = async () => {
     if (!pillars.self_dev.goal.trim()) { toast.error("Fill in your Self-Development Goal."); return; }
     if (pillars.self_dev.items.length === 0 || pillars.self_dev.items.some((i) => !i.text.trim())) { toast.error("Fill in your Self-Development action items, or remove blank ones."); return; }
-    if (!pillars.relationship.goal.trim()) { toast.error("Fill in your Relationship Goal."); return; }
-    if (pillars.relationship.items.length === 0 || pillars.relationship.items.some((i) => !i.text.trim())) { toast.error("Fill in your Relationship action items, or remove blank ones."); return; }
+    if (!isSuperAdmin) {
+      if (!pillars.relationship.goal.trim()) { toast.error("Fill in your Relationship Goal."); return; }
+      if (pillars.relationship.items.length === 0 || pillars.relationship.items.some((i) => !i.text.trim())) { toast.error("Fill in your Relationship action items, or remove blank ones."); return; }
+    }
     if (pillars.mlm.items.some((i) => !i.text.trim())) { toast.error("Remove blank Multilevel Marketing action items, or fill them in."); return; }
 
     if (entryChannel === "nbo") {
@@ -747,8 +922,10 @@ function GoalsSection() {
           finance_avg_price_usd: entryChannel === "nbo" ? null : Number(financeAvgPrice),
           self_dev_goal: pillars.self_dev.goal, self_dev_items: pillars.self_dev.items,
           mlm_goal: pillars.mlm.goal || MLM_DEFAULT_GOAL, mlm_items: pillars.mlm.items.filter((i) => i.text.trim()),
-          relationship_goal: pillars.relationship.goal, relationship_items: pillars.relationship.items,
+          relationship_goal: isSuperAdmin ? "N/A — Founder, no sponsor" : pillars.relationship.goal,
+          relationship_items: isSuperAdmin ? [] : pillars.relationship.items,
           custom_pillars: customPillars.map((p) => ({ ...p, items: p.items.filter((i) => i.text.trim()) })),
+          hidden_pillars: hiddenPillars,
         },
       });
       toast.success("Belief Goal submitted — daily binary tracking is now the evidence for Affirmation and Evaluation.");
@@ -798,15 +975,20 @@ function GoalsSection() {
             <h3 className="font-display text-lg font-bold">Set your Belief Goal</h3>
             <p className="text-xs text-muted-foreground mt-1">
               States intended effort, not results. Add as many action items to each goal as you need — every one of
-              them becomes a tracked activity in your Daily Tracker automatically once you submit.
+              them becomes a tracked activity in your Daily Tracker automatically once you submit. The BPS works
+              just as well for personal tracking — anything you don't want your sponsor, mentor or DSE Rep to see
+              can be hidden per goal below.
             </p>
           </div>
 
-          {BPS_PILLARS.filter((p) => p.key !== "finance").map((p) => {
+          {BPS_PILLARS.filter((p) => p.key !== "finance" && !(isSuperAdmin && p.key === "relationship")).map((p) => {
             const key = p.key as Exclude<PillarKey, "finance">;
             return (
               <div key={p.key} className="rounded-xl border border-border p-4">
-                <div className="font-semibold text-sm">{p.label}</div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-semibold text-sm">{p.label}</div>
+                  <PrivacyToggle hidden={hiddenPillars.includes(p.key)} onToggle={() => togglePillarPrivacy(p.key)} />
+                </div>
                 <p className="text-[11px] text-muted-foreground mt-0.5">{p.hint}</p>
                 <input
                   value={pillars[key].goal}
@@ -820,7 +1002,10 @@ function GoalsSection() {
           })}
 
           <div className="rounded-xl border border-border p-4">
-            <div className="font-semibold text-sm">Finance Goal</div>
+            <div className="flex items-center justify-between gap-2">
+              <div className="font-semibold text-sm">Finance Goal</div>
+              <PrivacyToggle hidden={hiddenPillars.includes("finance")} onToggle={() => togglePillarPrivacy("finance")} />
+            </div>
             {entryChannel === "nbo" ? (
               <>
                 <p className="text-[11px] text-muted-foreground mt-0.5">Income target and source — weeks 1-3 sales and marketing, week 4 skill training.</p>
@@ -876,6 +1061,7 @@ function GoalsSection() {
                     placeholder="Goal name (e.g. Physical Health)"
                     className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium"
                   />
+                  <PrivacyToggle hidden={hiddenPillars.includes(p.key)} onToggle={() => togglePillarPrivacy(p.key)} />
                   <button type="button" onClick={() => removeCustomPillar(idx)} className="shrink-0 text-muted-foreground hover:text-destructive" aria-label="Remove goal">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

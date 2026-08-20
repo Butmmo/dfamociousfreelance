@@ -34,17 +34,6 @@ export async function sendWebPush(supa: any, args: SendPushArgs) {
   const ids = Array.from(new Set((user_ids ?? []).filter(Boolean)));
   if (ids.length === 0) return { sent: 0, skipped: "no recipients" };
 
-  const VAPID_PUBLIC_KEY = Deno.env.get("VAPID_PUBLIC_KEY");
-  const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY");
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
-    return { sent: 0, skipped: "VAPID keys not configured" };
-  }
-  webpush.setVapidDetails(
-    Deno.env.get("VAPID_SUBJECT") ?? "mailto:boluwatifefamokunwa@gmail.com",
-    VAPID_PUBLIC_KEY,
-    VAPID_PRIVATE_KEY,
-  );
-
   let recipientIds = ids;
   if (category === "message") {
     const { data: prefs } = await supa
@@ -58,11 +47,29 @@ export async function sendWebPush(supa: any, args: SendPushArgs) {
   }
   if (recipientIds.length === 0) return { sent: 0, skipped: "all recipients opted out" };
 
+  // The in-app notification center logs every fired notification
+  // regardless of push-subscription state — a beneficiary without a
+  // working subscription (or who missed the OS toast) still sees it here.
+  await supa.from("notifications").insert(
+    recipientIds.map((user_id) => ({ user_id, category, title, body, url: url ?? "/" })),
+  );
+
+  const VAPID_PUBLIC_KEY = Deno.env.get("VAPID_PUBLIC_KEY");
+  const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY");
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
+    return { sent: 0, logged: recipientIds.length, skipped: "VAPID keys not configured" };
+  }
+  webpush.setVapidDetails(
+    Deno.env.get("VAPID_SUBJECT") ?? "mailto:boluwatifefamokunwa@gmail.com",
+    VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY,
+  );
+
   const { data: subs } = await supa
     .from("push_subscriptions")
     .select("*")
     .in("user_id", recipientIds);
-  if (!subs || subs.length === 0) return { sent: 0, skipped: "no active subscriptions" };
+  if (!subs || subs.length === 0) return { sent: 0, logged: recipientIds.length, skipped: "no active subscriptions" };
 
   const payload = JSON.stringify({ title, body, url: url ?? "/", category });
   let sent = 0;
@@ -82,5 +89,5 @@ export async function sendWebPush(supa: any, args: SendPushArgs) {
   if (stale.length > 0) {
     await supa.from("push_subscriptions").delete().in("id", stale);
   }
-  return { sent, stale: stale.length, attempted: subs.length };
+  return { sent, stale: stale.length, attempted: subs.length, logged: recipientIds.length };
 }
