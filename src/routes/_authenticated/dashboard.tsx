@@ -115,7 +115,7 @@ function Dashboard() {
   }, [completedRows]);
   const tpeListened = perPlaybook["tpe"] ?? 0;
 
-  const snapshot = useMemo(() => computeEscalation(completedRows), [completedRows]);
+  const snapshot = useMemo(() => computeEscalation(completedRows, new Date(), profile?.tpe_defaulting_until ?? null), [completedRows, profile?.tpe_defaulting_until]);
   const startDate = profile?.start_date ? new Date(profile.start_date)
                    : profile?.created_at ? new Date(profile.created_at) : null;
   const forecast = useMemo(() => forecastFirstClose(progressRows, startDate), [progressRows, startDate]);

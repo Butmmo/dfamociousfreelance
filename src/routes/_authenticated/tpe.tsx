@@ -1,11 +1,60 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { useSyncedTaskMap } from "@/lib/playbook-progress";
 import { TPE_TOPICS, TPE_PLAYBOOK_KEY, tpeProgressPercent } from "@/lib/tpe";
 import { toast } from "sonner";
-import { Headphones, CheckCircle2, Circle, Loader2, Save, NotebookPen } from "lucide-react";
+import { Headphones, CheckCircle2, Circle, Loader2, Save, NotebookPen, CalendarClock } from "lucide-react";
+
+function currentWeekMondaySunday(now = new Date()) {
+  const d = new Date(now); d.setHours(0, 0, 0, 0);
+  const day = d.getDay() || 7; // 1=Mon..7=Sun
+  const monday = new Date(d); monday.setDate(d.getDate() - (day - 1));
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  return { monday, sunday };
+}
+
+/** Weekly cadence status + the 12-month defaulting flag (set by the tpe-weekly-compliance sweep) — a signal, never a fine. */
+function WeeklyComplianceBanner() {
+  const { user } = useSession();
+  const [thisWeekDone, setThisWeekDone] = useState<boolean | null>(null);
+  const [defaultingUntil, setDefaultingUntil] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const { monday, sunday } = currentWeekMondaySunday();
+    Promise.all([
+      supabase.from("task_progress").select("id").eq("user_id", user.id).eq("playbook", TPE_PLAYBOOK_KEY).eq("completed", true)
+        .gte("completed_at", monday.toISOString()).lte("completed_at", sunday.toISOString()).limit(1),
+      supabase.from("profiles").select("tpe_defaulting_until").eq("id", user.id).maybeSingle(),
+    ]).then(([weekRes, profRes]) => {
+      setThisWeekDone(((weekRes.data as any[]) ?? []).length > 0);
+      setDefaultingUntil((profRes.data as any)?.tpe_defaulting_until ?? null);
+    });
+  }, [user]);
+
+  const isDefaulting = defaultingUntil && new Date(defaultingUntil) >= new Date(new Date().toDateString());
+
+  return (
+    <div className="space-y-3">
+      {isDefaulting && (
+        <div className="rounded-xl border border-crimson/40 bg-crimson/10 p-3 text-xs text-crimson">
+          <strong>Defaulting.</strong> A weekly session was missed — visible to your mentor and DSE Rep until{" "}
+          {new Date(defaultingUntil!).toLocaleDateString()}. No fine, just a signal.
+        </div>
+      )}
+      {thisWeekDone !== null && (
+        <div className={`rounded-xl border p-3 text-xs flex items-center gap-2 ${thisWeekDone ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700" : "border-gold/40 bg-gold/5 text-gold-deep"}`}>
+          <CalendarClock className="h-3.5 w-3.5 flex-shrink-0" />
+          {thisWeekDone
+            ? "This week's session is done — one per week, every Monday to Sunday, is compulsory as of the week of Aug 24, 2026."
+            : "No session listened this week yet — one per week is compulsory (weeks run Monday to Sunday) as of the week of Aug 24, 2026."}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/tpe")({
   head: () => ({
@@ -39,6 +88,8 @@ function TpePage() {
           into the business this week.
         </p>
       </header>
+
+      <WeeklyComplianceBanner />
 
       <div className="rounded-2xl border border-gold/40 bg-accent/20 p-5">
         <div className="flex items-center justify-between text-sm">

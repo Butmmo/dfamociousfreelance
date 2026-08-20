@@ -99,6 +99,7 @@ function streaks(days: Set<string>, today: Date) {
 export function computeEscalation(
   rows: ProgressRow[],
   now: Date = new Date(),
+  tpeDefaultingUntil: string | null = null,
 ): EscalationSnapshot {
   const days = activeDaySet(rows);
 
@@ -140,6 +141,11 @@ export function computeEscalation(
   const reasons: string[] = [];
   if (gracePeriodActive) {
     reasons.push(`Grace period active — escalation tracking began ${startOfDayISO(ESCALATION_START)}`);
+  }
+  // Visibility only, same non-punitive treatment as the cadence bands
+  // themselves — no score impact, just a signal the mentor/DSE Rep can see.
+  if (tpeDefaultingUntil && new Date(tpeDefaultingUntil) >= new Date(startOfDayISO(now))) {
+    reasons.push(`The Practise of Enterprise — defaulting on the weekly requirement, flagged until ${tpeDefaultingUntil}`);
   }
 
   // A. 14-day cadence (max 40) — scaled to target14

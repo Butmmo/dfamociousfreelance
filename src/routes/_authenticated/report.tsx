@@ -63,7 +63,7 @@ function ReportPage() {
   const startDate = profile?.start_date ? new Date(profile.start_date)
                    : profile?.created_at ? new Date(profile.created_at) : null;
 
-  const snapshot = useMemo(() => computeEscalation(rows.filter(r => r.completed)), [rows]);
+  const snapshot = useMemo(() => computeEscalation(rows.filter(r => r.completed), new Date(), profile?.tpe_defaulting_until ?? null), [rows, profile?.tpe_defaulting_until]);
   const forecast = useMemo(() => forecastFirstClose(rows, startDate), [rows, startDate]);
   const tips = useMemo(() => advice(snapshot, forecast), [snapshot, forecast]);
 

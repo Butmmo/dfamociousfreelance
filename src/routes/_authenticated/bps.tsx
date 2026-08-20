@@ -517,6 +517,7 @@ function TrackerSection() {
 
   return (
     <div className="space-y-4">
+      <TpeDefaultingBanner />
       <div className="rounded-2xl border border-gold/40 bg-gold/5 p-4 text-xs text-muted-foreground">
         Activities here are deduced automatically from this month's Belief Goal action items — there's nothing to type in.
         Set or edit your Belief Goal in the Monthly Goals tab and a tracking sheet appears here for the cycle, broken into weeks.
@@ -798,6 +799,27 @@ function ItemsEditor({ items, onChange, placeholder }: { items: GoalItem[]; onCh
   );
 }
 
+/** Surfaced wherever the user works on their goals — no fine, just a visible signal for their mentor/DSE Rep too. */
+function TpeDefaultingBanner() {
+  const { user } = useSession();
+  const [until, setUntil] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("tpe_defaulting_until").eq("id", user.id).maybeSingle()
+      .then(({ data }: { data: { tpe_defaulting_until: string | null } | null }) => setUntil(data?.tpe_defaulting_until ?? null));
+  }, [user]);
+
+  if (!until || new Date(until) < new Date(new Date().toDateString())) return null;
+
+  return (
+    <div className="rounded-xl border border-crimson/40 bg-crimson/10 p-3 text-xs text-crimson">
+      <strong>The Practise of Enterprise — defaulting.</strong> A weekly session was missed; visible to your mentor and
+      DSE Rep until {new Date(until).toLocaleDateString()}. Catch up any time on the TPE page — no fine, just a signal.
+    </div>
+  );
+}
+
 function PrivacyToggle({ hidden, onToggle }: { hidden: boolean; onToggle: () => void }) {
   return (
     <button
@@ -957,6 +979,7 @@ function GoalsSection() {
 
   return (
     <div className="space-y-6">
+      <TpeDefaultingBanner />
       <div className="rounded-2xl border border-gold/40 bg-accent/20 p-5">
         <div className="flex items-center gap-2 text-[10px] tracking-widest text-gold-deep"><TrendingUp className="h-3.5 w-3.5" /> This cycle</div>
         <h2 className="mt-1 font-display text-xl font-bold">

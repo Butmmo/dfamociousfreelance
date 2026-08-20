@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { WEEKS } from "./playbooks/plan";
-import { CheckCircle2, Circle, CalendarDays, Flame, Lock, ArrowRight, Clock, ChevronLeft, ChevronRight, Target } from "lucide-react";
+import { CheckCircle2, Circle, CalendarDays, Flame, Lock, ArrowRight, Clock, ChevronLeft, ChevronRight, Target, Sparkles, Headphones } from "lucide-react";
 import { ESCALATION_START } from "@/lib/escalation";
 import { toast } from "sonner";
 
@@ -29,23 +29,40 @@ function CalendarPage() {
   });
   const [bpsActivities, setBpsActivities] = useState<BpsActivity[]>([]);
   const [bpsChecks, setBpsChecks] = useState<BpsCheck[]>([]);
+  const [beliefSubmittedAt, setBeliefSubmittedAt] = useState<string | null>(null);
+  const [affirmationSubmittedAt, setAffirmationSubmittedAt] = useState<string | null>(null);
+  const [evaluationSubmittedAt, setEvaluationSubmittedAt] = useState<string | null>(null);
+  const [tpeDefaultingUntil, setTpeDefaultingUntil] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       setLoading(true);
-      const [pRes, prRes, actRes] = await Promise.all([
-        supabase.from("profiles").select("start_date, created_at").eq("id", user.id).maybeSingle(),
+      const [pRes, prRes, actRes, goalRes] = await Promise.all([
+        supabase.from("profiles").select("start_date, created_at, tpe_defaulting_until").eq("id", user.id).maybeSingle(),
         supabase.from("task_progress").select("task_id, completed, completed_at").eq("user_id", user.id).eq("playbook", "p_45day"),
         supabase.from("bps_activities").select("id,label,sort_order").eq("user_id", user.id).eq("active", true).order("sort_order", { ascending: true }),
+        supabase.from("bps_monthly_goals").select("belief_submitted_at,affirmation_submitted_at,evaluation_submitted_at").eq("user_id", user.id).order("target_month", { ascending: false }).limit(1).maybeSingle(),
       ]);
       const sd = pRes.data?.start_date ?? pRes.data?.created_at ?? null;
       setStartDate(sd ? new Date(sd) : new Date());
       setProgress((prRes.data as any) ?? []);
       setBpsActivities((actRes.data as any) ?? []);
+      setTpeDefaultingUntil((pRes.data as any)?.tpe_defaulting_until ?? null);
+      setBeliefSubmittedAt((goalRes.data as any)?.belief_submitted_at ?? null);
+      setAffirmationSubmittedAt((goalRes.data as any)?.affirmation_submitted_at ?? null);
+      setEvaluationSubmittedAt((goalRes.data as any)?.evaluation_submitted_at ?? null);
       setLoading(false);
     })();
   }, [user]);
+
+  // Every Belief Goal creates its own Affirmation (day 14) and Evaluation
+  // (day 40) reminders automatically — no separate event to create.
+  const addDays = (iso: string, n: number) => { const d = new Date(iso); d.setDate(d.getDate() + n); return d; };
+  const affirmationDueAt = beliefSubmittedAt && !affirmationSubmittedAt ? addDays(beliefSubmittedAt, 14) : null;
+  const evaluationDueAt = beliefSubmittedAt && !evaluationSubmittedAt ? addDays(beliefSubmittedAt, 40) : null;
+  const isSameDate = (a: Date, b: Date) => a.toDateString() === b.toDateString();
+  const tpeDefaulting = tpeDefaultingUntil ? new Date(tpeDefaultingUntil) >= new Date(new Date().toDateString()) : false;
 
   // BPS daily checks for the visible Gregorian month, refetched whenever
   // the user pages the calendar or toggles today's tracker.
@@ -192,6 +209,40 @@ function CalendarPage() {
         </div>
       </section>
 
+      {tpeDefaulting && (
+        <div className="rounded-2xl border border-crimson/40 bg-crimson/10 p-4 text-sm text-crimson flex items-start gap-3">
+          <Headphones className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <div>
+            <strong>The Practise of Enterprise — defaulting.</strong> A weekly session was missed, flagged visible to
+            your mentor and DSE Rep until <strong>{new Date(tpeDefaultingUntil!).toLocaleDateString()}</strong>. Catch
+            up on <Link to="/tpe" className="underline font-semibold">the TPE page</Link> — no fine, just a signal.
+          </div>
+        </div>
+      )}
+
+      {(affirmationDueAt || evaluationDueAt) && (
+        <div className="rounded-2xl border border-gold/40 bg-gold/5 p-5">
+          <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" /> Upcoming BPS checkpoints</div>
+          <div className="mt-2 grid sm:grid-cols-2 gap-3 text-xs">
+            {affirmationDueAt && (
+              <div className="rounded-lg border border-border bg-background p-3">
+                <div className="font-semibold">Affirmation Goal due</div>
+                <div className="text-muted-foreground mt-0.5">{affirmationDueAt.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })} — 14 days into this Belief Goal.</div>
+              </div>
+            )}
+            {evaluationDueAt && (
+              <div className="rounded-lg border border-border bg-background p-3">
+                <div className="font-semibold">Evaluation Goal due</div>
+                <div className="text-muted-foreground mt-0.5">{evaluationDueAt.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })} — 40 days into this Belief Goal.</div>
+              </div>
+            )}
+          </div>
+          <Link to="/bps" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-gold-deep hover:underline">
+            Open Monthly Goals <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      )}
+
       {/* BPS daily tracker — the same 1/0 binary layer that scores the Belief/Affirmation/Evaluation cycle */}
       <section className="rounded-2xl border border-gold/40 bg-gold/5 p-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
@@ -275,6 +326,8 @@ function CalendarPage() {
               : "bg-muted/20 border-transparent text-muted-foreground";
 
             const bpsDone = bpsDoneDates.has(cd.toISOString().slice(0, 10));
+            const isAffirmationDay = !!affirmationDueAt && isSameDate(cd, affirmationDueAt);
+            const isEvaluationDay = !!evaluationDueAt && isSameDate(cd, evaluationDueAt);
 
             return (
               <div key={i} className={`aspect-square rounded-md border p-1 flex flex-col text-[10px] ${tone}`}>
@@ -282,6 +335,9 @@ function CalendarPage() {
                   <span className="font-semibold">{cd.getDate()}</span>
                   <span className="flex items-center gap-0.5">
                     {bpsDone && <span className="h-1.5 w-1.5 rounded-full bg-gold" title="BPS: all activities done" />}
+                    {(isAffirmationDay || isEvaluationDay) && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" title={isAffirmationDay ? "Affirmation Goal due" : "Evaluation Goal due"} />
+                    )}
                     {planDay && <span className="text-[8px] opacity-70">D{planDay}</span>}
                   </span>
                 </div>

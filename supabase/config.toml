@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.tpe-weekly-compliance]
 verify_jwt = false
+
+[functions.bps-daily-tracker-reminder]
+verify_jwt = false
