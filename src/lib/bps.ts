@@ -55,8 +55,15 @@ export interface FinanceMetrics {
   revenueUsd: number;
 }
 
-/** A monthly Financial Goal's cycle length: day 14 is the Affirmation checkpoint, day 40 is the full Evaluation cycle. */
-export const FINANCE_CYCLE_DAYS = 40;
+/**
+ * A BPS Month's cycle length is NOT a flat 40 days — it's the exact span
+ * from the 1st of the month before the target month (Belief due) through
+ * the 10th of the target month itself (Evaluation due), inclusive. That
+ * span varies 38-41 days depending on how long the prior month is (e.g.
+ * August's cycle is July 1 - August 10 = 41 days; February's is 28+10 =
+ * 38). See bpsMonthWindowDays(). The Affirmation checkpoint is always
+ * exactly 14 days in (the 1st to the 15th), regardless of month length.
+ */
 export const FINANCE_CYCLE_WEEKS = 6;
 export const FINANCE_CHECKPOINT_DAYS = 14;
 
@@ -88,13 +95,49 @@ export interface FinanceCycleTargets {
   daily: FinanceMetrics;
 }
 
+export function daysBetween(a: Date, b: Date): number {
+  return Math.round((b.getTime() - a.getTime()) / 86_400_000);
+}
+
+/**
+ * Compulsory, fixed to the calendar — never relative to when a
+ * beneficiary happens to sign up or submit. The Belief Goal for a given
+ * target month is due the 1st of the month before it (August's Belief
+ * Goal is due July 1), independent of anything the beneficiary does.
+ */
+export function beliefDueDate(targetMonth: Date): Date {
+  return new Date(targetMonth.getFullYear(), targetMonth.getMonth() - 1, 1);
+}
+
+/** The 15th of the month before the target month — always exactly 14 days after beliefDueDate. */
+export function affirmationDueDate(targetMonth: Date): Date {
+  return new Date(targetMonth.getFullYear(), targetMonth.getMonth() - 1, 15);
+}
+
+/** The 10th of the target month itself. */
+export function evaluationDueDate(targetMonth: Date): Date {
+  return new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 10);
+}
+
+/**
+ * The BPS Month's full span — beliefDueDate through evaluationDueDate,
+ * inclusive — is what "money made in the BPS Month" actually means (e.g.
+ * August's BPS Month is July 1 through August 10, 41 days). Only this
+ * window's revenue is subject to the NBO Pocket System.
+ */
+export function bpsMonthWindowDays(targetMonth: Date): number {
+  return daysBetween(beliefDueDate(targetMonth), evaluationDueDate(targetMonth)) + 1;
+}
+
 /**
  * Whatever a beneficiary sets as their monthly Financial Goal (leads,
  * messages, new/returning clients, and the revenue those imply) gets
  * broken into weekly and daily standards so it can actually be measured
- * day to day — not just set once and checked at the end. The cycle is 40
- * working days (the same window the Evaluation Goal already uses), so
- * weekly = monthly / 6 and daily = monthly / 40.
+ * day to day — not just set once and checked at the end. Weekly is
+ * always monthly/6; daily is monthly divided by this specific target
+ * month's actual BPS Month length (bpsMonthWindowDays), not a flat
+ * constant, since that length varies by a few days depending on the
+ * prior month.
  */
 export function computeFinanceCycleTargets(goal: {
   finance_leads_target: number | null | undefined;
@@ -102,7 +145,7 @@ export function computeFinanceCycleTargets(goal: {
   finance_new_clients_target: number | null | undefined;
   finance_returning_clients_target: number | null | undefined;
   finance_avg_price_usd: number | null | undefined;
-}): FinanceCycleTargets {
+}, targetMonth: Date): FinanceCycleTargets {
   const monthly: FinanceMetrics = {
     leads: goal.finance_leads_target ?? 0,
     messages: goal.finance_messages_target ?? 0,
@@ -115,7 +158,7 @@ export function computeFinanceCycleTargets(goal: {
   return {
     monthly,
     weekly: divideFinanceMetrics(monthly, FINANCE_CYCLE_WEEKS),
-    daily: divideFinanceMetrics(monthly, FINANCE_CYCLE_DAYS),
+    daily: divideFinanceMetrics(monthly, bpsMonthWindowDays(targetMonth)),
   };
 }
 
@@ -149,30 +192,21 @@ export function deriveActivityLabels(pillars: {
   return all.map((i) => i.text.trim()).filter(Boolean);
 }
 
-/** Belief Goal is submitted ~30 days before the target month begins. */
-export function beliefDueDate(targetMonth: Date): Date {
-  const d = new Date(targetMonth);
-  d.setDate(d.getDate() - 30);
-  return d;
-}
-
-/** Affirmation Goal is submitted ~15 days before the target month begins. */
-export function affirmationDueDate(targetMonth: Date): Date {
-  const d = new Date(targetMonth);
-  d.setDate(d.getDate() - 15);
-  return d;
-}
-
-/** Evaluation Goal is submitted on the 10th day of the target month. */
-export function evaluationDueDate(targetMonth: Date): Date {
-  const d = new Date(targetMonth);
-  d.setDate(10);
-  return d;
-}
-
-/** Per the 30-day planning rule: you're always executing next month's plan. */
+/** Per the fixed-date planning rule: you're always executing next month's plan. */
 export function defaultTargetMonth(now = new Date()): Date {
   return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+}
+
+/**
+ * Parses a "YYYY-MM-01" target_month key into a local Date. Deliberately
+ * NOT `new Date(key)` — a bare "YYYY-MM-DD" string parses as UTC midnight
+ * per the JS spec, and reading it back with local getters (getMonth(),
+ * as beliefDueDate/affirmationDueDate/evaluationDueDate all do) can land
+ * on the wrong month for anyone west of UTC.
+ */
+export function parseTargetMonth(key: string): Date {
+  const [y, m] = key.split("-").map(Number);
+  return new Date(y, (m || 1) - 1, 1);
 }
 
 export function monthKey(d: Date): string {
@@ -220,19 +254,29 @@ export function computeEffortScore(checks: { done: boolean }[], activityCount: n
   return { score, total, percent };
 }
 
-export function daysBetween(a: Date, b: Date): number {
-  return Math.round((b.getTime() - a.getTime()) / 86_400_000);
-}
+export type GoalCycleStatus =
+  | "belief_due" | "affirmation_pending" | "affirmation_due" | "evaluation_pending" | "evaluation_due" | "complete";
 
-export type GoalCycleStatus = "planning" | "belief_due" | "affirmation_due" | "evaluation_due" | "complete";
-
-export function goalCycleStatus(row: {
-  belief_submitted_at: string | null;
-  affirmation_submitted_at: string | null;
-  evaluation_submitted_at: string | null;
-}): GoalCycleStatus {
+/**
+ * "Pending" means the next step's fixed calendar date hasn't arrived yet
+ * (the earlier step is done, but it's too early to submit the next one);
+ * "due" means that date has arrived and the step is actionable now.
+ */
+export function goalCycleStatus(
+  row: {
+    belief_submitted_at: string | null;
+    affirmation_submitted_at: string | null;
+    evaluation_submitted_at: string | null;
+  },
+  targetMonth: Date,
+  now: Date = new Date(),
+): GoalCycleStatus {
   if (row.evaluation_submitted_at) return "complete";
-  if (row.affirmation_submitted_at) return "evaluation_due";
-  if (row.belief_submitted_at) return "affirmation_due";
+  if (row.affirmation_submitted_at) {
+    return now >= evaluationDueDate(targetMonth) ? "evaluation_due" : "evaluation_pending";
+  }
+  if (row.belief_submitted_at) {
+    return now >= affirmationDueDate(targetMonth) ? "affirmation_due" : "affirmation_pending";
+  }
   return "belief_due";
 }

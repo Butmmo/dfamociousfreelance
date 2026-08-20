@@ -5,8 +5,8 @@ import { useSession } from "@/lib/use-session";
 import { computeEscalation, forecastFirstClose, advice, type ProgressRow } from "@/lib/escalation";
 import { localDateStr } from "@/lib/local-date";
 import {
-  computeFinanceCycleTargets, financeExpectationForDays, defaultTargetMonth, monthKey,
-  FINANCE_CHECKPOINT_DAYS, FINANCE_CYCLE_DAYS,
+  computeFinanceCycleTargets, financeExpectationForDays, defaultTargetMonth, monthKey, parseTargetMonth,
+  evaluationDueDate, bpsMonthWindowDays, FINANCE_CHECKPOINT_DAYS,
 } from "@/lib/bps";
 import {
   TrendingUp, Flame, AlertTriangle, ShieldAlert, Sparkles, Calendar as CalIcon,
@@ -290,28 +290,30 @@ function ReportPage() {
           <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><DollarSign className="h-3.5 w-3.5" /> Financial Goal</div>
           <h2 className="mt-1 font-display text-2xl font-bold">Checkpoint results</h2>
           <p className="mt-1 text-sm text-muted-foreground max-w-xl">
-            Computed automatically the moment you submit each goal — day {FINANCE_CHECKPOINT_DAYS} (Affirmation) and day {FINANCE_CYCLE_DAYS} (Evaluation) — and reported to your sponsor, mentor and DSE Rep the same moment.
+            Computed automatically the moment you submit each goal — the 15th of last month (Affirmation) and the
+            10th of this month (Evaluation), fixed to the calendar — and reported to your sponsor, mentor and DSE
+            Rep the same moment.
           </p>
           <div className="mt-4 grid sm:grid-cols-2 gap-4">
             <FinanceCheckpointCard
-              label={`Day ${FINANCE_CHECKPOINT_DAYS} — Affirmation`}
+              label="Affirmation (day 15)"
               submitted={!!financeGoal.affirmation_submitted_at}
               actual={{
                 leads: financeGoal.finance_checkpoint_leads_actual, messages: financeGoal.finance_checkpoint_messages_actual,
                 newClients: financeGoal.finance_checkpoint_new_clients_actual, returningClients: financeGoal.finance_checkpoint_returning_clients_actual,
                 revenueUsd: financeGoal.finance_checkpoint_revenue_actual,
               }}
-              expected={financeExpectationForDays(computeFinanceCycleTargets(financeGoal), FINANCE_CHECKPOINT_DAYS)}
+              expected={financeExpectationForDays(computeFinanceCycleTargets(financeGoal, parseTargetMonth(financeGoal.target_month)), FINANCE_CHECKPOINT_DAYS)}
             />
             <FinanceCheckpointCard
-              label={`Day ${FINANCE_CYCLE_DAYS} — Evaluation`}
+              label={`Evaluation (${evaluationDueDate(parseTargetMonth(financeGoal.target_month)).toLocaleDateString()})`}
               submitted={!!financeGoal.evaluation_submitted_at}
               actual={{
                 leads: financeGoal.finance_final_leads_actual, messages: financeGoal.finance_final_messages_actual,
                 newClients: financeGoal.finance_final_new_clients_actual, returningClients: financeGoal.finance_final_returning_clients_actual,
                 revenueUsd: financeGoal.finance_final_revenue_actual,
               }}
-              expected={computeFinanceCycleTargets(financeGoal).monthly}
+              expected={computeFinanceCycleTargets(financeGoal, parseTargetMonth(financeGoal.target_month)).monthly}
             />
           </div>
         </section>

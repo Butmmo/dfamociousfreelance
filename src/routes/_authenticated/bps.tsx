@@ -10,7 +10,8 @@ import {
   BPS_PILLARS, PILLAR_ITEM_COUNT, MLM_DEFAULT_GOAL, computeFinanceRevenueTarget,
   beliefDueDate, affirmationDueDate, evaluationDueDate, defaultTargetMonth, monthKey,
   goalCycleStatus, computeFinanceCycleTargets, financeExpectationForDays, sumFinanceEntries,
-  FINANCE_CYCLE_DAYS, type GoalItem, type PillarKey, type CustomPillar, type FinanceMetrics,
+  bpsMonthWindowDays, parseTargetMonth, FINANCE_CYCLE_WEEKS,
+  type GoalItem, type PillarKey, type CustomPillar, type FinanceMetrics,
 } from "@/lib/bps";
 import { localDateStr } from "@/lib/local-date";
 import {
@@ -661,20 +662,23 @@ function FinanceDailyTracker() {
 
   if (loading || !goal || goal.finance_leads_target == null || !goal.belief_submitted_at) return null;
 
-  const targets = computeFinanceCycleTargets(goal);
+  const targetMonthDate = parseTargetMonth(targetKey);
+  const cycleStart = beliefDueDate(targetMonthDate);
+  const cycleDays = bpsMonthWindowDays(targetMonthDate);
+  const targets = computeFinanceCycleTargets(goal, targetMonthDate);
   const todaysEntry = entries.find((e) => e.entry_date === today) ?? null;
 
   const daysSinceStart = Math.min(
-    FINANCE_CYCLE_DAYS,
-    Math.max(1, Math.round((Date.now() - new Date(goal.belief_submitted_at).getTime()) / 86_400_000) + 1),
+    cycleDays,
+    Math.max(1, Math.round((Date.now() - cycleStart.getTime()) / 86_400_000) + 1),
   );
   const cycleActual = sumFinanceEntries(entries);
   const cycleExpected = financeExpectationForDays(targets, daysSinceStart);
 
-  const weekNumber = Math.min(6, Math.ceil(daysSinceStart / 7));
+  const weekNumber = Math.min(FINANCE_CYCLE_WEEKS, Math.ceil(daysSinceStart / 7));
   const weekStartDay = (weekNumber - 1) * 7 + 1;
   const weekEntries = entries.filter((e) => {
-    const d = Math.round((new Date(e.entry_date).getTime() - new Date(goal.belief_submitted_at!).getTime()) / 86_400_000) + 1;
+    const d = Math.round((new Date(e.entry_date).getTime() - cycleStart.getTime()) / 86_400_000) + 1;
     return d >= weekStartDay && d <= daysSinceStart;
   });
   const weekActual = sumFinanceEntries(weekEntries);
@@ -1115,9 +1119,15 @@ function GoalsSection() {
 
       {history.length > 0 && (
         <div>
-          <h3 className="font-display text-lg font-bold mb-3">Past cycles</h3>
+          <h3 className="font-display text-lg font-bold mb-3">Other cycles</h3>
+          <p className="text-xs text-muted-foreground -mt-2 mb-3">
+            Cycles overlap by design — this month's Evaluation can still be open here while next month's Belief
+            Goal is already the current one above. Affirmation/Evaluation stay submittable here once due.
+          </p>
           <div className="space-y-3">
-            {history.map((g) => <GoalCycleCard key={g.id} goal={g} busy={false} compact onAffirmation={() => {}} onEvaluation={() => {}} />)}
+            {history.map((g) => (
+              <GoalCycleCard key={g.id} goal={g} busy={busy} compact onAffirmation={() => doAffirmation(g.id)} onEvaluation={() => doEvaluation(g.id)} />
+            ))}
           </div>
         </div>
       )}
@@ -1128,7 +1138,8 @@ function GoalsSection() {
 function GoalCycleCard({ goal, busy, onAffirmation, onEvaluation, compact }: {
   goal: MonthlyGoal; busy: boolean; onAffirmation: () => void; onEvaluation: () => void; compact?: boolean;
 }) {
-  const status = goalCycleStatus(goal);
+  const targetMonthDate = parseTargetMonth(goal.target_month);
+  const status = goalCycleStatus(goal, targetMonthDate);
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -1159,13 +1170,21 @@ function GoalCycleCard({ goal, busy, onAffirmation, onEvaluation, compact }: {
           label="Affirmation Goal"
           submittedAt={goal.affirmation_submitted_at}
           score={goal.affirmation_score} total={goal.affirmation_total} percent={goal.affirmation_percent} remark={goal.affirmation_remark}
-          action={status === "affirmation_due" ? <ActionButton busy={busy} onClick={onAffirmation} label="Submit Affirmation Goal" /> : null}
+          action={
+            status === "affirmation_due" ? <ActionButton busy={busy} onClick={onAffirmation} label="Submit Affirmation Goal" />
+            : status === "affirmation_pending" ? <p className="mt-2 text-[11px] text-muted-foreground">Opens {affirmationDueDate(targetMonthDate).toLocaleDateString()}</p>
+            : null
+          }
         />
         <ScoreBlock
           label="Evaluation Goal"
           submittedAt={goal.evaluation_submitted_at}
           score={goal.evaluation_score} total={goal.evaluation_total} percent={goal.evaluation_percent} remark={goal.evaluation_remark}
-          action={status === "evaluation_due" ? <ActionButton busy={busy} onClick={onEvaluation} label="Submit Evaluation Goal" /> : null}
+          action={
+            status === "evaluation_due" ? <ActionButton busy={busy} onClick={onEvaluation} label="Submit Evaluation Goal" />
+            : status === "evaluation_pending" ? <p className="mt-2 text-[11px] text-muted-foreground">Opens {evaluationDueDate(targetMonthDate).toLocaleDateString()}</p>
+            : null
+          }
         />
       </div>
     </div>
@@ -1183,7 +1202,9 @@ function ActionButton({ busy, onClick, label }: { busy: boolean; onClick: () => 
 function StatusPill({ status }: { status: string }) {
   const meta: Record<string, { label: string; className: string }> = {
     belief_due: { label: "Belief due", className: "bg-muted text-muted-foreground" },
+    affirmation_pending: { label: "Affirmation not yet due", className: "bg-muted text-muted-foreground" },
     affirmation_due: { label: "Affirmation due", className: "bg-amber-500/15 text-amber-600" },
+    evaluation_pending: { label: "Evaluation not yet due", className: "bg-muted text-muted-foreground" },
     evaluation_due: { label: "Evaluation due", className: "bg-sky-500/15 text-sky-600" },
     complete: { label: "Complete", className: "bg-emerald-500/15 text-emerald-600" },
   };

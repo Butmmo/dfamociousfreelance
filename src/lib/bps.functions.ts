@@ -13,6 +13,7 @@ import { z } from "zod";
 import {
   affirmationRemark, evaluationRemark, computeEffortScore, deriveActivityLabels,
   MLM_DEFAULT_GOAL, computeFinanceCycleTargets, financeExpectationForDays, sumFinanceEntries,
+  beliefDueDate, affirmationDueDate, evaluationDueDate, bpsMonthWindowDays, FINANCE_CHECKPOINT_DAYS,
   type FinanceMetrics,
 } from "@/lib/bps";
 
@@ -61,7 +62,7 @@ async function postFinanceCheckpointReport(
   supabaseAdmin: any,
   userId: string,
   beneficiaryName: string,
-  checkpoint: "14-day (Affirmation)" | "40-day (Evaluation)",
+  checkpoint: "Affirmation (day 15)" | "Evaluation (day 10)",
   actual: FinanceMetrics,
   expected: FinanceMetrics,
   recipientIds: string[],
@@ -197,15 +198,16 @@ async function computeEffortForWindow(supabaseAdmin: any, goalId: string, from: 
   return computeEffortScore((checks ?? []) as { done: boolean }[], activityIds.length, windowDays);
 }
 
-/** Sums the window's daily finance entries against the pro-rated target, persists the snapshot, and reports it — unless the beneficiary hid the finance pillar. */
+/** Sums the fixed calendar window's daily finance entries against the pro-rated target, persists the snapshot, and reports it — unless the beneficiary hid the finance pillar. */
 async function computeAndReportFinanceCheckpoint(
   supabaseAdmin: any,
   goalId: string,
   userId: string,
-  beliefSubmittedAt: string,
+  targetMonth: Date,
+  from: Date,
   windowDays: number,
   columnPrefix: "finance_checkpoint" | "finance_final",
-  checkpointLabel: "14-day (Affirmation)" | "40-day (Evaluation)",
+  checkpointLabel: "Affirmation (day 15)" | "Evaluation (day 10)",
 ) {
   const { data: goal } = await supabaseAdmin
     .from("bps_monthly_goals")
@@ -213,7 +215,6 @@ async function computeAndReportFinanceCheckpoint(
     .eq("id", goalId).maybeSingle();
   if (!goal) return;
 
-  const from = new Date(beliefSubmittedAt);
   const to = new Date(from);
   to.setDate(to.getDate() + windowDays);
   const { data: entries } = await supabaseAdmin
@@ -224,7 +225,7 @@ async function computeAndReportFinanceCheckpoint(
     .lt("entry_date", to.toISOString().slice(0, 10));
 
   const actual = sumFinanceEntries((entries ?? []) as any[]);
-  const targets = computeFinanceCycleTargets(goal);
+  const targets = computeFinanceCycleTargets(goal, targetMonth);
   const expected = financeExpectationForDays(targets, windowDays);
 
   await supabaseAdmin.from("bps_monthly_goals").update({
@@ -272,15 +273,22 @@ export const submitAffirmationGoal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: goal } = await supabaseAdmin
-      .from("bps_monthly_goals").select("user_id,belief_submitted_at,affirmation_submitted_at")
+      .from("bps_monthly_goals").select("user_id,target_month,belief_submitted_at,affirmation_submitted_at")
       .eq("id", data.goal_id).maybeSingle();
     if (!goal) throw new Error("Not found.");
     if (goal.user_id !== context.userId) throw new Error("Forbidden.");
     if (!goal.belief_submitted_at) throw new Error("Submit your Belief Goal first.");
     if (goal.affirmation_submitted_at) throw new Error("Affirmation Goal already submitted for this cycle.");
 
+    const targetMonth = new Date(goal.target_month);
+    const beliefDue = beliefDueDate(targetMonth);
+    const affirmationDue = affirmationDueDate(targetMonth);
+    if (new Date() < affirmationDue) {
+      throw new Error(`Affirmation Goal isn't due yet — it opens on ${affirmationDue.toLocaleDateString()}.`);
+    }
+
     const { score, total, percent } = await computeEffortForWindow(
-      supabaseAdmin, data.goal_id, new Date(goal.belief_submitted_at), 14,
+      supabaseAdmin, data.goal_id, beliefDue, FINANCE_CHECKPOINT_DAYS,
     );
     const remark = affirmationRemark(percent);
     const { error } = await supabaseAdmin.from("bps_monthly_goals").update({
@@ -291,7 +299,7 @@ export const submitAffirmationGoal = createServerFn({ method: "POST" })
 
     try {
       await computeAndReportFinanceCheckpoint(
-        supabaseAdmin, data.goal_id, context.userId, goal.belief_submitted_at, 14, "finance_checkpoint", "14-day (Affirmation)",
+        supabaseAdmin, data.goal_id, context.userId, targetMonth, beliefDue, FINANCE_CHECKPOINT_DAYS, "finance_checkpoint", "Affirmation (day 15)",
       );
     } catch { /* the affirmation submission itself already succeeded — never fail it over the finance report */ }
 
@@ -304,15 +312,23 @@ export const submitEvaluationGoal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: goal } = await supabaseAdmin
-      .from("bps_monthly_goals").select("user_id,belief_submitted_at,evaluation_submitted_at")
+      .from("bps_monthly_goals").select("user_id,target_month,belief_submitted_at,evaluation_submitted_at")
       .eq("id", data.goal_id).maybeSingle();
     if (!goal) throw new Error("Not found.");
     if (goal.user_id !== context.userId) throw new Error("Forbidden.");
     if (!goal.belief_submitted_at) throw new Error("Submit your Belief Goal first.");
     if (goal.evaluation_submitted_at) throw new Error("Evaluation Goal already submitted for this cycle.");
 
+    const targetMonth = new Date(goal.target_month);
+    const beliefDue = beliefDueDate(targetMonth);
+    const evaluationDue = evaluationDueDate(targetMonth);
+    if (new Date() < evaluationDue) {
+      throw new Error(`Evaluation Goal isn't due yet — it opens on ${evaluationDue.toLocaleDateString()}.`);
+    }
+    const cycleDays = bpsMonthWindowDays(targetMonth);
+
     const { score, total, percent } = await computeEffortForWindow(
-      supabaseAdmin, data.goal_id, new Date(goal.belief_submitted_at), 40,
+      supabaseAdmin, data.goal_id, beliefDue, cycleDays,
     );
     const remark = evaluationRemark(percent);
     const { error } = await supabaseAdmin.from("bps_monthly_goals").update({
@@ -323,7 +339,7 @@ export const submitEvaluationGoal = createServerFn({ method: "POST" })
 
     try {
       await computeAndReportFinanceCheckpoint(
-        supabaseAdmin, data.goal_id, context.userId, goal.belief_submitted_at, 40, "finance_final", "40-day (Evaluation)",
+        supabaseAdmin, data.goal_id, context.userId, targetMonth, beliefDue, cycleDays, "finance_final", "Evaluation (day 10)",
       );
     } catch { /* the evaluation submission itself already succeeded — never fail it over the finance report */ }
 
