@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { computeEscalation, forecastFirstClose, advice, type ProgressRow } from "@/lib/escalation";
 import {
+  computeFinanceCycleTargets, financeExpectationForDays, defaultTargetMonth, monthKey,
+  FINANCE_CHECKPOINT_DAYS, FINANCE_CYCLE_DAYS,
+} from "@/lib/bps";
+import {
   TrendingUp, Flame, AlertTriangle, ShieldAlert, Sparkles, Calendar as CalIcon,
   Target, Gauge, BookOpen, ArrowRight, DollarSign, ShieldCheck, CalendarCheck2,
 } from "lucide-react";
@@ -38,24 +42,27 @@ function ReportPage() {
   const [latestEscalation, setLatestEscalation] = useState<any>(null);
   const [checkIns, setCheckIns] = useState<any[]>([]);
   const [bpsWeeks, setBpsWeeks] = useState<any[]>([]);
+  const [financeGoal, setFinanceGoal] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       setLoading(true);
-      const [pRes, tRes, eRes, cRes, bRes] = await Promise.all([
+      const [pRes, tRes, eRes, cRes, bRes, fRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("task_progress").select("playbook, task_id, completed, completed_at").eq("user_id", user.id),
         supabase.from("escalations").select("*").eq("beneficiary_id", user.id).is("resolved_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
         supabase.from("check_ins").select("*").eq("beneficiary_id", user.id).order("created_at", { ascending: false }).limit(5),
         supabase.from("bps_weekly_reports").select("*").eq("user_id", user.id).order("week_start", { ascending: false }).limit(4),
+        supabase.from("bps_monthly_goals").select("*").eq("user_id", user.id).eq("target_month", monthKey(defaultTargetMonth())).maybeSingle(),
       ]);
       setProfile(pRes.data);
       setRows((tRes.data as any) ?? []);
       setLatestEscalation(eRes.data ?? null);
       setCheckIns((cRes.data as any) ?? []);
       setBpsWeeks((bRes.data as any) ?? []);
+      setFinanceGoal(fRes.data ?? null);
       setLoading(false);
     })();
   }, [user]);
@@ -270,6 +277,39 @@ function ReportPage() {
         )}
       </section>
 
+      {/* FINANCIAL GOAL CHECKPOINTS */}
+      {financeGoal?.finance_leads_target != null && financeGoal?.belief_submitted_at && (
+        <section className="rounded-2xl border border-border bg-card p-6">
+          <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><DollarSign className="h-3.5 w-3.5" /> Financial Goal</div>
+          <h2 className="mt-1 font-display text-2xl font-bold">Checkpoint results</h2>
+          <p className="mt-1 text-sm text-muted-foreground max-w-xl">
+            Computed automatically the moment you submit each goal — day {FINANCE_CHECKPOINT_DAYS} (Affirmation) and day {FINANCE_CYCLE_DAYS} (Evaluation) — and reported to your sponsor, mentor and DSE Rep the same moment.
+          </p>
+          <div className="mt-4 grid sm:grid-cols-2 gap-4">
+            <FinanceCheckpointCard
+              label={`Day ${FINANCE_CHECKPOINT_DAYS} — Affirmation`}
+              submitted={!!financeGoal.affirmation_submitted_at}
+              actual={{
+                leads: financeGoal.finance_checkpoint_leads_actual, messages: financeGoal.finance_checkpoint_messages_actual,
+                newClients: financeGoal.finance_checkpoint_new_clients_actual, returningClients: financeGoal.finance_checkpoint_returning_clients_actual,
+                revenueUsd: financeGoal.finance_checkpoint_revenue_actual,
+              }}
+              expected={financeExpectationForDays(computeFinanceCycleTargets(financeGoal), FINANCE_CHECKPOINT_DAYS)}
+            />
+            <FinanceCheckpointCard
+              label={`Day ${FINANCE_CYCLE_DAYS} — Evaluation`}
+              submitted={!!financeGoal.evaluation_submitted_at}
+              actual={{
+                leads: financeGoal.finance_final_leads_actual, messages: financeGoal.finance_final_messages_actual,
+                newClients: financeGoal.finance_final_new_clients_actual, returningClients: financeGoal.finance_final_returning_clients_actual,
+                revenueUsd: financeGoal.finance_final_revenue_actual,
+              }}
+              expected={computeFinanceCycleTargets(financeGoal).monthly}
+            />
+          </div>
+        </section>
+      )}
+
       {/* PLAYBOOK BREAKDOWN */}
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="text-[10px] tracking-widest text-gold-deep">Playbook coverage</div>
@@ -341,6 +381,33 @@ function ReportPage() {
         <div className="rounded-xl border border-border bg-card p-4 text-xs text-muted-foreground">
           You are viewing your own report. Beneficiary reports are inside the <Link to="/admin" className="text-primary font-semibold hover:underline">Council</Link>.
         </div>
+      )}
+    </div>
+  );
+}
+
+function FinanceCheckpointCard({ label, submitted, actual, expected }: {
+  label: string;
+  submitted: boolean;
+  actual: { leads: number | null; messages: number | null; newClients: number | null; returningClients: number | null; revenueUsd: number | null };
+  expected: { leads: number; messages: number; newClients: number; returningClients: number; revenueUsd: number };
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-background p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-semibold">{label}</span>
+        {!submitted && <span className="text-[10px] text-muted-foreground">Not yet submitted</span>}
+      </div>
+      {submitted ? (
+        <div className="mt-2 text-xs space-y-1">
+          <div><strong className="text-foreground">{actual.leads ?? 0}</strong> / {expected.leads.toFixed(1)} leads</div>
+          <div><strong className="text-foreground">{actual.messages ?? 0}</strong> / {expected.messages.toFixed(1)} messages</div>
+          <div><strong className="text-foreground">{actual.newClients ?? 0}</strong> / {expected.newClients.toFixed(1)} new clients</div>
+          <div><strong className="text-foreground">{actual.returningClients ?? 0}</strong> / {expected.returningClients.toFixed(1)} returning clients</div>
+          <div><strong className="text-foreground">${Number(actual.revenueUsd ?? 0).toFixed(2)}</strong> / ${expected.revenueUsd.toFixed(2)} revenue</div>
+        </div>
+      ) : (
+        <p className="mt-2 text-xs text-muted-foreground">Expected by then: {expected.leads.toFixed(1)}L / {expected.messages.toFixed(1)}M / {expected.newClients.toFixed(1)}NC / {expected.returningClients.toFixed(1)}RC / ${expected.revenueUsd.toFixed(2)}</p>
       )}
     </div>
   );
