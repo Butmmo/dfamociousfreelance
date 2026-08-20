@@ -5,8 +5,9 @@ import { useSession } from "@/lib/use-session";
 import { PATH_MAP } from "@/lib/paths";
 import { toast } from "sonner";
 import { usePushSubscription } from "@/lib/push";
+import { buildGoogleAuthUrl, isGoogleCalendarConfigured } from "@/lib/google-calendar";
 import {
-  User, Camera, Loader2, Save, Mail, Lock, Award, Calendar as CalIcon, Compass, Bell, BellOff,
+  User, Camera, Loader2, Save, Mail, Lock, Award, Calendar as CalIcon, Compass, Bell, BellOff, Link2, Unlink,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -38,6 +39,8 @@ function ProfilePage() {
 
   const push = usePushSubscription();
   const [savingMessagePush, setSavingMessagePush] = useState(false);
+  const [connectingGoogle, setConnectingGoogle] = useState(false);
+  const [disconnectingGoogle, setDisconnectingGoogle] = useState(false);
 
   const load = async () => {
     if (!user) return;
@@ -104,6 +107,28 @@ function ProfilePage() {
     setSavingEmail(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Confirmation link sent to your new email. Your login updates once you confirm it.");
+  };
+
+  const connectGoogleCalendar = async () => {
+    setConnectingGoogle(true);
+    const { data } = await supabase.auth.getSession();
+    const accessToken = data.session?.access_token;
+    setConnectingGoogle(false);
+    if (!accessToken) { toast.error("Sign-in session not found — refresh and try again."); return; }
+    window.location.href = buildGoogleAuthUrl(accessToken);
+  };
+
+  const disconnectGoogleCalendar = async () => {
+    setDisconnectingGoogle(true);
+    const { data } = await supabase.auth.getSession();
+    const accessToken = data.session?.access_token;
+    const { error } = await supabase.functions.invoke("google-calendar-disconnect", {
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    });
+    setDisconnectingGoogle(false);
+    if (error) { toast.error(error.message); return; }
+    setProfile((p: any) => ({ ...p, google_calendar_connected: false }));
+    toast.success("Google Calendar disconnected.");
   };
 
   const toggleMessagePush = async (enabled: boolean) => {
@@ -260,6 +285,39 @@ function ProfilePage() {
             {(profile?.push_messages_enabled ?? true) ? "On" : "Off"}
           </button>
         </div>
+      </section>
+
+      {/* GOOGLE CALENDAR */}
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <h2 className="font-display text-xl font-bold flex items-center gap-2"><CalIcon className="h-5 w-5" /> Google Calendar</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Syncs your Affirmation/Evaluation Goal due dates and the TPE weekly requirement straight onto your own
+          Google Calendar, kept current every night.
+        </p>
+        {!isGoogleCalendarConfigured() ? (
+          <p className="mt-4 rounded-lg border border-border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
+            Not set up yet on this server — ask the founder to finish the Google Cloud OAuth setup.
+          </p>
+        ) : profile?.google_calendar_connected ? (
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3">
+            <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">Connected</span>
+            <button
+              onClick={disconnectGoogleCalendar}
+              disabled={disconnectingGoogle}
+              className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-xs font-semibold hover:bg-muted disabled:opacity-60"
+            >
+              {disconnectingGoogle ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Unlink className="h-3.5 w-3.5" />} Disconnect
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={connectGoogleCalendar}
+            disabled={connectingGoogle}
+            className="mt-4 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+          >
+            {connectingGoogle ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Link2 className="h-3.5 w-3.5" />} Connect Google Calendar
+          </button>
+        )}
       </section>
 
       {/* EMAIL */}
