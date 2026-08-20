@@ -17,6 +17,7 @@ export type PushCategory =
   | "mentorship"
   | "bps"
   | "dfy"
+  | "pocket"
   | "admin"
   | "message"
   | "general";

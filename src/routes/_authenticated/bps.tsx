@@ -13,6 +13,11 @@ import {
   bpsMonthWindowDays, parseTargetMonth, FINANCE_CYCLE_WEEKS,
   type GoalItem, type PillarKey, type CustomPillar, type FinanceMetrics,
 } from "@/lib/bps";
+import { getMyPocketSummary, logMlmActualSpend, requestEmergencyWithdrawal } from "@/lib/pocket.functions";
+import {
+  MLM_TARGET_PPV, mlmRollover, savingsUnlockDate, isSavingsUnlocked, ESCALATION_LABELS,
+  type EscalationLevel,
+} from "@/lib/pocket";
 import { localDateStr } from "@/lib/local-date";
 import {
   CRM_STAGES, priorityFromScore, PRIORITY_META,
@@ -24,7 +29,7 @@ import {
   Target, Users, CalendarCheck2, Plus, Pencil, Trash2, X, Save, Loader2,
   Phone, Mail, Linkedin, Globe, MapPin, Star, Flame, CheckCircle2, Circle,
   Send, ClipboardList, TrendingUp, AlertTriangle, ChevronLeft, ChevronRight,
-  BarChart3, Upload, Eye, EyeOff,
+  BarChart3, Upload, Eye, EyeOff, Wallet, PiggyBank, ShoppingBag, ShieldAlert,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/bps")({
@@ -32,7 +37,7 @@ export const Route = createFileRoute("/_authenticated/bps")({
   component: BpsPage,
 });
 
-type Tab = "crm" | "tracker" | "goals";
+type Tab = "crm" | "tracker" | "goals" | "pocket";
 
 function BpsPage() {
   const [tab, setTab] = useState<Tab>("crm");
@@ -54,11 +59,13 @@ function BpsPage() {
         <TabButton active={tab === "crm"} onClick={() => setTab("crm")} icon={Users} label="Client CRM" />
         <TabButton active={tab === "tracker"} onClick={() => setTab("tracker")} icon={CalendarCheck2} label="Daily Tracker" />
         <TabButton active={tab === "goals"} onClick={() => setTab("goals")} icon={ClipboardList} label="Monthly Goals" />
+        <TabButton active={tab === "pocket"} onClick={() => setTab("pocket")} icon={Wallet} label="Pocket System" />
       </div>
 
       {tab === "crm" && <CrmSection />}
       {tab === "tracker" && <TrackerSection />}
       {tab === "goals" && <GoalsSection />}
+      {tab === "pocket" && <PocketSection />}
     </div>
   );
 }
@@ -1254,6 +1261,187 @@ function ScoreBlock({ label, submittedAt, score, total, percent, remark, action 
         <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" /> Not yet submitted</div>
       )}
       {action}
+    </div>
+  );
+}
+
+function PocketSection() {
+  const summaryFn = useServerFn(getMyPocketSummary);
+  const mlmSpendFn = useServerFn(logMlmActualSpend);
+  const requestFn = useServerFn(requestEmergencyWithdrawal);
+
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [mlmSpendInput, setMlmSpendInput] = useState<Record<string, string>>({});
+  const [busyMlm, setBusyMlm] = useState<string | null>(null);
+  const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("");
+  const [requesting, setRequesting] = useState(false);
+
+  const refresh = async () => {
+    setLoading(true);
+    try { setData(await summaryFn({ data: undefined as never })); }
+    catch (e: any) { toast.error(e.message ?? "Failed to load the Pocket System"); }
+    setLoading(false);
+  };
+  useEffect(() => { refresh(); /* eslint-disable-next-line */ }, []);
+
+  if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
+  if (!data) return null;
+
+  const latest = data.allocations[0];
+  const unlockDate = data.savingsStartedAt ? savingsUnlockDate(new Date(data.savingsStartedAt)) : null;
+  const savingsUnlocked = isSavingsUnlocked(data.savingsStartedAt ? new Date(data.savingsStartedAt) : null);
+
+  const doMlmSpend = async (allocationId: string) => {
+    const raw = mlmSpendInput[allocationId];
+    const value = Number(raw);
+    if (!raw || Number.isNaN(value) || value < 0) { toast.error("Enter a valid amount."); return; }
+    setBusyMlm(allocationId);
+    try { await mlmSpendFn({ data: { allocation_id: allocationId, actual_spend_usd: value } }); toast.success("Logged."); await refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
+    setBusyMlm(null);
+  };
+
+  const doRequest = async () => {
+    const value = Number(amount);
+    if (!amount || Number.isNaN(value) || value <= 0) { toast.error("Enter a valid amount."); return; }
+    if (!reason.trim()) { toast.error("Describe the emergency."); return; }
+    setRequesting(true);
+    try {
+      await requestFn({ data: { amount_usd: value, reason: reason.trim() } });
+      toast.success("Sent to your Rep.");
+      setAmount(""); setReason("");
+      await refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed"); }
+    setRequesting(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-2"><Wallet className="h-3.5 w-3.5" /> NBO Pocket Policy — binding on every participant</div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          The moment a BPS Month's Evaluation Goal is submitted, that month's revenue is split five ways: Upkeep/Spending 25%,
+          Savings 25% (long-term, only available in 3-year cycles), Investments 20%, MLM Product Purchase 20% (spend only
+          enough for {MLM_TARGET_PPV} PPV-equivalent on Neolife Back-Office — whatever's left rolls into Savings), and
+          Emergency 10% (short-term, propose to your Rep — unresolved after 48h it escalates to your Sponsor/Mentor, then the Founder).
+        </p>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <PocketCard icon={Wallet} label="Upkeep / Spending" value={data.lifetimeUpkeepUsd} hint="Always available." />
+        <PocketCard icon={PiggyBank} label="Savings" value={data.lifetimeSavingsUsd} hint={unlockDate ? (savingsUnlocked ? "Unlocked." : `Unlocks ${unlockDate.toLocaleDateString()}`) : "Funds on your first Evaluation Goal."} />
+        <PocketCard icon={TrendingUp} label="Investments" value={data.lifetimeInvestmentsUsd} hint="Deploy toward income-producing assets." />
+        <PocketCard icon={ShoppingBag} label="MLM Product" value={data.lifetimeMlmUsd} hint={`Spent so far: $${Number(data.lifetimeMlmActualSpendUsd).toFixed(2)}`} />
+        <PocketCard icon={ShieldAlert} label="Emergency (available)" value={data.emergencyBalanceUsd} hint="Withdrawable now." />
+      </div>
+
+      {latest && (
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <h3 className="font-display text-lg font-bold">
+            Log MLM Actual Spend — {new Date(latest.target_month).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            This month's MLM pocket: ${Number(latest.mlm_usd).toFixed(2)}. Only spend enough for {MLM_TARGET_PPV} PPV-equivalent — the rest rolls into Savings.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <input
+              type="number" min="0" step="0.01" placeholder="Actual spend ($)"
+              value={mlmSpendInput[latest.id] ?? String(latest.mlm_actual_spend_usd ?? "")}
+              onChange={(e) => setMlmSpendInput((s) => ({ ...s, [latest.id]: e.target.value }))}
+              className="rounded-md border border-border bg-background px-3 py-1.5 text-sm w-40"
+            />
+            <button
+              onClick={() => doMlmSpend(latest.id)} disabled={busyMlm === latest.id}
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+            >
+              {busyMlm === latest.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save
+            </button>
+            <span className="text-xs text-muted-foreground">
+              Rolls to Savings: ${mlmRollover(Number(latest.mlm_usd), Number(mlmSpendInput[latest.id] ?? latest.mlm_actual_spend_usd ?? 0)).toFixed(2)}
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="font-display text-lg font-bold flex items-center gap-2"><ShieldAlert className="h-4 w-4" /> Request an Emergency Withdrawal</h3>
+        <p className="mt-1 text-xs text-muted-foreground">Goes to your Rep first. If it stalls 48 hours, it escalates to your Sponsor/Mentor, then the Founder.</p>
+        <div className="mt-3 grid sm:grid-cols-[160px_1fr_auto] gap-2">
+          <input type="number" min="0" step="0.01" placeholder="Amount ($)" value={amount} onChange={(e) => setAmount(e.target.value)} className="rounded-md border border-border bg-background px-3 py-1.5 text-sm" />
+          <input type="text" placeholder="What's the emergency?" value={reason} onChange={(e) => setReason(e.target.value)} className="rounded-md border border-border bg-background px-3 py-1.5 text-sm" />
+          <button
+            onClick={doRequest} disabled={requesting}
+            className="inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+          >
+            {requesting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Send to Rep
+          </button>
+        </div>
+        {data.requests.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {data.requests.map((r: any) => <WithdrawalRow key={r.id} r={r} />)}
+          </div>
+        )}
+      </div>
+
+      {data.allocations.length > 0 && (
+        <div className="rounded-2xl border border-border bg-card p-5 overflow-x-auto">
+          <h3 className="font-display text-lg font-bold">Allocation History</h3>
+          <table className="mt-3 w-full text-xs min-w-[640px]">
+            <thead className="text-muted-foreground">
+              <tr className="text-left">
+                <th className="py-1.5 pr-3">Month</th><th className="py-1.5 pr-3">Revenue</th><th className="py-1.5 pr-3">Upkeep</th>
+                <th className="py-1.5 pr-3">Savings</th><th className="py-1.5 pr-3">Investments</th><th className="py-1.5 pr-3">MLM</th><th className="py-1.5 pr-3">Emergency</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.allocations.map((a: any) => (
+                <tr key={a.id} className="border-t border-border">
+                  <td className="py-1.5 pr-3 font-medium">{new Date(a.target_month).toLocaleDateString(undefined, { month: "short", year: "numeric" })}</td>
+                  <td className="py-1.5 pr-3">${Number(a.revenue_usd).toFixed(2)}</td>
+                  <td className="py-1.5 pr-3">${Number(a.upkeep_usd).toFixed(2)}</td>
+                  <td className="py-1.5 pr-3">${Number(a.savings_usd).toFixed(2)}</td>
+                  <td className="py-1.5 pr-3">${Number(a.investments_usd).toFixed(2)}</td>
+                  <td className="py-1.5 pr-3">${Number(a.mlm_usd).toFixed(2)}</td>
+                  <td className="py-1.5 pr-3">${Number(a.emergency_usd).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PocketCard({ icon: Icon, label, value, hint }: { icon: any; label: string; value: number; hint: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4">
+      <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><Icon className="h-3.5 w-3.5" /> {label}</div>
+      <div className="mt-1 font-display text-xl font-bold">${Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+      <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>
+    </div>
+  );
+}
+
+function WithdrawalRow({ r }: { r: any }) {
+  const statusMeta: Record<string, string> = {
+    pending: "bg-amber-500/15 text-amber-600",
+    approved: "bg-emerald-500/15 text-emerald-600",
+    denied: "bg-crimson/15 text-crimson",
+  };
+  return (
+    <div className="rounded-lg border border-border p-3 flex items-center justify-between flex-wrap gap-2">
+      <div>
+        <div className="font-medium text-sm">${Number(r.amount_usd).toFixed(2)} — {r.reason}</div>
+        <div className="text-[11px] text-muted-foreground">
+          Requested {new Date(r.requested_at).toLocaleDateString()}
+          {r.status === "pending" && ` · ${ESCALATION_LABELS[r.escalation_level as EscalationLevel] ?? r.escalation_level}`}
+          {r.decision_note && ` · "${r.decision_note}"`}
+        </div>
+      </div>
+      <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold tracking-widest ${statusMeta[r.status] ?? statusMeta.pending}`}>{r.status}</span>
     </div>
   );
 }

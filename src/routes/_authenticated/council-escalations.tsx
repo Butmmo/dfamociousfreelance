@@ -6,10 +6,12 @@ import {
   listAllEscalations, acknowledgeEscalation, classifyEscalation, resolveEscalation,
   listAdmins, assignAdminToBeneficiary,
 } from "@/lib/admin.functions";
+import { listWithdrawalRequestsForReview, decideEmergencyWithdrawal } from "@/lib/pocket.functions";
+import { ESCALATION_LABELS, type EscalationLevel } from "@/lib/pocket";
 import { slaSnapshot, formatHours, CLASSIFICATIONS, type EscalationRow } from "@/lib/escalation-sla";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { ShieldAlert, ArrowLeft, Check, Link2, Clock } from "lucide-react";
+import { ShieldAlert, ArrowLeft, Check, Link2, Clock, Wallet, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/council-escalations")({
   head: () => ({ meta: [{ title: "Escalations — DBI Council" }] }),
@@ -33,9 +35,12 @@ function CouncilEscalations() {
   const resolveFn = useServerFn(resolveEscalation);
   const listAdminsFn = useServerFn(listAdmins);
   const assignFn = useServerFn(assignAdminToBeneficiary);
+  const listWithdrawalsFn = useServerFn(listWithdrawalRequestsForReview);
+  const decideWithdrawalFn = useServerFn(decideEmergencyWithdrawal);
 
   const [rows, setRows] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
+  const [withdrawals, setWithdrawals] = useState<any[]>([]);
   const [busy, setBusy] = useState(true);
   const [, forceTick] = useState(0);
 
@@ -44,8 +49,10 @@ function CouncilEscalations() {
   const refresh = async () => {
     setBusy(true);
     try {
-      const [e, a] = await Promise.all([listFn({ data: undefined as never }), listAdminsFn({ data: undefined as never })]);
-      setRows(e); setAdmins(a);
+      const [e, a, w] = await Promise.all([
+        listFn({ data: undefined as never }), listAdminsFn({ data: undefined as never }), listWithdrawalsFn({ data: undefined as never }),
+      ]);
+      setRows(e); setAdmins(a); setWithdrawals(w);
     } catch (err: any) { toast.error(err.message ?? "Failed to load"); }
     setBusy(false);
   };
@@ -73,6 +80,11 @@ function CouncilEscalations() {
   };
   const doReassign = async (menteeId: string, newAdminId: string) => {
     try { await assignFn({ data: { beneficiary_id: menteeId, admin_id: newAdminId } }); toast.success("Rep reassigned."); }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
+  };
+  const doDecideWithdrawal = async (id: string, decision: "approved" | "denied") => {
+    const note = prompt(`${decision === "approved" ? "Approval" : "Denial"} note (optional):`) ?? undefined;
+    try { await decideWithdrawalFn({ data: { request_id: id, decision, decision_note: note || undefined } }); toast.success(decision === "approved" ? "Approved." : "Denied."); refresh(); }
     catch (e: any) { toast.error(e.message ?? "Failed"); }
   };
 
@@ -122,6 +134,64 @@ function CouncilEscalations() {
           </div>
         </section>
       )}
+
+      <section>
+        <h2 className="font-display text-xl font-bold flex items-center gap-2"><Wallet className="h-5 w-5 text-gold" /> Emergency Pocket Withdrawals</h2>
+        <p className="text-sm text-muted-foreground">Rep review first — stalls 48h and it escalates to Sponsor/Mentor, then the Founder. Any Council admin can decide, regardless of the current rung.</p>
+        {busy ? (
+          <p className="mt-3 text-sm text-muted-foreground">Loading…</p>
+        ) : withdrawals.filter((w) => w.status === "pending").length === 0 ? (
+          <p className="mt-3 text-sm text-muted-foreground">No pending Emergency withdrawal requests.</p>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {withdrawals.filter((w) => w.status === "pending").map((w) => (
+              <WithdrawalReviewCard key={w.id} row={w} onDecide={doDecideWithdrawal} />
+            ))}
+          </div>
+        )}
+        {withdrawals.filter((w) => w.status !== "pending").length > 0 && (
+          <div className="mt-4 space-y-2">
+            {withdrawals.filter((w) => w.status !== "pending").slice(0, 10).map((w) => (
+              <div key={w.id} className="rounded-lg border border-border bg-card p-3 text-sm flex items-center justify-between flex-wrap gap-2">
+                <span>{w.beneficiary?.full_name ?? "?"}: ${Number(w.amount_usd).toFixed(2)} — {w.reason}</span>
+                <span className={`text-xs inline-flex items-center gap-1 ${w.status === "approved" ? "text-emerald-600" : "text-crimson"}`}>
+                  {w.status === "approved" ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />} {w.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function WithdrawalReviewCard({ row, onDecide }: { row: any; onDecide: (id: string, decision: "approved" | "denied") => void }) {
+  const hours = Math.floor((Date.now() - new Date(row.requested_at).getTime()) / 3_600_000);
+  return (
+    <div className={`rounded-xl border p-5 ${row.escalation_level === "founder" ? "border-crimson bg-crimson/5" : row.escalation_level === "sponsor_mentor" ? "border-amber-500 bg-amber-500/5" : "border-border bg-card"}`}>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="rounded-full px-2.5 py-1 text-xs font-semibold tracking-widest bg-muted text-muted-foreground">
+              {ESCALATION_LABELS[row.escalation_level as EscalationLevel] ?? row.escalation_level}
+            </span>
+            <span className="text-xs text-muted-foreground inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {hours}h since requested</span>
+          </div>
+          <p className="mt-2 text-sm">
+            <strong>{row.beneficiary?.full_name ?? "A beneficiary"}</strong> requests <strong>${Number(row.amount_usd).toFixed(2)}</strong> from their Emergency Pocket.
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{row.reason}</p>
+        </div>
+        <div className="shrink-0 flex gap-2">
+          <button onClick={() => onDecide(row.id, "approved")} className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500 px-3 py-1.5 text-xs font-semibold text-emerald-600 hover:bg-emerald-500/10">
+            <Check className="h-3.5 w-3.5" /> Approve
+          </button>
+          <button onClick={() => onDecide(row.id, "denied")} className="inline-flex items-center gap-1.5 rounded-md border border-crimson px-3 py-1.5 text-xs font-semibold text-crimson hover:bg-crimson/10">
+            <X className="h-3.5 w-3.5" /> Deny
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

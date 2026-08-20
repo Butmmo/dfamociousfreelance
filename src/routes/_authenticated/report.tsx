@@ -8,9 +8,10 @@ import {
   computeFinanceCycleTargets, financeExpectationForDays, defaultTargetMonth, monthKey, parseTargetMonth,
   evaluationDueDate, bpsMonthWindowDays, FINANCE_CHECKPOINT_DAYS,
 } from "@/lib/bps";
+import { savingsUnlockDate, isSavingsUnlocked } from "@/lib/pocket";
 import {
   TrendingUp, Flame, AlertTriangle, ShieldAlert, Sparkles, Calendar as CalIcon,
-  Target, Gauge, BookOpen, ArrowRight, DollarSign, ShieldCheck, CalendarCheck2,
+  Target, Gauge, BookOpen, ArrowRight, DollarSign, ShieldCheck, CalendarCheck2, Wallet,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/report")({
@@ -50,19 +51,21 @@ function ReportPage() {
   const [checkIns, setCheckIns] = useState<any[]>([]);
   const [bpsWeeks, setBpsWeeks] = useState<any[]>([]);
   const [financeGoal, setFinanceGoal] = useState<any>(null);
+  const [pocketAllocations, setPocketAllocations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       setLoading(true);
-      const [pRes, tRes, eRes, cRes, bRes, fRes] = await Promise.all([
+      const [pRes, tRes, eRes, cRes, bRes, fRes, kRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("task_progress").select("playbook, task_id, completed, completed_at").eq("user_id", user.id),
         supabase.from("escalations").select("*").eq("beneficiary_id", user.id).is("resolved_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
         supabase.from("check_ins").select("*").eq("beneficiary_id", user.id).order("created_at", { ascending: false }).limit(5),
         supabase.from("bps_weekly_reports").select("*").eq("user_id", user.id).order("week_start", { ascending: false }).limit(4),
         supabase.from("bps_monthly_goals").select("*").eq("user_id", user.id).eq("target_month", monthKey(defaultTargetMonth())).maybeSingle(),
+        supabase.from("pocket_allocations").select("*").eq("user_id", user.id).order("target_month", { ascending: false }).limit(3),
       ]);
       setProfile(pRes.data);
       setRows((tRes.data as any) ?? []);
@@ -70,6 +73,7 @@ function ReportPage() {
       setCheckIns((cRes.data as any) ?? []);
       setBpsWeeks((bRes.data as any) ?? []);
       setFinanceGoal(fRes.data ?? null);
+      setPocketAllocations((kRes.data as any) ?? []);
       setLoading(false);
     })();
   }, [user]);
@@ -316,6 +320,41 @@ function ReportPage() {
               expected={computeFinanceCycleTargets(financeGoal, parseTargetMonth(financeGoal.target_month)).monthly}
             />
           </div>
+        </section>
+      )}
+
+      {/* NBO POCKET SYSTEM */}
+      {pocketAllocations.length > 0 && (
+        <section className="rounded-2xl border border-border bg-card p-6">
+          <div className="flex items-start justify-between flex-wrap gap-2">
+            <div>
+              <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5" /> NBO Pocket System</div>
+              <h2 className="mt-1 font-display text-2xl font-bold">Latest allocation</h2>
+            </div>
+            <Link to="/bps" className="text-xs font-semibold text-gold-deep hover:underline inline-flex items-center gap-1">
+              Manage in BPS <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          {(() => {
+            const latest = pocketAllocations[0];
+            const unlockDate = profile?.pocket_savings_started_at ? savingsUnlockDate(new Date(profile.pocket_savings_started_at)) : null;
+            const unlocked = isSavingsUnlocked(profile?.pocket_savings_started_at ? new Date(profile.pocket_savings_started_at) : null);
+            return (
+              <>
+                <p className="mt-1 text-sm text-muted-foreground max-w-xl">
+                  {new Date(latest.target_month).toLocaleDateString(undefined, { month: "long", year: "numeric" })}'s BPS Month revenue
+                  (${Number(latest.revenue_usd).toFixed(2)}), split per the binding Pocket Policy.
+                </p>
+                <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+                  <div className="rounded-lg border border-border p-3"><div className="text-muted-foreground">Upkeep</div><div className="mt-1 font-display text-lg font-bold">${Number(latest.upkeep_usd).toFixed(2)}</div></div>
+                  <div className="rounded-lg border border-border p-3"><div className="text-muted-foreground">Savings</div><div className="mt-1 font-display text-lg font-bold">${Number(latest.savings_usd).toFixed(2)}</div><div className="text-[10px] text-muted-foreground">{unlockDate ? (unlocked ? "Unlocked" : `Unlocks ${unlockDate.toLocaleDateString()}`) : ""}</div></div>
+                  <div className="rounded-lg border border-border p-3"><div className="text-muted-foreground">Investments</div><div className="mt-1 font-display text-lg font-bold">${Number(latest.investments_usd).toFixed(2)}</div></div>
+                  <div className="rounded-lg border border-border p-3"><div className="text-muted-foreground">MLM Product</div><div className="mt-1 font-display text-lg font-bold">${Number(latest.mlm_usd).toFixed(2)}</div></div>
+                  <div className="rounded-lg border border-border p-3"><div className="text-muted-foreground">Emergency</div><div className="mt-1 font-display text-lg font-bold">${Number(latest.emergency_usd).toFixed(2)}</div></div>
+                </div>
+              </>
+            );
+          })()}
         </section>
       )}
 

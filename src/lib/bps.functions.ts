@@ -16,6 +16,7 @@ import {
   beliefDueDate, affirmationDueDate, evaluationDueDate, bpsMonthWindowDays, FINANCE_CHECKPOINT_DAYS,
   type FinanceMetrics,
 } from "@/lib/bps";
+import { computePocketSplit } from "@/lib/pocket";
 
 const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
 
@@ -255,14 +256,16 @@ async function computeAndReportFinanceCheckpoint(
   }
 
   const hiddenPillars: string[] = goal.hidden_pillars ?? [];
-  if (hiddenPillars.includes("finance")) return;
+  if (!hiddenPillars.includes("finance")) {
+    const { data: beneficiary } = await supabaseAdmin
+      .from("profiles").select("full_name,sponsor_name").eq("id", userId).maybeSingle();
+    const recipientIds = await resolveReportRecipients(supabaseAdmin, userId, beneficiary?.sponsor_name ?? null);
+    await postFinanceCheckpointReport(
+      supabaseAdmin, userId, beneficiary?.full_name ?? "A beneficiary", checkpointLabel, actual, expected, recipientIds,
+    );
+  }
 
-  const { data: beneficiary } = await supabaseAdmin
-    .from("profiles").select("full_name,sponsor_name").eq("id", userId).maybeSingle();
-  const recipientIds = await resolveReportRecipients(supabaseAdmin, userId, beneficiary?.sponsor_name ?? null);
-  await postFinanceCheckpointReport(
-    supabaseAdmin, userId, beneficiary?.full_name ?? "A beneficiary", checkpointLabel, actual, expected, recipientIds,
-  );
+  return actual;
 }
 
 const cycleIdSchema = z.object({ goal_id: z.string().uuid() });
@@ -338,10 +341,33 @@ export const submitEvaluationGoal = createServerFn({ method: "POST" })
     if (error) throw error;
 
     try {
-      await computeAndReportFinanceCheckpoint(
+      const actual = await computeAndReportFinanceCheckpoint(
         supabaseAdmin, data.goal_id, context.userId, targetMonth, beliefDue, cycleDays, "finance_final", "Evaluation (day 10)",
       );
-    } catch { /* the evaluation submission itself already succeeded — never fail it over the finance report */ }
+      // The BPS Month's revenue is now final — split it per the binding
+      // NBO Pocket Policy and record the allocation. One row per target
+      // month; re-submitting an Evaluation Goal for the same month (not
+      // otherwise possible, but defensively) would just update it.
+      if (actual) {
+        const split = computePocketSplit(actual.revenueUsd);
+        const { data: profile } = await supabaseAdmin
+          .from("profiles").select("pocket_savings_started_at").eq("id", context.userId).maybeSingle();
+        if (!profile?.pocket_savings_started_at) {
+          await supabaseAdmin.from("profiles").update({ pocket_savings_started_at: new Date().toISOString() }).eq("id", context.userId);
+        }
+        await supabaseAdmin.from("pocket_allocations").upsert({
+          user_id: context.userId,
+          goal_id: data.goal_id,
+          target_month: goal.target_month,
+          revenue_usd: actual.revenueUsd,
+          upkeep_usd: split.upkeepUsd,
+          savings_usd: split.savingsUsd,
+          investments_usd: split.investmentsUsd,
+          mlm_usd: split.mlmUsd,
+          emergency_usd: split.emergencyUsd,
+        }, { onConflict: "user_id,target_month" });
+      }
+    } catch { /* the evaluation submission itself already succeeded — never fail it over the finance report or pocket split */ }
 
     return { ok: true, score, total, percent, remark };
   });
