@@ -33,16 +33,18 @@ function CalendarPage() {
   const [affirmationSubmittedAt, setAffirmationSubmittedAt] = useState<string | null>(null);
   const [evaluationSubmittedAt, setEvaluationSubmittedAt] = useState<string | null>(null);
   const [tpeDefaultingUntil, setTpeDefaultingUntil] = useState<string | null>(null);
+  const [tpeCompletedDates, setTpeCompletedDates] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       setLoading(true);
-      const [pRes, prRes, actRes, goalRes] = await Promise.all([
+      const [pRes, prRes, actRes, goalRes, tpeRes] = await Promise.all([
         supabase.from("profiles").select("start_date, created_at, tpe_defaulting_until").eq("id", user.id).maybeSingle(),
         supabase.from("task_progress").select("task_id, completed, completed_at").eq("user_id", user.id).eq("playbook", "p_45day"),
         supabase.from("bps_activities").select("id,label,sort_order").eq("user_id", user.id).eq("active", true).order("sort_order", { ascending: true }),
         supabase.from("bps_monthly_goals").select("belief_submitted_at,affirmation_submitted_at,evaluation_submitted_at").eq("user_id", user.id).order("target_month", { ascending: false }).limit(1).maybeSingle(),
+        supabase.from("task_progress").select("completed_at").eq("user_id", user.id).eq("playbook", "tpe").eq("completed", true),
       ]);
       const sd = pRes.data?.start_date ?? pRes.data?.created_at ?? null;
       setStartDate(sd ? new Date(sd) : new Date());
@@ -52,6 +54,7 @@ function CalendarPage() {
       setBeliefSubmittedAt((goalRes.data as any)?.belief_submitted_at ?? null);
       setAffirmationSubmittedAt((goalRes.data as any)?.affirmation_submitted_at ?? null);
       setEvaluationSubmittedAt((goalRes.data as any)?.evaluation_submitted_at ?? null);
+      setTpeCompletedDates(new Set(((tpeRes.data as any[]) ?? []).filter((r) => r.completed_at).map((r) => new Date(r.completed_at).toISOString().slice(0, 10))));
       setLoading(false);
     })();
   }, [user]);
@@ -328,6 +331,7 @@ function CalendarPage() {
             const bpsDone = bpsDoneDates.has(cd.toISOString().slice(0, 10));
             const isAffirmationDay = !!affirmationDueAt && isSameDate(cd, affirmationDueAt);
             const isEvaluationDay = !!evaluationDueAt && isSameDate(cd, evaluationDueAt);
+            const tpeDone = tpeCompletedDates.has(cd.toISOString().slice(0, 10));
 
             return (
               <div key={i} className={`aspect-square rounded-md border p-1 flex flex-col text-[10px] ${tone}`}>
@@ -335,6 +339,7 @@ function CalendarPage() {
                   <span className="font-semibold">{cd.getDate()}</span>
                   <span className="flex items-center gap-0.5">
                     {bpsDone && <span className="h-1.5 w-1.5 rounded-full bg-gold" title="BPS: all activities done" />}
+                    {tpeDone && <span className="h-1.5 w-1.5 rounded-full bg-purple-500" title="TPE session listened" />}
                     {(isAffirmationDay || isEvaluationDay) && (
                       <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" title={isAffirmationDay ? "Affirmation Goal due" : "Evaluation Goal due"} />
                     )}
@@ -352,7 +357,7 @@ function CalendarPage() {
         </div>
         <p className="mt-3 text-[11px] text-muted-foreground">
           The 45-Day plan is anchored to your start date · your program will run for at least a year — new playbooks land here as they release.
-          {bpsActivities.length > 0 && <> A gold dot marks a day where every BPS activity was checked off.</>}
+          {bpsActivities.length > 0 && <> A gold dot marks a day where every BPS activity was checked off.</>} A purple dot marks a TPE session listened that day, an indigo dot an Affirmation/Evaluation Goal due date.
         </p>
       </section>
 

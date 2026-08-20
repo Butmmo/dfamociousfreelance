@@ -1880,7 +1880,7 @@ function PlanPage() {
   const [openSvc,setOpenSvc]      = useState(null);
   const [openUps,setOpenUps]      = useState(null);
   const [openGHL,setOpenGHL]      = useState(null);
-  const [done,setDone,syncMeta]   = useSyncedTaskMap("plan");
+  const [done,setDone,syncMeta]   = useSyncedTaskMap("p_45day");
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
   const totalTasks     = allTasks.length;

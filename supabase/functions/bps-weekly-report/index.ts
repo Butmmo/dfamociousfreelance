@@ -173,13 +173,21 @@ Deno.serve(async (req) => {
        <p>Full detail is on their BPS tracker page — nothing to file, this posted itself.</p>`,
     );
     const emailResult = await sendEmail(Array.from(recipientEmails), `BPS weekly cadence — ${beneficiary?.full_name ?? "beneficiary"} (${percent.toFixed(0)}%)`, html);
-    recipientIds.add(userId);
     const pushResult = await sendWebPush(supa, {
       user_ids: Array.from(recipientIds),
       category: "bps",
       title: `Weekly cadence: ${percent.toFixed(0)}%`,
       body: `${beneficiary?.full_name ?? "Beneficiary"} — ${activitiesDone}/${activitiesTotal} for ${weekStart} to ${weekEnd}.`,
       url: "/bps",
+    });
+    // The beneficiary gets their own notification too, pointed at their
+    // own report page rather than the mentor/sponsor/rep-facing BPS view.
+    const ownPushResult = await sendWebPush(supa, {
+      user_ids: [userId],
+      category: "bps",
+      title: `Your weekly performance: ${percent.toFixed(0)}%`,
+      body: `${activitiesDone}/${activitiesTotal} for ${weekStart} to ${weekEnd} — posted to your report page.`,
+      url: "/report",
     });
 
     const { error: insertError } = await supa.from("bps_weekly_reports").insert({
@@ -195,7 +203,7 @@ Deno.serve(async (req) => {
     });
     if (insertError) { results.push({ userId, error: insertError.message }); continue; }
 
-    results.push({ userId, activitiesDone, activitiesTotal, percent, email: emailResult, push: pushResult });
+    results.push({ userId, activitiesDone, activitiesTotal, percent, email: emailResult, push: pushResult, ownPush: ownPushResult });
   }
 
   return new Response(JSON.stringify({ weekStart, weekEnd, count: userIds.length, results }), {

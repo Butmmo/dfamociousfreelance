@@ -235,6 +235,24 @@ async function computeAndReportFinanceCheckpoint(
     [`${columnPrefix}_revenue_actual`]: Math.round(actual.revenueUsd * 100) / 100,
   }).eq("id", goalId);
 
+  // The beneficiary always sees their own result on their own report page
+  // — the hidden_pillars privacy toggle only controls what sponsor/mentor/
+  // rep see, never the beneficiary's own view of their own numbers.
+  const base = process.env.SUPABASE_URL;
+  if (base) {
+    fetch(`${base}/functions/v1/send-push`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_ids: [userId],
+        category: "bps",
+        title: `Financial Goal — ${checkpointLabel} results are in`,
+        body: `${formatFinanceLine(actual)} — posted to your report page.`,
+        url: "/report",
+      }),
+    }).catch(() => {});
+  }
+
   const hiddenPillars: string[] = goal.hidden_pillars ?? [];
   if (hiddenPillars.includes("finance")) return;
 

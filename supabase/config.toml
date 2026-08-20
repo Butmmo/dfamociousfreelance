@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.bps-daily-tracker-reminder]
 verify_jwt = false
+
+[functions.bps-daily-checkin]
+verify_jwt = false
+
+[functions.bps-checkpoint-due-reminder]
+verify_jwt = false
