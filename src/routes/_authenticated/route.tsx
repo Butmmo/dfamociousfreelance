@@ -100,6 +100,31 @@ function AuthedShell() {
     };
   }, [user?.id]);
 
+  // Every reminder cron (and the finance daily tracker's same-day-only
+  // lock) reads profiles.timezone to decide what "now" means for this
+  // beneficiary — keep it in sync with whatever the browser actually
+  // reports, silently, on every login.
+  useEffect(() => {
+    if (!user?.id) return;
+    let detected: string | null = null;
+    try {
+      detected = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+    } catch {
+      detected = null;
+    }
+    if (!detected) return;
+    supabase
+      .from("profiles")
+      .select("timezone")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }: { data: { timezone: string } | null }) => {
+        if (data && data.timezone !== detected) {
+          supabase.from("profiles").update({ timezone: detected } as never).eq("id", user.id);
+        }
+      });
+  }, [user?.id]);
+
   useEffect(() => {
     if (!menuOpen) return;
     const onClick = (e: MouseEvent) => {

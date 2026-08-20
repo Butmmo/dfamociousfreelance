@@ -41,10 +41,15 @@ export interface EscalationSnapshot {
   daysInGrace: number;             // how many of the 14 days are still in grace (informational)
 }
 
+// Buckets by the browser's own local calendar day. Date.toISOString()
+// forces UTC first, which silently rolls "today" back a day for anyone
+// ahead of UTC (WAT — this operation's own home base — included), so
+// this reads the date parts straight off the Date object instead.
 const startOfDayISO = (d: Date) => {
-  const nd = new Date(d);
-  nd.setHours(0, 0, 0, 0);
-  return nd.toISOString().slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 };
 
 export function activeDaySet(rows: ProgressRow[]): Set<string> {

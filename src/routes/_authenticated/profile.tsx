@@ -285,6 +285,12 @@ function ProfilePage() {
             {(profile?.push_messages_enabled ?? true) ? "On" : "Off"}
           </button>
         </div>
+
+        <div className="mt-3 text-[11px] text-muted-foreground">
+          Every reminder — the daily tracker check-ins, checkpoint due dates, weekly reports — fires on{" "}
+          <strong className="text-foreground">your own local time</strong> ({profile?.timezone ?? "detecting…"}),
+          detected automatically from this device and kept in sync every time you sign in.
+        </div>
       </section>
 
       {/* GOOGLE CALENDAR */}
