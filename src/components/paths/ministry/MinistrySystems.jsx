@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
 import { MINISTRY_TYPES } from "./MinistryProspecting";
-
-const STORAGE_KEY = "ministry-progress-v1";
+import { useSyncedTaskMap } from "@/lib/playbook-progress";
 
 const RANKS = [
   { name:"Ministry Recruit", threshold:0, blurb:"Day 1. Free accounts live, your own parish honestly audited." },
@@ -1328,6 +1327,45 @@ function SLabel({text,color}) {
   );
 }
 
+function timeAgo(date) {
+  const secs = Math.floor((Date.now()-date.getTime())/1000);
+  if (secs<10) return "just now";
+  if (secs<60) return `${secs}s ago`;
+  const mins = Math.floor(secs/60);
+  if (mins<60) return `${mins}m ago`;
+  return date.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+}
+
+function SaveStatusBar({status,lastSavedAt,pendingCount,saveNow}) {
+  const dotColor = status==="saving"?"#C99A3B":status==="error"?"#8B2E1F":status==="saved"?"#0D7A5F":"#6E6459";
+  const label = status==="saving" ? "Saving…"
+    : status==="error" ? "Save failed — check your connection"
+    : status==="saved" ? (lastSavedAt ? `Saved ${timeAgo(lastSavedAt)}` : "Saved")
+    : "Progress saves automatically as you go";
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",
+      background:"#F8F5EE",border:"1px solid #FBF8F1",borderRadius:9,
+      padding:"9px 12px",marginBottom:14}}>
+      <span style={{width:7,height:7,borderRadius:"50%",background:dotColor,flexShrink:0,
+        boxShadow:status==="saving"?`0 0 6px ${dotColor}`:"none",transition:"all .15s"}}/>
+      <span style={{fontSize:11.5,color:"#6E6459",flex:1,minWidth:160}}>
+        {label}
+        {pendingCount>0&&status!=="saving"&&(
+          <span style={{color:"#7A5A00",fontWeight:600}}> · {pendingCount} unsaved change{pendingCount===1?"":"s"}</span>
+        )}
+      </span>
+      <button onClick={saveNow} disabled={status==="saving"} style={{
+        background:status==="saving"?"#FBF8F1":"#7A5A00",
+        color:status==="saving"?"#6E6459":"#F5F0E4",
+        border:"none",borderRadius:7,padding:"6px 14px",fontSize:11.5,fontWeight:700,
+        cursor:status==="saving"?"default":"pointer",fontFamily:"inherit",
+        letterSpacing:".02em",flexShrink:0}}>
+        {status==="saving"?"Saving…":"Save progress"}
+      </button>
+    </div>
+  );
+}
+
 export default function DigitalMinistrySystems() {
   const [tab,setTab]             = useState("plan");
   const [openWeek,setOpenWeek]   = useState(0);
@@ -1335,29 +1373,13 @@ export default function DigitalMinistrySystems() {
   const [openSvc,setOpenSvc]     = useState(null);
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
-  const [done,setDone]           = useState({});
-  const [loaded,setLoaded]       = useState(false);
+  const [done,setDone,syncMeta]  = useSyncedTaskMap("p_ministry");
   const [confirmingReset,setConfirmingReset] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await window.storage.get(STORAGE_KEY, false);
-        if (res && res.value) setDone(JSON.parse(res.value).done || {});
-      } catch (e) { /* no saved progress yet */ }
-      finally { setLoaded(true); }
-    })();
-  }, []);
-
-  const persist = useCallback(async (next) => {
-    try { await window.storage.set(STORAGE_KEY, JSON.stringify({ done: next, savedAt: Date.now() }), false); }
-    catch (e) { /* best effort */ }
-  }, []);
-
-  const toggle = id=>setDone(p=>{ const next={...p,[id]:!p[id]}; persist(next); return next; });
+  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const handleReset = () => {
     if (!confirmingReset) { setConfirmingReset(true); return; }
-    setDone({}); persist({}); setConfirmingReset(false);
+    setDone({}); setConfirmingReset(false);
   };
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
@@ -1375,8 +1397,6 @@ export default function DigitalMinistrySystems() {
   const currentRank = useMemo(()=>{ let r=RANKS[0]; for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; } return r; },[pct]);
   const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
   const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
-
-  if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
     {id:"start",    label:"🧭 Start Here"},
@@ -1544,6 +1564,8 @@ export default function DigitalMinistrySystems() {
               Tap a week → tap a day → tick tasks as you complete them. This moves slower and warmer
               than SMB outreach — that is intentional. Days marked ★ carry a BPS checkpoint.
             </p>
+            <SaveStatusBar status={syncMeta.status} lastSavedAt={syncMeta.lastSavedAt}
+              pendingCount={syncMeta.pendingCount} saveNow={syncMeta.saveNow}/>
             <div style={{marginBottom:18}}>
               <div style={{fontSize:10,fontWeight:700,letterSpacing:".08em",color:"#7A5A00",marginBottom:8}}>
                 BPS Checkpoints Inside the 60 Days
