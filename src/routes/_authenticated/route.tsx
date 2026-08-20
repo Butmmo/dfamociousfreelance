@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { DfsMark, Motto } from "@/components/dfs/Brand";
+import { NotificationBell } from "@/components/dfs/NotificationBell";
 import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
@@ -280,18 +281,21 @@ function AuthedShell() {
               </div>
             )}
           </nav>
-          <ProfileMenu
-            open={menuOpen}
-            setOpen={setMenuOpen}
-            menuRef={menuRef}
-            fullName={profile.full_name}
-            avatarUrl={profile.avatar_url}
-            email={user?.email}
-            role={role}
-            isSuperAdmin={isSuperAdmin}
-            pathShort={path?.short}
-            onSignOut={signOut}
-          />
+          <div className="flex items-center gap-1 shrink-0">
+            <NotificationBell />
+            <ProfileMenu
+              open={menuOpen}
+              setOpen={setMenuOpen}
+              menuRef={menuRef}
+              fullName={profile.full_name}
+              avatarUrl={profile.avatar_url}
+              email={user?.email}
+              role={role}
+              isSuperAdmin={isSuperAdmin}
+              pathShort={path?.short}
+              onSignOut={signOut}
+            />
+          </div>
         </div>
 
         {effectiveNeedsChoice && (
