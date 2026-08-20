@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { BpsCheckpoints, PhaseOverview, ScoutMethodsList, FocusPicker } from "@/components/paths/shared/primitives";
 import { TARGETS } from "./AuthorityProspecting";
-
-const STORAGE_KEY = "authority-progress-v1";
+import { useSyncedTaskMap } from "@/lib/playbook-progress";
 
 const RANKS = [
   { name:"Authority Recruit", threshold:0, blurb:"Day 1. Notion CRM live, first creators bookmarked to study." },
@@ -947,6 +946,47 @@ function SLabel({text,color}) {
   );
 }
 
+function savedAtLabel(date) {
+  if (!date) return null;
+  const secs = Math.max(0, Math.round((Date.now() - date.getTime()) / 1000));
+  if (secs < 10) return "Saved just now";
+  if (secs < 60) return `Saved ${secs}s ago`;
+  const mins = Math.round(secs / 60);
+  if (mins < 60) return `Saved ${mins} min${mins===1?"":"s"} ago`;
+  return `Saved at ${date.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`;
+}
+
+function SaveStatusBar({syncMeta}) {
+  const {status,lastSavedAt,pendingCount,saveNow} = syncMeta;
+  const saving = status==="saving";
+  const errored = status==="error";
+  const dotColor = errored?"#8B2E1F":saving?"#C99A3B":"#0D7A5F";
+  const statusText = errored
+    ? "Save failed — check your connection"
+    : saving
+      ? "Saving…"
+      : (savedAtLabel(lastSavedAt) || (pendingCount>0 ? "Unsaved changes" : "Progress synced"));
+  return (
+    <div style={{marginTop:12,background:"#F5F0E4",border:`1px solid ${errored?"#8B2E1F35":"#FBF8F1"}`,
+      borderRadius:9,padding:"9px 12px",display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+      <span style={{width:7,height:7,borderRadius:"50%",background:dotColor,flexShrink:0,
+        boxShadow:saving?`0 0 6px ${dotColor}`:"none",transition:"all .15s"}}/>
+      <span style={{flex:1,minWidth:140,fontSize:11.5,color:errored?"#8B2E1F":"#6E6459"}}>
+        {statusText}
+        {!errored && !saving && pendingCount>0 && (
+          <span style={{color:"#C99A3B",fontWeight:600}}> · {pendingCount} unsaved change{pendingCount===1?"":"s"}</span>
+        )}
+      </span>
+      <button onClick={saveNow} disabled={saving} style={{
+        background:saving?"#FBF8F1":"#7A5A00",color:saving?"#6E6459":"#F5F0E4",
+        border:"none",borderRadius:7,padding:"6px 15px",fontSize:11.5,fontWeight:700,
+        cursor:saving?"default":"pointer",fontFamily:"inherit",transition:"all .15s",flexShrink:0}}>
+        {saving?"Saving…":"Save progress"}
+      </button>
+    </div>
+  );
+}
+
 export default function TheAuthorityEngine() {
   const [tab,setTab]             = useState("plan");
   const [openWeek,setOpenWeek]   = useState(0);
@@ -954,29 +994,14 @@ export default function TheAuthorityEngine() {
   const [openSvc,setOpenSvc]     = useState(null);
   const [openScript,setOpenScript]= useState(null);
   const [openFaq,setOpenFaq]     = useState(null);
-  const [done,setDone]           = useState({});
-  const [loaded,setLoaded]       = useState(false);
+  const [done,setDone,syncMeta]  = useSyncedTaskMap("p_authority");
   const [confirmingReset,setConfirmingReset] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await window.storage.get(STORAGE_KEY, false);
-        if (res && res.value) setDone(JSON.parse(res.value).done || {});
-      } catch (e) { /* no saved progress yet */ }
-      finally { setLoaded(true); }
-    })();
-  }, []);
-
-  const persist = useCallback(async (next) => {
-    try { await window.storage.set(STORAGE_KEY, JSON.stringify({ done: next, savedAt: Date.now() }), false); }
-    catch (e) { /* best effort */ }
-  }, []);
-
-  const toggle = id=>setDone(p=>{ const next={...p,[id]:!p[id]}; persist(next); return next; });
+  const toggle = id=>setDone(p=>({...p,[id]:!p[id]}));
   const handleReset = () => {
     if (!confirmingReset) { setConfirmingReset(true); return; }
-    setDone({}); persist({}); setConfirmingReset(false);
+    setDone({});
+    setConfirmingReset(false);
   };
 
   const allTasks = useMemo(()=>WEEKS.flatMap(w=>w.days.flatMap(d=>d.tasks)),[]);
@@ -994,8 +1019,6 @@ export default function TheAuthorityEngine() {
   const currentRank = useMemo(()=>{ let r=RANKS[0]; for(const rank of RANKS){ if(pct>=rank.threshold) r=rank; } return r; },[pct]);
   const nextRank = useMemo(()=>RANKS.find(r=>r.threshold>currentRank.threshold),[currentRank]);
   const badgeItems = useMemo(()=>allTasks.filter(t=>t.badge),[allTasks]);
-
-  if (!loaded) return <div style={{background:"#F5F0E4",minHeight:"100vh"}}/>;
 
   const TABS=[
     {id:"start",   label:"🧭 Start Here"},
@@ -1080,6 +1103,7 @@ export default function TheAuthorityEngine() {
                 fontSize:11,color:confirmingReset?"#8B2E1F":"#6E6459",textDecoration:"underline",
               }}>{confirmingReset?"Click again to confirm reset":"Reset progress"}</button>
             </div>
+            <SaveStatusBar syncMeta={syncMeta}/>
           </div>
         </div>
       </div>
