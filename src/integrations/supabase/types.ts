@@ -1116,6 +1116,7 @@ export type Database = {
           suspended_at: string | null
           suspended_by: string | null
           suspension_reason: string | null
+          timezone: string
           tpe_defaulting_since: string | null
           tpe_defaulting_until: string | null
           updated_at: string
@@ -1152,6 +1153,7 @@ export type Database = {
           suspended_at?: string | null
           suspended_by?: string | null
           suspension_reason?: string | null
+          timezone?: string
           tpe_defaulting_since?: string | null
           tpe_defaulting_until?: string | null
           updated_at?: string
@@ -1188,6 +1190,7 @@ export type Database = {
           suspended_at?: string | null
           suspended_by?: string | null
           suspension_reason?: string | null
+          timezone?: string
           tpe_defaulting_since?: string | null
           tpe_defaulting_until?: string | null
           updated_at?: string

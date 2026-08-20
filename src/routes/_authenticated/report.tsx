@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { computeEscalation, forecastFirstClose, advice, type ProgressRow } from "@/lib/escalation";
+import { localDateStr } from "@/lib/local-date";
 import {
   computeFinanceCycleTargets, financeExpectationForDays, defaultTargetMonth, monthKey,
   FINANCE_CHECKPOINT_DAYS, FINANCE_CYCLE_DAYS,
@@ -24,6 +25,12 @@ const PLAYBOOK_META: Record<string, { title: string; slug: string }> = {
   p_global:      { title: "SMB Prospecting Guide", slug: "global-smb-engine" },
   p_prospecting: { title: "SMB Prospecting Guide", slug: "global-smb-engine" },
   p_grandslam:   { title: "SMB Prospecting Guide", slug: "global-smb-engine" },
+  p_ascent:      { title: "The Ascent", slug: "ascent-machine" },
+  p_carebridge:  { title: "CareBridge", slug: "care-bridge" },
+  p_ministry:    { title: "Digital Ministry Systems", slug: "ministry-systems" },
+  p_broadcast:   { title: "The Broadcast Engine", slug: "broadcast-engine" },
+  p_authority:   { title: "The Authority Engine", slug: "authority-engine" },
+  p_revenue:     { title: "Revenue Recovery Engine", slug: "revenue-engine" },
 };
 
 
@@ -90,8 +97,8 @@ function ReportPage() {
     const now = new Date(); now.setHours(0, 0, 0, 0);
     for (let i = 13; i >= 0; i--) {
       const d = new Date(now); d.setDate(d.getDate() - i);
-      const iso = d.toISOString().slice(0, 10);
-      const count = rows.filter(r => r.completed && r.completed_at?.slice(0, 10) === iso).length;
+      const iso = localDateStr(d);
+      const count = rows.filter(r => r.completed && r.completed_at && localDateStr(new Date(r.completed_at)) === iso).length;
       days.push({ date: d, count, iso });
     }
     return days;

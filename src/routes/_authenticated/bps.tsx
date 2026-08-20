@@ -12,6 +12,7 @@ import {
   goalCycleStatus, computeFinanceCycleTargets, financeExpectationForDays, sumFinanceEntries,
   FINANCE_CYCLE_DAYS, type GoalItem, type PillarKey, type CustomPillar, type FinanceMetrics,
 } from "@/lib/bps";
+import { localDateStr } from "@/lib/local-date";
 import {
   CRM_STAGES, priorityFromScore, PRIORITY_META,
   viewAllLeads, viewHotLeads, viewActiveOutreach, viewThisWeek, viewClosedWon,
@@ -443,7 +444,7 @@ function weekStartOf(d: Date): Date {
   return out;
 }
 function isoDate(d: Date): string {
-  return d.toISOString().slice(0, 10);
+  return localDateStr(d);
 }
 
 function TrackerSection() {

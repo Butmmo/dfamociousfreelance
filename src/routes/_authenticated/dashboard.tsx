@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
+import { localDateStr } from "@/lib/local-date";
 import { Motto } from "@/components/dfs/Brand";
 import { WEEKS } from "./playbooks/plan";
 import { usePath } from "@/lib/use-path";
@@ -85,7 +86,7 @@ function Dashboard() {
     // the rest of the dashboard if its tables aren't migrated yet here.
     (async () => {
       try {
-        const today = new Date().toISOString().slice(0, 10);
+        const today = localDateStr();
         const [{ count: clientCount }, { data: activities }] = await Promise.all([
           supabase.from("crm_clients").select("id", { count: "exact", head: true }).eq("user_id", user.id),
           supabase.from("bps_activities").select("id").eq("user_id", user.id).eq("active", true),

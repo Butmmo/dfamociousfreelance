@@ -5,6 +5,7 @@ import { useSession } from "@/lib/use-session";
 import { WEEKS } from "./playbooks/plan";
 import { CheckCircle2, Circle, CalendarDays, Flame, Lock, ArrowRight, Clock, ChevronLeft, ChevronRight, Target, Sparkles, Headphones } from "lucide-react";
 import { ESCALATION_START } from "@/lib/escalation";
+import { localDateStr } from "@/lib/local-date";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
@@ -54,7 +55,7 @@ function CalendarPage() {
       setBeliefSubmittedAt((goalRes.data as any)?.belief_submitted_at ?? null);
       setAffirmationSubmittedAt((goalRes.data as any)?.affirmation_submitted_at ?? null);
       setEvaluationSubmittedAt((goalRes.data as any)?.evaluation_submitted_at ?? null);
-      setTpeCompletedDates(new Set(((tpeRes.data as any[]) ?? []).filter((r) => r.completed_at).map((r) => new Date(r.completed_at).toISOString().slice(0, 10))));
+      setTpeCompletedDates(new Set(((tpeRes.data as any[]) ?? []).filter((r) => r.completed_at).map((r) => localDateStr(new Date(r.completed_at)))));
       setLoading(false);
     })();
   }, [user]);
@@ -78,8 +79,8 @@ function CalendarPage() {
       .from("bps_daily_checks")
       .select("activity_id,check_date,done")
       .eq("user_id", user.id)
-      .gte("check_date", from.toISOString().slice(0, 10))
-      .lt("check_date", to.toISOString().slice(0, 10))
+      .gte("check_date", localDateStr(from))
+      .lt("check_date", localDateStr(to))
       .then(({ data, error }: { data: BpsCheck[] | null; error: { message: string } | null }) => {
         if (error) { toast.error(error.message); return; }
         setBpsChecks(data ?? []);
@@ -88,7 +89,7 @@ function CalendarPage() {
 
   const toggleBpsToday = async (activityId: string) => {
     if (!user) return;
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = localDateStr();
     const current = bpsChecks.find((c) => c.activity_id === activityId && c.check_date === todayStr)?.done ?? false;
     const { error } = await supabase.from("bps_daily_checks").upsert(
       { user_id: user.id, activity_id: activityId, check_date: todayStr, done: !current },
@@ -267,7 +268,7 @@ function CalendarPage() {
         ) : (
           <div className="mt-3 flex flex-wrap gap-2">
             {bpsActivities.map((a) => {
-              const done = bpsChecks.some((c) => c.activity_id === a.id && c.check_date === new Date().toISOString().slice(0, 10) && c.done);
+              const done = bpsChecks.some((c) => c.activity_id === a.id && c.check_date === localDateStr() && c.done);
               return (
                 <button
                   key={a.id}
@@ -328,10 +329,10 @@ function CalendarPage() {
               ? "bg-background border-border"
               : "bg-muted/20 border-transparent text-muted-foreground";
 
-            const bpsDone = bpsDoneDates.has(cd.toISOString().slice(0, 10));
+            const bpsDone = bpsDoneDates.has(localDateStr(cd));
             const isAffirmationDay = !!affirmationDueAt && isSameDate(cd, affirmationDueAt);
             const isEvaluationDay = !!evaluationDueAt && isSameDate(cd, evaluationDueAt);
-            const tpeDone = tpeCompletedDates.has(cd.toISOString().slice(0, 10));
+            const tpeDone = tpeCompletedDates.has(localDateStr(cd));
 
             return (
               <div key={i} className={`aspect-square rounded-md border p-1 flex flex-col text-[10px] ${tone}`}>
