@@ -5,12 +5,33 @@
 // every eligible user's own wall-clock time (via their stored
 // profiles.timezone) is checked against the four slot windows, and at
 // most one fires per user per tick.
+//
+// "Active" now means this beneficiary's own local calendar date falls
+// inside their actual fixed BPS Month window (Belief-due through
+// Evaluation-due, per target_month — 38-41 days depending on the prior
+// month's length), not a flat 40-day count from whenever they happened to
+// submit their Belief Goal. Mirrors src/lib/bps.ts's
+// beliefDueDate/evaluationDueDate — duplicated here since edge functions
+// can't import from src/.
 
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendWebPush } from "../_shared/push.ts";
 
-const FINANCE_CYCLE_DAYS = 40;
+function parseTargetMonth(key: string): Date {
+  const [y, m] = key.split("-").map(Number);
+  return new Date(y, (m || 1) - 1, 1);
+}
+function beliefDueDate(targetMonth: Date): Date {
+  return new Date(targetMonth.getFullYear(), targetMonth.getMonth() - 1, 1);
+}
+function evaluationDueDate(targetMonth: Date): Date {
+  return new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 10);
+}
+function dateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -68,31 +89,35 @@ Deno.serve(async (req) => {
 
   const { data: goals } = await supa
     .from("bps_monthly_goals")
-    .select("id,user_id,belief_submitted_at")
+    .select("id,user_id,target_month,belief_submitted_at")
     .not("finance_leads_target", "is", null)
     .not("belief_submitted_at", "is", null);
 
-  const now = new Date();
-  const active = (goals ?? []).filter((g: any) => {
-    const daysSince = Math.floor((now.getTime() - new Date(g.belief_submitted_at).getTime()) / 86_400_000) + 1;
-    return daysSince >= 1 && daysSince <= FINANCE_CYCLE_DAYS;
-  });
-  if (active.length === 0) {
+  const candidateGoals = (goals ?? []) as any[];
+  if (candidateGoals.length === 0) {
     return new Response(JSON.stringify({ ok: true, count: 0 }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  const userIds = Array.from(new Set(active.map((g: any) => g.user_id)));
+  const now = new Date();
+  const userIds = Array.from(new Set(candidateGoals.map((g) => g.user_id)));
   const { data: profiles } = await supa.from("profiles").select("id,timezone").in("id", userIds);
   const tzById = new Map((profiles ?? []).map((p: any) => [p.id, p.timezone ?? "Africa/Lagos"]));
 
   const results: any[] = [];
-  for (const g of active as any[]) {
+  for (const g of candidateGoals) {
     const tz = tzById.get(g.user_id) ?? "Africa/Lagos";
+    const today = localDateStr(now, tz);
+
+    // Active window: this beneficiary's own local today, inside their
+    // actual fixed BPS Month for this goal (Belief-due through
+    // Evaluation-due) — not a flat day-count from submission.
+    const targetMonth = parseTargetMonth(g.target_month);
+    if (today < dateStr(beliefDueDate(targetMonth)) || today > dateStr(evaluationDueDate(targetMonth))) continue;
+
     const localMinutes = localMinutesOfDay(now, tz);
     const slot = SLOTS.find((s) => localMinutes >= s.startMin && localMinutes < s.endMin);
     if (!slot) continue;
 
-    const today = localDateStr(now, tz);
     const { data: entry } = await supa
       .from("bps_finance_daily_entries").select("id").eq("goal_id", g.id).eq("entry_date", today).maybeSingle();
     if (entry) { results.push({ userId: g.user_id, slot: slot.name, skipped: "already marked" }); continue; }

@@ -13,10 +13,11 @@ import { z } from "zod";
 import {
   affirmationRemark, evaluationRemark, computeEffortScore, deriveActivityLabels,
   MLM_DEFAULT_GOAL, computeFinanceCycleTargets, financeExpectationForDays, sumFinanceEntries,
-  beliefDueDate, affirmationDueDate, evaluationDueDate, bpsMonthWindowDays, FINANCE_CHECKPOINT_DAYS,
+  beliefDueDate, affirmationDueDate, evaluationDueDate, bpsMonthWindowDays, parseTargetMonth, FINANCE_CHECKPOINT_DAYS,
   type FinanceMetrics,
 } from "@/lib/bps";
 import { computePocketSplit } from "@/lib/pocket";
+import { localDateStr, localDateStrInTimeZone } from "@/lib/local-date";
 
 const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
 
@@ -194,8 +195,8 @@ async function computeEffortForWindow(supabaseAdmin: any, goalId: string, from: 
     .from("bps_daily_checks")
     .select("done,check_date")
     .in("activity_id", activityIds)
-    .gte("check_date", from.toISOString().slice(0, 10))
-    .lt("check_date", to.toISOString().slice(0, 10));
+    .gte("check_date", localDateStr(from))
+    .lt("check_date", localDateStr(to));
   return computeEffortScore((checks ?? []) as { done: boolean }[], activityIds.length, windowDays);
 }
 
@@ -222,8 +223,8 @@ async function computeAndReportFinanceCheckpoint(
     .from("bps_finance_daily_entries")
     .select("leads_contacted,messages_sent,new_clients_closed,returning_clients_closed,revenue_usd")
     .eq("goal_id", goalId)
-    .gte("entry_date", from.toISOString().slice(0, 10))
-    .lt("entry_date", to.toISOString().slice(0, 10));
+    .gte("entry_date", localDateStr(from))
+    .lt("entry_date", localDateStr(to));
 
   const actual = sumFinanceEntries((entries ?? []) as any[]);
   const targets = computeFinanceCycleTargets(goal, targetMonth);
@@ -283,11 +284,18 @@ export const submitAffirmationGoal = createServerFn({ method: "POST" })
     if (!goal.belief_submitted_at) throw new Error("Submit your Belief Goal first.");
     if (goal.affirmation_submitted_at) throw new Error("Affirmation Goal already submitted for this cycle.");
 
-    const targetMonth = new Date(goal.target_month);
+    const targetMonth = parseTargetMonth(goal.target_month);
     const beliefDue = beliefDueDate(targetMonth);
     const affirmationDue = affirmationDueDate(targetMonth);
-    if (new Date() < affirmationDue) {
-      throw new Error(`Affirmation Goal isn't due yet — it opens on ${affirmationDue.toLocaleDateString()}.`);
+    // Gated on this beneficiary's OWN local calendar date, not a single
+    // global instant — "new Date() < affirmationDue" would silently anchor
+    // the cutoff to the server's own runtime timezone, opening the gate
+    // early for everyone west of it and keeping it locked late for
+    // everyone east of it.
+    const { data: profile } = await supabaseAdmin.from("profiles").select("timezone").eq("id", context.userId).maybeSingle();
+    const tz = profile?.timezone ?? "Africa/Lagos";
+    if (localDateStrInTimeZone(new Date(), tz) < localDateStr(affirmationDue)) {
+      throw new Error(`Affirmation Goal isn't due yet — it opens on ${affirmationDue.toLocaleDateString(undefined, { timeZone: tz })}.`);
     }
 
     const { score, total, percent } = await computeEffortForWindow(
@@ -322,11 +330,14 @@ export const submitEvaluationGoal = createServerFn({ method: "POST" })
     if (!goal.belief_submitted_at) throw new Error("Submit your Belief Goal first.");
     if (goal.evaluation_submitted_at) throw new Error("Evaluation Goal already submitted for this cycle.");
 
-    const targetMonth = new Date(goal.target_month);
+    const targetMonth = parseTargetMonth(goal.target_month);
     const beliefDue = beliefDueDate(targetMonth);
     const evaluationDue = evaluationDueDate(targetMonth);
-    if (new Date() < evaluationDue) {
-      throw new Error(`Evaluation Goal isn't due yet — it opens on ${evaluationDue.toLocaleDateString()}.`);
+    // Same beneficiary-own-timezone gate as submitAffirmationGoal above.
+    const { data: profile } = await supabaseAdmin.from("profiles").select("timezone").eq("id", context.userId).maybeSingle();
+    const tz = profile?.timezone ?? "Africa/Lagos";
+    if (localDateStrInTimeZone(new Date(), tz) < localDateStr(evaluationDue)) {
+      throw new Error(`Evaluation Goal isn't due yet — it opens on ${evaluationDue.toLocaleDateString(undefined, { timeZone: tz })}.`);
     }
     const cycleDays = bpsMonthWindowDays(targetMonth);
 
@@ -389,7 +400,7 @@ export const getBpsSnapshotForBeneficiary = createServerFn({ method: "POST" })
     const activityIds = (activities ?? []).map((a: any) => a.id);
     const since = new Date(); since.setDate(since.getDate() - 7);
     const { data: recentChecks } = activityIds.length
-      ? await supabaseAdmin.from("bps_daily_checks").select("*").in("activity_id", activityIds).gte("check_date", since.toISOString().slice(0, 10))
+      ? await supabaseAdmin.from("bps_daily_checks").select("*").in("activity_id", activityIds).gte("check_date", localDateStr(since))
       : { data: [] as any[] };
     const last7 = computeEffortScore((recentChecks ?? []) as any[], activityIds.length, 7);
     return { activities: activities ?? [], goals: goals ?? [], last7 };
