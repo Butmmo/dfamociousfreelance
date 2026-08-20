@@ -1,20 +1,19 @@
 // The Care Bridge — 45-Day Senior & Home-Care Communication System
 // Rebuilt to the DBI Regal standard set by AscentMachine.jsx: per-task XP with
-// milestone badges, percentage-based rank progression, window.storage persistence,
-// and the shared BPS (Belief/Affirmation/Evaluation) checkpoint cadence woven directly
-// into the 45-day roadmap. Every original CareBridge system (care-focus scoring, the
-// 4 Bridge Components, Agency CRM, scripts, packages, FAQ) is carried over in full —
-// nothing dropped — plus the Scout Methods, PROVEN framework and BPS integration that
-// were the actual point of this rebuild.
+// milestone badges, percentage-based rank progression, real Supabase-backed
+// persistence via useSyncedTaskMap, and the shared BPS (Belief/Affirmation/Evaluation)
+// checkpoint cadence woven directly into the 45-day roadmap. Every original CareBridge
+// system (care-focus scoring, the 4 Bridge Components, Agency CRM, scripts, packages,
+// FAQ) is carried over in full — nothing dropped — plus the Scout Methods, PROVEN
+// framework and BPS integration that were the actual point of this rebuild.
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   CREAM, CREAM_DEEP, BORDER, INK, MUTED, GOLD, GOLD_DEEP, CRIMSON, EMERALD,
   TONE, tone, h2Style, pStyle, eyebrowStyle, labelStyle,
   ScoreDots, CalloutBox, AccordionShell, NextLink, TaskRow, DayCard, BpsCheckpoints,
 } from "@/components/paths/shared/primitives";
-
-const STORAGE_KEY = "carebridge-progress-v1";
+import { useSyncedTaskMap } from "@/lib/playbook-progress";
 
 /* ---------------------------------------------------------------------- */
 /* DATA                                                                    */
@@ -1644,46 +1643,16 @@ function FaqTab() {
 
 export default function TheCareBridge() {
   const [activeTab, setActiveTab] = useState("start");
-  const [checked, setChecked] = useState({});
-  const [loaded, setLoaded] = useState(false);
+  const [checked, setChecked, syncMeta] = useSyncedTaskMap("p_carebridge");
   const [confirmingReset, setConfirmingReset] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await window.storage.get(STORAGE_KEY, false);
-        if (res && res.value) {
-          const parsed = JSON.parse(res.value);
-          setChecked(parsed.checked || {});
-        }
-      } catch (e) {
-        // no saved progress yet — fine, start fresh
-      } finally {
-        setLoaded(true);
-      }
-    })();
-  }, []);
-
-  const persist = useCallback(async (next) => {
-    try {
-      await window.storage.set(STORAGE_KEY, JSON.stringify({ checked: next, savedAt: Date.now() }), false);
-    } catch (e) {
-      // best effort — progress still stands for this session either way
-    }
-  }, []);
-
   const toggle = useCallback((id) => {
-    setChecked((prev) => {
-      const next = { ...prev, [id]: !prev[id] };
-      persist(next);
-      return next;
-    });
-  }, [persist]);
+    setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+  }, [setChecked]);
 
   const handleReset = () => {
     if (!confirmingReset) { setConfirmingReset(true); return; }
     setChecked({});
-    persist({});
     setConfirmingReset(false);
   };
 
@@ -1701,9 +1670,19 @@ export default function TheCareBridge() {
 
   const badgeItems = useMemo(() => allItems.filter((i) => i.badge), [allItems]);
 
-  if (!loaded) {
-    return <div style={{ background: CREAM, minHeight: "100vh" }} />;
-  }
+  const syncStatusText = useMemo(() => {
+    if (syncMeta.status === "saving") return "Saving…";
+    if (syncMeta.status === "error") return "Save failed — check your connection";
+    if (syncMeta.status === "saved" && syncMeta.lastSavedAt) {
+      const secs = Math.floor((Date.now() - syncMeta.lastSavedAt.getTime()) / 1000);
+      if (secs < 10) return "Saved just now";
+      if (secs < 60) return `Saved ${secs}s ago`;
+      const mins = Math.floor(secs / 60);
+      if (mins < 60) return `Saved ${mins}m ago`;
+      return `Saved at ${syncMeta.lastSavedAt.toLocaleTimeString()}`;
+    }
+    return "Progress syncs to your account automatically";
+  }, [syncMeta.status, syncMeta.lastSavedAt]);
 
   return (
     <div style={{ background: CREAM, minHeight: "100vh", color: INK, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
@@ -1767,6 +1746,38 @@ export default function TheCareBridge() {
             </button>
           </div>
 
+          {/* SYNC STATUS */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap",
+            background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "8px 12px", marginBottom: 12,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <span style={{
+                width: 7, height: 7, borderRadius: "50%", display: "inline-block", flexShrink: 0,
+                background: syncMeta.status === "error" ? CRIMSON : syncMeta.status === "saving" ? GOLD : EMERALD,
+              }} />
+              <span style={{ fontSize: 11.5, fontWeight: 600, color: syncMeta.status === "error" ? CRIMSON : MUTED }}>
+                {syncStatusText}
+              </span>
+              {syncMeta.pendingCount > 0 && (
+                <span style={{ fontSize: 10, background: CREAM, border: `1px solid ${BORDER}`, borderRadius: 5, padding: "1px 7px", color: GOLD_DEEP, fontWeight: 600 }}>
+                  {syncMeta.pendingCount} unsaved change{syncMeta.pendingCount === 1 ? "" : "s"}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => syncMeta.saveNow()}
+              disabled={syncMeta.status === "saving"}
+              style={{
+                background: GOLD, border: "none", borderRadius: 7, padding: "6px 14px", fontSize: 11.5, fontWeight: 700,
+                color: "#FFFFFF", cursor: syncMeta.status === "saving" ? "default" : "pointer",
+                opacity: syncMeta.status === "saving" ? 0.6 : 1, fontFamily: "inherit", flexShrink: 0,
+              }}
+            >
+              {syncMeta.status === "saving" ? "Saving…" : "Save progress"}
+            </button>
+          </div>
+
           {/* TABS */}
           <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" }}>
             {TABS.map((t) => (
@@ -1811,7 +1822,7 @@ export default function TheCareBridge() {
             <NextLink to="/playbooks/care-calculator" icon="🧮" title="Care Calculator" body="Model your real monthly and annual revenue across Foundation, Growth, and Full Care System tiers." />
           </div>
           <p style={{ fontSize: 11, color: MUTED, margin: 0, display: "flex", alignItems: "center", gap: 6 }}>
-            🛡️ Progress saves to this device automatically. This system replaces guesswork with a scored, scouted pipeline — it doesn't replace doing the work.
+            🛡️ Progress saves to your account automatically — use the Save button above any time to sync immediately. This system replaces guesswork with a scored, scouted pipeline — it doesn't replace doing the work.
           </p>
         </div>
       </div>
