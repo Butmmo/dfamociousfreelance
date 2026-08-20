@@ -4,14 +4,13 @@
 // All data, copy, gamification and persistence logic carried over unchanged
 // from the original dark "signal/insignia/alert" theme — visuals only were replaced.
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   CREAM, CREAM_DEEP, BORDER, INK, MUTED, GOLD, GOLD_DEEP, CRIMSON, EMERALD,
   TONE, tone, h2Style, pStyle, eyebrowStyle, labelStyle,
   ScoreDots, CalloutBox, AccordionShell, NextLink, TaskRow, DayCard, BpsCheckpoints,
 } from "@/components/paths/shared/primitives";
-
-const STORAGE_KEY = "ascent-progress-v2";
+import { useSyncedTaskMap } from "@/lib/playbook-progress";
 
 /* ---------------------------------------------------------------------- */
 /* DATA                                                                    */
@@ -831,13 +830,57 @@ function ScoutTab() {
   );
 }
 
-function DaysTab({ checked, onToggle }) {
+function SaveStatusBar({ syncMeta }) {
+  const { status, lastSavedAt, pendingCount, saveNow } = syncMeta;
+  const saving = status === "saving";
+  const statusColor = status === "error" ? CRIMSON : status === "saved" || status === "idle" ? EMERALD : GOLD_DEEP;
+  const statusText =
+    status === "saving" ? "Saving…"
+    : status === "error" ? "Save failed — check your connection"
+    : lastSavedAt ? `Saved ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    : "Auto-saves as you check off tasks";
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+      background: "#FFFFFF", border: `1px solid ${BORDER}`, borderRadius: 12,
+      padding: "10px 14px", marginBottom: 16,
+    }}>
+      <span style={{
+        width: 7, height: 7, borderRadius: "50%", flexShrink: 0, background: statusColor,
+        boxShadow: saving ? "none" : `0 0 6px ${statusColor}`,
+      }} />
+      <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{statusText}</span>
+      {pendingCount > 0 && !saving && (
+        <span style={{ fontSize: 11, color: MUTED }}>
+          {pendingCount} unsaved change{pendingCount === 1 ? "" : "s"}
+        </span>
+      )}
+      <button
+        onClick={() => saveNow()}
+        disabled={saving}
+        style={{
+          marginLeft: "auto", fontFamily: "inherit", fontSize: 11.5, fontWeight: 700,
+          color: saving ? MUTED : "#FFFFFF", background: saving ? CREAM_DEEP : GOLD_DEEP,
+          border: "none", borderRadius: 8, padding: "6px 14px",
+          cursor: saving ? "default" : "pointer",
+        }}
+      >
+        {saving ? "Saving…" : "Save progress"}
+      </button>
+    </div>
+  );
+}
+
+function DaysTab({ checked, onToggle, syncMeta }) {
   const [expandedDay, setExpandedDay] = useState(1);
   const phases = [1, 2, 3];
   return (
     <div>
       <h2 style={h2Style}>The 45-Day Roadmap</h2>
       <p style={pStyle}>Every day builds on the last. Check off each task as you complete it — your rank and XP update automatically.</p>
+
+      <SaveStatusBar syncMeta={syncMeta} />
 
       {phases.map((p) => {
         const meta = PHASE_META[p];
@@ -1099,46 +1142,16 @@ function AfterTab() {
 
 export default function TheAscent() {
   const [activeTab, setActiveTab] = useState("start");
-  const [checked, setChecked] = useState({});
-  const [loaded, setLoaded] = useState(false);
+  const [checked, setChecked, syncMeta] = useSyncedTaskMap("p_ascent");
   const [confirmingReset, setConfirmingReset] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await window.storage.get(STORAGE_KEY, false);
-        if (res && res.value) {
-          const parsed = JSON.parse(res.value);
-          setChecked(parsed.checked || {});
-        }
-      } catch (e) {
-        // no saved progress yet — fine, start fresh
-      } finally {
-        setLoaded(true);
-      }
-    })();
-  }, []);
-
-  const persist = useCallback(async (next) => {
-    try {
-      await window.storage.set(STORAGE_KEY, JSON.stringify({ checked: next, savedAt: Date.now() }), false);
-    } catch (e) {
-      // best effort — progress still stands for this session either way
-    }
-  }, []);
-
   const toggle = useCallback((id) => {
-    setChecked((prev) => {
-      const next = { ...prev, [id]: !prev[id] };
-      persist(next);
-      return next;
-    });
-  }, [persist]);
+    setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+  }, [setChecked]);
 
   const handleReset = () => {
     if (!confirmingReset) { setConfirmingReset(true); return; }
     setChecked({});
-    persist({});
     setConfirmingReset(false);
   };
 
@@ -1155,10 +1168,6 @@ export default function TheAscent() {
   const nextRank = useMemo(() => RANKS.find((r) => r.threshold > currentRank.threshold), [currentRank]);
 
   const badgeItems = useMemo(() => allItems.filter((i) => i.badge), [allItems]);
-
-  if (!loaded) {
-    return <div style={{ background: CREAM, minHeight: "100vh" }} />;
-  }
 
   return (
     <div style={{ background: CREAM, minHeight: "100vh", color: INK, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
@@ -1248,7 +1257,7 @@ export default function TheAscent() {
         {activeTab === "start" && <StartTab />}
         {activeTab === "niche" && <NicheTab />}
         {activeTab === "scout" && <ScoutTab />}
-        {activeTab === "days" && <DaysTab checked={checked} onToggle={toggle} />}
+        {activeTab === "days" && <DaysTab checked={checked} onToggle={toggle} syncMeta={syncMeta} />}
         {activeTab === "scripts" && <ScriptsTab />}
         {activeTab === "mastery" && <MasteryTab />}
         {activeTab === "toolkit" && <ToolkitTab />}
@@ -1264,7 +1273,7 @@ export default function TheAscent() {
             <NextLink to="/performance-calculator" icon="🧮" title="Performance Calculator" body="Model your real monthly income at Ramping, Established, and Beyond-90 stages." />
           </div>
           <p style={{ fontSize: 11, color: MUTED, margin: 0, display: "flex", alignItems: "center", gap: 6 }}>
-            🛡️ Progress saves to this device automatically. This system replaces marketplace scrolling with direct scouting — it doesn't replace doing the work.
+            🛡️ Progress saves to your account automatically. This system replaces marketplace scrolling with direct scouting — it doesn't replace doing the work.
           </p>
         </div>
       </div>
