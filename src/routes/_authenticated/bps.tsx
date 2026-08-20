@@ -13,9 +13,11 @@ import {
   bpsMonthWindowDays, parseTargetMonth, FINANCE_CYCLE_WEEKS,
   type GoalItem, type PillarKey, type CustomPillar, type FinanceMetrics,
 } from "@/lib/bps";
-import { getMyPocketSummary, logMlmActualSpend, requestEmergencyWithdrawal } from "@/lib/pocket.functions";
+import { getMyPocketSummary, logMlmActualSpend, requestEmergencyWithdrawal, enrollInBpn } from "@/lib/pocket.functions";
 import {
-  MLM_TARGET_PPV, mlmRollover, savingsUnlockDate, isSavingsUnlocked, ESCALATION_LABELS,
+  savingsUnlockDate, isSavingsUnlocked, ESCALATION_LABELS, MLM_BALANCE_CAP_USD,
+  MLM_MONTHLY_FLOOR_USD, MLM_MONTHLY_CEILING_USD, BPN_ELIGIBILITY_MIN_NET_INCOME_USD,
+  BPN_PPV_ADVISED_CAP, BPN_PPV_HARD_CAP, EMERGENCY_AUTO_RELEASE_MONTHS,
   type EscalationLevel,
 } from "@/lib/pocket";
 import { localDateStr } from "@/lib/local-date";
@@ -29,7 +31,7 @@ import {
   Target, Users, CalendarCheck2, Plus, Pencil, Trash2, X, Save, Loader2,
   Phone, Mail, Linkedin, Globe, MapPin, Star, Flame, CheckCircle2, Circle,
   Send, ClipboardList, TrendingUp, AlertTriangle, ChevronLeft, ChevronRight,
-  BarChart3, Upload, Eye, EyeOff, Wallet, PiggyBank, ShoppingBag, ShieldAlert,
+  BarChart3, Upload, Eye, EyeOff, Wallet, PiggyBank, ShoppingBag, ShieldAlert, Lock, Unlock,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/bps")({
@@ -1269,6 +1271,7 @@ function PocketSection() {
   const summaryFn = useServerFn(getMyPocketSummary);
   const mlmSpendFn = useServerFn(logMlmActualSpend);
   const requestFn = useServerFn(requestEmergencyWithdrawal);
+  const enrollFn = useServerFn(enrollInBpn);
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -1277,6 +1280,7 @@ function PocketSection() {
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   const [requesting, setRequesting] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
 
   const refresh = async () => {
     setLoading(true);
@@ -1292,6 +1296,7 @@ function PocketSection() {
   const latest = data.allocations[0];
   const unlockDate = data.savingsStartedAt ? savingsUnlockDate(new Date(data.savingsStartedAt)) : null;
   const savingsUnlocked = isSavingsUnlocked(data.savingsStartedAt ? new Date(data.savingsStartedAt) : null);
+  const bpnEnrolled = !!data.bpnEnrolledAt;
 
   const doMlmSpend = async (allocationId: string) => {
     const raw = mlmSpendInput[allocationId];
@@ -1317,33 +1322,65 @@ function PocketSection() {
     setRequesting(false);
   };
 
+  const doEnroll = async () => {
+    setEnrolling(true);
+    try { await enrollFn({ data: undefined as never }); toast.success("Enrolled in BPN."); await refresh(); }
+    catch (e: any) { toast.error(e.message ?? "Failed"); }
+    setEnrolling(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-2"><Wallet className="h-3.5 w-3.5" /> NBO Pocket Policy — binding on every participant</div>
         <p className="mt-2 text-sm text-muted-foreground">
-          The moment a BPS Month's Evaluation Goal is submitted, that month's revenue is split five ways: Upkeep/Spending 25%,
-          Savings 25% (long-term, only available in 3-year cycles), Investments 20%, MLM Product Purchase 20% (spend only
-          enough for {MLM_TARGET_PPV} PPV-equivalent on Neolife Back-Office — whatever's left rolls into Savings), and
-          Emergency 10% (short-term, propose to your Rep — unresolved after 48h it escalates to your Sponsor/Mentor, then the Founder).
+          The moment a BPS Month's Evaluation Goal is submitted, that month's revenue is split five ways: Upkeep/Spending 25% (always
+          available), Savings 25% (3-year cycles — each completed cycle issues a withdrawal permit and starts a new one), Investments 20%
+          (released by your mentor as it's needed, in full at least once a year regardless), MLM Product Purchase 20% (only for BPN
+          participants — otherwise it goes to Investments instead), and Emergency 10% (Rep-approved on request, plus an automatic 40%
+          release every March and October).
         </p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <PocketCard icon={Wallet} label="Upkeep / Spending" value={data.lifetimeUpkeepUsd} hint="Always available." />
-        <PocketCard icon={PiggyBank} label="Savings" value={data.lifetimeSavingsUsd} hint={unlockDate ? (savingsUnlocked ? "Unlocked." : `Unlocks ${unlockDate.toLocaleDateString()}`) : "Funds on your first Evaluation Goal."} />
-        <PocketCard icon={TrendingUp} label="Investments" value={data.lifetimeInvestmentsUsd} hint="Deploy toward income-producing assets." />
-        <PocketCard icon={ShoppingBag} label="MLM Product" value={data.lifetimeMlmUsd} hint={`Spent so far: $${Number(data.lifetimeMlmActualSpendUsd).toFixed(2)}`} />
+        <PocketCard icon={PiggyBank} label="Savings" value={data.lifetimeSavingsUsd} hint={unlockDate ? (savingsUnlocked ? "Cycle complete — check permits below." : `Cycle ends ${unlockDate.toLocaleDateString()}`) : "Funds on your first Evaluation Goal."} />
+        <PocketCard icon={data.investmentLockedUsd > 0 ? Lock : Unlock} label="Investments" value={data.lifetimeInvestmentsUsd} hint={`Unlocked: $${Number(data.investmentUnlockedUsd).toFixed(2)} · Locked: $${Number(data.investmentLockedUsd).toFixed(2)}`} />
+        <PocketCard icon={ShoppingBag} label="MLM Product" value={data.mlmBalanceUsd} hint={`Cap $${MLM_BALANCE_CAP_USD} · Spent so far $${Number(data.lifetimeMlmActualSpendUsd).toFixed(2)}`} />
         <PocketCard icon={ShieldAlert} label="Emergency (available)" value={data.emergencyBalanceUsd} hint="Withdrawable now." />
       </div>
 
-      {latest && (
+      {/* BPN — Blazer People Network */}
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="font-display text-lg font-bold flex items-center gap-2"><Users className="h-4 w-4" /> BPN — Blazer People Network</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Not compulsory. If you're not enrolled, your MLM Product Pocket's monthly share goes to Investments instead — the money isn't lost, it just has nowhere to go without BPN.
+          Personal Neolife purchases: advised {BPN_PPV_ADVISED_CAP} PPV/month, hard cap {BPN_PPV_HARD_CAP} PPV — the emphasis is personal use, not aggressive selling.
+        </p>
+        {bpnEnrolled ? (
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-600">
+            <CheckCircle2 className="h-3.5 w-3.5" /> Enrolled since {new Date(data.bpnEnrolledAt).toLocaleDateString()}
+          </div>
+        ) : data.bpnEligible ? (
+          <button onClick={doEnroll} disabled={enrolling} className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+            {enrolling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Users className="h-3.5 w-3.5" />} Enroll in BPN
+          </button>
+        ) : (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Needs $1,000 in cumulative net income first (DFY's own tracked figure) — you're at ${Number(data.cumulativeNetIncomeUsd).toFixed(2)} of ${BPN_ELIGIBILITY_MIN_NET_INCOME_USD.toLocaleString()}.
+          </p>
+        )}
+      </div>
+
+      {latest && bpnEnrolled && (
         <div className="rounded-2xl border border-border bg-card p-5">
           <h3 className="font-display text-lg font-bold">
             Log MLM Actual Spend — {new Date(latest.target_month).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            This month's MLM pocket: ${Number(latest.mlm_usd).toFixed(2)}. Only spend enough for {MLM_TARGET_PPV} PPV-equivalent — the rest rolls into Savings.
+            {`This month's inflow: $${Number(latest.mlm_usd).toFixed(2)} (band: $${MLM_MONTHLY_FLOOR_USD}-$${MLM_MONTHLY_CEILING_USD}/month).`}
+            {Number(latest.mlm_diverted_usd) > 0 && ` $${Number(latest.mlm_diverted_usd).toFixed(2)} of this month's nominal share went to Investments instead (over the monthly ceiling or the $${MLM_BALANCE_CAP_USD} pocket cap).`}
+            {` Unspent balance stays in the pocket for future months, up to the $${MLM_BALANCE_CAP_USD} cap.`}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <input
@@ -1358,16 +1395,40 @@ function PocketSection() {
             >
               {busyMlm === latest.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save
             </button>
-            <span className="text-xs text-muted-foreground">
-              Rolls to Savings: ${mlmRollover(Number(latest.mlm_usd), Number(mlmSpendInput[latest.id] ?? latest.mlm_actual_spend_usd ?? 0)).toFixed(2)}
-            </span>
           </div>
         </div>
       )}
 
       <div className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="font-display text-lg font-bold flex items-center gap-2"><Lock className="h-4 w-4" /> Investments Pocket</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Not self-service — your mentor releases funds when there's something concrete to put them toward. Whatever's still locked releases in full automatically once a year, regardless.
+        </p>
+        {data.unlocks.length > 0 ? (
+          <div className="mt-3 space-y-2">
+            {data.unlocks.map((u: any) => (
+              <div key={u.id} className="rounded-lg border border-border p-3 flex items-center justify-between flex-wrap gap-2 text-sm">
+                <div>
+                  <span className="font-semibold text-emerald-600">${Number(u.amount_usd).toFixed(2)} released</span>
+                  {u.note && <span className="text-muted-foreground"> — {u.note}</span>}
+                </div>
+                <span className="text-[11px] text-muted-foreground">
+                  {new Date(u.unlocked_at).toLocaleDateString()}{u.is_annual_safeguard ? " · annual safeguard" : " · mentor release"}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 text-xs text-muted-foreground">Nothing released yet.</p>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5">
         <h3 className="font-display text-lg font-bold flex items-center gap-2"><ShieldAlert className="h-4 w-4" /> Request an Emergency Withdrawal</h3>
-        <p className="mt-1 text-xs text-muted-foreground">Goes to your Rep first. If it stalls 48 hours, it escalates to your Sponsor/Mentor, then the Founder.</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Goes to your Rep first. If it stalls 48 hours, it escalates to your Sponsor/Mentor, then the Founder. 40% of your balance also releases
+          automatically every {EMERGENCY_AUTO_RELEASE_MONTHS.map((m: number) => new Date(2000, m - 1, 1).toLocaleDateString(undefined, { month: "long" })).join(" and ")} — no request needed.
+        </p>
         <div className="mt-3 grid sm:grid-cols-[160px_1fr_auto] gap-2">
           <input type="number" min="0" step="0.01" placeholder="Amount ($)" value={amount} onChange={(e) => setAmount(e.target.value)} className="rounded-md border border-border bg-background px-3 py-1.5 text-sm" />
           <input type="text" placeholder="What's the emergency?" value={reason} onChange={(e) => setReason(e.target.value)} className="rounded-md border border-border bg-background px-3 py-1.5 text-sm" />
@@ -1385,14 +1446,34 @@ function PocketSection() {
         )}
       </div>
 
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h3 className="font-display text-lg font-bold flex items-center gap-2"><PiggyBank className="h-4 w-4" /> Savings Withdrawal Permits</h3>
+        <p className="mt-1 text-xs text-muted-foreground">Issued automatically when a 3-year cycle completes — permanently withdrawable from that point on.</p>
+        {data.permits.length > 0 ? (
+          <div className="mt-3 space-y-2">
+            {data.permits.map((p: any) => (
+              <div key={p.id} className="rounded-lg border border-border p-3 flex items-center justify-between flex-wrap gap-2 text-sm">
+                <span className="font-semibold text-emerald-600">${Number(p.amount_usd).toFixed(2)} withdrawable</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Cycle {new Date(p.cycle_started_at).toLocaleDateString()} – {new Date(p.cycle_ended_at).toLocaleDateString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 text-xs text-muted-foreground">No cycle completed yet.</p>
+        )}
+      </div>
+
       {data.allocations.length > 0 && (
         <div className="rounded-2xl border border-border bg-card p-5 overflow-x-auto">
           <h3 className="font-display text-lg font-bold">Allocation History</h3>
-          <table className="mt-3 w-full text-xs min-w-[640px]">
+          <table className="mt-3 w-full text-xs min-w-[720px]">
             <thead className="text-muted-foreground">
               <tr className="text-left">
                 <th className="py-1.5 pr-3">Month</th><th className="py-1.5 pr-3">Revenue</th><th className="py-1.5 pr-3">Upkeep</th>
-                <th className="py-1.5 pr-3">Savings</th><th className="py-1.5 pr-3">Investments</th><th className="py-1.5 pr-3">MLM</th><th className="py-1.5 pr-3">Emergency</th>
+                <th className="py-1.5 pr-3">Savings</th><th className="py-1.5 pr-3">Investments</th><th className="py-1.5 pr-3">MLM</th>
+                <th className="py-1.5 pr-3">MLM Diverted</th><th className="py-1.5 pr-3">Emergency</th>
               </tr>
             </thead>
             <tbody>
@@ -1404,6 +1485,7 @@ function PocketSection() {
                   <td className="py-1.5 pr-3">${Number(a.savings_usd).toFixed(2)}</td>
                   <td className="py-1.5 pr-3">${Number(a.investments_usd).toFixed(2)}</td>
                   <td className="py-1.5 pr-3">${Number(a.mlm_usd).toFixed(2)}</td>
+                  <td className="py-1.5 pr-3">${Number(a.mlm_diverted_usd).toFixed(2)}</td>
                   <td className="py-1.5 pr-3">${Number(a.emergency_usd).toFixed(2)}</td>
                 </tr>
               ))}

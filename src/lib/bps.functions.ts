@@ -16,7 +16,7 @@ import {
   beliefDueDate, affirmationDueDate, evaluationDueDate, bpsMonthWindowDays, parseTargetMonth, FINANCE_CHECKPOINT_DAYS,
   type FinanceMetrics,
 } from "@/lib/bps";
-import { computePocketSplit } from "@/lib/pocket";
+import { computePocketSplit, computeMlmPolicy } from "@/lib/pocket";
 import { localDateStr, localDateStrInTimeZone } from "@/lib/local-date";
 
 const SUPER_ADMIN_EMAIL = "boluwatifefamokunwa@gmail.com";
@@ -362,10 +362,22 @@ export const submitEvaluationGoal = createServerFn({ method: "POST" })
       if (actual) {
         const split = computePocketSplit(actual.revenueUsd);
         const { data: profile } = await supabaseAdmin
-          .from("profiles").select("pocket_savings_started_at").eq("id", context.userId).maybeSingle();
+          .from("profiles").select("pocket_savings_started_at,bpn_enrolled_at").eq("id", context.userId).maybeSingle();
         if (!profile?.pocket_savings_started_at) {
           await supabaseAdmin.from("profiles").update({ pocket_savings_started_at: new Date().toISOString() }).eq("id", context.userId);
         }
+
+        // The MLM Product Pocket only has a purpose for a BPN participant
+        // — otherwise (or once its own monthly ceiling / running-balance
+        // cap is reached) its nominal share diverts to Investments.
+        const { data: priorAllocations } = await supabaseAdmin
+          .from("pocket_allocations").select("mlm_usd,mlm_actual_spend_usd")
+          .eq("user_id", context.userId).neq("target_month", goal.target_month);
+        const priorMlmBalanceUsd = (priorAllocations ?? []).reduce(
+          (sum: number, a: any) => sum + Number(a.mlm_usd) - Number(a.mlm_actual_spend_usd), 0,
+        );
+        const mlmPolicy = computeMlmPolicy(split.mlmUsd, !!profile?.bpn_enrolled_at, priorMlmBalanceUsd);
+
         await supabaseAdmin.from("pocket_allocations").upsert({
           user_id: context.userId,
           goal_id: data.goal_id,
@@ -373,8 +385,9 @@ export const submitEvaluationGoal = createServerFn({ method: "POST" })
           revenue_usd: actual.revenueUsd,
           upkeep_usd: split.upkeepUsd,
           savings_usd: split.savingsUsd,
-          investments_usd: split.investmentsUsd,
-          mlm_usd: split.mlmUsd,
+          investments_usd: split.investmentsUsd + mlmPolicy.divertedToInvestmentUsd,
+          mlm_usd: mlmPolicy.mlmInflowUsd,
+          mlm_diverted_usd: mlmPolicy.divertedToInvestmentUsd,
           emergency_usd: split.emergencyUsd,
         }, { onConflict: "user_id,target_month" });
       }

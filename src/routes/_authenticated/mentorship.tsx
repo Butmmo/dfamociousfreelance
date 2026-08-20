@@ -10,9 +10,10 @@ import {
 import { leadershipProgress, currentWeekStart, LEADERSHIP_MENTEE_TARGET, MENTOR_SOFT_CAP } from "@/lib/mentorship";
 import { slaSnapshot } from "@/lib/escalation-sla";
 import { mentorshipCallUrl } from "@/lib/video";
+import { getMenteeInvestmentStatus, releaseInvestmentFunds } from "@/lib/pocket.functions";
 import { toast } from "sonner";
 import {
-  Users, UserPlus, Loader2, Check, X, Video, Award, ChevronDown, ChevronUp, Flag, Search, UserRound,
+  Users, UserPlus, Loader2, Check, X, Video, Award, ChevronDown, ChevronUp, Flag, Search, UserRound, Lock,
 } from "lucide-react";
 
 function MiniAvatar({ url, size = "h-9 w-9" }: { url?: string | null; size?: string }) {
@@ -399,6 +400,67 @@ function MentorshipDetail({ mentorship, isMenteeView }: { mentorship: any; isMen
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {!isMenteeView && <InvestmentReleasePanel menteeId={mentorship.mentee_id} />}
+    </div>
+  );
+}
+
+function InvestmentReleasePanel({ menteeId }: { menteeId: string }) {
+  const statusFn = useServerFn(getMenteeInvestmentStatus);
+  const releaseFn = useServerFn(releaseInvestmentFunds);
+
+  const [status, setStatus] = useState<any>(null);
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const load = async () => {
+    try { setStatus(await statusFn({ data: { mentee_id: menteeId } })); }
+    catch (e: any) { toast.error(e.message ?? "Failed to load Investments status"); }
+  };
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [menteeId]);
+
+  const doRelease = async () => {
+    const value = Number(amount);
+    if (!amount || Number.isNaN(value) || value <= 0) { toast.error("Enter a valid amount."); return; }
+    setBusy(true);
+    try {
+      await releaseFn({ data: { beneficiary_id: menteeId, amount_usd: value, note: note.trim() || undefined } });
+      toast.success("Released.");
+      setAmount(""); setNote("");
+      load();
+    } catch (e: any) { toast.error(e.message ?? "Failed"); }
+    setBusy(false);
+  };
+
+  if (!status) return null;
+
+  return (
+    <div className="border-t border-border pt-4">
+      <div className="text-[10px] tracking-widest text-muted-foreground mb-2 flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> Investments Pocket</div>
+      <p className="text-xs text-muted-foreground">
+        {`Locked: $${Number(status.lockedUsd).toFixed(2)} of $${Number(status.fundedUsd).toFixed(2)} funded. Release what's needed for what your mentee is actively working on — whatever's left releases in full automatically once a year regardless.`}
+      </p>
+      {Number(status.lockedUsd) > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          <input type="number" min="0" step="0.01" max={status.lockedUsd} placeholder="Amount ($)" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-32 rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
+          <input type="text" placeholder="What's it for? (optional)" value={note} onChange={(e) => setNote(e.target.value)} className="flex-1 min-w-[160px] rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
+          <button onClick={doRelease} disabled={busy} className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+            {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Release
+          </button>
+        </div>
+      )}
+      {status.unlocks.length > 0 && (
+        <div className="mt-3 space-y-1.5">
+          {status.unlocks.map((u: any) => (
+            <div key={u.id} className="text-[11px] text-muted-foreground">
+              <span className="text-emerald-600 font-semibold">${Number(u.amount_usd).toFixed(2)}</span>
+              {u.note && <> — {u.note}</>} · {new Date(u.unlocked_at).toLocaleDateString()}{u.is_annual_safeguard && " · annual safeguard"}
+            </div>
+          ))}
         </div>
       )}
     </div>
