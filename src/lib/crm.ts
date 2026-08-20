@@ -4,6 +4,8 @@
 // being the canonical spec this mirrors). Stage order, priority bands and
 // the five pipeline views all come from that spec verbatim.
 
+import { localDateStr } from "@/lib/local-date";
+
 export const CRM_STAGES = [
   { key: "not_contacted", label: "Not Contacted" },
   { key: "contacted", label: "Contacted" },
@@ -60,6 +62,29 @@ export function viewThisWeek<T extends CrmClientRow>(rows: T[], now = new Date()
 }
 export function viewClosedWon<T extends CrmClientRow>(rows: T[]): T[] {
   return rows.filter((r) => r.stage === "closed" || r.stage === "retainer");
+}
+
+export interface CrmDateGroup<T> {
+  dateKey: string; // YYYY-MM-DD, the local calendar date the row was added
+  label: string;   // human display, e.g. "Wednesday, August 20, 2026"
+  clients: T[];
+}
+
+/** Buckets rows by the local calendar date they were added (created_at), newest date first — an alternate grouping layered on top of whichever pipeline view/filter is already active. */
+export function groupClientsByDateAdded<T extends { created_at: string }>(rows: T[]): CrmDateGroup<T>[] {
+  const byDate = new Map<string, T[]>();
+  for (const r of rows) {
+    const key = localDateStr(new Date(r.created_at));
+    if (!byDate.has(key)) byDate.set(key, []);
+    byDate.get(key)!.push(r);
+  }
+  return Array.from(byDate.entries())
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([dateKey, clients]) => ({
+      dateKey,
+      label: new Date(clients[0].created_at).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
+      clients,
+    }));
 }
 
 /* ═══════════════════════ CSV import ═══════════════════════ */

@@ -24,7 +24,7 @@ import { localDateStr } from "@/lib/local-date";
 import {
   CRM_STAGES, priorityFromScore, PRIORITY_META,
   viewAllLeads, viewHotLeads, viewActiveOutreach, viewThisWeek, viewClosedWon,
-  mapCsvToClients,
+  mapCsvToClients, groupClientsByDateAdded,
 } from "@/lib/crm";
 import { toast } from "sonner";
 import {
@@ -32,6 +32,7 @@ import {
   Phone, Mail, Linkedin, Globe, MapPin, Star, Flame, CheckCircle2, Circle,
   Send, ClipboardList, TrendingUp, AlertTriangle, ChevronLeft, ChevronRight,
   BarChart3, Upload, Eye, EyeOff, Wallet, PiggyBank, ShoppingBag, ShieldAlert, Lock, Unlock,
+  LayoutGrid, Table2, CalendarDays,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/bps")({
@@ -113,6 +114,8 @@ function CrmSection() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<CrmView>("all");
+  const [layout, setLayout] = useState<"cards" | "table">("cards");
+  const [groupByDate, setGroupByDate] = useState(false);
   const [editing, setEditing] = useState<Client | "new" | null>(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -198,6 +201,18 @@ function CrmSection() {
 
   if (loading) return <div className="text-sm text-muted-foreground">Loading your pipeline…</div>;
 
+  const groups = groupByDate ? groupClientsByDateAdded(filtered) : null;
+  const renderList = (list: Client[]) => layout === "cards" ? (
+    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {list.map((c) => (
+        <ClientCard key={c.id} client={c} onEdit={() => setEditing(c)} onDelete={() => deleteClient(c.id, c.name)}
+          onStage={(stage) => quickStage(c.id, stage)} onFlag={(f) => quickFlag(c, f)} />
+      ))}
+    </div>
+  ) : (
+    <ClientTable clients={list} onEdit={setEditing} onDelete={deleteClient} onStage={quickStage} />
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -238,18 +253,55 @@ function CrmSection() {
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1 w-fit">
+          <button
+            onClick={() => setLayout("cards")}
+            className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition ${
+              layout === "cards" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" /> Cards
+          </button>
+          <button
+            onClick={() => setLayout("table")}
+            className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition ${
+              layout === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            <Table2 className="h-3.5 w-3.5" /> Table
+          </button>
+        </div>
+        <button
+          onClick={() => setGroupByDate((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold transition ${
+            groupByDate ? "border-gold bg-gold/10 text-gold-deep" : "border-border text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          <CalendarDays className="h-3.5 w-3.5" /> Group by date added
+        </button>
+      </div>
+
       {filtered.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
           No leads in this view yet. Add your first client to start the pipeline.
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filtered.map((c) => (
-          <ClientCard key={c.id} client={c} onEdit={() => setEditing(c)} onDelete={() => deleteClient(c.id, c.name)}
-            onStage={(stage) => quickStage(c.id, stage)} onFlag={(f) => quickFlag(c, f)} />
-        ))}
-      </div>
+      {groups ? (
+        <div className="space-y-6">
+          {groups.map((g) => (
+            <div key={g.dateKey}>
+              <div className="flex items-center gap-2 mb-2">
+                <CalendarDays className="h-3.5 w-3.5 text-gold-deep" />
+                <h3 className="text-sm font-semibold">{g.label}</h3>
+                <span className="text-xs text-muted-foreground">({g.clients.length})</span>
+              </div>
+              {renderList(g.clients)}
+            </div>
+          ))}
+        </div>
+      ) : renderList(filtered)}
 
       {editing && (
         <ClientFormModal
@@ -340,6 +392,74 @@ function FlagChip({ label, active, onClick }: { label: string; active: boolean; 
     >
       {active ? <CheckCircle2 className="h-3 w-3" /> : <Circle className="h-3 w-3" />} {label}
     </button>
+  );
+}
+
+/** Dense, scannable alternative to the card grid — same rows, same actions, better for scanning a large pipeline at once. */
+function ClientTable({ clients, onEdit, onDelete, onStage }: {
+  clients: Client[]; onEdit: (c: Client) => void; onDelete: (id: string, name: string) => void; onStage: (id: string, stage: string) => void;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card overflow-x-auto">
+      <table className="w-full text-xs min-w-[820px]">
+        <thead className="text-muted-foreground border-b border-border">
+          <tr className="text-left">
+            <th className="py-2 px-3">Name</th>
+            <th className="py-2 px-3">Stage</th>
+            <th className="py-2 px-3">Score</th>
+            <th className="py-2 px-3">Niche</th>
+            <th className="py-2 px-3">City</th>
+            <th className="py-2 px-3">Path</th>
+            <th className="py-2 px-3">Contact</th>
+            <th className="py-2 px-3">Last contacted</th>
+            <th className="py-2 px-3">Added</th>
+            <th className="py-2 px-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {clients.map((c) => {
+            const prio = c.priority ? PRIORITY_META[c.priority as "hot" | "warm" | "cold"] : null;
+            const path = PATHS.find((p) => p.key === c.path_key);
+            return (
+              <tr key={c.id} className="border-b border-border last:border-0 hover:bg-muted/40">
+                <td className="py-2 px-3 font-medium whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1.5">{prio && <span title={prio.label}>{prio.emoji}</span>}{c.name}</span>
+                </td>
+                <td className="py-2 px-3">
+                  <select
+                    value={c.stage} onChange={(e) => onStage(c.id, e.target.value)}
+                    className="rounded-md border border-input bg-background px-1.5 py-1 text-[11px] font-semibold"
+                  >
+                    {CRM_STAGES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
+                  </select>
+                </td>
+                <td className="py-2 px-3">{c.lead_score != null ? `${c.lead_score}/10` : "—"}</td>
+                <td className="py-2 px-3 max-w-[140px] truncate">{c.niche || "—"}</td>
+                <td className="py-2 px-3 max-w-[120px] truncate">{c.city || "—"}</td>
+                <td className="py-2 px-3 text-gold-deep whitespace-nowrap">{path?.short ?? "—"}</td>
+                <td className="py-2 px-3">
+                  <div className="flex items-center gap-1.5">
+                    {c.contact_email && <a href={`mailto:${c.contact_email}`} className="text-primary hover:underline" title={c.contact_email}><Mail className="h-3.5 w-3.5" /></a>}
+                    {c.contact_phone && <a href={`tel:${c.contact_phone}`} className="text-primary hover:underline" title={c.contact_phone}><Phone className="h-3.5 w-3.5" /></a>}
+                    {c.contact_linkedin && <a href={c.contact_linkedin} target="_blank" rel="noreferrer" className="text-primary hover:underline" title="LinkedIn"><Linkedin className="h-3.5 w-3.5" /></a>}
+                    {c.website_url && <a href={c.website_url} target="_blank" rel="noreferrer" className="text-primary hover:underline" title="Website"><Globe className="h-3.5 w-3.5" /></a>}
+                    {!c.contact_email && !c.contact_phone && !c.contact_linkedin && !c.website_url && "—"}
+                  </div>
+                </td>
+                <td className="py-2 px-3 whitespace-nowrap">{c.last_contacted_at ? new Date(c.last_contacted_at).toLocaleDateString() : "—"}</td>
+                <td className="py-2 px-3 whitespace-nowrap">{new Date(c.created_at).toLocaleDateString()}</td>
+                <td className="py-2 px-3">
+                  <div className="flex items-center justify-end gap-1">
+                    <button onClick={() => onEdit(c)} className="rounded-md border border-border p-1.5 hover:bg-muted" title="Edit"><Pencil className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => onDelete(c.id, c.name)} className="rounded-md border border-crimson p-1.5 text-crimson hover:bg-crimson/10" title="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
