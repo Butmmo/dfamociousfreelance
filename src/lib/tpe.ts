@@ -1,5 +1,6 @@
-// TPE — twelve audio sessions on what actually runs an enterprise, end to
-// end: not a checklist, a listen-and-apply series. Progress reuses the same
+// TPE — The Practise of Enterprise: twelve audio sessions on what actually
+// runs an enterprise, end to end. Not a checklist, a listen-and-apply
+// series. Progress reuses the same
 // task_progress table every other playbook writes to (playbook = "tpe"),
 // so a TPE session marked listened counts toward XP, the escalation
 // cadence and the Field Report exactly like any other playbook task —

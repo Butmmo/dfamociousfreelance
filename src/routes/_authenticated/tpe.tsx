@@ -10,8 +10,8 @@ import { Headphones, CheckCircle2, Circle, Loader2, Save, NotebookPen } from "lu
 export const Route = createFileRoute("/_authenticated/tpe")({
   head: () => ({
     meta: [
-      { title: "TPE — DBI Citadel" },
-      { name: "description", content: "Twelve audio sessions on what actually runs an enterprise." },
+      { title: "The Practise of Enterprise — DBI Citadel" },
+      { name: "description", content: "The Practise of Enterprise: twelve sessions on running an enterprise." },
     ],
   }),
   component: TpePage,
@@ -30,7 +30,7 @@ function TpePage() {
     <div className="space-y-6">
       <header>
         <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-2">
-          <Headphones className="h-3.5 w-3.5" /> TPE
+          <Headphones className="h-3.5 w-3.5" /> The Practise of Enterprise
         </div>
         <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">Twelve sessions on running an enterprise</h1>
         <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
