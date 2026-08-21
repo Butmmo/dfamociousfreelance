@@ -1,8 +1,8 @@
-import dbiLogo from "@/assets/dbi_logo.png.asset.json";
-import dfgCrest from "@/assets/dfg_crest.png.asset.json";
+import dbiLogo from "@/assets/dbi_logo.png";
+import dfgCrest from "@/assets/dfg_crest.png";
 
-export const DBI_LOGO = dbiLogo.url;
-export const DFG_CREST = dfgCrest.url;
+export const DBI_LOGO = dbiLogo;
+export const DFG_CREST = dfgCrest;
 
 export function DbiMark({ className = "h-10 w-10" }: { className?: string }) {
   return <img src={DBI_LOGO} alt="DBI" className={className} />;

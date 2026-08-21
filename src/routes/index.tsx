@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode, type HTMLAttributes } from "react";
 import { DbiMark, DfgMark, Motto } from "@/components/dfs/Brand";
-import dbiHero from "@/assets/dbi_hero.png.asset.json";
-import founderAsset from "@/assets/founder.jpg.asset.json";
+import dbiHero from "@/assets/dbi_hero.png";
+import founderAsset from "@/assets/founder.jpg";
 import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, Lock, Award,
   Calculator, LayoutDashboard, LineChart, Users, Bell, CheckCircle2, Mail,
@@ -796,7 +796,7 @@ function Landing() {
             <Reveal delay={100} className="relative">
               <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-gold/20 via-transparent to-crimson/20 blur-2xl animate-drift" />
               <img
-                src={dbiHero.url}
+                src={dbiHero}
                 alt="DBI — D'Famocious Business Incubator, with D'Famocious Group and Blazer Empowerment Foundation"
                 className="relative mx-auto w-full max-w-sm drop-shadow-2xl"
               />
@@ -868,7 +868,7 @@ function Landing() {
         <div className="grid items-center gap-12 md:grid-cols-2">
           <Reveal className="relative">
             <div className="absolute -inset-3 rounded-full bg-gradient-gold opacity-30 blur-2xl" />
-            <img src={founderAsset.url} alt="Boluwatife Famokunwa, founder of D'Famocious Group" className="relative mx-auto w-full max-w-md rounded-2xl border border-gold object-cover shadow-regal" />
+            <img src={founderAsset} alt="Boluwatife Famokunwa, founder of D'Famocious Group" className="relative mx-auto w-full max-w-md rounded-2xl border border-gold object-cover shadow-regal" />
           </Reveal>
           <Reveal delay={100}>
             <h2 className="font-display text-4xl md:text-5xl font-bold">From the founder</h2>
