@@ -1,4 +1,4 @@
-import dbiLogo from "@/assets/dbi_logo.png";
+import dbiLogo from "@/assets/dbi_logo.webp";
 import dfgCrest from "@/assets/dfg_crest.png";
 
 export const DBI_LOGO = dbiLogo;

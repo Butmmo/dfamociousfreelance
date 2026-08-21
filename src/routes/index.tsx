@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode, type HTMLAttributes } from "react";
 import { DbiMark, DfgMark, Motto } from "@/components/dfs/Brand";
-import dbiHero from "@/assets/dbi_hero.png";
+import dbiHero from "@/assets/dbi_hero.webp";
 import founderAsset from "@/assets/founder.jpg";
 import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, Lock, Award,
