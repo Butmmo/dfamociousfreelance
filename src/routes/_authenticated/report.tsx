@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { computeEscalation, forecastFirstClose, advice, type ProgressRow } from "@/lib/escalation";
+import { REVISION_WINDOW_HOURS } from "@/lib/paths";
 import { localDateStr } from "@/lib/local-date";
 import {
   computeFinanceCycleTargets, financeExpectationForDays, defaultTargetMonth, monthKey, parseTargetMonth,
@@ -81,7 +82,13 @@ function ReportPage() {
   const startDate = profile?.start_date ? new Date(profile.start_date)
                    : profile?.created_at ? new Date(profile.created_at) : null;
 
-  const snapshot = useMemo(() => computeEscalation(rows.filter(r => r.completed), new Date(), profile?.tpe_defaulting_until ?? null), [rows, profile?.tpe_defaulting_until]);
+  const revisionGraceUntil = profile?.path_first_chosen_at
+    ? new Date(new Date(profile.path_first_chosen_at).getTime() + REVISION_WINDOW_HOURS * 3_600_000)
+    : null;
+  const snapshot = useMemo(
+    () => computeEscalation(rows.filter(r => r.completed), new Date(), profile?.tpe_defaulting_until ?? null, revisionGraceUntil),
+    [rows, profile?.tpe_defaulting_until, profile?.path_first_chosen_at],
+  );
   const forecast = useMemo(() => forecastFirstClose(rows, startDate), [rows, startDate]);
   const tips = useMemo(() => advice(snapshot, forecast), [snapshot, forecast]);
 

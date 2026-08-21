@@ -138,3 +138,11 @@ export const BRIEFINGS: Record<PathKey, React.LazyExoticComponent<React.Componen
 };
 
 export const CHOICE_WINDOW_HOURS = 24;
+
+/**
+ * Opens exactly once, the moment a path is first chosen (self-chosen or
+ * auto-assigned) — a one-time grace window to revise that choice. Switching
+ * paths inside the window does not reopen or extend it; it's anchored to
+ * profiles.path_first_chosen_at, which a normal path switch never touches.
+ */
+export const REVISION_WINDOW_HOURS = 48;

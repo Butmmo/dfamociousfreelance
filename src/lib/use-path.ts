@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
-import { CHOICE_WINDOW_HOURS, getPath, type PathDef, type PathKey } from "@/lib/paths";
+import { CHOICE_WINDOW_HOURS, REVISION_WINDOW_HOURS, getPath, type PathDef, type PathKey } from "@/lib/paths";
 
 export interface PathState {
   loading: boolean;
@@ -13,6 +13,11 @@ export interface PathState {
   msRemaining: number;
   deadline: Date | null;
   autoAssigned: boolean;
+  /** True while the beneficiary's one-time 48h revision window (from their very first choice) is still open. */
+  revisionWindowOpen: boolean;
+  /** ms remaining in the revision window. */
+  revisionMsRemaining: number;
+  revisionDeadline: Date | null;
   /** Super admins may inspect any path. */
   canSeeAllPaths: boolean;
   choose: (key: PathKey) => Promise<void>;
@@ -39,7 +44,7 @@ export function usePath(): PathState {
     let alive = true;
     supabase
       .from("profiles")
-      .select("path_key, path_chosen_at, path_deadline, path_auto_assigned, created_at")
+      .select("path_key, path_chosen_at, path_deadline, path_auto_assigned, path_first_chosen_at, created_at")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
@@ -52,12 +57,19 @@ export function usePath(): PathState {
     };
   }, [user, sessionLoading, nonce]);
 
-  // Re-render every 30s so the countdown stays honest.
+  const revisionDeadline = row?.path_first_chosen_at
+    ? new Date(new Date(row.path_first_chosen_at).getTime() + REVISION_WINDOW_HOURS * 3_600_000)
+    : null;
+  const revisionWindowOpen = !!row?.path_key && !!revisionDeadline && revisionDeadline.getTime() > Date.now();
+
+  // Re-render every 30s so either countdown (choice window, or the
+  // one-time revision window after a first choice) stays honest.
   useEffect(() => {
-    if (!row || row.path_key) return;
+    if (!row) return;
+    if (row.path_key && !revisionWindowOpen) return;
     const id = setInterval(() => setTick((t) => t + 1), 30_000);
     return () => clearInterval(id);
-  }, [row]);
+  }, [row, revisionWindowOpen]);
   void tick;
 
   const deadline = row?.path_deadline
@@ -82,12 +94,17 @@ export function usePath(): PathState {
       }
       const { error } = await supabase
         .from("profiles")
-        .update({ path_key: key, path_chosen_at: new Date().toISOString(), path_auto_assigned: false } as any)
+        .update({
+          path_key: key, path_chosen_at: new Date().toISOString(), path_auto_assigned: false,
+          // Only the very first-ever choice opens the 48h revision window —
+          // a switch made inside that window never resets or extends it.
+          ...(row?.path_first_chosen_at ? {} : { path_first_chosen_at: new Date().toISOString() }),
+        } as any)
         .eq("id", user.id);
       if (error) throw error;
       refresh();
     },
-    [user, isSuperAdmin, refresh],
+    [user, isSuperAdmin, refresh, row?.path_first_chosen_at],
   );
 
   return {
@@ -98,6 +115,9 @@ export function usePath(): PathState {
     msRemaining: deadline ? Math.max(0, deadline.getTime() - Date.now()) : 0,
     deadline,
     autoAssigned: !!row?.path_auto_assigned,
+    revisionWindowOpen: !isSuperAdmin && revisionWindowOpen,
+    revisionMsRemaining: revisionDeadline ? Math.max(0, revisionDeadline.getTime() - Date.now()) : 0,
+    revisionDeadline,
     canSeeAllPaths: isSuperAdmin,
     choose,
     refresh,

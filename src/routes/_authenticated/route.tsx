@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_authenticated")({
 function AuthedShell() {
   const { role, user, isSuperAdmin } = useSession();
   const navigate = useNavigate();
-  const { path, needsChoice, msRemaining, loading: pathLoading } = usePath();
+  const { path, needsChoice, msRemaining, revisionWindowOpen, revisionMsRemaining, loading: pathLoading } = usePath();
   const status = useAccountStatus();
   const { gate: paymentsGate } = usePaymentsGate();
   const push = usePushSubscription();
@@ -242,7 +242,7 @@ function AuthedShell() {
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/playbooks", label: "Playbooks", icon: BookOpen, show: !effectiveNeedsChoice && !isOrdinaryAdmin },
     { to: "/messages", label: "Messages", icon: MessageSquare, show: !effectiveNeedsChoice && !consumerGated },
-    { to: "/choose-path", label: "Your Path", icon: Compass, show: effectiveNeedsChoice && !isOrdinaryAdmin },
+    { to: "/choose-path", label: "Your Path", icon: Compass, show: (effectiveNeedsChoice || revisionWindowOpen) && !isOrdinaryAdmin },
   ].filter((t) => t.show);
 
   const moreLinks = [
@@ -342,6 +342,21 @@ function AuthedShell() {
               </span>
               <Link to="/choose-path" className="font-semibold underline">
                 Open the briefings
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {!effectiveNeedsChoice && revisionWindowOpen && (
+          <div className="border-t border-gold/30 bg-gold/5">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 py-2 text-[11px] text-gold-deep flex flex-wrap items-center gap-2">
+              <strong>Revision window open.</strong>
+              <span className="text-muted-foreground">
+                {formatCountdown(revisionMsRemaining)} left to change your path — a one-time window, nothing you do
+                now affects your escalation standing.
+              </span>
+              <Link to="/choose-path" className="font-semibold underline">
+                Review or switch
               </Link>
             </div>
           </div>

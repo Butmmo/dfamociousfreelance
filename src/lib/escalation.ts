@@ -105,16 +105,23 @@ export function computeEscalation(
   rows: ProgressRow[],
   now: Date = new Date(),
   tpeDefaultingUntil: string | null = null,
+  /** profiles.path_first_chosen_at + REVISION_WINDOW_HOURS — the beneficiary's own one-time 48h path-revision window. Nothing before it counts, same treatment as the global ESCALATION_START cutoff. */
+  personalGraceUntil: Date | null = null,
 ): EscalationSnapshot {
   const days = activeDaySet(rows);
+
+  // The effective grace boundary is whichever cutoff is later: the global
+  // tracking start, or (if still running) this beneficiary's own
+  // path-revision window.
+  const graceStart = personalGraceUntil && personalGraceUntil > ESCALATION_START ? personalGraceUntil : ESCALATION_START;
 
   // Requested window bounds
   const rawSeven = new Date(now); rawSeven.setDate(rawSeven.getDate() - 6);
   const rawFourteen = new Date(now); rawFourteen.setDate(rawFourteen.getDate() - 13);
 
-  // Grace clamp — never count days before ESCALATION_START
-  const seven = rawSeven < ESCALATION_START ? new Date(ESCALATION_START) : rawSeven;
-  const fourteen = rawFourteen < ESCALATION_START ? new Date(ESCALATION_START) : rawFourteen;
+  // Grace clamp — never count days before the effective grace boundary
+  const seven = rawSeven < graceStart ? new Date(graceStart) : rawSeven;
+  const fourteen = rawFourteen < graceStart ? new Date(graceStart) : rawFourteen;
 
   // Target thresholds scale with the effective window length while inside grace.
   const sevenLen = windowLength(seven, now);
@@ -138,13 +145,15 @@ export function computeEscalation(
     daysSinceLastActivity = Math.max(0, diff);
   }
 
-  const gracePeriodActive = rawFourteen < ESCALATION_START;
+  const gracePeriodActive = rawFourteen < graceStart;
   const daysInGrace = gracePeriodActive
-    ? Math.min(14, Math.max(0, Math.ceil((ESCALATION_START.getTime() - rawFourteen.getTime()) / 86_400_000)))
+    ? Math.min(14, Math.max(0, Math.ceil((graceStart.getTime() - rawFourteen.getTime()) / 86_400_000)))
     : 0;
 
   const reasons: string[] = [];
-  if (gracePeriodActive) {
+  if (gracePeriodActive && personalGraceUntil && personalGraceUntil > ESCALATION_START) {
+    reasons.push(`Path-revision grace active — your choice isn't judged until ${startOfDayISO(graceStart)}`);
+  } else if (gracePeriodActive) {
     reasons.push(`Grace period active — escalation tracking began ${startOfDayISO(ESCALATION_START)}`);
   }
   // Visibility only, same non-punitive treatment as the cadence bands

@@ -19,6 +19,11 @@ const inviteSchema = z.object({
   full_name: z.string().trim().min(1).max(120).optional(),
   role: z.enum(["admin", "beneficiary"]).default("beneficiary"),
   cohort_id: z.string().uuid().optional().nullable(),
+  // Founder-only: explicitly hand the choice to the system for this one
+  // invite, resolved immediately (not deferred to the global random-
+  // assignment setting) — distinct from just leaving cohort_id blank,
+  // which means "wait for the founder" unless that global setting is on.
+  assign_random_cohort: z.boolean().default(false),
   sponsor_name: z.string().trim().min(1).max(160).default("Boluwatife Famokunwa"),
   entry_channel: z.enum(["nbo", "direct"]).default("direct"),
 });
@@ -36,9 +41,18 @@ export const inviteBeneficiary = createServerFn({ method: "POST" })
     // enforcing this is the real backstop) so handle_new_user()'s own
     // policy (random if an admin enabled it, else left unassigned) decides.
     const { data: isSuper } = await context.supabase.rpc("is_super_admin", { _user_id: context.userId });
-    const cohortId = isSuper ? (data.cohort_id ?? null) : null;
-
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let cohortId = isSuper ? (data.cohort_id ?? null) : null;
+
+    if (isSuper && !cohortId && data.assign_random_cohort) {
+      const { data: cohorts } = await supabaseAdmin.from("cohorts").select("id").eq("active", true);
+      const { data: members } = await supabaseAdmin.from("profiles").select("cohort_id").not("cohort_id", "is", null);
+      const countByCohort = new Map<string, number>();
+      for (const m of (members ?? []) as any[]) countByCohort.set(m.cohort_id, (countByCohort.get(m.cohort_id) ?? 0) + 1);
+      const withRoom = ((cohorts ?? []) as any[]).filter((c) => (countByCohort.get(c.id) ?? 0) < COHORT_MAX_MEMBERS);
+      if (withRoom.length > 0) cohortId = withRoom[Math.floor(Math.random() * withRoom.length)].id;
+    }
+
     const origin = process.env.SITE_URL || "";
 
     const { error: invErr } = await supabaseAdmin.from("invitations").insert({
@@ -629,6 +643,20 @@ export const createCohort = createServerFn({ method: "POST" })
     return cohort;
   });
 
+const setCohortActiveSchema = z.object({ cohort_id: z.string().uuid(), active: z.boolean() });
+
+/** Only the founder decides whether a cohort is open to new participants — independent of the 12-member ceiling, which is enforced separately by the DB trigger. */
+export const setCohortActive = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => setCohortActiveSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireSuperAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("cohorts").update({ active: data.active }).eq("id", data.cohort_id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
 export const COHORT_MAX_MEMBERS = 12;
 
 export const listCohorts = createServerFn({ method: "GET" })
@@ -705,7 +733,7 @@ export const setBeneficiaryPath = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: current } = await supabaseAdmin
-      .from("profiles").select("path_key").eq("id", data.beneficiary_id).maybeSingle();
+      .from("profiles").select("path_key,path_first_chosen_at").eq("id", data.beneficiary_id).maybeSingle();
     const changing = !!current?.path_key && current.path_key !== data.path_key;
 
     if (changing) {
@@ -720,10 +748,51 @@ export const setBeneficiaryPath = createServerFn({ method: "POST" })
         path_key: data.path_key,
         path_chosen_at: new Date().toISOString(),
         path_auto_assigned: true,
+        // Only the very first ever path assignment opens the 48h revision
+        // window — a later admin-driven switch never reopens it.
+        ...(current?.path_first_chosen_at ? {} : { path_first_chosen_at: new Date().toISOString() }),
         ...(changing ? { xp: 0, rank: "recruit" } : {}),
       } as never)
       .eq("id", data.beneficiary_id);
     if (error) throw error;
     return { ok: true, wiped: changing };
+  });
+
+/**
+ * Full reset back to "no path chosen" — a clean slate as if the
+ * beneficiary just joined: fresh 24h choice window, and their eventual
+ * next choice opens a fresh 48h revision window too. Founder only, and
+ * meant to be used sparingly — per policy, only after the beneficiary has
+ * petitioned through their mentor and it's been carefully considered, not
+ * as a routine undo button. Wipes all path-scoped progress exactly like a
+ * normal path switch does.
+ */
+export const resetBeneficiaryPath = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => userIdSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireSuperAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    await supabaseAdmin.from("task_progress").delete().eq("user_id", data.user_id);
+    await supabaseAdmin.from("weekly_reports").delete().eq("user_id", data.user_id);
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        path_key: null,
+        path_chosen_at: null,
+        path_first_chosen_at: null,
+        path_auto_assigned: false,
+        path_deadline: new Date(Date.now() + 24 * 3_600_000).toISOString(),
+        path_permanence_notified_at: null,
+        xp: 0,
+        rank: "recruit",
+        path_reset_at: new Date().toISOString(),
+        path_reset_by: context.userId,
+      } as never)
+      .eq("id", data.user_id);
+    if (error) throw error;
+    return { ok: true };
   });
 

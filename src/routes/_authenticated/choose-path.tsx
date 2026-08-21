@@ -5,7 +5,7 @@ import { usePath, formatCountdown } from "@/lib/use-path";
 import { useSession } from "@/lib/use-session";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { ArrowLeft, Check, Clock, Loader2, ShieldAlert, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Clock, Loader2, ShieldAlert, Sparkles, AlertTriangle, X, History } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/choose-path")({
   head: () => ({
@@ -23,24 +23,32 @@ export const Route = createFileRoute("/_authenticated/choose-path")({
 
 function ChoosePathPage() {
   const { isSuperAdmin } = useSession();
-  const { pathKey, msRemaining, canSeeAllPaths, choose, loading } = usePath();
+  const { pathKey, msRemaining, revisionWindowOpen, revisionMsRemaining, canSeeAllPaths, choose, loading } = usePath();
   const navigate = useNavigate();
   const [open, setOpen] = useState<PathKey | null>(null);
+  const [confirmTarget, setConfirmTarget] = useState<PathKey | null>(null);
   const [busy, setBusy] = useState<PathKey | null>(null);
 
-  // Once a path is sealed, only the founder may keep browsing the briefings.
-  const locked = !loading && !isSuperAdmin && !!pathKey;
+  // Once a path is sealed and the one-time revision window has closed, only
+  // the founder may keep browsing the briefings.
+  const locked = !loading && !isSuperAdmin && !!pathKey && !revisionWindowOpen;
   useEffect(() => {
     if (locked) navigate({ to: "/dashboard", replace: true });
   }, [locked, navigate]);
+
+  const isFirstChoice = !pathKey;
+  const isRevision = !!pathKey && revisionWindowOpen;
 
   const commit = async (key: PathKey) => {
     setBusy(key);
     try {
       await choose(key);
       toast.success(
-        isSuperAdmin ? "Viewing this path as the founder." : "Path sealed. Your Citadel is now scoped to this system.",
+        isSuperAdmin ? "Viewing this path as the founder."
+        : isRevision ? "Path switched. Your Citadel is rescoped — this did not reset your revision window."
+        : "Path sealed. Your Citadel is now scoped to this system.",
       );
+      setConfirmTarget(null);
       navigate({ to: "/dashboard" });
     } catch (e: any) {
       toast.error(e?.message ?? "Could not save your path.");
@@ -49,10 +57,14 @@ function ChoosePathPage() {
     }
   };
 
+  const requestCommit = (key: PathKey) => {
+    if (isSuperAdmin) { commit(key); return; }
+    setConfirmTarget(key);
+  };
+
   if (loading || locked) {
     return <div className="p-10 text-center text-muted-foreground">Loading the seven paths…</div>;
   }
-
 
   if (open) {
     const Briefing = BRIEFINGS[open];
@@ -67,7 +79,7 @@ function ChoosePathPage() {
             <ArrowLeft className="h-4 w-4" /> All seven paths
           </button>
           <button
-            onClick={() => commit(open)}
+            onClick={() => requestCommit(open)}
             disabled={busy === open}
             className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
@@ -84,7 +96,7 @@ function ChoosePathPage() {
 
         <div className="flex justify-end">
           <button
-            onClick={() => commit(open)}
+            onClick={() => requestCommit(open)}
             disabled={busy === open}
             className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
           >
@@ -109,7 +121,7 @@ function ChoosePathPage() {
           commit.
         </p>
 
-        {!isSuperAdmin && !pathKey && (
+        {!isSuperAdmin && isFirstChoice && (
           <div className="mt-4 flex items-start gap-3 rounded-xl border border-crimson/40 bg-crimson/5 p-4 max-w-3xl">
             <Clock className="h-5 w-5 text-crimson shrink-0 mt-0.5" />
             <div className="text-sm">
@@ -118,7 +130,25 @@ function ChoosePathPage() {
               </div>
               <p className="mt-1 text-muted-foreground">
                 You have 24 hours from entering the Citadel. If the window closes without a decision, the council
-                assigns you a path at random — and it is just as binding.
+                assigns you a path at random — and it is just as binding. Once you choose, you'll get a one-time
+                48-hour window to revise it if you change your mind.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {!isSuperAdmin && isRevision && (
+          <div className="mt-4 flex items-start gap-3 rounded-xl border border-gold/50 bg-gold/5 p-4 max-w-3xl">
+            <History className="h-5 w-5 text-gold-deep shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <div className="font-semibold text-gold-deep">
+                Revision window open — {formatCountdown(revisionMsRemaining)} left
+              </div>
+              <p className="mt-1 text-muted-foreground">
+                You're currently on <strong className="text-foreground">{PATHS.find((p) => p.key === pathKey)?.name}</strong>.
+                You may still switch to a different path — nothing you do during this window affects your escalation
+                standing. This is a one-time window from your very first choice; switching does not reset or extend it,
+                and once it closes your path is permanent.
               </p>
             </div>
           </div>
@@ -188,12 +218,14 @@ function ChoosePathPage() {
                     Read the briefing
                   </button>
                   <button
-                    onClick={() => commit(p.key)}
+                    onClick={() => requestCommit(p.key)}
                     disabled={busy === p.key || (active && !canSeeAllPaths)}
                     className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                   >
                     {busy === p.key ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                    {active ? (canSeeAllPaths ? "Inspecting" : "Your path") : canSeeAllPaths ? "Inspect" : "Choose this path"}
+                    {active
+                      ? (canSeeAllPaths ? "Inspecting" : "Your path")
+                      : canSeeAllPaths ? "Inspect" : isRevision ? "Switch to this path" : "Choose this path"}
                   </button>
                 </div>
               </div>
@@ -212,6 +244,98 @@ function ChoosePathPage() {
           attention.
         </p>
       </section>
+
+      {confirmTarget && (
+        <PathWarningDialog
+          target={confirmTarget}
+          isRevision={isRevision}
+          currentPathName={pathKey ? PATHS.find((p) => p.key === pathKey)?.name ?? null : null}
+          revisionMsRemaining={revisionMsRemaining}
+          busy={busy === confirmTarget}
+          onCancel={() => setConfirmTarget(null)}
+          onConfirm={() => commit(confirmTarget)}
+        />
+      )}
+    </div>
+  );
+}
+
+function PathWarningDialog({
+  target, isRevision, currentPathName, revisionMsRemaining, busy, onCancel, onConfirm,
+}: {
+  target: PathKey; isRevision: boolean; currentPathName: string | null; revisionMsRemaining: number;
+  busy: boolean; onCancel: () => void; onConfirm: () => void;
+}) {
+  const def = PATHS.find((p) => p.key === target)!;
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={onCancel}>
+      <div
+        className="w-full max-w-lg rounded-2xl border border-crimson/40 bg-card p-6 shadow-regal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start gap-3">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-crimson/10">
+            <AlertTriangle className="h-5 w-5 text-crimson" />
+          </div>
+          <div>
+            <h3 className="font-display text-lg font-bold">Before you commit to {def.name}</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Read this — it's exactly what changes once you confirm.</p>
+          </div>
+          <button onClick={onCancel} className="ml-auto rounded-md p-1.5 hover:bg-muted shrink-0"><X className="h-4 w-4" /></button>
+        </div>
+
+        <ul className="mt-4 space-y-2.5 text-sm">
+          <li className="flex items-start gap-2">
+            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-crimson shrink-0" />
+            <span>
+              This path becomes the scope of your entire Citadel — playbooks, the 45-day calendar, XP, rank, and
+              escalation tracking are all locked to <strong>{def.name}</strong>. The other six paths become unavailable.
+            </span>
+          </li>
+          {isRevision ? (
+            <>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-crimson shrink-0" />
+                <span>
+                  Switching away from <strong>{currentPathName}</strong> wipes any progress already recorded under it —
+                  calendar completions, weekly filings, XP and rank all reset.
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" />
+                <span>
+                  You're inside your one-time 48-hour revision window ({formatCountdown(revisionMsRemaining)} left).
+                  Switching now does <strong>not</strong> reset or extend that window — once it closes, whatever path
+                  you're on becomes permanent.
+                </span>
+              </li>
+            </>
+          ) : (
+            <li className="flex items-start gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" />
+              <span>
+                You'll get a one-time 48-hour window after this to change your mind if you're unsure — after that,
+                it's permanent. Only the founder can reset a path back to a clean slate, and only after a mentor-vetted
+                petition.
+              </span>
+            </li>
+          )}
+        </ul>
+
+        <div className="mt-6 flex justify-end gap-2">
+          <button onClick={onCancel} className="rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-muted">
+            Go back
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={busy}
+            className="inline-flex items-center gap-2 rounded-md bg-crimson px-4 py-2 text-sm font-semibold text-white hover:bg-crimson-deep disabled:opacity-60"
+          >
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+            Yes, commit to {def.short}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

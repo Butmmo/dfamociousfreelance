@@ -6,6 +6,7 @@ import { localDateStr } from "@/lib/local-date";
 import { Motto } from "@/components/dfs/Brand";
 import { WEEKS } from "./playbooks/plan";
 import { usePath } from "@/lib/use-path";
+import { REVISION_WINDOW_HOURS } from "@/lib/paths";
 import { PATH_PLAYBOOKS } from "@/lib/path-playbooks";
 import { computeEscalation, forecastFirstClose, type ProgressRow } from "@/lib/escalation";
 import { TPE_TOPICS } from "@/lib/tpe";
@@ -116,7 +117,13 @@ function Dashboard() {
   }, [completedRows]);
   const tpeListened = perPlaybook["tpe"] ?? 0;
 
-  const snapshot = useMemo(() => computeEscalation(completedRows, new Date(), profile?.tpe_defaulting_until ?? null), [completedRows, profile?.tpe_defaulting_until]);
+  const revisionGraceUntil = profile?.path_first_chosen_at
+    ? new Date(new Date(profile.path_first_chosen_at).getTime() + REVISION_WINDOW_HOURS * 3_600_000)
+    : null;
+  const snapshot = useMemo(
+    () => computeEscalation(completedRows, new Date(), profile?.tpe_defaulting_until ?? null, revisionGraceUntil),
+    [completedRows, profile?.tpe_defaulting_until, profile?.path_first_chosen_at],
+  );
   const startDate = profile?.start_date ? new Date(profile.start_date)
                    : profile?.created_at ? new Date(profile.created_at) : null;
   const forecast = useMemo(() => forecastFirstClose(progressRows, startDate), [progressRows, startDate]);

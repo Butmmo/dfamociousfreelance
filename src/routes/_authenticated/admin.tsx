@@ -10,12 +10,13 @@ import {
   listAllDfyMonths, verifyDfyMonth, certifyVettedDse,
   createCohort, listCohorts, setConsumerAccess, requestConsumerAccess,
   setRandomCohortAssignment, setBeneficiaryCohort, COHORT_MAX_MEMBERS,
+  setCohortActive, resetBeneficiaryPath,
 } from "@/lib/admin.functions";
 import { PATHS } from "@/lib/paths";
 import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { Compass, FileText } from "lucide-react";
+import { Compass, FileText, Lock, Unlock, Undo2 } from "lucide-react";
 import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users, ShieldAlert, Search, UserRound, CreditCard } from "lucide-react";
 
 function RosterAvatar({ url, size = "h-9 w-9" }: { url?: string | null; size?: string }) {
@@ -105,6 +106,8 @@ function Admin() {
   const listCoh = useServerFn(listCohorts);
   const setRandomCohort = useServerFn(setRandomCohortAssignment);
   const setBenCohort = useServerFn(setBeneficiaryCohort);
+  const setCohActive = useServerFn(setCohortActive);
+  const resetPath = useServerFn(resetBeneficiaryPath);
 
   const [bens, setBens] = useState<any[]>([]);
   const [invs, setInvs] = useState<any[]>([]);
@@ -124,6 +127,9 @@ function Admin() {
   const [sponsorName, setSponsorName] = useState("Boluwatife Famokunwa");
   const [entryChannel, setEntryChannel] = useState<"direct" | "nbo">("direct");
   const [inviteCohortId, setInviteCohortId] = useState("");
+  const [inviteRandomCohort, setInviteRandomCohort] = useState(false);
+  const [togglingCohortId, setTogglingCohortId] = useState<string | null>(null);
+  const [resettingPathId, setResettingPathId] = useState<string | null>(null);
   const [checkinTarget, setCheckinTarget] = useState<string | null>(null);
   const [checkinText, setCheckinText] = useState("");
   const [checkinMood, setCheckinMood] = useState<"green" | "yellow" | "red">("green");
@@ -164,11 +170,11 @@ function Admin() {
         data: {
           email: email.trim(), full_name: fullName.trim() || undefined, role: asAdmin ? "admin" : "beneficiary",
           sponsor_name: sponsorName.trim() || "Boluwatife Famokunwa", entry_channel: entryChannel,
-          cohort_id: inviteCohortId || undefined,
+          cohort_id: inviteCohortId || undefined, assign_random_cohort: inviteRandomCohort,
         },
       });
       toast.success(`Invitation dispatched to ${email}`);
-      setEmail(""); setFullName(""); setAsAdmin(false); setSponsorName("Boluwatife Famokunwa"); setEntryChannel("direct"); setInviteCohortId(""); refresh();
+      setEmail(""); setFullName(""); setAsAdmin(false); setSponsorName("Boluwatife Famokunwa"); setEntryChannel("direct"); setInviteCohortId(""); setInviteRandomCohort(false); refresh();
     } catch (e: any) { toast.error(e.message ?? "Invite failed"); }
     finally { setBusy(false); }
   };
@@ -190,6 +196,29 @@ function Admin() {
       toast.success("Cohort updated.");
       refresh();
     } catch (e: any) { toast.error(e.message ?? "Failed to assign cohort"); }
+  };
+
+  const doToggleCohortActive = async (cohortId: string, nextActive: boolean) => {
+    setTogglingCohortId(cohortId);
+    try {
+      await setCohActive({ data: { cohort_id: cohortId, active: nextActive } });
+      toast.success(nextActive ? "Cohort reopened to new participants." : "Cohort closed to new participants.");
+      refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed to update cohort"); }
+    finally { setTogglingCohortId(null); }
+  };
+
+  const doResetPath = async (b: { id: string; full_name: string | null; email: string }) => {
+    if (!confirm(
+      `Reset ${b.full_name ?? b.email}'s path back to "no path chosen"?\n\nThis wipes all path-scoped progress (calendar completions, weekly filings, XP, rank) and reopens a fresh 24-hour choice window followed by a fresh 48-hour revision window — exactly as if they just joined.\n\nUse only after the beneficiary has petitioned through their mentor and it's been carefully considered.`,
+    )) return;
+    setResettingPathId(b.id);
+    try {
+      await resetPath({ data: { user_id: b.id } });
+      toast.success("Path reset. They're back to a clean slate.");
+      refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed to reset path"); }
+    finally { setResettingPathId(null); }
   };
 
   const assignmentByBen = useMemo(() => {
@@ -394,8 +423,17 @@ function Admin() {
           {isSuperAdmin && (
             <label className="md:col-span-1 block">
               <span className="text-[10px] tracking-widest text-muted-foreground">Cohort (founder only)</span>
-              <select value={inviteCohortId} onChange={(e) => setInviteCohortId(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                <option value="">— leave unassigned —</option>
+              <select
+                value={inviteRandomCohort ? "__random__" : inviteCohortId}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setInviteRandomCohort(v === "__random__");
+                  setInviteCohortId(v === "__random__" ? "" : v);
+                }}
+                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">— leave unassigned (wait for founder) —</option>
+                <option value="__random__">— randomly assign one now —</option>
                 {cohorts.map((c) => (
                   <option key={c.id} value={c.id} disabled={c.member_count >= COHORT_MAX_MEMBERS}>
                     {c.name} ({c.member_count}/{COHORT_MAX_MEMBERS}{c.member_count >= COHORT_MAX_MEMBERS ? " — FULL" : ""})
@@ -467,7 +505,22 @@ function Admin() {
                 </div>
               </div>
               {c.description && <p className="text-xs text-muted-foreground mt-1">{c.description}</p>}
-              <div className="mt-2 text-xs text-muted-foreground">{c.member_count}/{COHORT_MAX_MEMBERS} members</div>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <span className="text-xs text-muted-foreground">{c.member_count}/{COHORT_MAX_MEMBERS} members</span>
+                {isSuperAdmin && (
+                  <button
+                    onClick={() => doToggleCohortActive(c.id, !c.active)}
+                    disabled={togglingCohortId === c.id}
+                    title={c.active ? "Close to new participants" : "Reopen to new participants"}
+                    className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold disabled:opacity-60 ${
+                      c.active ? "border-border text-muted-foreground hover:bg-muted" : "border-gold text-gold-deep hover:bg-gold/10"
+                    }`}
+                  >
+                    {togglingCohortId === c.id ? <Loader2 className="h-3 w-3 animate-spin" /> : c.active ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                    {c.active ? "Close" : "Reopen"}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -681,6 +734,16 @@ function Admin() {
                         <option value="">— not chosen —</option>
                         {PATHS.map((p) => (<option key={p.key} value={p.key}>{p.name}</option>))}
                       </select>
+                      {b.path_key && (
+                        <button
+                          onClick={() => doResetPath(b)}
+                          disabled={resettingPathId === b.id}
+                          title="Reset to a clean slate — petition-only"
+                          className="shrink-0 inline-flex items-center gap-1 rounded-md border border-crimson px-2 py-1 text-[11px] font-semibold text-crimson hover:bg-crimson/10 disabled:opacity-60"
+                        >
+                          {resettingPathId === b.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Undo2 className="h-3.5 w-3.5" />}
+                        </button>
+                      )}
                     </label>
                   ) : (
                     <div className="col-span-2 flex items-center gap-2 text-muted-foreground">
