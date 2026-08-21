@@ -17,11 +17,13 @@ import { Route as AuthenticatedWeeklyReportRouteImport } from './routes/_authent
 import { Route as AuthenticatedTpeRouteImport } from './routes/_authenticated/tpe'
 import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated/report'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMentorshipRouteImport } from './routes/_authenticated/mentorship'
 import { Route as AuthenticatedDfyRouteImport } from './routes/_authenticated/dfy'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCouncilReportsRouteImport } from './routes/_authenticated/council-reports'
+import { Route as AuthenticatedCouncilPaymentsRouteImport } from './routes/_authenticated/council-payments'
 import { Route as AuthenticatedCouncilMentorshipRouteImport } from './routes/_authenticated/council-mentorship'
 import { Route as AuthenticatedCouncilEscalationsRouteImport } from './routes/_authenticated/council-escalations'
 import { Route as AuthenticatedChoosePathRouteImport } from './routes/_authenticated/choose-path'
@@ -91,6 +93,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -115,6 +122,12 @@ const AuthenticatedCouncilReportsRoute =
   AuthenticatedCouncilReportsRouteImport.update({
     id: '/council-reports',
     path: '/council-reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCouncilPaymentsRoute =
+  AuthenticatedCouncilPaymentsRouteImport.update({
+    id: '/council-payments',
+    path: '/council-payments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedCouncilMentorshipRoute =
@@ -292,11 +305,13 @@ export interface FileRoutesByFullPath {
   '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
   '/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
+  '/council-payments': typeof AuthenticatedCouncilPaymentsRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dfy': typeof AuthenticatedDfyRoute
   '/mentorship': typeof AuthenticatedMentorshipRoute
   '/messages': typeof AuthenticatedMessagesRoute
+  '/payments': typeof AuthenticatedPaymentsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
   '/tpe': typeof AuthenticatedTpeRoute
@@ -334,11 +349,13 @@ export interface FileRoutesByTo {
   '/choose-path': typeof AuthenticatedChoosePathRoute
   '/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
   '/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
+  '/council-payments': typeof AuthenticatedCouncilPaymentsRoute
   '/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dfy': typeof AuthenticatedDfyRoute
   '/mentorship': typeof AuthenticatedMentorshipRoute
   '/messages': typeof AuthenticatedMessagesRoute
+  '/payments': typeof AuthenticatedPaymentsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/report': typeof AuthenticatedReportRoute
   '/tpe': typeof AuthenticatedTpeRoute
@@ -378,11 +395,13 @@ export interface FileRoutesById {
   '/_authenticated/choose-path': typeof AuthenticatedChoosePathRoute
   '/_authenticated/council-escalations': typeof AuthenticatedCouncilEscalationsRoute
   '/_authenticated/council-mentorship': typeof AuthenticatedCouncilMentorshipRoute
+  '/_authenticated/council-payments': typeof AuthenticatedCouncilPaymentsRoute
   '/_authenticated/council-reports': typeof AuthenticatedCouncilReportsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dfy': typeof AuthenticatedDfyRoute
   '/_authenticated/mentorship': typeof AuthenticatedMentorshipRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
+  '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/report': typeof AuthenticatedReportRoute
   '/_authenticated/tpe': typeof AuthenticatedTpeRoute
@@ -422,11 +441,13 @@ export interface FileRouteTypes {
     | '/choose-path'
     | '/council-escalations'
     | '/council-mentorship'
+    | '/council-payments'
     | '/council-reports'
     | '/dashboard'
     | '/dfy'
     | '/mentorship'
     | '/messages'
+    | '/payments'
     | '/profile'
     | '/report'
     | '/tpe'
@@ -464,11 +485,13 @@ export interface FileRouteTypes {
     | '/choose-path'
     | '/council-escalations'
     | '/council-mentorship'
+    | '/council-payments'
     | '/council-reports'
     | '/dashboard'
     | '/dfy'
     | '/mentorship'
     | '/messages'
+    | '/payments'
     | '/profile'
     | '/report'
     | '/tpe'
@@ -507,11 +530,13 @@ export interface FileRouteTypes {
     | '/_authenticated/choose-path'
     | '/_authenticated/council-escalations'
     | '/_authenticated/council-mentorship'
+    | '/_authenticated/council-payments'
     | '/_authenticated/council-reports'
     | '/_authenticated/dashboard'
     | '/_authenticated/dfy'
     | '/_authenticated/mentorship'
     | '/_authenticated/messages'
+    | '/_authenticated/payments'
     | '/_authenticated/profile'
     | '/_authenticated/report'
     | '/_authenticated/tpe'
@@ -605,6 +630,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/payments': {
+      id: '/_authenticated/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof AuthenticatedPaymentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/messages': {
       id: '/_authenticated/messages'
       path: '/messages'
@@ -638,6 +670,13 @@ declare module '@tanstack/react-router' {
       path: '/council-reports'
       fullPath: '/council-reports'
       preLoaderRoute: typeof AuthenticatedCouncilReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/council-payments': {
+      id: '/_authenticated/council-payments'
+      path: '/council-payments'
+      fullPath: '/council-payments'
+      preLoaderRoute: typeof AuthenticatedCouncilPaymentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/council-mentorship': {
@@ -846,11 +885,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChoosePathRoute: typeof AuthenticatedChoosePathRoute
   AuthenticatedCouncilEscalationsRoute: typeof AuthenticatedCouncilEscalationsRoute
   AuthenticatedCouncilMentorshipRoute: typeof AuthenticatedCouncilMentorshipRoute
+  AuthenticatedCouncilPaymentsRoute: typeof AuthenticatedCouncilPaymentsRoute
   AuthenticatedCouncilReportsRoute: typeof AuthenticatedCouncilReportsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDfyRoute: typeof AuthenticatedDfyRoute
   AuthenticatedMentorshipRoute: typeof AuthenticatedMentorshipRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
+  AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportRoute: typeof AuthenticatedReportRoute
   AuthenticatedTpeRoute: typeof AuthenticatedTpeRoute
@@ -886,11 +927,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChoosePathRoute: AuthenticatedChoosePathRoute,
   AuthenticatedCouncilEscalationsRoute: AuthenticatedCouncilEscalationsRoute,
   AuthenticatedCouncilMentorshipRoute: AuthenticatedCouncilMentorshipRoute,
+  AuthenticatedCouncilPaymentsRoute: AuthenticatedCouncilPaymentsRoute,
   AuthenticatedCouncilReportsRoute: AuthenticatedCouncilReportsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDfyRoute: AuthenticatedDfyRoute,
   AuthenticatedMentorshipRoute: AuthenticatedMentorshipRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
+  AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportRoute: AuthenticatedReportRoute,
   AuthenticatedTpeRoute: AuthenticatedTpeRoute,
@@ -950,13 +993,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

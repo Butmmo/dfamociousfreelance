@@ -15,7 +15,7 @@ import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
 import { Compass, FileText } from "lucide-react";
-import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users, ShieldAlert, Search, UserRound } from "lucide-react";
+import { Crown, UserPlus, Loader2, Mail, Shield, AlertTriangle, MessageSquare, Link2, Trash2, ArrowDown, ArrowUp, Ban, RotateCcw, DollarSign, Award, CheckCircle2, Users, ShieldAlert, Search, UserRound, CreditCard } from "lucide-react";
 
 function RosterAvatar({ url, size = "h-9 w-9" }: { url?: string | null; size?: string }) {
   return url ? (
@@ -313,6 +313,9 @@ function Admin() {
           </Link>
           <Link to="/council-escalations" className="inline-flex items-center gap-2 rounded-md border border-crimson bg-crimson/10 px-4 py-2 text-sm font-semibold text-crimson hover:bg-crimson/20">
             <ShieldAlert className="h-4 w-4" /> Escalations
+          </Link>
+          <Link to="/council-payments" className="inline-flex items-center gap-2 rounded-md border border-gold bg-accent/30 px-4 py-2 text-sm font-semibold text-gold-deep hover:bg-accent/60">
+            <CreditCard className="h-4 w-4" /> Payments
           </Link>
         </div>
       </div>

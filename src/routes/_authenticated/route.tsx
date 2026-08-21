@@ -25,6 +25,7 @@ import {
   Plus,
   Headphones,
   Bell,
+  CreditCard,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -75,7 +76,7 @@ function AuthedShell() {
   // + choose-path stay off-limits regardless since those are "the paths."
   // The founder is always exempt from both.
   const consumerGated = isOrdinaryAdmin && !status.loading && status.consumerAccessStatus !== "granted";
-  const repAllowedPrefixes = ["/admin", "/council-reports", "/council-mentorship", "/council-escalations", "/profile"];
+  const repAllowedPrefixes = ["/admin", "/council-reports", "/council-mentorship", "/council-escalations", "/council-payments", "/profile"];
   useEffect(() => {
     if (!isOrdinaryAdmin) return;
     const blockedByPaths = pathname.startsWith("/playbooks") || pathname.startsWith("/choose-path");
@@ -244,6 +245,7 @@ function AuthedShell() {
     { to: "/report", label: "Report", icon: FileText, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/bps", label: "BPS", icon: Activity, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/dfy", label: "DFY Tracker", icon: DollarSign, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/payments", label: "Payments", icon: CreditCard, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/tpe", label: "TPE", icon: Headphones, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },
