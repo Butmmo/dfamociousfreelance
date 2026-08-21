@@ -1212,6 +1212,74 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_transactions: {
+        Row: {
+          amount_usd: number
+          charged_amount: number
+          charged_currency: string
+          created_at: string
+          id: string
+          marked_paid_by: string | null
+          marked_paid_note: string | null
+          metadata: Json
+          paid_at: string | null
+          provider: string
+          provider_reference: string | null
+          purpose: string
+          purpose_ref_id: string | null
+          signup_request_id: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_usd: number
+          charged_amount: number
+          charged_currency: string
+          created_at?: string
+          id?: string
+          marked_paid_by?: string | null
+          marked_paid_note?: string | null
+          metadata?: Json
+          paid_at?: string | null
+          provider: string
+          provider_reference?: string | null
+          purpose: string
+          purpose_ref_id?: string | null
+          signup_request_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_usd?: number
+          charged_amount?: number
+          charged_currency?: string
+          created_at?: string
+          id?: string
+          marked_paid_by?: string | null
+          marked_paid_note?: string | null
+          metadata?: Json
+          paid_at?: string | null
+          provider?: string
+          provider_reference?: string | null
+          purpose?: string
+          purpose_ref_id?: string | null
+          signup_request_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_signup_request_id_fkey"
+            columns: ["signup_request_id"]
+            isOneToOne: false
+            referencedRelation: "signup_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pocket_allocations: {
         Row: {
           created_at: string
@@ -1274,6 +1342,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bef_number: string | null
           bio: string | null
           bpn_enrolled_at: string | null
           city: string | null
@@ -1281,13 +1350,17 @@ export type Database = {
           consumer_access_status: string
           country: string | null
           created_at: string
+          dse_entry_paid_at: string | null
           email: string
           entry_channel: string
           full_name: string | null
           google_calendar_connected: boolean
           google_refresh_token: string | null
           id: string
+          nbo_id_card_number: string | null
           niche: string | null
+          nigeria_id_number: string | null
+          nigeria_id_type: string | null
           path_auto_assigned: boolean
           path_chosen_at: string | null
           path_deadline: string | null
@@ -1299,6 +1372,8 @@ export type Database = {
           reinstatement_fee_usd: number
           sponsor_name: string | null
           start_date: string | null
+          suc_entry_paid_at: string | null
+          suc_entry_tier: string | null
           suspended: boolean
           suspended_at: string | null
           suspended_by: string | null
@@ -1313,6 +1388,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bef_number?: string | null
           bio?: string | null
           bpn_enrolled_at?: string | null
           city?: string | null
@@ -1320,13 +1396,17 @@ export type Database = {
           consumer_access_status?: string
           country?: string | null
           created_at?: string
+          dse_entry_paid_at?: string | null
           email: string
           entry_channel?: string
           full_name?: string | null
           google_calendar_connected?: boolean
           google_refresh_token?: string | null
           id: string
+          nbo_id_card_number?: string | null
           niche?: string | null
+          nigeria_id_number?: string | null
+          nigeria_id_type?: string | null
           path_auto_assigned?: boolean
           path_chosen_at?: string | null
           path_deadline?: string | null
@@ -1338,6 +1418,8 @@ export type Database = {
           reinstatement_fee_usd?: number
           sponsor_name?: string | null
           start_date?: string | null
+          suc_entry_paid_at?: string | null
+          suc_entry_tier?: string | null
           suspended?: boolean
           suspended_at?: string | null
           suspended_by?: string | null
@@ -1352,6 +1434,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bef_number?: string | null
           bio?: string | null
           bpn_enrolled_at?: string | null
           city?: string | null
@@ -1359,13 +1442,17 @@ export type Database = {
           consumer_access_status?: string
           country?: string | null
           created_at?: string
+          dse_entry_paid_at?: string | null
           email?: string
           entry_channel?: string
           full_name?: string | null
           google_calendar_connected?: boolean
           google_refresh_token?: string | null
           id?: string
+          nbo_id_card_number?: string | null
           niche?: string | null
+          nigeria_id_number?: string | null
+          nigeria_id_type?: string | null
           path_auto_assigned?: boolean
           path_chosen_at?: string | null
           path_deadline?: string | null
@@ -1377,6 +1464,8 @@ export type Database = {
           reinstatement_fee_usd?: number
           sponsor_name?: string | null
           start_date?: string | null
+          suc_entry_paid_at?: string | null
+          suc_entry_tier?: string | null
           suspended?: boolean
           suspended_at?: string | null
           suspended_by?: string | null
@@ -1462,6 +1551,68 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      signup_requests: {
+        Row: {
+          bef_number: string | null
+          cohort_id: string | null
+          country: string | null
+          created_at: string
+          email: string
+          entry_channel: string
+          full_name: string
+          id: string
+          nbo_id_card_number: string | null
+          nigeria_id_number: string | null
+          nigeria_id_type: string | null
+          sponsor_name: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          bef_number?: string | null
+          cohort_id?: string | null
+          country?: string | null
+          created_at?: string
+          email: string
+          entry_channel?: string
+          full_name: string
+          id?: string
+          nbo_id_card_number?: string | null
+          nigeria_id_number?: string | null
+          nigeria_id_type?: string | null
+          sponsor_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          bef_number?: string | null
+          cohort_id?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          entry_channel?: string
+          full_name?: string
+          id?: string
+          nbo_id_card_number?: string | null
+          nigeria_id_number?: string | null
+          nigeria_id_type?: string | null
+          sponsor_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signup_requests_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       task_progress: {
         Row: {
