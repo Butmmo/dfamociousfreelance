@@ -364,6 +364,48 @@ export type Database = {
           },
         ]
       }
+      calendar_events: {
+        Row: {
+          all_day: boolean
+          color: string
+          created_at: string
+          description: string | null
+          end_at: string
+          id: string
+          location: string | null
+          start_at: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          all_day?: boolean
+          color?: string
+          created_at?: string
+          description?: string | null
+          end_at: string
+          id?: string
+          location?: string | null
+          start_at: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          all_day?: boolean
+          color?: string
+          created_at?: string
+          description?: string | null
+          end_at?: string
+          id?: string
+          location?: string | null
+          start_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       check_ins: {
         Row: {
           admin_id: string
@@ -645,6 +687,60 @@ export type Database = {
         }
         Relationships: []
       }
+      emergency_withdrawal_requests: {
+        Row: {
+          amount_usd: number
+          auto_release_period: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          escalation_level: string
+          id: string
+          reason: string
+          rep_escalated_at: string | null
+          requested_at: string
+          second_escalated_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_usd: number
+          auto_release_period?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          escalation_level?: string
+          id?: string
+          reason: string
+          rep_escalated_at?: string | null
+          requested_at?: string
+          second_escalated_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_usd?: number
+          auto_release_period?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          escalation_level?: string
+          id?: string
+          reason?: string
+          rep_escalated_at?: string | null
+          requested_at?: string
+          second_escalated_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       escalations: {
         Row: {
           beneficiary_id: string
@@ -711,6 +807,36 @@ export type Database = {
           room?: string
           sender_id?: string
           sender_name?: string
+        }
+        Relationships: []
+      }
+      investment_unlocks: {
+        Row: {
+          amount_usd: number
+          id: string
+          is_annual_safeguard: boolean
+          note: string | null
+          unlocked_at: string
+          unlocked_by: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_usd: number
+          id?: string
+          is_annual_safeguard?: boolean
+          note?: string | null
+          unlocked_at?: string
+          unlocked_by?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_usd?: number
+          id?: string
+          is_annual_safeguard?: boolean
+          note?: string | null
+          unlocked_at?: string
+          unlocked_by?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1086,10 +1212,70 @@ export type Database = {
         }
         Relationships: []
       }
+      pocket_allocations: {
+        Row: {
+          created_at: string
+          emergency_usd: number
+          goal_id: string | null
+          id: string
+          investments_usd: number
+          mlm_actual_spend_usd: number
+          mlm_diverted_usd: number
+          mlm_usd: number
+          revenue_usd: number
+          savings_usd: number
+          target_month: string
+          updated_at: string
+          upkeep_usd: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emergency_usd?: number
+          goal_id?: string | null
+          id?: string
+          investments_usd?: number
+          mlm_actual_spend_usd?: number
+          mlm_diverted_usd?: number
+          mlm_usd?: number
+          revenue_usd?: number
+          savings_usd?: number
+          target_month: string
+          updated_at?: string
+          upkeep_usd?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emergency_usd?: number
+          goal_id?: string | null
+          id?: string
+          investments_usd?: number
+          mlm_actual_spend_usd?: number
+          mlm_diverted_usd?: number
+          mlm_usd?: number
+          revenue_usd?: number
+          savings_usd?: number
+          target_month?: string
+          updated_at?: string
+          upkeep_usd?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pocket_allocations_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "bps_monthly_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           bio: string | null
+          bpn_enrolled_at: string | null
           city: string | null
           cohort_id: string | null
           consumer_access_status: string
@@ -1106,6 +1292,7 @@ export type Database = {
           path_chosen_at: string | null
           path_deadline: string | null
           path_key: string | null
+          pocket_savings_started_at: string | null
           positioning_statement: string | null
           push_messages_enabled: boolean
           rank: Database["public"]["Enums"]["rank_tier"]
@@ -1127,6 +1314,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          bpn_enrolled_at?: string | null
           city?: string | null
           cohort_id?: string | null
           consumer_access_status?: string
@@ -1143,6 +1331,7 @@ export type Database = {
           path_chosen_at?: string | null
           path_deadline?: string | null
           path_key?: string | null
+          pocket_savings_started_at?: string | null
           positioning_statement?: string | null
           push_messages_enabled?: boolean
           rank?: Database["public"]["Enums"]["rank_tier"]
@@ -1164,6 +1353,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          bpn_enrolled_at?: string | null
           city?: string | null
           cohort_id?: string | null
           consumer_access_status?: string
@@ -1180,6 +1370,7 @@ export type Database = {
           path_chosen_at?: string | null
           path_deadline?: string | null
           path_key?: string | null
+          pocket_savings_started_at?: string | null
           positioning_statement?: string | null
           push_messages_enabled?: boolean
           rank?: Database["public"]["Enums"]["rank_tier"]
@@ -1241,6 +1432,33 @@ export type Database = {
           id?: string
           p256dh?: string
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      savings_withdrawal_permits: {
+        Row: {
+          amount_usd: number
+          created_at: string
+          cycle_ended_at: string
+          cycle_started_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount_usd?: number
+          created_at?: string
+          cycle_ended_at: string
+          cycle_started_at: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount_usd?: number
+          created_at?: string
+          cycle_ended_at?: string
+          cycle_started_at?: string
+          id?: string
           user_id?: string
         }
         Relationships: []
