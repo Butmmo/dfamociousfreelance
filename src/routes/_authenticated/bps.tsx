@@ -229,7 +229,7 @@ function CrmSection() {
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <input
             ref={fileInputRef}
             type="file"
@@ -240,13 +240,13 @@ function CrmSection() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={importing}
-            className="inline-flex items-center gap-1.5 rounded-md border border-input px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-md border border-input px-3 py-2 text-sm font-semibold hover:bg-muted disabled:opacity-60"
           >
             {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Import CSV
           </button>
           <button
             onClick={() => setEditing("new")}
-            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" /> Add client
           </button>
