@@ -13,7 +13,7 @@ import {
   type EntryChannel, type SucEntryTier,
 } from "@/lib/payments";
 
-const SITE_URL = "https://dfamociousincubator.lovable.app";
+export const SITE_URL = "https://dfamociousincubator.lovable.app";
 
 /** Everything the beneficiary's /payments page needs. */
 export const getMyPayments = createServerFn({ method: "POST" })
@@ -41,9 +41,9 @@ export const getMyPayments = createServerFn({ method: "POST" })
     };
   });
 
-/** Creates a pending ledger row — the one thing every purpose shares before diverging into a provider-specific checkout call. */
-async function createPendingTransaction(supabaseAdmin: any, row: {
-  user_id: string; purpose: string; purpose_ref_id?: string | null; provider: string;
+/** Creates a pending ledger row — the one thing every purpose shares before diverging into a provider-specific checkout call. Exported for signup.functions.ts, whose checkout rows have no user_id yet (signup_request_id instead). */
+export async function createPendingTransaction(supabaseAdmin: any, row: {
+  user_id?: string | null; signup_request_id?: string | null; purpose: string; purpose_ref_id?: string | null; provider: string;
   amount_usd: number; charged_currency: string; charged_amount: number; metadata?: Record<string, unknown>;
 }) {
   const { data, error } = await supabaseAdmin
@@ -54,14 +54,17 @@ async function createPendingTransaction(supabaseAdmin: any, row: {
   return data.id as string;
 }
 
-async function createStripeCheckout(txId: string, amountUsd: number, description: string) {
+export async function createStripeCheckout(
+  txId: string, amountUsd: number, description: string,
+  redirects: { successUrl?: string; cancelUrl?: string } = {},
+) {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error("Payments aren't configured yet — Stripe isn't connected. Contact an admin.");
   const body = new URLSearchParams({
     "mode": "payment",
     "client_reference_id": txId,
-    "success_url": `${SITE_URL}/payments?paid=1`,
-    "cancel_url": `${SITE_URL}/payments?cancelled=1`,
+    "success_url": redirects.successUrl ?? `${SITE_URL}/payments?paid=1`,
+    "cancel_url": redirects.cancelUrl ?? `${SITE_URL}/payments?cancelled=1`,
     "line_items[0][quantity]": "1",
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": String(Math.round(amountUsd * 100)),
@@ -77,7 +80,10 @@ async function createStripeCheckout(txId: string, amountUsd: number, description
   return session.url as string;
 }
 
-async function createPaystackCheckout(txId: string, email: string, amountNgn: number, description: string) {
+export async function createPaystackCheckout(
+  txId: string, email: string, amountNgn: number, description: string,
+  redirects: { callbackUrl?: string } = {},
+) {
   const key = process.env.PAYSTACK_SECRET_KEY;
   if (!key) throw new Error("Payments aren't configured yet — Paystack isn't connected. Contact an admin.");
   const res = await fetch("https://api.paystack.co/transaction/initialize", {
@@ -85,7 +91,7 @@ async function createPaystackCheckout(txId: string, email: string, amountNgn: nu
     headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       email, amount: Math.round(amountNgn * 100), reference: txId,
-      callback_url: `${SITE_URL}/payments?paid=1`,
+      callback_url: redirects.callbackUrl ?? `${SITE_URL}/payments?paid=1`,
       metadata: { description },
     }),
   });
@@ -192,12 +198,23 @@ export const listAllPayments = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows } = await supabaseAdmin
       .from("payment_transactions").select("*").order("created_at", { ascending: false }).limit(300);
-    const userIds = Array.from(new Set((rows ?? []).map((r: any) => r.user_id)));
-    const { data: people } = userIds.length
-      ? await supabaseAdmin.from("profiles").select("id,full_name,email,bef_number,nbo_id_card_number,nigeria_id_type,nigeria_id_number").in("id", userIds)
-      : { data: [] as any[] };
+    const userIds = Array.from(new Set((rows ?? []).map((r: any) => r.user_id).filter(Boolean)));
+    const signupIds = Array.from(new Set((rows ?? []).map((r: any) => r.signup_request_id).filter(Boolean)));
+    const [{ data: people }, { data: signups }] = await Promise.all([
+      userIds.length
+        ? supabaseAdmin.from("profiles").select("id,full_name,email,bef_number,nbo_id_card_number,nigeria_id_type,nigeria_id_number").in("id", userIds)
+        : Promise.resolve({ data: [] as any[] }),
+      signupIds.length
+        ? supabaseAdmin.from("signup_requests").select("id,full_name,email,bef_number,nbo_id_card_number,nigeria_id_type,nigeria_id_number").in("id", signupIds)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
     const byId = new Map((people ?? []).map((p: any) => [p.id, p]));
-    return (rows ?? []).map((r: any) => ({ ...r, beneficiary: byId.get(r.user_id) ?? null }));
+    const bySignupId = new Map((signups ?? []).map((s: any) => [s.id, s]));
+    return (rows ?? []).map((r: any) => ({
+      ...r,
+      beneficiary: byId.get(r.user_id) ?? (r.signup_request_id ? bySignupId.get(r.signup_request_id) : null) ?? null,
+      is_new_signup: !r.user_id && !!r.signup_request_id,
+    }));
   });
 
 const markPaidSchema = z.object({
@@ -220,9 +237,47 @@ export const markPaymentPaid = createServerFn({ method: "POST" })
       status: "succeeded", paid_at: new Date().toISOString(), marked_paid_by: context.userId, marked_paid_note: data.note,
     }).eq("id", data.transaction_id);
     if (error) throw error;
-    await applyPaymentSuccess(supabaseAdmin, tx);
+    if (!tx.user_id && tx.signup_request_id) {
+      await provisionFromSignup(supabaseAdmin, tx);
+    } else {
+      await applyPaymentSuccess(supabaseAdmin, tx);
+    }
     return { ok: true };
   });
+
+/**
+ * A signup paid by bank transfer/cash before either provider is live —
+ * exactly the same provisioning the two webhooks do on a real Stripe/
+ * Paystack confirmation, just triggered by an admin's manual override
+ * instead. Turns the signup_requests row into a real account: invites the
+ * email (handle_new_user creates auth.users + profiles synchronously),
+ * then backfills identification + dse_entry_paid_at onto that profile.
+ */
+async function provisionFromSignup(supabaseAdmin: any, tx: any) {
+  const { data: signup } = await supabaseAdmin.from("signup_requests").select("*").eq("id", tx.signup_request_id).maybeSingle();
+  if (!signup || signup.status !== "pending") return;
+
+  await supabaseAdmin.from("invitations").insert({
+    email: signup.email, full_name: signup.full_name, role: "beneficiary",
+    cohort_id: signup.cohort_id, sponsor_name: signup.sponsor_name, entry_channel: signup.entry_channel,
+  });
+
+  const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(signup.email, {
+    data: { full_name: signup.full_name },
+    redirectTo: `${SITE_URL}/accept-invite`,
+  });
+  if (error || !invited?.user?.id) throw error ?? new Error("Couldn't create the account.");
+  const newUserId = invited.user.id as string;
+
+  await supabaseAdmin.from("profiles").update({
+    bef_number: signup.bef_number, nbo_id_card_number: signup.nbo_id_card_number,
+    nigeria_id_type: signup.nigeria_id_type, nigeria_id_number: signup.nigeria_id_number,
+    dse_entry_paid_at: new Date().toISOString(),
+  }).eq("id", newUserId);
+
+  await supabaseAdmin.from("payment_transactions").update({ user_id: newUserId }).eq("id", tx.id);
+  await supabaseAdmin.from("signup_requests").update({ status: "provisioned", user_id: newUserId }).eq("id", signup.id);
+}
 
 /** Shared by both the manual-override path above and the two webhooks — updates the linked record for whichever purpose just got paid. Exported so the edge functions... actually edge functions run in Deno and can't import this; they duplicate this logic themselves, same as every other edge function in this codebase duplicates its own small pieces of src/lib. */
 async function applyPaymentSuccess(supabaseAdmin: any, tx: any) {

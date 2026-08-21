@@ -5,7 +5,7 @@ import founderAsset from "@/assets/founder.jpg.asset.json";
 import {
   Crown, Shield, Target, Flame, TrendingUp, Calendar, Lock, Award,
   Calculator, LayoutDashboard, LineChart, Users, Bell, CheckCircle2, Mail,
-  MessageSquare, Timer, ArrowRight, Gauge, FileDown, Compass, Layers, Store,
+  MessageSquare, Timer, Gauge, FileDown, Compass, Layers, Store,
   Banknote, GraduationCap, Building2, HeartHandshake,
 } from "lucide-react";
 
@@ -177,12 +177,20 @@ function Landing() {
             <a href="#group" className="hover:text-primary transition">Group &amp; BEF</a>
             <a href="#founder" className="hover:text-primary transition">Founder</a>
           </nav>
-          <Link
-            to="/auth"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal"
-          >
-            <Lock className="h-4 w-4" /> Beneficiary Login
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/signup"
+              className="hidden sm:inline-flex items-center gap-2 rounded-md border border-gold px-4 py-2 text-sm font-semibold hover:bg-accent/40 transition"
+            >
+              Apply Now
+            </Link>
+            <Link
+              to="/auth"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal"
+            >
+              <Lock className="h-4 w-4" /> Beneficiary Login
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -203,8 +211,8 @@ function Landing() {
               that proof into a business you own — digital or traditional.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
-              <Link to="/auth" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">
-                <Shield className="h-5 w-5" /> Enter as Beneficiary
+              <Link to="/signup" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">
+                <Shield className="h-5 w-5" /> Apply for DSE Entry
               </Link>
               <a href="#stages" className="inline-flex items-center gap-2 rounded-md border border-gold px-6 py-3 text-base font-semibold hover:bg-accent/40 transition">
                 <Compass className="h-5 w-5" /> See the two stages
@@ -602,18 +610,18 @@ function Landing() {
       <section>
         <div className="mx-auto max-w-4xl px-6 py-24 text-center">
           <Motto />
-          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The gate opens by invitation.</h2>
+          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The gate opens to those who apply.</h2>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            DBI is closed to public sign-up. If your email has been registered by an admin, your invitation is already
-            in your inbox — use it to set your password and step inside.
+            Fill in your details, pick a cohort, and pay the DSE entry fee — your account is created the moment
+            payment is confirmed. Already invited by an admin? Your invitation is in your inbox.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link to="/auth" className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">
+            <Link to="/signup" className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">
+              <Shield className="h-5 w-5" /> Apply for DSE Entry
+            </Link>
+            <Link to="/auth" className="inline-flex items-center gap-2 rounded-md border border-gold px-8 py-4 text-base font-semibold hover:bg-accent/40 transition">
               <Lock className="h-5 w-5" /> Beneficiary Login
             </Link>
-            <a href="#dse" className="inline-flex items-center gap-2 rounded-md border border-gold px-8 py-4 text-base font-semibold hover:bg-accent/40 transition">
-              See what's inside <ArrowRight className="h-5 w-5" />
-            </a>
           </div>
         </div>
       </section>

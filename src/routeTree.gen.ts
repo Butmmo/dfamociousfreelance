@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -53,6 +54,11 @@ import { Route as AuthenticatedPlaybooksAscentTargetingRouteImport } from './rou
 import { Route as AuthenticatedPlaybooksAscentMachineRouteImport } from './routes/_authenticated/playbooks/ascent-machine'
 import { Route as AuthenticatedPlaybooksAscentCalculatorRouteImport } from './routes/_authenticated/playbooks/ascent-calculator'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -299,6 +305,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
+  '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bps': typeof AuthenticatedBpsRoute
   '/calendar': typeof AuthenticatedCalendarRoute
@@ -343,6 +350,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
+  '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bps': typeof AuthenticatedBpsRoute
   '/calendar': typeof AuthenticatedCalendarRoute
@@ -389,6 +397,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/accept-invite': typeof AcceptInviteRoute
   '/auth': typeof AuthRoute
+  '/signup': typeof SignupRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bps': typeof AuthenticatedBpsRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
@@ -435,6 +444,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accept-invite'
     | '/auth'
+    | '/signup'
     | '/admin'
     | '/bps'
     | '/calendar'
@@ -479,6 +489,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accept-invite'
     | '/auth'
+    | '/signup'
     | '/admin'
     | '/bps'
     | '/calendar'
@@ -524,6 +535,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/accept-invite'
     | '/auth'
+    | '/signup'
     | '/_authenticated/admin'
     | '/_authenticated/bps'
     | '/_authenticated/calendar'
@@ -570,10 +582,18 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AcceptInviteRoute: typeof AcceptInviteRoute
   AuthRoute: typeof AuthRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -989,6 +1009,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AcceptInviteRoute: AcceptInviteRoute,
   AuthRoute: AuthRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

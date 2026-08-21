@@ -102,7 +102,12 @@ function CouncilPayments() {
               <tbody>
                 {pending.map((r) => (
                   <tr key={r.id} className="border-b border-border last:border-0">
-                    <td className="py-2 px-3">{r.beneficiary?.full_name ?? r.beneficiary?.email ?? "—"}</td>
+                    <td className="py-2 px-3">
+                      {r.beneficiary?.full_name ?? r.beneficiary?.email ?? "—"}
+                      {r.is_new_signup && (
+                        <span className="ml-1.5 rounded-full bg-gold/15 px-1.5 py-0.5 text-[9px] font-bold tracking-widest text-gold-deep align-middle">NEW APPLICANT</span>
+                      )}
+                    </td>
                     <td className="py-2 px-3">{PAYMENT_PURPOSE_LABELS[r.purpose as keyof typeof PAYMENT_PURPOSE_LABELS] ?? r.purpose}</td>
                     <td className="py-2 px-3 capitalize">{r.provider}</td>
                     <td className="py-2 px-3">{r.charged_currency === "NGN" ? `₦${Number(r.charged_amount).toLocaleString()}` : `$${Number(r.charged_amount).toFixed(2)}`}</td>

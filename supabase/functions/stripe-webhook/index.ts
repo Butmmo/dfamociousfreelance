@@ -8,6 +8,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendWebPush } from "../_shared/push.ts";
 
+const SITE_URL = "https://dfamociousincubator.lovable.app";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
@@ -38,6 +40,56 @@ async function applyPaymentSuccess(supa: any, tx: any) {
       suc_entry_paid_at: new Date().toISOString(), suc_entry_tier: tx.metadata?.suc_tier ?? null,
     }).eq("id", tx.user_id);
   }
+}
+
+/**
+ * A paid public signup: no auth.users row exists yet, only a
+ * signup_requests row (see src/lib/signup.functions.ts). Payment is what
+ * turns the application into a real account — invites the email (which
+ * synchronously creates auth.users + profiles via handle_new_user, same
+ * trigger the admin-invite flow uses), then backfills the identification
+ * fields and dse_entry_paid_at onto the profile it just created. Returns
+ * the new user id, or null if this signup was already provisioned
+ * (webhook redelivery).
+ */
+async function provisionFromSignup(supa: any, tx: any): Promise<string | null> {
+  const { data: signup } = await supa.from("signup_requests").select("*").eq("id", tx.signup_request_id).maybeSingle();
+  if (!signup || signup.status !== "pending") return null;
+
+  await supa.from("invitations").insert({
+    email: signup.email, full_name: signup.full_name, role: "beneficiary",
+    cohort_id: signup.cohort_id, sponsor_name: signup.sponsor_name, entry_channel: signup.entry_channel,
+  });
+
+  const { data: invited, error } = await supa.auth.admin.inviteUserByEmail(signup.email, {
+    data: { full_name: signup.full_name },
+    redirectTo: `${SITE_URL}/accept-invite`,
+  });
+  if (error || !invited?.user?.id) return null;
+  const newUserId = invited.user.id as string;
+
+  await supa.from("profiles").update({
+    bef_number: signup.bef_number, nbo_id_card_number: signup.nbo_id_card_number,
+    nigeria_id_type: signup.nigeria_id_type, nigeria_id_number: signup.nigeria_id_number,
+    dse_entry_paid_at: new Date().toISOString(),
+  }).eq("id", newUserId);
+
+  await supa.from("payment_transactions").update({ user_id: newUserId }).eq("id", tx.id);
+  await supa.from("signup_requests").update({ status: "provisioned", user_id: newUserId }).eq("id", signup.id);
+
+  const { data: admins } = await supa.from("user_roles").select("user_id").eq("role", "admin");
+  await sendWebPush(supa, {
+    user_ids: (admins ?? []).map((a: any) => a.user_id), category: "admin",
+    title: "New DSE entry — beneficiary provisioned",
+    body: `${signup.full_name} paid and was added to the cohort.`,
+    url: "/council-payments",
+  });
+  await supa.from("mentee_activity_feed").insert({
+    mentee_id: newUserId, kind: "payment_confirmed", title: "DSE Entry — payment confirmed",
+    body: `$${Number(tx.amount_usd).toFixed(2)} received via Stripe.`,
+  });
+
+  return newUserId;
 }
 
 const PURPOSE_LABELS: Record<string, string> = {
@@ -78,19 +130,31 @@ Deno.serve(async (req) => {
   await supa.from("payment_transactions").update({
     status: "succeeded", paid_at: new Date().toISOString(), provider_reference: session.id,
   }).eq("id", txId);
-  await applyPaymentSuccess(supa, tx);
+
+  let userId = tx.user_id as string | null;
+  if (!userId && tx.signup_request_id) {
+    userId = await provisionFromSignup(supa, tx);
+  } else {
+    await applyPaymentSuccess(supa, tx);
+  }
+  if (!userId) return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   const label = PURPOSE_LABELS[tx.purpose] ?? tx.purpose;
   await sendWebPush(supa, {
-    user_ids: [tx.user_id], category: "admin",
+    user_ids: [userId], category: "admin",
     title: `${label} payment confirmed`,
     body: `$${Number(tx.amount_usd).toFixed(2)} received via Stripe.`,
     url: "/payments",
   });
-  await supa.from("mentee_activity_feed").insert({
-    mentee_id: tx.user_id, kind: "payment_confirmed", title: `${label} — payment confirmed`,
-    body: `$${Number(tx.amount_usd).toFixed(2)} received via Stripe.`,
-  });
+  if (tx.user_id) {
+    // The signup-provisioning path above already logs its own activity-feed
+    // entry (it needs the freshly created user id, which doesn't exist yet
+    // when this file's mentee_activity_feed insert would otherwise fire).
+    await supa.from("mentee_activity_feed").insert({
+      mentee_id: userId, kind: "payment_confirmed", title: `${label} — payment confirmed`,
+      body: `$${Number(tx.amount_usd).toFixed(2)} received via Stripe.`,
+    });
+  }
 
   return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });

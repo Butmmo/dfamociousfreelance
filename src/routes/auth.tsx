@@ -111,7 +111,7 @@ function AuthPage() {
                 <Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link>
               </div>
               <p className="mt-8 text-xs text-muted-foreground border-t border-border pt-6">
-                <strong>Note:</strong> DBI is invitation-only. Public sign-up is closed. If you don't have an invitation, request access from an admin.
+                No account yet? <Link to="/signup" className="text-primary hover:underline">Apply for DSE entry</Link> — fill your details, pick a cohort, and pay to get started.
               </p>
             </>
           ) : (
