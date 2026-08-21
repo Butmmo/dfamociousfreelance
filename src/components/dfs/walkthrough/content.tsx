@@ -72,7 +72,7 @@ export const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     icon: Wallet,
     eyebrow: "Payments & the Pocket System",
     title: "Money, handled the way a real institution handles it",
-    body: "DSE entry, DFY remittances, and SUC entry all run through Payments — Stripe for the world, or NBO's further-subsidized Paystack rate if you're in Nigeria through that channel. Once income starts moving, the Pocket System governs how it's actually managed: a monthly floor and ceiling, savings that unlock on a real schedule, and a genuine emergency-withdrawal process instead of a suggestion box.",
+    body: "DSE entry, DFY remittances, and SUC entry all run through Payments — via Paystack for now, in USD worldwide or NBO's further-subsidized local NGN rate once your NIN is verified. Once income starts moving, the Pocket System governs how it's actually managed: a monthly floor and ceiling, savings that unlock on a real schedule, and a genuine emergency-withdrawal process instead of a suggestion box.",
     highlights: [
       "Payments — entry fees and remittances, every receipt kept automatically",
       "Pocket System — structured income management, not just 'save what's left'",

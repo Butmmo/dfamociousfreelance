@@ -2,28 +2,23 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { submitSignup } from "@/lib/signup.functions";
+import { checkNin } from "@/lib/payments.functions";
 import { DSE_ENTRY_USD, DSE_ENTRY_NGN_NBO, LOCAL_EQUIVALENT_DISCLAIMER, type EntryChannel } from "@/lib/payments";
 import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft, CheckCircle2, XCircle, IdCard, Send } from "lucide-react";
+import { Loader2, ArrowLeft, CheckCircle2, XCircle, IdCard, Send, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Apply — DBI" }] }),
   component: SignupPage,
 });
 
-const NIGERIA_ID_TYPES: { value: string; label: string }[] = [
-  { value: "nin", label: "NIN" },
-  { value: "voters_card", label: "Voter's Card" },
-  { value: "drivers_license", label: "Driver's License" },
-  { value: "passport", label: "International Passport" },
-];
-
 function SignupPage() {
   const submitFn = useServerFn(submitSignup);
+  const checkNinFn = useServerFn(checkNin);
 
   const [redirectState, setRedirectState] = useState<"paid" | "cancelled" | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,10 +26,9 @@ function SignupPage() {
   const [sponsorName, setSponsorName] = useState("");
   const [entryChannel, setEntryChannel] = useState<EntryChannel>("direct");
   const [befNumber, setBefNumber] = useState("");
-  const [nboIdCardNumber, setNboIdCardNumber] = useState("");
-  const [nigeriaIdType, setNigeriaIdType] = useState("");
-  const [nigeriaIdNumber, setNigeriaIdNumber] = useState("");
-  const [provider, setProvider] = useState<"stripe" | "paystack">("stripe");
+  const [ninNumber, setNinNumber] = useState("");
+  const [ninVerified, setNinVerified] = useState(false);
+  const [verifyingNin, setVerifyingNin] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -42,36 +36,44 @@ function SignupPage() {
     else if (params.get("cancelled") === "1") setRedirectState("cancelled");
   }, []);
 
-  useEffect(() => {
-    if (entryChannel !== "nbo" && provider === "paystack") setProvider("stripe");
-  }, [entryChannel, provider]);
+  // NIN verification is tied to the exact number+name pair it was checked
+  // against — editing either after a successful check invalidates it, so
+  // the ₦75,000 button can never ride on a stale verification.
+  useEffect(() => { setNinVerified(false); }, [ninNumber, fullName]);
 
-  const hasNboId = !!(befNumber.trim() || nboIdCardNumber.trim());
-  const hasNigeriaId = !!(nigeriaIdType && nigeriaIdNumber.trim());
+  const verifyNin = async () => {
+    if (!fullName.trim()) { toast.error("Enter your full name first."); return; }
+    if (!/^\d{11}$/.test(ninNumber.trim())) { toast.error("NIN must be 11 digits."); return; }
+    setVerifyingNin(true);
+    try {
+      await checkNinFn({ data: { full_name: fullName.trim(), nin_number: ninNumber.trim() } });
+      setNinVerified(true);
+      toast.success("NIN verified.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Couldn't verify that NIN.");
+    }
+    setVerifyingNin(false);
+  };
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (entryChannel === "nbo" && !hasNboId) {
-      toast.error("Provide your BEF number or NBO Identity card number."); return;
-    }
-    if (provider === "paystack" && !hasNigeriaId) {
-      toast.error("Nigerian NBO applicants must provide a means of identification for Paystack."); return;
-    }
-    setSubmitting(true);
+  const pay = async (currency: "USD" | "NGN") => {
+    if (!fullName.trim() || !email.trim()) { toast.error("Fill in your name and email."); return; }
+    if (entryChannel === "nbo" && !befNumber.trim()) { toast.error("Provide your BEF Reg. Number."); return; }
+    if (currency === "NGN" && !ninVerified) { toast.error("Verify your NIN first."); return; }
+    setBusyKey(currency);
     try {
       const { url } = await submitFn({
         data: {
           full_name: fullName.trim(), email: email.trim(), country: country.trim() || undefined,
           sponsor_name: sponsorName.trim() || undefined, entry_channel: entryChannel,
-          bef_number: befNumber.trim() || undefined, nbo_id_card_number: nboIdCardNumber.trim() || undefined,
-          nigeria_id_type: (nigeriaIdType || undefined) as any, nigeria_id_number: nigeriaIdNumber.trim() || undefined,
-          provider,
+          bef_number: befNumber.trim() || undefined,
+          nin_number: currency === "NGN" ? ninNumber.trim() : undefined,
+          currency,
         },
       });
       window.location.href = url;
     } catch (err: any) {
       toast.error(err.message ?? "Couldn't start checkout.");
-      setSubmitting(false);
+      setBusyKey(null);
     }
   };
 
@@ -106,7 +108,7 @@ function SignupPage() {
             </Link>
           </div>
         ) : (
-          <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-xl border border-border bg-card p-6 shadow-regal">
+          <div className="mt-8 space-y-4 rounded-xl border border-border bg-card p-6 shadow-regal">
             {redirectState === "cancelled" && (
               <div className="rounded-lg border border-crimson/40 bg-crimson/10 p-3 text-xs text-crimson flex items-center gap-2">
                 <XCircle className="h-4 w-4 shrink-0" /> Checkout was cancelled — your details below weren't saved. Fill the form again when you're ready.
@@ -136,55 +138,66 @@ function SignupPage() {
             </label>
 
             {entryChannel === "nbo" && (
-              <div className="rounded-lg border border-border p-3">
-                <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
-                  <IdCard className="h-3.5 w-3.5" /> NBO Identification — required
+              <>
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
+                    <IdCard className="h-3.5 w-3.5" /> BEF Reg. Number — required
+                  </div>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Your BEF Registration Number is enough to confirm NBO access — no separate NBO Identity card needed.
+                  </p>
+                  <input type="text" placeholder="BEF Reg. Number" value={befNumber} onChange={(e) => setBefNumber(e.target.value)}
+                    className="mt-2 w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
                 </div>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  Every NBO participant must present their BEF number or NBO Identity card number. Nigerian NBO
-                  applicants paying via Paystack must also provide a means of identification.
-                </p>
-                <div className="mt-2 grid sm:grid-cols-2 gap-2">
-                  <input type="text" placeholder="BEF number" value={befNumber} onChange={(e) => setBefNumber(e.target.value)}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
-                  <input type="text" placeholder="NBO Identity card number" value={nboIdCardNumber} onChange={(e) => setNboIdCardNumber(e.target.value)}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
-                  <select value={nigeriaIdType} onChange={(e) => setNigeriaIdType(e.target.value)}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs">
-                    <option value="">Nigeria ID type (for Paystack) — optional</option>
-                    {NIGERIA_ID_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
-                  <input type="text" placeholder="Nigeria ID number" value={nigeriaIdNumber} onChange={(e) => setNigeriaIdNumber(e.target.value)}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
+
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Verify your NIN — unlocks the ₦75,000 local rate
+                  </div>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Only Nigerian NBO applicants who verify their NIN against their name above can pay the further-subsidized
+                    local rate. Just the 11-digit number — no NIN slip or ID card upload needed. Everyone else pays ${DSE_ENTRY_USD.nbo} via Paystack.
+                  </p>
+                  <div className="mt-2 flex gap-2">
+                    <input type="text" placeholder="NIN (11 digits)" value={ninNumber}
+                      onChange={(e) => setNinNumber(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                      className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
+                    <button type="button" onClick={verifyNin} disabled={verifyingNin || ninVerified}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60 whitespace-nowrap">
+                      {verifyingNin ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                      {ninVerified ? "Verified" : "Verify NIN"}
+                    </button>
+                  </div>
+                  {ninVerified && (
+                    <p className="mt-2 text-[11px] text-emerald-600 inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> NIN verified — the local rate is unlocked below.</p>
+                  )}
                 </div>
-              </div>
+              </>
             )}
 
-            <label className="block">
-              <span className="text-xs tracking-widest text-muted-foreground font-medium">Pay with</span>
-              <div className="mt-2 grid grid-cols-2 gap-2">
-                <button type="button" onClick={() => setProvider("stripe")}
-                  className={`rounded-md border px-3 py-2 text-sm font-semibold ${provider === "stripe" ? "border-primary bg-primary/10 text-primary" : "border-input"}`}>
-                  Stripe (international) — ${dseAmount}
+            <div className="pt-2 space-y-2">
+              <span className="text-xs tracking-widest text-muted-foreground font-medium">Pay with Paystack</span>
+              <button type="button" onClick={() => pay("USD")} disabled={busyKey !== null}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 shadow-regal">
+                {busyKey === "USD" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Pay ${dseAmount} via Paystack
+              </button>
+              {entryChannel === "nbo" && ninVerified && (
+                <button type="button" onClick={() => pay("NGN")} disabled={busyKey !== null}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-gold px-4 py-3 font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60">
+                  {busyKey === "NGN" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  Pay ₦{DSE_ENTRY_NGN_NBO.toLocaleString()} via Paystack (Nigeria)
                 </button>
-                <button type="button" disabled={entryChannel !== "nbo"} onClick={() => setProvider("paystack")}
-                  className={`rounded-md border px-3 py-2 text-sm font-semibold disabled:opacity-40 ${provider === "paystack" ? "border-primary bg-primary/10 text-primary" : "border-input"}`}>
-                  Paystack (Nigeria) — ₦{DSE_ENTRY_NGN_NBO.toLocaleString()}
-                </button>
-              </div>
-              {entryChannel !== "nbo" && <p className="mt-1 text-[11px] text-muted-foreground">Paystack is only available for NBO-subsidized entry.</p>}
-            </label>
-
-            <button type="submit" disabled={submitting}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 shadow-regal">
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Continue to payment
-            </button>
+              )}
+              <p className="text-[10px] text-muted-foreground">
+                Stripe is temporarily unavailable — every payment runs through Paystack for now, in USD or (once verified) NGN.
+              </p>
+            </div>
 
             <p className="text-xs text-muted-foreground border-t border-border pt-4">
               Already have an account? <Link to="/auth" className="text-primary hover:underline">Log in</Link> and use the Payments page instead.
             </p>
-          </form>
+          </div>
         )}
       </div>
     </div>

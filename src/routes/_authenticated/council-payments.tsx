@@ -16,9 +16,8 @@ function IdentificationCell({ b }: { b: any }) {
   if (!b) return <span className="text-muted-foreground">—</span>;
   const parts: string[] = [];
   if (b.bef_number) parts.push(`BEF# ${b.bef_number}`);
-  if (b.nbo_id_card_number) parts.push(`NBO ID ${b.nbo_id_card_number}`);
   if (b.nigeria_id_type && b.nigeria_id_number) {
-    parts.push(`${NIGERIA_ID_LABELS[b.nigeria_id_type] ?? b.nigeria_id_type} ${b.nigeria_id_number}`);
+    parts.push(`${NIGERIA_ID_LABELS[b.nigeria_id_type] ?? b.nigeria_id_type} ${b.nigeria_id_number}${b.nigeria_id_verified_at ? " ✓" : ""}`);
   }
   if (parts.length === 0) return <span className="text-crimson">Not provided</span>;
   return (
@@ -81,7 +80,7 @@ function CouncilPayments() {
         <h1 className="mt-3 font-display text-4xl font-bold flex items-center gap-3">
           <CreditCard className="h-9 w-9 text-gold" /> Payments
         </h1>
-        <p className="text-muted-foreground">DSE entry, DFY remittances, and SUC entry — Stripe and Paystack transactions, plus manual reconciliation for anything paid outside the app.</p>
+        <p className="text-muted-foreground">DSE entry, DFY remittances, and SUC entry — Paystack transactions (Stripe is temporarily on hold), plus manual reconciliation for anything paid outside the app.</p>
       </div>
 
       <section>

@@ -1,8 +1,10 @@
-// Paystack's confirmation of a successful charge — the only payment this
-// ever handles is the further-subsidized ₦75,000 NBO DSE entry fee (see
-// src/lib/payments.ts). Verifies the x-paystack-signature header
-// (HMAC-SHA512 of the raw body, keyed with the Paystack secret) before
-// trusting anything in the body. Mirrors stripe-webhook's shape.
+// Paystack's confirmation of a successful charge. Stripe is temporarily
+// off, so every payment purpose (DSE entry — USD or NBO's further-
+// subsidized flat ₦75,000 NGN rate, DFY remittances, SUC entry) now runs
+// through here, not just the NGN NBO rate this file originally assumed.
+// Verifies the x-paystack-signature header (HMAC-SHA512 of the raw body,
+// keyed with the Paystack secret) before trusting anything in the body.
+// Mirrors stripe-webhook's shape.
 
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -24,6 +26,27 @@ async function verifyPaystackSignature(payload: string, sigHeader: string | null
   const expectedHex = Array.from(new Uint8Array(sigBytes)).map((b) => b.toString(16).padStart(2, "0")).join("");
   return expectedHex === sigHeader;
 }
+
+/** Same "mark succeeded, update the linked record" logic as the manual-override path in payments.functions.ts — duplicated here since edge functions can't import from src/. */
+async function applyPaymentSuccess(supa: any, tx: any) {
+  if (tx.purpose === "dse_entry") {
+    await supa.from("profiles").update({ dse_entry_paid_at: new Date().toISOString() }).eq("id", tx.user_id);
+  } else if (tx.purpose === "dfy_remittance" && tx.purpose_ref_id) {
+    await supa.from("dfy_months").update({ remittance_paid: true, remittance_paid_at: new Date().toISOString() }).eq("id", tx.purpose_ref_id);
+  } else if (tx.purpose === "suc_entry") {
+    await supa.from("profiles").update({
+      suc_entry_paid_at: new Date().toISOString(), suc_entry_tier: tx.metadata?.suc_tier ?? null,
+    }).eq("id", tx.user_id);
+  }
+}
+
+function formatCharged(tx: any): string {
+  return tx.charged_currency === "NGN" ? `₦${Number(tx.charged_amount).toLocaleString()}` : `$${Number(tx.charged_amount).toFixed(2)}`;
+}
+
+const PURPOSE_LABELS: Record<string, string> = {
+  dse_entry: "DSE Entry", dfy_remittance: "DFY Remittance", suc_entry: "SUC Entry",
+};
 
 /**
  * A paid public signup: no auth.users row exists yet, only a
@@ -53,8 +76,9 @@ async function provisionFromSignup(supa: any, tx: any): Promise<string | null> {
   const newUserId = invited.user.id as string;
 
   await supa.from("profiles").update({
-    bef_number: signup.bef_number, nbo_id_card_number: signup.nbo_id_card_number,
+    bef_number: signup.bef_number,
     nigeria_id_type: signup.nigeria_id_type, nigeria_id_number: signup.nigeria_id_number,
+    nigeria_id_verified_at: signup.nigeria_id_verified_at,
     dse_entry_paid_at: new Date().toISOString(),
   }).eq("id", newUserId);
 
@@ -70,7 +94,7 @@ async function provisionFromSignup(supa: any, tx: any): Promise<string | null> {
   });
   await supa.from("mentee_activity_feed").insert({
     mentee_id: newUserId, kind: "payment_confirmed", title: "DSE Entry — payment confirmed",
-    body: `₦${Number(tx.charged_amount).toLocaleString()} received via Paystack.`,
+    body: `${formatCharged(tx)} received via Paystack.`,
   });
 
   return newUserId;
@@ -114,15 +138,15 @@ Deno.serve(async (req) => {
   if (!userId && tx.signup_request_id) {
     userId = await provisionFromSignup(supa, tx);
   } else if (userId) {
-    // Paystack only ever carries dse_entry — no need for the general purpose-switch stripe-webhook has.
-    await supa.from("profiles").update({ dse_entry_paid_at: new Date().toISOString() }).eq("id", userId);
+    await applyPaymentSuccess(supa, tx);
   }
   if (!userId) return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
+  const label = PURPOSE_LABELS[tx.purpose] ?? tx.purpose;
   await sendWebPush(supa, {
     user_ids: [userId], category: "admin",
-    title: "DSE Entry payment confirmed",
-    body: `₦${Number(tx.charged_amount).toLocaleString()} received via Paystack.`,
+    title: `${label} payment confirmed`,
+    body: `${formatCharged(tx)} received via Paystack.`,
     url: "/payments",
   });
   if (tx.user_id) {
@@ -130,8 +154,8 @@ Deno.serve(async (req) => {
     // entry (it needs the freshly created user id, which doesn't exist yet
     // when this file's mentee_activity_feed insert would otherwise fire).
     await supa.from("mentee_activity_feed").insert({
-      mentee_id: userId, kind: "payment_confirmed", title: "DSE Entry — payment confirmed",
-      body: `₦${Number(tx.charged_amount).toLocaleString()} received via Paystack.`,
+      mentee_id: userId, kind: "payment_confirmed", title: `${label} — payment confirmed`,
+      body: `${formatCharged(tx)} received via Paystack.`,
     });
   }
 

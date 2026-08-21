@@ -212,7 +212,7 @@ function PaymentsScreen() {
           <div className="text-[7px] font-semibold">DFY Remittance — March</div>
           <div className="mt-1 flex items-center justify-between">
             <span className="text-[8px] font-display font-bold text-gold-deep">$412.00</span>
-            <span className="rounded-md bg-primary px-1.5 py-0.5 text-[6px] font-semibold text-primary-foreground">Pay via Stripe</span>
+            <span className="rounded-md bg-primary px-1.5 py-0.5 text-[6px] font-semibold text-primary-foreground">Pay via Paystack</span>
           </div>
         </div>
         <div className="rounded-lg border border-gold/40 bg-accent/20 p-2">
@@ -249,7 +249,7 @@ function MessagesScreen() {
 
 function NotificationsScreen() {
   const items = [
-    { t: "DFY remittance confirmed", b: "$412.00 received via Stripe.", u: true },
+    { t: "DFY remittance confirmed", b: "$412.00 received via Paystack.", u: true },
     { t: "Weekly report is due", b: "Submit before Sunday 11:59pm.", u: true },
     { t: "Mentor check-in logged", b: "\"Strong week — keep the pace.\"", u: false },
     { t: "Belief Goal reminder", b: "Set next month's goal by the 1st.", u: false },
@@ -279,7 +279,7 @@ const APP_SCREENS = [
   { Screen: DashboardScreen, t: "Dashboard", d: "Rank, XP, streaks and today's missions the second you log in.", tilt: -3 },
   { Screen: CrmScreen, t: "Client CRM", d: "Your whole outreach pipeline — leads, stages, priority — never a spreadsheet again.", tilt: 2 },
   { Screen: CalendarScreen, t: "45-Day Calendar", d: "Days seal gold as tasks complete. Nothing falls through unseen.", tilt: -2 },
-  { Screen: PaymentsScreen, t: "Payments & Pocket", d: "DSE entry, DFY remittances and structured savings — Stripe or Paystack.", tilt: 3 },
+  { Screen: PaymentsScreen, t: "Payments & Pocket", d: "DSE entry, DFY remittances and structured savings — via Paystack.", tilt: 3 },
   { Screen: MessagesScreen, t: "Mentorship", d: "Your Rep, your mentor, your cohort — one tap away, video included.", tilt: -2 },
   { Screen: NotificationsScreen, t: "Notifications", d: "A running history of everything the Citadel has ever told you.", tilt: 2 },
 ];
@@ -345,7 +345,7 @@ const PROPRIETOR = [
 ];
 
 const ECONOMICS = [
-  { icon: GraduationCap, t: "DSE entry — $900", d: "One-time. Or $90 through NBO, the Blazer Empowerment Foundation subsidy built to open the gate to students who could not otherwise reach it — paid in-app via Stripe, or Paystack at the Nigeria rate." },
+  { icon: GraduationCap, t: "DSE entry — $900", d: "One-time. Or $90 through NBO, the Blazer Empowerment Foundation subsidy built to open the gate to students who could not otherwise reach it — paid in-app via Paystack, at the ₦75,000 local rate once your NIN is verified." },
   { icon: Banknote, t: "The D'Famocious Year", d: "Once you earn, 20% of every earning month returns to DBI until you complete 12 qualified months — each at $2,000+ net, not necessarily consecutive. Tracked and payable from your own Payments page." },
   { icon: Award, t: "V. DsE. certification", d: "Completing DFY earns the Vetted Digital Systems Engineer credential — the mark that Stage 1 was finished on real income, not attendance." },
   { icon: Layers, t: "The SUC ladder", d: "$2,000 by invitation, once DSE has produced $450k and five mentees carried through their own DFY. Skipping DSE costs $6,000 at 25% equity, or $24,000 with DBI's stake reduced to 10% — a ladder, not a cliff." },

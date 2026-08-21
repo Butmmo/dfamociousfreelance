@@ -1,25 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { usePaymentsGate } from "@/lib/use-payments-gate";
 import {
   getMyPayments, createDseEntryCheckout, createDfyRemittanceCheckout, createSucEntryCheckout,
+  verifyAndSaveNin,
 } from "@/lib/payments.functions";
 import {
   DSE_ENTRY_USD, DSE_ENTRY_NGN_NBO, LOCAL_EQUIVALENT_DISCLAIMER, SUC_ENTRY_TIERS,
   PAYMENT_PURPOSE_LABELS, type SucEntryTier, type EntryChannel,
 } from "@/lib/payments";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CreditCard, Loader2, CheckCircle2, Send, GraduationCap, TrendingUp, Rocket, IdCard, Save, Lock } from "lucide-react";
-
-const NIGERIA_ID_TYPES: { value: string; label: string }[] = [
-  { value: "nin", label: "NIN" },
-  { value: "voters_card", label: "Voter's Card" },
-  { value: "drivers_license", label: "Driver's License" },
-  { value: "passport", label: "International Passport" },
-];
+import { CreditCard, Loader2, CheckCircle2, Send, GraduationCap, TrendingUp, Rocket, IdCard, Save, Lock, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/payments")({
   head: () => ({ meta: [{ title: "Payments — DBI Citadel" }] }),
@@ -33,22 +27,22 @@ function PaymentsPage() {
   const dseFn = useServerFn(createDseEntryCheckout);
   const dfyFn = useServerFn(createDfyRemittanceCheckout);
   const sucFn = useServerFn(createSucEntryCheckout);
+  const verifyAndSaveNinFn = useServerFn(verifyAndSaveNin);
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [busyKey, setBusyKey] = useState<string | null>(null);
-  const [idForm, setIdForm] = useState({ befNumber: "", nboIdCardNumber: "", nigeriaIdType: "", nigeriaIdNumber: "" });
-  const [savingId, setSavingId] = useState(false);
+  const [befNumber, setBefNumber] = useState("");
+  const [savingBef, setSavingBef] = useState(false);
+  const [ninNumber, setNinNumber] = useState("");
+  const [verifyingNin, setVerifyingNin] = useState(false);
 
   const refresh = async () => {
     setLoading(true);
     try {
       const d = await summaryFn({ data: undefined as never });
       setData(d);
-      setIdForm({
-        befNumber: d.befNumber ?? "", nboIdCardNumber: d.nboIdCardNumber ?? "",
-        nigeriaIdType: d.nigeriaIdType ?? "", nigeriaIdNumber: d.nigeriaIdNumber ?? "",
-      });
+      setBefNumber(d.befNumber ?? "");
     } catch (e: any) { toast.error(e.message ?? "Failed to load payments"); }
     setLoading(false);
   };
@@ -65,30 +59,36 @@ function PaymentsPage() {
     }
   };
 
-  const saveIdentification = async () => {
+  const saveBefNumber = async () => {
     if (!user) return;
-    if (!idForm.befNumber.trim() && !idForm.nboIdCardNumber.trim()) {
-      toast.error("Provide your BEF number or NBO Identity card number."); return;
-    }
-    setSavingId(true);
-    const { error } = await supabase.from("profiles").update({
-      bef_number: idForm.befNumber.trim() || null,
-      nbo_id_card_number: idForm.nboIdCardNumber.trim() || null,
-      nigeria_id_type: idForm.nigeriaIdType || null,
-      nigeria_id_number: idForm.nigeriaIdNumber.trim() || null,
-    }).eq("id", user.id);
-    if (error) { toast.error(error.message); setSavingId(false); return; }
-    toast.success("Identification saved.");
-    setSavingId(false);
+    if (!befNumber.trim()) { toast.error("Provide your BEF Reg. Number."); return; }
+    setSavingBef(true);
+    const { error } = await supabase.from("profiles").update({ bef_number: befNumber.trim() }).eq("id", user.id);
+    if (error) { toast.error(error.message); setSavingBef(false); return; }
+    toast.success("BEF Reg. Number saved.");
+    setSavingBef(false);
     refresh();
+  };
+
+  const verifyNin = async () => {
+    if (!/^\d{11}$/.test(ninNumber.trim())) { toast.error("NIN must be 11 digits."); return; }
+    setVerifyingNin(true);
+    try {
+      await verifyAndSaveNinFn({ data: { nin_number: ninNumber.trim() } });
+      toast.success("NIN verified — the local rate is unlocked.");
+      refresh();
+    } catch (e: any) {
+      toast.error(e.message ?? "Couldn't verify that NIN.");
+    }
+    setVerifyingNin(false);
   };
 
   if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
   if (!data) return null;
 
   const sucTierEntries = Object.entries(SUC_ENTRY_TIERS) as [SucEntryTier, typeof SUC_ENTRY_TIERS[SucEntryTier]][];
-  const hasNboId = !!(data.befNumber || data.nboIdCardNumber);
-  const hasNigeriaId = !!(data.nigeriaIdType && data.nigeriaIdNumber);
+  const hasBefNumber = !!data.befNumber;
+  const ninVerified = data.nigeriaIdType === "nin" && !!data.nigeriaIdVerifiedAt;
 
   return (
     <div className="space-y-6">
@@ -98,8 +98,8 @@ function PaymentsPage() {
         </div>
         <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold">Payments</h1>
         <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-          DSE entry, DFY remittances, and SUC entry — all handled here. International payments run through Stripe;
-          NBO-subsidized DSE entry from Nigeria can also pay through Paystack at the further-subsidized local rate.
+          DSE entry, DFY remittances, and SUC entry — all handled here, all via Paystack for now (Stripe is temporarily
+          unavailable). NBO-subsidized DSE entry from Nigeria can pay the further-subsidized local rate once your NIN is verified.
         </p>
       </header>
 
@@ -118,62 +118,67 @@ function PaymentsPage() {
         ) : (
           <>
             {data.entryChannel === "nbo" && (
-              <div className="mt-3 rounded-lg border border-border p-3">
-                <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><IdCard className="h-3.5 w-3.5" /> NBO Identification — required before paying</div>
-                <p className="mt-1 text-[11px] text-muted-foreground">Every NBO participant must present their BEF number or NBO Identity card number. Nigerian NBO participants paying via Paystack must also provide a means of identification.</p>
-                <div className="mt-2 grid sm:grid-cols-2 gap-2">
-                  <input
-                    type="text" placeholder="BEF number" value={idForm.befNumber}
-                    onChange={(e) => setIdForm((f) => ({ ...f, befNumber: e.target.value }))}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
-                  />
-                  <input
-                    type="text" placeholder="NBO Identity card number" value={idForm.nboIdCardNumber}
-                    onChange={(e) => setIdForm((f) => ({ ...f, nboIdCardNumber: e.target.value }))}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
-                  />
-                  <select
-                    value={idForm.nigeriaIdType} onChange={(e) => setIdForm((f) => ({ ...f, nigeriaIdType: e.target.value }))}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
-                  >
-                    <option value="">Nigeria ID type (for Paystack) — optional</option>
-                    {NIGERIA_ID_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
-                  <input
-                    type="text" placeholder="Nigeria ID number" value={idForm.nigeriaIdNumber}
-                    onChange={(e) => setIdForm((f) => ({ ...f, nigeriaIdNumber: e.target.value }))}
-                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
-                  />
+              <div className="mt-3 space-y-3">
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><IdCard className="h-3.5 w-3.5" /> BEF Reg. Number — required before paying</div>
+                  <p className="mt-1 text-[11px] text-muted-foreground">Your BEF Registration Number is enough to confirm NBO access — no separate NBO Identity card needed.</p>
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      type="text" placeholder="BEF Reg. Number" value={befNumber}
+                      onChange={(e) => setBefNumber(e.target.value)}
+                      className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                    />
+                    <button
+                      onClick={saveBefNumber} disabled={savingBef}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60 whitespace-nowrap"
+                    >
+                      {savingBef ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save
+                    </button>
+                  </div>
+                  {hasBefNumber && (
+                    <p className="mt-2 text-[11px] text-emerald-600 inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> BEF Reg. Number on file.</p>
+                  )}
                 </div>
-                <button
-                  onClick={saveIdentification} disabled={savingId}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60"
-                >
-                  {savingId ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save identification
-                </button>
-                {hasNboId && (
-                  <p className="mt-2 text-[11px] text-emerald-600 inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> BEF number / NBO Identity card on file.</p>
-                )}
+
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Verify your NIN — unlocks the ₦75,000 local rate</div>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Just the 11-digit number, checked against your name — no NIN slip or ID card upload needed.
+                  </p>
+                  {ninVerified ? (
+                    <p className="mt-2 text-[11px] text-emerald-600 inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> NIN verified {data.nigeriaIdVerifiedAt && `on ${new Date(data.nigeriaIdVerifiedAt).toLocaleDateString()}`}.</p>
+                  ) : (
+                    <div className="mt-2 flex gap-2">
+                      <input type="text" placeholder="NIN (11 digits)" value={ninNumber}
+                        onChange={(e) => setNinNumber(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                        className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs" />
+                      <button onClick={verifyNin} disabled={verifyingNin}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60 whitespace-nowrap">
+                        {verifyingNin ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />} Verify NIN
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
             <div className="mt-3 flex flex-wrap gap-2">
               <button
-                onClick={() => goCheckout("dse-stripe", () => dseFn({ data: { provider: "stripe" } }))}
-                disabled={busyKey === "dse-stripe" || (data.entryChannel === "nbo" && !hasNboId)}
+                onClick={() => goCheckout("dse-usd", () => dseFn({ data: { currency: "USD" } }))}
+                disabled={busyKey === "dse-usd" || (data.entryChannel === "nbo" && !hasBefNumber)}
                 className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
               >
-                {busyKey === "dse-stripe" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                Pay ${DSE_ENTRY_USD[data.entryChannel as EntryChannel]} via Stripe
+                {busyKey === "dse-usd" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Pay ${DSE_ENTRY_USD[data.entryChannel as EntryChannel]} via Paystack
               </button>
-              {data.entryChannel === "nbo" && (
+              {data.entryChannel === "nbo" && ninVerified && (
                 <div className="flex flex-col gap-1">
                   <button
-                    onClick={() => goCheckout("dse-paystack", () => dseFn({ data: { provider: "paystack" } }))}
-                    disabled={busyKey === "dse-paystack" || !hasNboId || !hasNigeriaId}
+                    onClick={() => goCheckout("dse-ngn", () => dseFn({ data: { currency: "NGN" } }))}
+                    disabled={busyKey === "dse-ngn"}
                     className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-2 text-sm font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60"
                   >
-                    {busyKey === "dse-paystack" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    {busyKey === "dse-ngn" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     Pay ₦{DSE_ENTRY_NGN_NBO.toLocaleString()} via Paystack (Nigeria)
                   </button>
                   <p className="text-[10px] text-muted-foreground">NBO's own further-subsidized local rate — {LOCAL_EQUIVALENT_DISCLAIMER}.</p>
@@ -187,7 +192,7 @@ function PaymentsPage() {
       {/* DFY Remittances */}
       <section className="rounded-2xl border border-border bg-card p-5">
         <h2 className="font-display text-lg font-bold flex items-center gap-2"><TrendingUp className="h-4 w-4" /> DFY Remittances</h2>
-        <p className="mt-1 text-xs text-muted-foreground">20% of every qualified month's net income, via Stripe.</p>
+        <p className="mt-1 text-xs text-muted-foreground">20% of every qualified month's net income, via Paystack.</p>
         {data.unpaidDfyMonths.length === 0 ? (
           <p className="mt-3 text-xs text-muted-foreground">Nothing outstanding.</p>
         ) : (
@@ -203,7 +208,7 @@ function PaymentsPage() {
                   disabled={busyKey === `dfy-${m.id}`}
                   className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                 >
-                  {busyKey === `dfy-${m.id}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Pay via Stripe
+                  {busyKey === `dfy-${m.id}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Pay via Paystack
                 </button>
               </div>
             ))}
@@ -239,7 +244,7 @@ function PaymentsPage() {
                       >
                         {busyKey === `suc-${key}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                           : !payable ? <Lock className="h-3.5 w-3.5" /> : <Send className="h-3.5 w-3.5" />}
-                        {payable ? "Pay via Stripe" : "Not available yet"}
+                        {payable ? "Pay via Paystack" : "Not available yet"}
                       </button>
                     </div>
                   );

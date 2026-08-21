@@ -1361,6 +1361,7 @@ export type Database = {
           niche: string | null
           nigeria_id_number: string | null
           nigeria_id_type: string | null
+          nigeria_id_verified_at: string | null
           path_auto_assigned: boolean
           path_chosen_at: string | null
           path_deadline: string | null
@@ -1407,6 +1408,7 @@ export type Database = {
           niche?: string | null
           nigeria_id_number?: string | null
           nigeria_id_type?: string | null
+          nigeria_id_verified_at?: string | null
           path_auto_assigned?: boolean
           path_chosen_at?: string | null
           path_deadline?: string | null
@@ -1453,6 +1455,7 @@ export type Database = {
           niche?: string | null
           nigeria_id_number?: string | null
           nigeria_id_type?: string | null
+          nigeria_id_verified_at?: string | null
           path_auto_assigned?: boolean
           path_chosen_at?: string | null
           path_deadline?: string | null
@@ -1565,6 +1568,7 @@ export type Database = {
           nbo_id_card_number: string | null
           nigeria_id_number: string | null
           nigeria_id_type: string | null
+          nigeria_id_verified_at: string | null
           sponsor_name: string
           status: string
           updated_at: string
@@ -1582,6 +1586,7 @@ export type Database = {
           nbo_id_card_number?: string | null
           nigeria_id_number?: string | null
           nigeria_id_type?: string | null
+          nigeria_id_verified_at?: string | null
           sponsor_name?: string
           status?: string
           updated_at?: string
@@ -1599,6 +1604,7 @@ export type Database = {
           nbo_id_card_number?: string | null
           nigeria_id_number?: string | null
           nigeria_id_type?: string | null
+          nigeria_id_verified_at?: string | null
           sponsor_name?: string
           status?: string
           updated_at?: string

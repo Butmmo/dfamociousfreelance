@@ -17,7 +17,7 @@ import {
   dseEntryAmountUsd, DSE_ENTRY_NGN_NBO, type EntryChannel,
 } from "@/lib/payments";
 import {
-  createPendingTransaction, createStripeCheckout, createPaystackCheckout, SITE_URL,
+  createPendingTransaction, createPaystackCheckout, verifyNinWithProvider, SITE_URL,
 } from "@/lib/payments.functions";
 
 const signupSchema = z.object({
@@ -27,13 +27,11 @@ const signupSchema = z.object({
   sponsor_name: z.string().trim().min(1).max(160).default("Boluwatife Famokunwa"),
   entry_channel: z.enum(["nbo", "direct"]).default("direct"),
   bef_number: z.string().trim().max(80).optional(),
-  nbo_id_card_number: z.string().trim().max(80).optional(),
-  nigeria_id_type: z.enum(["nin", "voters_card", "drivers_license", "passport"]).optional(),
-  nigeria_id_number: z.string().trim().max(80).optional(),
-  provider: z.enum(["stripe", "paystack"]),
+  nin_number: z.string().trim().regex(/^\d{11}$/, "NIN must be 11 digits").optional(),
+  currency: z.enum(["USD", "NGN"]).default("USD"),
 });
 
-/** Submits the application and immediately returns a checkout URL — nothing about the applicant is written to profiles/auth.users until the provider confirms payment. */
+/** Submits the application and immediately returns a checkout URL — nothing about the applicant is written to profiles/auth.users until Paystack confirms payment. */
 export const submitSignup = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => signupSchema.parse(d))
   .handler(async ({ data }) => {
@@ -48,16 +46,21 @@ export const submitSignup = createServerFn({ method: "POST" })
     if (pendingSignup) throw new Error("You already have an application pending payment. Check your email, or contact an admin if the checkout link expired.");
 
     // Same rule as the existing beneficiary flow (createDseEntryCheckout):
-    // every NBO applicant needs a BEF number or NBO Identity card, and the
-    // Paystack rate additionally needs a Nigerian means of identification.
-    if (data.entry_channel === "nbo" && !data.bef_number && !data.nbo_id_card_number) {
-      throw new Error("Provide your BEF number or NBO Identity card number to continue.");
+    // every NBO applicant needs a BEF Reg. Number, and the ₦75,000 local
+    // rate additionally needs a NIN that actually matches the name given —
+    // re-verified here, not just trusted from the live "Verify NIN" button,
+    // since that's what actually stands between the discount and anyone
+    // who could otherwise just claim it.
+    if (data.entry_channel === "nbo" && !data.bef_number) {
+      throw new Error("Provide your BEF Reg. Number to continue.");
     }
-    if (data.provider === "paystack") {
-      if (data.entry_channel !== "nbo") throw new Error("Paystack is only available for NBO-subsidized entry.");
-      if (!data.nigeria_id_type || !data.nigeria_id_number) {
-        throw new Error("Nigerian NBO applicants must provide a means of identification (NIN, Voter's Card, Driver's License, or Passport) to continue.");
-      }
+    let ninVerifiedAt: string | null = null;
+    if (data.currency === "NGN") {
+      if (data.entry_channel !== "nbo") throw new Error("The ₦75,000 local rate is only available for NBO-subsidized entry.");
+      if (!data.nin_number) throw new Error("Verify your NIN to continue with the local rate.");
+      const { verified } = await verifyNinWithProvider(data.nin_number, data.full_name);
+      if (!verified) throw new Error("That NIN doesn't match the name provided — double check both and try again.");
+      ninVerifiedAt = new Date().toISOString();
     }
 
     const { data: signup, error: signupErr } = await supabaseAdmin
@@ -65,30 +68,30 @@ export const submitSignup = createServerFn({ method: "POST" })
       .insert({
         email: data.email.toLowerCase(), full_name: data.full_name, country: data.country ?? null,
         sponsor_name: data.sponsor_name, entry_channel: data.entry_channel,
-        bef_number: data.bef_number ?? null, nbo_id_card_number: data.nbo_id_card_number ?? null,
-        nigeria_id_type: data.nigeria_id_type ?? null, nigeria_id_number: data.nigeria_id_number ?? null,
+        bef_number: data.bef_number ?? null,
+        nigeria_id_type: ninVerifiedAt ? "nin" : null, nigeria_id_number: ninVerifiedAt ? data.nin_number : null,
+        nigeria_id_verified_at: ninVerifiedAt,
       })
       .select("id").single();
     if (signupErr) throw signupErr;
 
     const entryChannel = data.entry_channel as EntryChannel;
     const successUrl = `${SITE_URL}/signup?paid=1`;
-    const cancelUrl = `${SITE_URL}/signup?cancelled=1`;
 
-    if (data.provider === "paystack") {
+    if (data.currency === "NGN") {
       const txId = await createPendingTransaction(supabaseAdmin, {
         signup_request_id: signup.id, purpose: "dse_entry", provider: "paystack",
         amount_usd: dseEntryAmountUsd(entryChannel), charged_currency: "NGN", charged_amount: DSE_ENTRY_NGN_NBO,
       });
-      const url = await createPaystackCheckout(txId, data.email, DSE_ENTRY_NGN_NBO, "DSE Entry (NBO subsidy, or local equivalent)", { callbackUrl: successUrl });
+      const url = await createPaystackCheckout(txId, data.email, DSE_ENTRY_NGN_NBO, "NGN", "DSE Entry (NBO subsidy, or local equivalent)", { callbackUrl: successUrl });
       return { url };
     }
 
     const amountUsd = dseEntryAmountUsd(entryChannel);
     const txId = await createPendingTransaction(supabaseAdmin, {
-      signup_request_id: signup.id, purpose: "dse_entry", provider: "stripe",
+      signup_request_id: signup.id, purpose: "dse_entry", provider: "paystack",
       amount_usd: amountUsd, charged_currency: "USD", charged_amount: amountUsd,
     });
-    const url = await createStripeCheckout(txId, amountUsd, "DSE Entry", { successUrl, cancelUrl });
+    const url = await createPaystackCheckout(txId, data.email, amountUsd, "USD", "DSE Entry", { callbackUrl: successUrl });
     return { url };
   });
