@@ -6,6 +6,7 @@ import { Walkthrough } from "@/components/dfs/walkthrough/Walkthrough";
 import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
+import { usePaymentsGate } from "@/lib/use-payments-gate";
 import { usePushSubscription } from "@/lib/push";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -46,6 +47,7 @@ function AuthedShell() {
   const navigate = useNavigate();
   const { path, needsChoice, msRemaining, loading: pathLoading } = usePath();
   const status = useAccountStatus();
+  const { gate: paymentsGate } = usePaymentsGate();
   const push = usePushSubscription();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({
@@ -248,7 +250,7 @@ function AuthedShell() {
     { to: "/report", label: "Report", icon: FileText, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/bps", label: "BPS", icon: Activity, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/dfy", label: "DFY Tracker", icon: DollarSign, show: !effectiveNeedsChoice && !consumerGated },
-    { to: "/payments", label: "Payments", icon: CreditCard, show: !effectiveNeedsChoice && !consumerGated },
+    { to: "/payments", label: "Payments", icon: CreditCard, show: !effectiveNeedsChoice && !consumerGated && paymentsGate.showPaymentsLink },
     { to: "/mentorship", label: "Mentorship", icon: Users, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/tpe", label: "TPE", icon: Headphones, show: !effectiveNeedsChoice && !consumerGated },
     { to: "/admin", label: "Council", icon: Crown, show: role === "admin" },

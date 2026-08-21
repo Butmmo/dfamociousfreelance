@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
+import { usePaymentsGate } from "@/lib/use-payments-gate";
 import {
   getMyPayments, createDseEntryCheckout, createDfyRemittanceCheckout, createSucEntryCheckout,
 } from "@/lib/payments.functions";
@@ -11,7 +12,7 @@ import {
   PAYMENT_PURPOSE_LABELS, type SucEntryTier, type EntryChannel,
 } from "@/lib/payments";
 import { toast } from "sonner";
-import { CreditCard, Loader2, CheckCircle2, Send, GraduationCap, TrendingUp, Rocket, IdCard, Save } from "lucide-react";
+import { CreditCard, Loader2, CheckCircle2, Send, GraduationCap, TrendingUp, Rocket, IdCard, Save, Lock } from "lucide-react";
 
 const NIGERIA_ID_TYPES: { value: string; label: string }[] = [
   { value: "nin", label: "NIN" },
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/_authenticated/payments")({
 
 function PaymentsPage() {
   const { user } = useSession();
+  const { gate } = usePaymentsGate();
   const summaryFn = useServerFn(getMyPayments);
   const dseFn = useServerFn(createDseEntryCheckout);
   const dfyFn = useServerFn(createDfyRemittanceCheckout);
@@ -108,6 +110,11 @@ function PaymentsPage() {
           <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-600">
             <CheckCircle2 className="h-3.5 w-3.5" /> Paid {new Date(data.dseEntryPaidAt).toLocaleDateString()}
           </div>
+        ) : !gate.dseButtonsClickable ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Your DSE entry access is already active. Payment for it is handled by your DSE Rep or an admin — reach out
+            to them if you'd like to arrange or confirm it.
+          </p>
         ) : (
           <>
             {data.entryChannel === "nbo" && (
@@ -204,31 +211,44 @@ function PaymentsPage() {
         )}
       </section>
 
-      {/* SUC Entry */}
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="font-display text-lg font-bold flex items-center gap-2"><Rocket className="h-4 w-4" /> SUC Entry</h2>
-        {data.sucEntryPaidAt ? (
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-600">
-            <CheckCircle2 className="h-3.5 w-3.5" /> Paid {new Date(data.sucEntryPaidAt).toLocaleDateString()} — {data.sucEntryTier && SUC_ENTRY_TIERS[data.sucEntryTier as SucEntryTier]?.label}
-          </div>
-        ) : (
-          <div className="mt-3 grid sm:grid-cols-3 gap-3">
-            {sucTierEntries.map(([key, tier]) => (
-              <div key={key} className="rounded-lg border border-border p-3">
-                <div className="font-display text-xl font-bold">${tier.usd.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">{tier.label} · {tier.equityPercent}% equity</div>
-                <button
-                  onClick={() => goCheckout(`suc-${key}`, () => sucFn({ data: { tier: key } }))}
-                  disabled={busyKey === `suc-${key}`}
-                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
-                >
-                  {busyKey === `suc-${key}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />} Pay via Stripe
-                </button>
+      {/* SUC Entry — hidden until you qualify or have at least finished DFY, except once already paid */}
+      {(data.sucEntryPaidAt || gate.sucSectionUnlocked) && (
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h2 className="font-display text-lg font-bold flex items-center gap-2"><Rocket className="h-4 w-4" /> SUC Entry</h2>
+          {data.sucEntryPaidAt ? (
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-600">
+              <CheckCircle2 className="h-3.5 w-3.5" /> Paid {new Date(data.sucEntryPaidAt).toLocaleDateString()} — {data.sucEntryTier && SUC_ENTRY_TIERS[data.sucEntryTier as SucEntryTier]?.label}
+            </div>
+          ) : (
+            <>
+              <p className="mt-1 text-xs text-muted-foreground">
+                The Standard tier needs an actual SUC invitation — that verification isn't built yet, so only the
+                direct-entry tiers are payable for now.
+              </p>
+              <div className="mt-3 grid sm:grid-cols-3 gap-3">
+                {sucTierEntries.map(([key, tier]) => {
+                  const payable = key !== "standard_2000";
+                  return (
+                    <div key={key} className="rounded-lg border border-border p-3">
+                      <div className="font-display text-xl font-bold">${tier.usd.toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{tier.label} · {tier.equityPercent}% equity</div>
+                      <button
+                        onClick={() => goCheckout(`suc-${key}`, () => sucFn({ data: { tier: key } }))}
+                        disabled={!payable || busyKey === `suc-${key}`}
+                        className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                      >
+                        {busyKey === `suc-${key}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          : !payable ? <Lock className="h-3.5 w-3.5" /> : <Send className="h-3.5 w-3.5" />}
+                        {payable ? "Pay via Stripe" : "Not available yet"}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        )}
-      </section>
+            </>
+          )}
+        </section>
+      )}
 
       {/* History */}
       {data.transactions.length > 0 && (

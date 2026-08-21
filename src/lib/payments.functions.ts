@@ -175,6 +175,10 @@ export const createSucEntryCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => sucCheckoutSchema.parse(d))
   .handler(async ({ data, context }) => {
+    // The Standard tier needs a real invited/qualified verification workflow
+    // that doesn't exist yet — only the direct-entry tiers (paying more to
+    // skip that requirement) are payable until SUC itself is built out.
+    if (data.tier === "standard_2000") throw new Error("SUC's Standard tier isn't available yet — pick a direct-entry tier.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: profile } = await supabaseAdmin.from("profiles").select("suc_entry_paid_at").eq("id", context.userId).maybeSingle();
     if (profile?.suc_entry_paid_at) throw new Error("SUC entry is already paid.");

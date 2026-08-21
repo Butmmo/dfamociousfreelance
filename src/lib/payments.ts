@@ -51,3 +51,45 @@ export const PAYMENT_PURPOSE_LABELS: Record<PaymentPurpose, string> = {
   dfy_remittance: "DFY Remittance",
   suc_entry: "SUC Entry",
 };
+
+/**
+ * Once a beneficiary already has app access, DSE entry is no longer a
+ * self-serve concern here — it was either paid up front via /signup or is
+ * being reconciled off-app by an admin. So by default the DSE pay buttons
+ * go inert and the SUC Entry section stays hidden until there's an actual
+ * reason to be looking at it. SUC's "standard" $2,000 tier requires a real
+ * invited/qualified verification workflow that doesn't exist yet — it stays
+ * permanently non-clickable regardless of gate state; only the two "pay
+ * more to skip the requirement" direct-entry tiers are ever payable.
+ */
+export interface PaymentsGateInput {
+  dseEntryPaidAt: string | null;
+  sucEntryPaidAt: string | null;
+  vettedDseCertifiedAt: string | null;
+  /** dfyProgress(months).complete — at least 12 qualified months or the $18,000 cap. */
+  dfyComplete: boolean;
+  /** sucPace(...).qualifies — any of the three earnings-pace tiers currently met. */
+  sucPaceQualifies: boolean;
+  /** Any qualified DFY month still owing a remittance — kept payable regardless of the gate below; real debt is never hidden. */
+  hasUnpaidDfyRemittance: boolean;
+}
+
+export interface PaymentsGate {
+  /** Nav visibility: is there anything on this page actually worth a beneficiary's attention right now. */
+  showPaymentsLink: boolean;
+  /** SUC Entry section visibility — qualifies for SUC, or at least finished DFY. */
+  sucSectionUnlocked: boolean;
+  /** DSE Entry pay buttons — inert once you already have access, unless you're the direct-to-SUC exception below. */
+  dseButtonsClickable: boolean;
+  /** Paid SUC without ever paying DSE — evidence this account's route bypassed DSE entirely, so DSE stays available to them. */
+  enteredSucDirect: boolean;
+}
+
+export function computePaymentsGate(input: PaymentsGateInput): PaymentsGate {
+  const sucQualified = !!input.vettedDseCertifiedAt || input.sucPaceQualifies;
+  const enteredSucDirect = !!input.sucEntryPaidAt && !input.dseEntryPaidAt;
+  const sucSectionUnlocked = sucQualified || input.dfyComplete;
+  const dseButtonsClickable = !input.dseEntryPaidAt && enteredSucDirect;
+  const showPaymentsLink = sucSectionUnlocked || input.hasUnpaidDfyRemittance || enteredSucDirect;
+  return { showPaymentsLink, sucSectionUnlocked, dseButtonsClickable, enteredSucDirect };
+}
