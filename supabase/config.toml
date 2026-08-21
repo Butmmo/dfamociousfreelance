@@ -15,9 +15,6 @@ verify_jwt = false
 [functions.tpe-weekly-compliance]
 verify_jwt = false
 
-[functions.bps-daily-tracker-reminder]
-verify_jwt = false
-
 [functions.bps-daily-checkin]
 verify_jwt = false
 
@@ -28,4 +25,25 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.google-calendar-sync]
+verify_jwt = false
+
+[functions.bps-weekly-report]
+verify_jwt = false
+
+[functions.path-permanence-notify]
+verify_jwt = false
+
+[functions.playbook-daily-reminder]
+verify_jwt = false
+
+[functions.pocket-emergency-notify]
+verify_jwt = false
+
+[functions.pocket-sweep]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.paystack-webhook]
 verify_jwt = false
