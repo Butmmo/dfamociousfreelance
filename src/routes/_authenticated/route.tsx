@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate, useRouterState } 
 import { supabase } from "@/integrations/supabase/client";
 import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { NotificationBell } from "@/components/dfs/NotificationBell";
+import { Walkthrough } from "@/components/dfs/walkthrough/Walkthrough";
 import { useSession } from "@/lib/use-session";
 import { usePath, formatCountdown } from "@/lib/use-path";
 import { useAccountStatus } from "@/lib/use-account-status";
@@ -26,6 +27,7 @@ import {
   Headphones,
   Bell,
   CreditCard,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -52,6 +54,7 @@ function AuthedShell() {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [walkthroughReplay, setWalkthroughReplay] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
   const moreSheetRef = useRef<HTMLDivElement>(null);
@@ -321,6 +324,7 @@ function AuthedShell() {
               isSuperAdmin={isSuperAdmin}
               pathShort={path?.short}
               onSignOut={signOut}
+              onReplayWalkthrough={() => setWalkthroughReplay((n) => n + 1)}
             />
           </div>
         </div>
@@ -396,6 +400,7 @@ function AuthedShell() {
         )}
       </nav>
 
+      <Walkthrough replaySignal={walkthroughReplay} />
     </div>
   );
 }
@@ -411,6 +416,7 @@ function ProfileMenu({
   isSuperAdmin,
   pathShort,
   onSignOut,
+  onReplayWalkthrough,
 }: {
   open: boolean;
   setOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
@@ -422,6 +428,7 @@ function ProfileMenu({
   isSuperAdmin: boolean;
   pathShort: string | undefined;
   onSignOut: () => void;
+  onReplayWalkthrough: () => void;
 }) {
   const roleLabel = isSuperAdmin ? "Super Admin" : role === "admin" ? "Council Admin" : "Beneficiary";
 
@@ -475,6 +482,12 @@ function ProfileMenu({
           >
             <UserRound className="h-4 w-4" /> Profile
           </Link>
+          <button
+            onClick={() => { setOpen(false); onReplayWalkthrough(); }}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted"
+          >
+            <Sparkles className="h-4 w-4" /> Replay walkthrough
+          </button>
           <button
             onClick={onSignOut}
             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-crimson hover:bg-crimson/10"

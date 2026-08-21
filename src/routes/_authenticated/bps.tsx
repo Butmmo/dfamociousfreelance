@@ -203,7 +203,7 @@ function CrmSection() {
 
   const groups = groupByDate ? groupClientsByDateAdded(filtered) : null;
   const renderList = (list: Client[]) => layout === "cards" ? (
-    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {list.map((c) => (
         <ClientCard key={c.id} client={c} onEdit={() => setEditing(c)} onDelete={() => deleteClient(c.id, c.name)}
           onStage={(stage) => quickStage(c.id, stage)} onFlag={(f) => quickFlag(c, f)} />
@@ -321,7 +321,7 @@ function ClientCard({ client: c, onEdit, onDelete, onStage, onFlag }: {
   const prio = c.priority ? PRIORITY_META[c.priority as "hot" | "warm" | "cold"] : null;
   const path = PATHS.find((p) => p.key === c.path_key);
   return (
-    <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
+    <div className="min-w-0 max-w-full rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="font-display font-semibold truncate flex items-center gap-1.5">
@@ -329,8 +329,8 @@ function ClientCard({ client: c, onEdit, onDelete, onStage, onFlag }: {
             {c.name}
           </div>
           <div className="text-xs text-muted-foreground mt-0.5 flex flex-wrap items-center gap-x-2">
-            {c.niche && <span>{c.niche}</span>}
-            {c.city && <span className="inline-flex items-center gap-0.5"><MapPin className="h-3 w-3" />{c.city}</span>}
+            {c.niche && <span className="max-w-[160px] truncate">{c.niche}</span>}
+            {c.city && <span className="inline-flex items-center gap-0.5 max-w-[140px] truncate"><MapPin className="h-3 w-3 shrink-0" />{c.city}</span>}
             {path && <span className="text-gold-deep">{path.short}</span>}
           </div>
         </div>
@@ -372,7 +372,7 @@ function ClientCard({ client: c, onEdit, onDelete, onStage, onFlag }: {
       </div>
 
       {(c.the_gap || c.the_leak || c.the_lift) && (
-        <div className="text-[11px] text-muted-foreground space-y-0.5 pt-1">
+        <div className="text-[11px] text-muted-foreground space-y-0.5 pt-1 break-words">
           {c.the_gap && <div><span className="font-semibold text-foreground">Gap:</span> {c.the_gap}</div>}
           {c.the_leak && <div><span className="font-semibold text-foreground">Leak:</span> {c.the_leak}</div>}
           {c.the_lift && <div><span className="font-semibold text-foreground">Lift:</span> {c.the_lift}</div>}
