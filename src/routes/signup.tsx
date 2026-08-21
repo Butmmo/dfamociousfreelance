@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { listOpenCohorts, submitSignup } from "@/lib/signup.functions";
+import { submitSignup } from "@/lib/signup.functions";
 import { DSE_ENTRY_USD, DSE_ENTRY_NGN_NBO, LOCAL_EQUIVALENT_DISCLAIMER, type EntryChannel } from "@/lib/payments";
 import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
@@ -19,15 +19,10 @@ const NIGERIA_ID_TYPES: { value: string; label: string }[] = [
   { value: "passport", label: "International Passport" },
 ];
 
-type Cohort = { id: string; name: string; start_date: string; description: string | null };
-
 function SignupPage() {
-  const listCohortsFn = useServerFn(listOpenCohorts);
   const submitFn = useServerFn(submitSignup);
 
   const [redirectState, setRedirectState] = useState<"paid" | "cancelled" | null>(null);
-  const [cohorts, setCohorts] = useState<Cohort[]>([]);
-  const [loadingCohorts, setLoadingCohorts] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   const [fullName, setFullName] = useState("");
@@ -35,7 +30,6 @@ function SignupPage() {
   const [country, setCountry] = useState("");
   const [sponsorName, setSponsorName] = useState("");
   const [entryChannel, setEntryChannel] = useState<EntryChannel>("direct");
-  const [cohortId, setCohortId] = useState("");
   const [befNumber, setBefNumber] = useState("");
   const [nboIdCardNumber, setNboIdCardNumber] = useState("");
   const [nigeriaIdType, setNigeriaIdType] = useState("");
@@ -49,14 +43,6 @@ function SignupPage() {
   }, []);
 
   useEffect(() => {
-    listCohortsFn({ data: undefined as never })
-      .then((rows: any) => { setCohorts(rows); if (rows.length > 0) setCohortId(rows[0].id); })
-      .catch(() => toast.error("Couldn't load open cohorts."))
-      .finally(() => setLoadingCohorts(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (entryChannel !== "nbo" && provider === "paystack") setProvider("stripe");
   }, [entryChannel, provider]);
 
@@ -65,7 +51,6 @@ function SignupPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cohortId) { toast.error("Pick a cohort to apply to."); return; }
     if (entryChannel === "nbo" && !hasNboId) {
       toast.error("Provide your BEF number or NBO Identity card number."); return;
     }
@@ -77,7 +62,7 @@ function SignupPage() {
       const { url } = await submitFn({
         data: {
           full_name: fullName.trim(), email: email.trim(), country: country.trim() || undefined,
-          sponsor_name: sponsorName.trim() || undefined, entry_channel: entryChannel, cohort_id: cohortId,
+          sponsor_name: sponsorName.trim() || undefined, entry_channel: entryChannel,
           bef_number: befNumber.trim() || undefined, nbo_id_card_number: nboIdCardNumber.trim() || undefined,
           nigeria_id_type: (nigeriaIdType || undefined) as any, nigeria_id_number: nigeriaIdNumber.trim() || undefined,
           provider,
@@ -103,8 +88,8 @@ function SignupPage() {
           <Motto className="mt-3 inline-block" />
           <h1 className="mt-4 font-display text-3xl font-bold">Apply for DSE Entry</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Fill in your details, pick a cohort, and pay the DSE entry fee. Your account is created — and you're
-            added to the cohort — the moment payment is confirmed.
+            Fill in your details and pay the DSE entry fee. Your account is created the moment payment is confirmed —
+            the founder assigns your cohort afterward.
           </p>
         </div>
 
@@ -150,20 +135,6 @@ function SignupPage() {
               </p>
             </label>
 
-            <label className="block">
-              <span className="text-xs tracking-widest text-muted-foreground font-medium">Cohort</span>
-              {loadingCohorts ? (
-                <div className="mt-2 text-xs text-muted-foreground flex items-center gap-2"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading open cohorts…</div>
-              ) : cohorts.length === 0 ? (
-                <p className="mt-2 text-xs text-crimson">No cohorts are currently open. Contact an admin.</p>
-              ) : (
-                <select value={cohortId} onChange={(e) => setCohortId(e.target.value)} required
-                  className="mt-2 w-full rounded-md border border-input bg-background px-3 py-3 text-sm">
-                  {cohorts.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              )}
-            </label>
-
             {entryChannel === "nbo" && (
               <div className="rounded-lg border border-border p-3">
                 <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5">
@@ -204,7 +175,7 @@ function SignupPage() {
               {entryChannel !== "nbo" && <p className="mt-1 text-[11px] text-muted-foreground">Paystack is only available for NBO-subsidized entry.</p>}
             </label>
 
-            <button type="submit" disabled={submitting || loadingCohorts || cohorts.length === 0}
+            <button type="submit" disabled={submitting}
               className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 shadow-regal">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Continue to payment

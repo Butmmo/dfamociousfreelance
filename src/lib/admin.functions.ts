@@ -31,12 +31,19 @@ export const inviteBeneficiary = createServerFn({ method: "POST" })
     // Only super admin can invite admins
     if (data.role === "admin") await requireSuperAdmin(context);
 
+    // Only the founder may name a specific cohort at invite time — anyone
+    // else's cohort_id is dropped here (defense in depth; the DB trigger
+    // enforcing this is the real backstop) so handle_new_user()'s own
+    // policy (random if an admin enabled it, else left unassigned) decides.
+    const { data: isSuper } = await context.supabase.rpc("is_super_admin", { _user_id: context.userId });
+    const cohortId = isSuper ? (data.cohort_id ?? null) : null;
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const origin = process.env.SITE_URL || "";
 
     const { error: invErr } = await supabaseAdmin.from("invitations").insert({
       email: data.email, full_name: data.full_name ?? null, role: data.role,
-      cohort_id: data.cohort_id ?? null, invited_by: context.userId,
+      cohort_id: cohortId, invited_by: context.userId,
       sponsor_name: data.sponsor_name, entry_channel: data.entry_channel,
     });
     if (invErr && !invErr.message.includes("duplicate")) throw invErr;
@@ -55,7 +62,7 @@ export const listBeneficiaries = createServerFn({ method: "GET" })
     await requireAdmin(context);
     const { data, error } = await context.supabase
       .from("profiles")
-      .select("id,email,full_name,avatar_url,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned,suspended,suspended_at,suspension_reason,reinstatement_fee_usd,start_date,vetted_dse_certified_at")
+      .select("id,email,full_name,avatar_url,rank,xp,country,niche,created_at,path_key,path_chosen_at,path_deadline,path_auto_assigned,suspended,suspended_at,suspension_reason,reinstatement_fee_usd,start_date,vetted_dse_certified_at,cohort_id")
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
@@ -622,6 +629,8 @@ export const createCohort = createServerFn({ method: "POST" })
     return cohort;
   });
 
+export const COHORT_MAX_MEMBERS = 12;
+
 export const listCohorts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -635,7 +644,51 @@ export const listCohorts = createServerFn({ method: "GET" })
       if (!p.cohort_id) continue;
       countByCohort.set(p.cohort_id, (countByCohort.get(p.cohort_id) ?? 0) + 1);
     }
-    return (cohorts ?? []).map((c: any) => ({ ...c, member_count: countByCohort.get(c.id) ?? 0 }));
+    const { data: setting } = await context.supabase
+      .from("app_settings").select("value").eq("key", "random_cohort_assignment_enabled").maybeSingle();
+    return {
+      cohorts: (cohorts ?? []).map((c: any) => ({ ...c, member_count: countByCohort.get(c.id) ?? 0 })),
+      randomAssignmentEnabled: setting?.value === true,
+    };
+  });
+
+const setRandomAssignmentSchema = z.object({ enabled: z.boolean() });
+
+/** Any admin (not just the founder) may permit random cohort assignment — it's a fallback for when nobody's picked a cohort by hand, not a specific assignment itself. */
+export const setRandomCohortAssignment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => setRandomAssignmentSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("app_settings").upsert({
+      key: "random_cohort_assignment_enabled", value: data.enabled, updated_at: new Date().toISOString(),
+    });
+    if (error) throw error;
+    return { ok: true };
+  });
+
+const setBeneficiaryCohortSchema = z.object({
+  beneficiary_id: z.string().uuid(),
+  cohort_id: z.string().uuid().nullable(),
+});
+
+/** Only the founder assigns a beneficiary to a specific cohort — everyone else either waits for the founder or relies on random assignment if an admin turned that on. */
+export const setBeneficiaryCohort = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => setBeneficiaryCohortSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireSuperAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.cohort_id) {
+      const { count } = await supabaseAdmin
+        .from("profiles").select("id", { count: "exact", head: true }).eq("cohort_id", data.cohort_id);
+      if ((count ?? 0) >= COHORT_MAX_MEMBERS) throw new Error(`That cohort is full (${COHORT_MAX_MEMBERS}/${COHORT_MAX_MEMBERS}) — pick another.`);
+    }
+    const { error } = await supabaseAdmin
+      .from("profiles").update({ cohort_id: data.cohort_id }).eq("id", data.beneficiary_id);
+    if (error) throw error; // the DB trigger is the authoritative backstop against a capacity race
+    return { ok: true };
   });
 
 // ── Path assignment ─────────────────────────────────────────────────────────

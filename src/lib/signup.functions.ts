@@ -1,8 +1,16 @@
-// Public self-signup: fill details, pick an open cohort, pay the DSE entry
-// fee — the account itself is only created once that payment succeeds (see
-// applyProvisioning in the two webhook edge functions). Neither function
-// here carries requireSupabaseAuth — this is the one place in the app
-// meant to be called by someone with no session at all.
+// Public self-signup: fill details, pay the DSE entry fee — the account
+// itself is only created once that payment succeeds (see provisionFromSignup
+// in the two webhook edge functions, and in payments.functions.ts for the
+// manual-override path). This function carries no requireSupabaseAuth —
+// it's the one place in the app meant to be called by someone with no
+// session at all.
+//
+// Cohort assignment is never the applicant's choice: only the founder may
+// place a participant in a specific cohort, and short of that a signup
+// lands unassigned unless an admin has turned on random assignment among
+// cohorts with room. Both policies live centrally in handle_new_user() —
+// this file simply leaves signup_requests.cohort_id null and lets that
+// trigger decide once the account is actually provisioned.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
@@ -12,23 +20,12 @@ import {
   createPendingTransaction, createStripeCheckout, createPaystackCheckout, SITE_URL,
 } from "@/lib/payments.functions";
 
-/** Cohorts open for new applicants — just enough to render a picker, nothing sensitive. */
-export const listOpenCohorts = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("cohorts").select("id,name,start_date,description")
-      .eq("active", true).order("seq_number", { ascending: true, nullsFirst: true });
-    return data ?? [];
-  });
-
 const signupSchema = z.object({
   full_name: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(255),
   country: z.string().trim().max(120).optional(),
   sponsor_name: z.string().trim().min(1).max(160).default("Boluwatife Famokunwa"),
   entry_channel: z.enum(["nbo", "direct"]).default("direct"),
-  cohort_id: z.string().uuid(),
   bef_number: z.string().trim().max(80).optional(),
   nbo_id_card_number: z.string().trim().max(80).optional(),
   nigeria_id_type: z.enum(["nin", "voters_card", "drivers_license", "passport"]).optional(),
@@ -41,10 +38,6 @@ export const submitSignup = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => signupSchema.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { data: cohort } = await supabaseAdmin
-      .from("cohorts").select("id").eq("id", data.cohort_id).eq("active", true).maybeSingle();
-    if (!cohort) throw new Error("That cohort isn't open for new applicants anymore. Refresh and pick another.");
 
     const { data: existingProfile } = await supabaseAdmin
       .from("profiles").select("id").ilike("email", data.email).maybeSingle();
@@ -71,7 +64,7 @@ export const submitSignup = createServerFn({ method: "POST" })
       .from("signup_requests")
       .insert({
         email: data.email.toLowerCase(), full_name: data.full_name, country: data.country ?? null,
-        sponsor_name: data.sponsor_name, entry_channel: data.entry_channel, cohort_id: data.cohort_id,
+        sponsor_name: data.sponsor_name, entry_channel: data.entry_channel,
         bef_number: data.bef_number ?? null, nbo_id_card_number: data.nbo_id_card_number ?? null,
         nigeria_id_type: data.nigeria_id_type ?? null, nigeria_id_number: data.nigeria_id_number ?? null,
       })

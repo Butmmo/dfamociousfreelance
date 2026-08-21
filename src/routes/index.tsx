@@ -612,8 +612,8 @@ function Landing() {
           <Motto />
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold">The gate opens to those who apply.</h2>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            Fill in your details, pick a cohort, and pay the DSE entry fee — your account is created the moment
-            payment is confirmed. Already invited by an admin? Your invitation is in your inbox.
+            Fill in your details and pay the DSE entry fee — your account is created the moment payment is confirmed,
+            and the founder assigns your cohort. Already invited by an admin? Your invitation is in your inbox.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link to="/signup" className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-base font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal">

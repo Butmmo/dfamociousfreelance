@@ -9,6 +9,7 @@ import {
   suspendBeneficiary, reinstateBeneficiary,
   listAllDfyMonths, verifyDfyMonth, certifyVettedDse,
   createCohort, listCohorts, setConsumerAccess, requestConsumerAccess,
+  setRandomCohortAssignment, setBeneficiaryCohort, COHORT_MAX_MEMBERS,
 } from "@/lib/admin.functions";
 import { PATHS } from "@/lib/paths";
 import { dfyProgress, type DfyMonthRow } from "@/lib/dfy";
@@ -102,6 +103,8 @@ function Admin() {
   const setConsumerAcc = useServerFn(setConsumerAccess);
   const requestConsumerAcc = useServerFn(requestConsumerAccess);
   const listCoh = useServerFn(listCohorts);
+  const setRandomCohort = useServerFn(setRandomCohortAssignment);
+  const setBenCohort = useServerFn(setBeneficiaryCohort);
 
   const [bens, setBens] = useState<any[]>([]);
   const [invs, setInvs] = useState<any[]>([]);
@@ -110,6 +113,8 @@ function Admin() {
   const [escs, setEscs] = useState<any[]>([]);
   const [dfyMonths, setDfyMonths] = useState<any[]>([]);
   const [cohorts, setCohorts] = useState<any[]>([]);
+  const [randomAssignmentEnabled, setRandomAssignmentEnabled] = useState(false);
+  const [togglingRandom, setTogglingRandom] = useState(false);
   const [cohortDesc, setCohortDesc] = useState("");
   const [creatingCohort, setCreatingCohort] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -118,6 +123,7 @@ function Admin() {
   const [asAdmin, setAsAdmin] = useState(false);
   const [sponsorName, setSponsorName] = useState("Boluwatife Famokunwa");
   const [entryChannel, setEntryChannel] = useState<"direct" | "nbo">("direct");
+  const [inviteCohortId, setInviteCohortId] = useState("");
   const [checkinTarget, setCheckinTarget] = useState<string | null>(null);
   const [checkinText, setCheckinText] = useState("");
   const [checkinMood, setCheckinMood] = useState<"green" | "yellow" | "red">("green");
@@ -145,7 +151,8 @@ function Admin() {
     // Same isolation: the cohort system is newer still than DFY.
     try {
       const c = await listCoh({ data: undefined as never });
-      setCohorts(c);
+      setCohorts(c.cohorts);
+      setRandomAssignmentEnabled(c.randomAssignmentEnabled);
     } catch { /* cohort system not migrated yet on this environment */ }
   };
   useEffect(() => { if (role === "admin") refresh(); /* eslint-disable-next-line */ }, [role]);
@@ -157,12 +164,32 @@ function Admin() {
         data: {
           email: email.trim(), full_name: fullName.trim() || undefined, role: asAdmin ? "admin" : "beneficiary",
           sponsor_name: sponsorName.trim() || "Boluwatife Famokunwa", entry_channel: entryChannel,
+          cohort_id: inviteCohortId || undefined,
         },
       });
       toast.success(`Invitation dispatched to ${email}`);
-      setEmail(""); setFullName(""); setAsAdmin(false); setSponsorName("Boluwatife Famokunwa"); setEntryChannel("direct"); refresh();
+      setEmail(""); setFullName(""); setAsAdmin(false); setSponsorName("Boluwatife Famokunwa"); setEntryChannel("direct"); setInviteCohortId(""); refresh();
     } catch (e: any) { toast.error(e.message ?? "Invite failed"); }
     finally { setBusy(false); }
+  };
+
+  const doToggleRandomAssignment = async () => {
+    setTogglingRandom(true);
+    try {
+      const next = !randomAssignmentEnabled;
+      await setRandomCohort({ data: { enabled: next } });
+      setRandomAssignmentEnabled(next);
+      toast.success(next ? "New participants without a founder-assigned cohort will be randomly placed." : "Random cohort assignment turned off — unassigned participants wait for the founder.");
+    } catch (e: any) { toast.error(e.message ?? "Failed to update setting"); }
+    finally { setTogglingRandom(false); }
+  };
+
+  const doAssignCohort = async (beneficiaryId: string, cohortId: string) => {
+    try {
+      await setBenCohort({ data: { beneficiary_id: beneficiaryId, cohort_id: cohortId || null } });
+      toast.success("Cohort updated.");
+      refresh();
+    } catch (e: any) { toast.error(e.message ?? "Failed to assign cohort"); }
   };
 
   const assignmentByBen = useMemo(() => {
@@ -364,6 +391,19 @@ function Admin() {
               <option value="nbo">NBO</option>
             </select>
           </label>
+          {isSuperAdmin && (
+            <label className="md:col-span-1 block">
+              <span className="text-[10px] tracking-widest text-muted-foreground">Cohort (founder only)</span>
+              <select value={inviteCohortId} onChange={(e) => setInviteCohortId(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="">— leave unassigned —</option>
+                {cohorts.map((c) => (
+                  <option key={c.id} value={c.id} disabled={c.member_count >= COHORT_MAX_MEMBERS}>
+                    {c.name} ({c.member_count}/{COHORT_MAX_MEMBERS}{c.member_count >= COHORT_MAX_MEMBERS ? " — FULL" : ""})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <div className="md:col-span-2 flex items-center gap-3">
             {isSuperAdmin && (
               <label className="inline-flex items-center gap-2 text-sm">
@@ -383,9 +423,25 @@ function Admin() {
         <h2 className="font-display text-xl font-bold flex items-center gap-2"><Users className="h-5 w-5" /> Cohorts</h2>
         <p className="text-sm text-muted-foreground mt-1">
           {isSuperAdmin
-            ? "Only you can form a new cohort. The moment one exists its group chat is live and active."
-            : "Only the super admin can form a new cohort."}
+            ? "Only you can form a new cohort, and only you assign a participant to a specific one. The moment a cohort exists its group chat is live and active."
+            : "Only the super admin can form a new cohort or assign someone to a specific one."}
         </p>
+        <div className="mt-4 flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+          <button
+            type="button" role="switch" aria-checked={randomAssignmentEnabled}
+            onClick={doToggleRandomAssignment} disabled={togglingRandom}
+            className={`relative shrink-0 mt-0.5 h-5 w-9 rounded-full transition disabled:opacity-60 ${randomAssignmentEnabled ? "bg-primary" : "bg-muted"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition ${randomAssignmentEnabled ? "translate-x-4" : "translate-x-0"}`} />
+          </button>
+          <div className="text-xs">
+            <div className="font-semibold">Randomly assign unassigned participants</div>
+            <p className="text-muted-foreground mt-0.5">
+              When on, a new beneficiary the founder didn't place in a specific cohort is randomly placed in one with
+              room instead of waiting. When off (default), they stay unassigned until the founder assigns them.
+            </p>
+          </div>
+        </div>
         {isSuperAdmin && (
           <form onSubmit={onCreateCohort} className="mt-4 flex flex-wrap items-center gap-3">
             <input
@@ -405,10 +461,13 @@ function Admin() {
             <div key={c.id} className="rounded-xl border border-border bg-background p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="font-display font-semibold">{c.name}</div>
-                {!c.active && <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">INACTIVE</span>}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {c.member_count >= COHORT_MAX_MEMBERS && <span className="rounded-full bg-crimson/15 px-2 py-0.5 text-[10px] font-bold text-crimson">FULL</span>}
+                  {!c.active && <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">INACTIVE</span>}
+                </div>
               </div>
               {c.description && <p className="text-xs text-muted-foreground mt-1">{c.description}</p>}
-              <div className="mt-2 text-xs text-muted-foreground">{c.member_count} member{c.member_count === 1 ? "" : "s"}</div>
+              <div className="mt-2 text-xs text-muted-foreground">{c.member_count}/{COHORT_MAX_MEMBERS} members</div>
             </div>
           ))}
         </div>
@@ -589,6 +648,23 @@ function Admin() {
                     </label>
                   ) : (
                     <div className="col-span-2 text-muted-foreground">DSE Rep: {admins.find((a) => a.id === assignedAdmin)?.full_name ?? "unassigned"}</div>
+                  )}
+
+                  {isSuperAdmin ? (
+                    <label className="col-span-2 flex items-center gap-2">
+                      <Users className="h-3.5 w-3.5" />
+                      <span className="text-muted-foreground">Cohort:</span>
+                      <select value={b.cohort_id ?? ""} onChange={(e) => doAssignCohort(b.id, e.target.value)} className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-xs">
+                        <option value="">— unassigned —</option>
+                        {cohorts.map((c) => (
+                          <option key={c.id} value={c.id} disabled={c.member_count >= COHORT_MAX_MEMBERS && c.id !== b.cohort_id}>
+                            {c.name} ({c.member_count}/{COHORT_MAX_MEMBERS}{c.member_count >= COHORT_MAX_MEMBERS ? " — FULL" : ""})
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : (
+                    <div className="col-span-2 text-muted-foreground">Cohort: {cohorts.find((c) => c.id === b.cohort_id)?.name ?? "unassigned"} — founder only</div>
                   )}
 
                   <button onClick={() => doEscalate(b.id, "at_risk")} className="rounded-md border border-gold py-1.5 text-gold-deep hover:bg-gold/10">Flag at-risk</button>
