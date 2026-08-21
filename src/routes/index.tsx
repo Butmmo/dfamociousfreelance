@@ -426,7 +426,7 @@ function Landing() {
               <div className="text-[10px] tracking-[0.2em] text-muted-foreground">D'Famocious Business Incubator</div>
             </div>
           </div>
-          <nav className="hidden md:flex items-center gap-7 text-sm">
+          <nav className="hidden md:flex items-center gap-5 text-xs tracking-wide">
             <a href="#stages" className="hover:text-primary transition">The Two Stages</a>
             <a href="#app" className="hover:text-primary transition">Inside the App</a>
             <a href="#dse" className="hover:text-primary transition">Stage 1 · DSE</a>
@@ -438,15 +438,15 @@ function Landing() {
           <div className="flex items-center gap-2">
             <Link
               to="/signup"
-              className="hidden sm:inline-flex items-center gap-2 rounded-md border border-gold px-4 py-2 text-sm font-semibold hover:bg-accent/40 transition"
+              className="hidden sm:inline-flex items-center gap-2 rounded-md border border-gold px-3.5 py-1.5 text-xs font-semibold hover:bg-accent/40 transition"
             >
               Apply Now
             </Link>
             <Link
               to="/auth"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal"
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 shadow-regal"
             >
-              <Lock className="h-4 w-4" /> Beneficiary Login
+              <Lock className="h-3.5 w-3.5" /> Beneficiary Login
             </Link>
           </div>
         </div>
