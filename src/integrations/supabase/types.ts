@@ -1365,7 +1365,11 @@ export type Database = {
           path_auto_assigned: boolean
           path_chosen_at: string | null
           path_deadline: string | null
+          path_first_chosen_at: string | null
           path_key: string | null
+          path_permanence_notified_at: string | null
+          path_reset_at: string | null
+          path_reset_by: string | null
           pocket_savings_started_at: string | null
           positioning_statement: string | null
           push_messages_enabled: boolean
@@ -1412,7 +1416,11 @@ export type Database = {
           path_auto_assigned?: boolean
           path_chosen_at?: string | null
           path_deadline?: string | null
+          path_first_chosen_at?: string | null
           path_key?: string | null
+          path_permanence_notified_at?: string | null
+          path_reset_at?: string | null
+          path_reset_by?: string | null
           pocket_savings_started_at?: string | null
           positioning_statement?: string | null
           push_messages_enabled?: boolean
@@ -1459,7 +1467,11 @@ export type Database = {
           path_auto_assigned?: boolean
           path_chosen_at?: string | null
           path_deadline?: string | null
+          path_first_chosen_at?: string | null
           path_key?: string | null
+          path_permanence_notified_at?: string | null
+          path_reset_at?: string | null
+          path_reset_by?: string | null
           pocket_savings_started_at?: string | null
           positioning_statement?: string | null
           push_messages_enabled?: boolean
