@@ -6,7 +6,27 @@ import { listAllPayments, markPaymentPaid } from "@/lib/payments.functions";
 import { PAYMENT_PURPOSE_LABELS } from "@/lib/payments";
 import { Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
-import { CreditCard, ArrowLeft, Check } from "lucide-react";
+import { CreditCard, ArrowLeft, Check, IdCard } from "lucide-react";
+
+const NIGERIA_ID_LABELS: Record<string, string> = {
+  nin: "NIN", voters_card: "Voter's Card", drivers_license: "Driver's License", passport: "Passport",
+};
+
+function IdentificationCell({ b }: { b: any }) {
+  if (!b) return <span className="text-muted-foreground">—</span>;
+  const parts: string[] = [];
+  if (b.bef_number) parts.push(`BEF# ${b.bef_number}`);
+  if (b.nbo_id_card_number) parts.push(`NBO ID ${b.nbo_id_card_number}`);
+  if (b.nigeria_id_type && b.nigeria_id_number) {
+    parts.push(`${NIGERIA_ID_LABELS[b.nigeria_id_type] ?? b.nigeria_id_type} ${b.nigeria_id_number}`);
+  }
+  if (parts.length === 0) return <span className="text-crimson">Not provided</span>;
+  return (
+    <span className="inline-flex items-center gap-1 whitespace-nowrap">
+      <IdCard className="h-3 w-3 text-muted-foreground shrink-0" /> {parts.join(" · ")}
+    </span>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/council-payments")({
   head: () => ({ meta: [{ title: "Payments — DBI Council" }] }),
@@ -76,7 +96,7 @@ function CouncilPayments() {
               <thead className="text-muted-foreground border-b border-border">
                 <tr className="text-left">
                   <th className="py-2 px-3">Beneficiary</th><th className="py-2 px-3">Purpose</th><th className="py-2 px-3">Provider</th>
-                  <th className="py-2 px-3">Amount</th><th className="py-2 px-3">Requested</th><th className="py-2 px-3 text-right">Action</th>
+                  <th className="py-2 px-3">Amount</th><th className="py-2 px-3">Identification</th><th className="py-2 px-3">Requested</th><th className="py-2 px-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -86,6 +106,7 @@ function CouncilPayments() {
                     <td className="py-2 px-3">{PAYMENT_PURPOSE_LABELS[r.purpose as keyof typeof PAYMENT_PURPOSE_LABELS] ?? r.purpose}</td>
                     <td className="py-2 px-3 capitalize">{r.provider}</td>
                     <td className="py-2 px-3">{r.charged_currency === "NGN" ? `₦${Number(r.charged_amount).toLocaleString()}` : `$${Number(r.charged_amount).toFixed(2)}`}</td>
+                    <td className="py-2 px-3">{r.purpose === "dse_entry" ? <IdentificationCell b={r.beneficiary} /> : <span className="text-muted-foreground">—</span>}</td>
                     <td className="py-2 px-3 whitespace-nowrap">{new Date(r.created_at).toLocaleDateString()}</td>
                     <td className="py-2 px-3 text-right">
                       <button onClick={() => doMarkPaid(r.id)} className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 hover:bg-emerald-500/10">

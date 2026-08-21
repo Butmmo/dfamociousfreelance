@@ -21,7 +21,9 @@ export const getMyPayments = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: profile }, { data: transactions }, { data: dfyMonths }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("entry_channel,dse_entry_paid_at,suc_entry_paid_at,suc_entry_tier").eq("id", context.userId).maybeSingle(),
+      supabaseAdmin.from("profiles").select(
+        "entry_channel,dse_entry_paid_at,suc_entry_paid_at,suc_entry_tier,bef_number,nbo_id_card_number,nigeria_id_type,nigeria_id_number",
+      ).eq("id", context.userId).maybeSingle(),
       supabaseAdmin.from("payment_transactions").select("*").eq("user_id", context.userId).order("created_at", { ascending: false }),
       supabaseAdmin.from("dfy_months").select("*").eq("user_id", context.userId).eq("qualified", true).eq("remittance_paid", false).order("period_month", { ascending: true }),
     ]);
@@ -30,6 +32,10 @@ export const getMyPayments = createServerFn({ method: "POST" })
       dseEntryPaidAt: profile?.dse_entry_paid_at ?? null,
       sucEntryPaidAt: profile?.suc_entry_paid_at ?? null,
       sucEntryTier: profile?.suc_entry_tier ?? null,
+      befNumber: profile?.bef_number ?? null,
+      nboIdCardNumber: profile?.nbo_id_card_number ?? null,
+      nigeriaIdType: profile?.nigeria_id_type ?? null,
+      nigeriaIdNumber: profile?.nigeria_id_number ?? null,
       transactions: transactions ?? [],
       unpaidDfyMonths: dfyMonths ?? [],
     };
@@ -97,13 +103,25 @@ export const createDseEntryCheckout = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: profile } = await supabaseAdmin
-      .from("profiles").select("email,entry_channel,dse_entry_paid_at").eq("id", context.userId).maybeSingle();
+      .from("profiles").select("email,entry_channel,dse_entry_paid_at,bef_number,nbo_id_card_number,nigeria_id_type,nigeria_id_number")
+      .eq("id", context.userId).maybeSingle();
     if (!profile) throw new Error("Profile not found.");
     if (profile.dse_entry_paid_at) throw new Error("DSE entry is already paid.");
     const entryChannel = (profile.entry_channel ?? "direct") as EntryChannel;
 
+    // Every NBO participant must present their BEF number or NBO Identity
+    // card before the subsidized entry fee can be paid — enforced here,
+    // not just in the UI, since this is what actually stands between the
+    // discount and anyone who could otherwise just claim NBO status.
+    if (entryChannel === "nbo" && !profile.bef_number && !profile.nbo_id_card_number) {
+      throw new Error("Provide your BEF number or NBO Identity card number before paying.");
+    }
+
     if (data.provider === "paystack") {
       if (entryChannel !== "nbo") throw new Error("Paystack is only available for NBO-subsidized entry.");
+      if (!profile.nigeria_id_type || !profile.nigeria_id_number) {
+        throw new Error("Nigerian NBO participants must provide a means of identification (NIN, Voter's Card, Driver's License, or Passport) before paying.");
+      }
       const txId = await createPendingTransaction(supabaseAdmin, {
         user_id: context.userId, purpose: "dse_entry", provider: "paystack",
         amount_usd: dseEntryAmountUsd(entryChannel), charged_currency: "NGN", charged_amount: DSE_ENTRY_NGN_NBO,
@@ -176,7 +194,7 @@ export const listAllPayments = createServerFn({ method: "POST" })
       .from("payment_transactions").select("*").order("created_at", { ascending: false }).limit(300);
     const userIds = Array.from(new Set((rows ?? []).map((r: any) => r.user_id)));
     const { data: people } = userIds.length
-      ? await supabaseAdmin.from("profiles").select("id,full_name,email").in("id", userIds)
+      ? await supabaseAdmin.from("profiles").select("id,full_name,email,bef_number,nbo_id_card_number,nigeria_id_type,nigeria_id_number").in("id", userIds)
       : { data: [] as any[] };
     const byId = new Map((people ?? []).map((p: any) => [p.id, p]));
     return (rows ?? []).map((r: any) => ({ ...r, beneficiary: byId.get(r.user_id) ?? null }));

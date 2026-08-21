@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/lib/use-session";
 import {
   getMyPayments, createDseEntryCheckout, createDfyRemittanceCheckout, createSucEntryCheckout,
 } from "@/lib/payments.functions";
@@ -9,7 +11,14 @@ import {
   PAYMENT_PURPOSE_LABELS, type SucEntryTier, type EntryChannel,
 } from "@/lib/payments";
 import { toast } from "sonner";
-import { CreditCard, Loader2, CheckCircle2, Send, GraduationCap, TrendingUp, Rocket } from "lucide-react";
+import { CreditCard, Loader2, CheckCircle2, Send, GraduationCap, TrendingUp, Rocket, IdCard, Save } from "lucide-react";
+
+const NIGERIA_ID_TYPES: { value: string; label: string }[] = [
+  { value: "nin", label: "NIN" },
+  { value: "voters_card", label: "Voter's Card" },
+  { value: "drivers_license", label: "Driver's License" },
+  { value: "passport", label: "International Passport" },
+];
 
 export const Route = createFileRoute("/_authenticated/payments")({
   head: () => ({ meta: [{ title: "Payments — DBI Citadel" }] }),
@@ -17,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/payments")({
 });
 
 function PaymentsPage() {
+  const { user } = useSession();
   const summaryFn = useServerFn(getMyPayments);
   const dseFn = useServerFn(createDseEntryCheckout);
   const dfyFn = useServerFn(createDfyRemittanceCheckout);
@@ -25,11 +35,19 @@ function PaymentsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [idForm, setIdForm] = useState({ befNumber: "", nboIdCardNumber: "", nigeriaIdType: "", nigeriaIdNumber: "" });
+  const [savingId, setSavingId] = useState(false);
 
   const refresh = async () => {
     setLoading(true);
-    try { setData(await summaryFn({ data: undefined as never })); }
-    catch (e: any) { toast.error(e.message ?? "Failed to load payments"); }
+    try {
+      const d = await summaryFn({ data: undefined as never });
+      setData(d);
+      setIdForm({
+        befNumber: d.befNumber ?? "", nboIdCardNumber: d.nboIdCardNumber ?? "",
+        nigeriaIdType: d.nigeriaIdType ?? "", nigeriaIdNumber: d.nigeriaIdNumber ?? "",
+      });
+    } catch (e: any) { toast.error(e.message ?? "Failed to load payments"); }
     setLoading(false);
   };
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, []);
@@ -45,10 +63,30 @@ function PaymentsPage() {
     }
   };
 
+  const saveIdentification = async () => {
+    if (!user) return;
+    if (!idForm.befNumber.trim() && !idForm.nboIdCardNumber.trim()) {
+      toast.error("Provide your BEF number or NBO Identity card number."); return;
+    }
+    setSavingId(true);
+    const { error } = await supabase.from("profiles").update({
+      bef_number: idForm.befNumber.trim() || null,
+      nbo_id_card_number: idForm.nboIdCardNumber.trim() || null,
+      nigeria_id_type: idForm.nigeriaIdType || null,
+      nigeria_id_number: idForm.nigeriaIdNumber.trim() || null,
+    }).eq("id", user.id);
+    if (error) { toast.error(error.message); setSavingId(false); return; }
+    toast.success("Identification saved.");
+    setSavingId(false);
+    refresh();
+  };
+
   if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
   if (!data) return null;
 
   const sucTierEntries = Object.entries(SUC_ENTRY_TIERS) as [SucEntryTier, typeof SUC_ENTRY_TIERS[SucEntryTier]][];
+  const hasNboId = !!(data.befNumber || data.nboIdCardNumber);
+  const hasNigeriaId = !!(data.nigeriaIdType && data.nigeriaIdNumber);
 
   return (
     <div className="space-y-6">
@@ -71,29 +109,71 @@ function PaymentsPage() {
             <CheckCircle2 className="h-3.5 w-3.5" /> Paid {new Date(data.dseEntryPaidAt).toLocaleDateString()}
           </div>
         ) : (
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button
-              onClick={() => goCheckout("dse-stripe", () => dseFn({ data: { provider: "stripe" } }))}
-              disabled={busyKey === "dse-stripe"}
-              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
-            >
-              {busyKey === "dse-stripe" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Pay ${DSE_ENTRY_USD[data.entryChannel as EntryChannel]} via Stripe
-            </button>
+          <>
             {data.entryChannel === "nbo" && (
-              <div className="flex flex-col gap-1">
+              <div className="mt-3 rounded-lg border border-border p-3">
+                <div className="text-[10px] tracking-widest text-gold-deep flex items-center gap-1.5"><IdCard className="h-3.5 w-3.5" /> NBO Identification — required before paying</div>
+                <p className="mt-1 text-[11px] text-muted-foreground">Every NBO participant must present their BEF number or NBO Identity card number. Nigerian NBO participants paying via Paystack must also provide a means of identification.</p>
+                <div className="mt-2 grid sm:grid-cols-2 gap-2">
+                  <input
+                    type="text" placeholder="BEF number" value={idForm.befNumber}
+                    onChange={(e) => setIdForm((f) => ({ ...f, befNumber: e.target.value }))}
+                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                  />
+                  <input
+                    type="text" placeholder="NBO Identity card number" value={idForm.nboIdCardNumber}
+                    onChange={(e) => setIdForm((f) => ({ ...f, nboIdCardNumber: e.target.value }))}
+                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                  />
+                  <select
+                    value={idForm.nigeriaIdType} onChange={(e) => setIdForm((f) => ({ ...f, nigeriaIdType: e.target.value }))}
+                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                  >
+                    <option value="">Nigeria ID type (for Paystack) — optional</option>
+                    {NIGERIA_ID_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                  <input
+                    type="text" placeholder="Nigeria ID number" value={idForm.nigeriaIdNumber}
+                    onChange={(e) => setIdForm((f) => ({ ...f, nigeriaIdNumber: e.target.value }))}
+                    className="rounded-md border border-input bg-background px-2 py-1.5 text-xs"
+                  />
+                </div>
                 <button
-                  onClick={() => goCheckout("dse-paystack", () => dseFn({ data: { provider: "paystack" } }))}
-                  disabled={busyKey === "dse-paystack"}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-2 text-sm font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60"
+                  onClick={saveIdentification} disabled={savingId}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-1.5 text-xs font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60"
                 >
-                  {busyKey === "dse-paystack" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  Pay ₦{DSE_ENTRY_NGN_NBO.toLocaleString()} via Paystack (Nigeria)
+                  {savingId ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save identification
                 </button>
-                <p className="text-[10px] text-muted-foreground">NBO's own further-subsidized local rate — {LOCAL_EQUIVALENT_DISCLAIMER}.</p>
+                {hasNboId && (
+                  <p className="mt-2 text-[11px] text-emerald-600 inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> BEF number / NBO Identity card on file.</p>
+                )}
               </div>
             )}
-          </div>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => goCheckout("dse-stripe", () => dseFn({ data: { provider: "stripe" } }))}
+                disabled={busyKey === "dse-stripe" || (data.entryChannel === "nbo" && !hasNboId)}
+                className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+              >
+                {busyKey === "dse-stripe" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Pay ${DSE_ENTRY_USD[data.entryChannel as EntryChannel]} via Stripe
+              </button>
+              {data.entryChannel === "nbo" && (
+                <div className="flex flex-col gap-1">
+                  <button
+                    onClick={() => goCheckout("dse-paystack", () => dseFn({ data: { provider: "paystack" } }))}
+                    disabled={busyKey === "dse-paystack" || !hasNboId || !hasNigeriaId}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-gold px-3 py-2 text-sm font-semibold text-gold-deep hover:bg-gold/10 disabled:opacity-60"
+                  >
+                    {busyKey === "dse-paystack" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    Pay ₦{DSE_ENTRY_NGN_NBO.toLocaleString()} via Paystack (Nigeria)
+                  </button>
+                  <p className="text-[10px] text-muted-foreground">NBO's own further-subsidized local rate — {LOCAL_EQUIVALENT_DISCLAIMER}.</p>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </section>
 
