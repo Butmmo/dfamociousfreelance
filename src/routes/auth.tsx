@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { DfsMark, Motto } from "@/components/dfs/Brand";
 import { toast } from "sonner";
 import { Loader2, Mail, Lock, ArrowLeft } from "lucide-react";
@@ -48,12 +47,18 @@ function AuthPage() {
     setMode("login");
   };
 
+  // Native Supabase OAuth — replaces Lovable's cloud-auth-js broker. Requires
+  // the Google provider to be configured under Supabase Auth settings, with
+  // its own Google Cloud OAuth client pointed at Supabase's callback URL
+  // (https://<project-ref>.supabase.co/auth/v1/callback), independent of Lovable.
   const onGoogle = async () => {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) { toast.error("Google sign-in failed"); setBusy(false); return; }
-    if (result.redirected) return;
-    navigate({ to: "/dashboard" });
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    });
+    if (error) { toast.error("Google sign-in failed"); setBusy(false); return; }
+    // On success the browser is redirected to Google, then back — nothing left to do here.
   };
 
   return (
